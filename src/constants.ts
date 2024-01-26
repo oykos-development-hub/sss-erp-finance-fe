@@ -19,8 +19,8 @@ export const budgetTabs: ExtendedTab[] = [
 ];
 
 export const invoicesTabs: ExtendedTab[] = [
-  {id: 1, title: 'Overview', routeName: '', disabled: false},
-  {id: 2, title: 'Invoice Entry', routeName: 'add-invoice', disabled: false},
+  {id: 1, title: 'Pregled računa', routeName: '', disabled: false},
+  {id: 2, title: 'Unos računa', routeName: 'add-invoice', disabled: false},
 ];
 
 export enum ScreenTitlesEnum {
@@ -63,4 +63,9 @@ export const mockDropdownOptions = [
   {id: 1, title: 'Option 1'},
   {id: 2, title: 'Option 2'},
   {id: 3, title: 'Option 3'},
+];
+
+export const invoiceTypeOptions = [
+  {id: 1, title: 'Ručni unos'},
+  {id: 2, title: 'Materijalno knjigovodstvo'},
 ];

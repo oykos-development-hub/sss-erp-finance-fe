@@ -26,15 +26,15 @@ const Contracts = () => {
     if (activeTab !== tab.id) {
       navigate(
         routeName
-          ? '/finance/liabilities-receivables/contracts/add-contract'
-          : '/finance/liabilities-receivables/contracts',
+          ? '/finance/liabilities-receivables/liabilities/contracts/add-contract'
+          : '/finance/liabilities-receivables/liabilities/contracts',
       );
     }
   };
 
   const renderScreen = () => {
-    if (pathname === '/finance/liabilities-receivables/contracts') return <ContractsOverview />;
-    if (pathname === '/finance/liabilities-receivables/contracts/add-contract') return <ContractsEntry />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/contracts') return <ContractsOverview />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/contracts/add-contract') return <ContractsEntry />;
     return <NotFound404 />;
   };
 

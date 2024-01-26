@@ -8,7 +8,6 @@ export const FileUploadWrapper = styled.div`
 
   > div > div {
     display: block;
-    width: 100%;
     > :nth-child(2) {
       display: flex;
       justify-content: flex-start;

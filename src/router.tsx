@@ -25,10 +25,10 @@ export const Router = () => {
     const name = path[path.length - 1];
 
     const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
-    const invoicesRegex = new RegExp('^/finance/liabilities-receivables/invoices(?:/add-invoice)?$');
-    const decisionsRegex = new RegExp('^/finance/liabilities-receivables/decisions(?:/add-decision)?$');
-    const contractsRegex = new RegExp('^/finance/liabilities-receivables/contracts(?:/add-contract)?$');
-    const salariesRegex = new RegExp('^/finance/liabilities-receivables/salaries(?:/add-salary)?$');
+    const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
+    const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
+    const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
+    const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
     const budgetCreateRegex = /\/finance\/budget-create-(\d{4})/;
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);

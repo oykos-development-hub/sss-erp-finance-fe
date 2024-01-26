@@ -4,7 +4,7 @@ import {Dropdown, Datepicker, FileUpload, Typography, Input, Table, Button} from
 import Footer from '../../../../shared/footer.ts';
 import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
 import {Controller, useForm} from 'react-hook-form';
-import {mockDropdownOptions} from '../../../../constants.ts';
+import {invoiceTypeOptions, mockDropdownOptions} from '../../../../constants.ts';
 
 const initialValues = {
   dobavljac: null,
@@ -16,19 +16,35 @@ const initialValues = {
   ziro_racun: null,
   datum_valute: null,
   opis: '',
+  invoice_type: {id: 1, title: 'Ručni unos'},
 };
 const InvoiceEntry = () => {
-  const {control, register, handleSubmit, reset} = useForm({defaultValues: initialValues});
+  const {control, register, handleSubmit, reset, watch} = useForm({defaultValues: initialValues});
 
   const onSubmit = (data: any) => {
     // TODO add sumbit api call
     console.log(data);
   };
 
+  const invoiceType = watch('invoice_type').id;
   return (
     <InvoiceEntryForm>
       <>
         <Row>
+          <Controller
+            name="invoice_type"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={value}
+                onChange={onChange}
+                label="TIP RAČUNA:"
+                placeholder={'Odaberite tip računa'}
+                options={invoiceTypeOptions}
+              />
+            )}
+          />
           <Controller
             name="dobavljac"
             control={control}
@@ -43,33 +59,20 @@ const InvoiceEntry = () => {
               />
             )}
           />
-          <Controller
-            name="aktivnost"
-            control={control}
-            render={({field: {name, value, onChange}}) => (
-              <Dropdown
-                name={name}
-                value={value}
-                onChange={onChange}
-                label="AKTIVNOST:"
-                placeholder={'Odaberite aktivnost'}
-                options={mockDropdownOptions}
-              />
-            )}
-          />
         </Row>
         <Row>
           <Controller
-            name={'broj_racuna'}
+            name="dobavljac"
             control={control}
             render={({field: {name, value, onChange}}) => (
               <Dropdown
                 name={name}
                 value={value}
                 onChange={onChange}
-                label="BROJ RAČUNA:"
-                placeholder={'Odaberite broj računa'}
-                options={mockDropdownOptions}
+                label="NARUDŽBENICA:"
+                placeholder={'Odaberite narudžbenicu'}
+                options={[]}
+                isDisabled={invoiceType === 1}
               />
             )}
           />
@@ -171,8 +174,8 @@ const InvoiceEntry = () => {
         <Table tableHeads={invoiceAmountTableHeads} data={[]} />
       </>
       <Footer>
-        <Button content="Clear" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        <Button content="Create Invoice Entry" variant="primary" onClick={handleSubmit(onSubmit)} />
+        <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
+        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
       </Footer>
     </InvoiceEntryForm>
   );

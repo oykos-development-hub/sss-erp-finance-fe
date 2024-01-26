@@ -26,15 +26,15 @@ const Salaries = () => {
     if (activeTab !== tab.id) {
       navigate(
         routeName
-          ? '/finance/liabilities-receivables/salaries/add-salary'
-          : '/finance/liabilities-receivables/salaries',
+          ? '/finance/liabilities-receivables/liabilities/salaries/add-salary'
+          : '/finance/liabilities-receivables/liabilities/salaries',
       );
     }
   };
 
   const renderScreen = () => {
-    if (pathname === '/finance/liabilities-receivables/salaries') return <SalariesOverview />;
-    if (pathname === '/finance/liabilities-receivables/salaries/add-salary') return <SalariesEntry />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/salaries') return <SalariesOverview />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/salaries/add-salary') return <SalariesEntry />;
     return <NotFound404 />;
   };
 

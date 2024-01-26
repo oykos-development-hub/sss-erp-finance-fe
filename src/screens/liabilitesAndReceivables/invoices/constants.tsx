@@ -26,7 +26,6 @@ export const invoiceEntryTableHeads: TableHead[] = [
   {title: 'Ukupan iznos', accessor: 'total'},
   {title: 'Opis', accessor: 'description'},
   {title: 'Konto', accessor: 'account'},
-  {title: 'Konto troška', accessor: 'pay_account'},
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 

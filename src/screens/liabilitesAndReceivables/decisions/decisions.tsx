@@ -26,15 +26,15 @@ const Decisions = () => {
     if (activeTab !== tab.id) {
       navigate(
         routeName
-          ? '/finance/liabilities-receivables/decisions/add-decision'
-          : '/finance/liabilities-receivables/decisions',
+          ? '/finance/liabilities-receivables/liabilities/decisions/add-decision'
+          : '/finance/liabilities-receivables/liabilities/decisions',
       );
     }
   };
 
   const renderScreen = () => {
-    if (pathname === '/finance/liabilities-receivables/decisions') return <DecisionsOverview />;
-    if (pathname === '/finance/liabilities-receivables/decisions/add-decision') return <DecisionsEntry />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/decisions') return <DecisionsOverview />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/decisions/add-decision') return <DecisionsEntry />;
     return <NotFound404 />;
   };
 

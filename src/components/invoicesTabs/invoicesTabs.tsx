@@ -26,15 +26,15 @@ const InvoicesTabs = () => {
     if (activeTab !== tab.id) {
       navigate(
         routeName
-          ? '/finance/liabilities-receivables/invoices/add-invoice'
-          : '/finance/liabilities-receivables/invoices',
+          ? '/finance/liabilities-receivables/liabilities/invoices/add-invoice'
+          : '/finance/liabilities-receivables/liabilities/invoices',
       );
     }
   };
 
   const renderScreen = () => {
-    if (pathname === '/finance/liabilities-receivables/invoices') return <InvoicesOverview />;
-    if (pathname === '/finance/liabilities-receivables/invoices/add-invoice') return <InvoiceEntry />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/invoices') return <InvoicesOverview />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/invoices/add-invoice') return <InvoiceEntry />;
     return <NotFound404 />;
   };
 
