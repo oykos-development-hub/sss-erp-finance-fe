@@ -15,7 +15,7 @@ const BudgetOverview = () => {
     size: PAGE_SIZE,
     status: filterValues.status ? filterValues.status.id : '',
     type_budget: filterValues.type_budget ? filterValues.type_budget.id : '',
-    year: filterValues.year ? filterValues.year.id : '',
+    year: filterValues.year ? filterValues.year.id : null,
   });
 
   const onPageChange = (page: number) => {

@@ -2,7 +2,7 @@ import {Dropdown, Modal} from 'client-library';
 import {Controller, useForm} from 'react-hook-form';
 import {DropdownData} from '../../types/dropdownData';
 import {BudgetOverviewForm} from './styles';
-import {budgetStatusModal, budgetTypeModal, budgetYearModal} from '../budgetList/constants';
+import {budgetTypeModal, budgetYearModal} from '../budgetList/constants';
 import useInsertBudget from '../../services/graphQL/insertBudget/useInsertBudget.ts';
 import useAppContext from '../../context/useAppContext.ts';
 
@@ -14,8 +14,7 @@ interface BudgetOverviewModalProps {
 
 interface BudgetOverviewModalForm {
   year: DropdownData<string>;
-  type: DropdownData<string>;
-  source: DropdownData<string>;
+  budget_type: DropdownData<number>;
 }
 
 const BudgetOverviewModal = ({onClose, refetch}: BudgetOverviewModalProps) => {
@@ -35,8 +34,7 @@ const BudgetOverviewModal = ({onClose, refetch}: BudgetOverviewModalProps) => {
         {
           ...data,
           year: data.year.id,
-          type: data.type.id,
-          source: data.source.id,
+          budget_type: data.budget_type.id,
           id: 0,
         },
         () => {
@@ -77,23 +75,9 @@ const BudgetOverviewModal = ({onClose, refetch}: BudgetOverviewModalProps) => {
               />
             )}
           />
+
           <Controller
-            name="source"
-            control={control}
-            rules={{required: 'Ovo polje je obavezno'}}
-            render={({field: {name, value, onChange}}) => (
-              <Dropdown
-                name={name}
-                value={value}
-                onChange={onChange}
-                options={budgetStatusModal}
-                label="IZVOR:"
-                error={errors.source?.message as string}
-              />
-            )}
-          />
-          <Controller
-            name="type"
+            name="budget_type"
             control={control}
             rules={{required: 'Ovo polje je obavezno'}}
             render={({field: {name, value, onChange}}) => (
@@ -103,7 +87,7 @@ const BudgetOverviewModal = ({onClose, refetch}: BudgetOverviewModalProps) => {
                 onChange={onChange}
                 options={budgetTypeModal}
                 label="TIP BUDŽETA:"
-                error={errors.type?.message as string}
+                error={errors.budget_type?.message as string}
               />
             )}
           />

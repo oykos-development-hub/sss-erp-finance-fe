@@ -1,13 +1,12 @@
-const budgetOverview = `query BudgetOverview($page: Int, $size: Int, $id: Int, $status: String, $year: String, $type_budget: String) {
-    budget_Overview(page: $page, size: $size,id: $id, status: $status, year: $year, type_budget: $type_budget) {
+const budgetOverview = `query BudgetOverview($id: Int, $status: String, $year: Int, $budget_type: Int) {
+    budget_Overview(id: $id, status: $status, year: $year, budget_type: $budget_type) {
         status
         message
         total
         items {
             id
             year
-            source
-            type
+            budget_type
             status
         }
     }

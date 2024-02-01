@@ -3,14 +3,12 @@ import {DropdownData} from '../dropdownData';
 export interface BudgetOverviewInsert {
   id: number;
   year: DropdownData<string>;
-  source: DropdownData<string>;
-  type: DropdownData<string>;
+  budget_type: DropdownData<number>;
   status: string;
 }
 
 export interface BudgetOverviewInsertData {
   id: number;
   year: string;
-  source: string;
-  type: string;
+  budget_type: number;
 }

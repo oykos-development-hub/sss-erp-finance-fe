@@ -35,9 +35,9 @@ export const budgetType: DropdownData<string>[] = [
   {id: 'tekuci', title: 'Tekući'},
 ];
 
-export const budgetTypeModal: DropdownData<string>[] = [
-  {id: 'kapitalni', title: 'Kapitalni'},
-  {id: 'tekuci', title: 'Tekući'},
+export const budgetTypeModal: DropdownData<number>[] = [
+  {id: 1, title: 'Kapitalni'},
+  {id: 2, title: 'Tekući'},
 ];
 
 export const budgetStatus: DropdownData<string>[] = [

@@ -2,14 +2,14 @@ export interface BudgetOverviewParams {
   page: number;
   size: number;
   id?: number;
-  year?: string | null;
+  year?: number | null;
   type_budget?: string | null;
   status?: string | null;
 }
 
 export interface BudgetOverviewItem {
   id: number;
-  year: string;
+  year: number;
   type_budget: string;
   status: string;
 }

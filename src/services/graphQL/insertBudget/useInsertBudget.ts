@@ -10,7 +10,7 @@ const useInsertBudget = () => {
   const insertBudget = async (data: BudgetOverviewInsertData, onSuccess?: () => void, onError?: () => void) => {
     setLoading(true);
     const response: BudgetResponse['insert'] = await fetch(GraphQL.insertBudget, {data});
-    if (response.budget_Insert.status === 'success') {
+    if (response?.budget_Insert?.status === 'success') {
       onSuccess && onSuccess();
     } else {
       onError && onError();

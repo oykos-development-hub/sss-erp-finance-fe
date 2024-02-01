@@ -2,11 +2,10 @@ const budgetInsert = `mutation($data: BudgetMutation!) {
     budget_Insert(data: $data) {
         status 
         message 
-        items {
+        item {
             id
             year
-            source
-            type
+            budget_type
             status
         }
     }
