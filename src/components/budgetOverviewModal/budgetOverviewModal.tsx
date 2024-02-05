@@ -5,6 +5,7 @@ import {BudgetOverviewForm} from './styles';
 import {budgetTypeModal, budgetYearModal} from '../budgetList/constants';
 import useInsertBudget from '../../services/graphQL/insertBudget/useInsertBudget.ts';
 import useAppContext from '../../context/useAppContext.ts';
+import {MicroserviceProps} from '../../types/micro-service-props.ts';
 
 interface BudgetOverviewModalProps {
   onClose: () => void;
@@ -24,28 +25,16 @@ const BudgetOverviewModal = ({onClose, refetch}: BudgetOverviewModalProps) => {
     control,
   } = useForm<BudgetOverviewModalForm>();
 
-  const {alert} = useAppContext();
-
-  const {insertBudget} = useInsertBudget();
+  const context = useAppContext();
+  // const {insertBudget} = useInsertBudget();
 
   const onAddNewBudget = async (data: BudgetOverviewModalForm) => {
     if (isValid) {
-      await insertBudget(
-        {
-          ...data,
-          year: data.year.id,
-          budget_type: data.budget_type.id,
-          id: 0,
+      context.navigation.navigate(`/finance/budget-create-${data.year.id}`, {
+        state: {
+          data,
         },
-        () => {
-          alert.success('Budžet uspješno dodat');
-          refetch && refetch();
-          onClose();
-        },
-        () => {
-          alert.error('Greška prilikom dodavanja budžeta');
-        },
-      );
+      });
     }
   };
 

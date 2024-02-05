@@ -4,7 +4,6 @@ import {BudgetTableHead, BudgetTableStep} from './types';
 export const baseTableHeads: BudgetTableHead[] = [
   {name: 'Ekonomska Klasifikacija', width: 6},
   {name: 'Opis Konta', width: 15},
-  {name: 'Izvor', width: 12},
 ];
 
 const capitalizeFirstLetter = (text: string) => {

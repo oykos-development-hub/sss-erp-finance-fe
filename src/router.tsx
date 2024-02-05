@@ -11,6 +11,7 @@ import {NonFinance} from './screens/budget/nonFinance/nonFinance.tsx';
 import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
+import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
 
 export const Router = () => {
   const {
@@ -36,7 +37,7 @@ export const Router = () => {
     if (pathname === '/finance/budget') return <BudgetOverview />;
     if (pathname === '/finance/budget-template') return <BudgetTemplate />;
     if (pathname === '/finance/budget/nonFinance') return <NonFinance />;
-    if (budgetCreateRegex.test(pathname)) return <BudgetTemplate />;
+    if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
     if (budgetDetails.test(pathname)) return <BudgetDetails />;
     if (invoicesRegex.test(pathname)) return <Invoices />;
     if (budgetPreviewDetails.test(pathname)) return <NonFinancePreview />;

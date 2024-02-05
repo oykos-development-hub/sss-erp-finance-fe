@@ -21,10 +21,9 @@ export type SimpleResponse = {
   message: string;
 };
 
-export type DetailsResponse<T> = {
+export type DetailsResponse = {
   status: string;
   message: string;
-  item: T;
 };
 
 export type BudgetResponse = {
