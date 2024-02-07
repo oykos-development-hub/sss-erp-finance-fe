@@ -32,16 +32,17 @@ const BudgetOverviewModal = ({onClose, availableYearsForBudget}: BudgetOverviewM
     watch,
   } = useForm<BudgetOverviewModalForm>({defaultValues: initialValues});
 
-  const context = useAppContext();
+  const {
+    navigation: {navigate},
+  } = useAppContext();
 
-  const budgetType = watch('budget_type');
+  const budgetType = watch('budget_type').id;
 
   const onAddNewBudget = async (data: BudgetOverviewModalForm) => {
     if (isValid) {
-      context.navigation.navigate(`/finance/budget-create-${data.year.id}`, {
+      navigate(`/finance/${budgetType}/budget-create-${data.year.id}`, {
         state: {
           data,
-          budgetType,
         },
       });
     }

@@ -21,7 +21,7 @@ const BudgetCreate = () => {
 
   const {
     navigation: {
-      location: {pathname, state},
+      location: {pathname},
       navigate,
     },
     contextMain,
@@ -29,7 +29,7 @@ const BudgetCreate = () => {
   } = useAppContext();
 
   const year = getYearFromPath(pathname);
-  const budgetTypeId = state.data.budget_type.id;
+  const budgetTypeId = location.pathname.split('/').at(2);
 
   const {insertBudget, loading: isSaving} = useInsertBudget();
 
@@ -42,7 +42,7 @@ const BudgetCreate = () => {
 
     const payload = {
       year: year.toString(),
-      budget_type: budgetTypeId,
+      budget_type: Number(budgetTypeId) || null,
       limits: limits,
     };
 

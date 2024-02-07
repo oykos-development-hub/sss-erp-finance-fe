@@ -10,7 +10,7 @@ export interface BudgetOverviewInsert {
 export interface BudgetOverviewInsertData {
   id?: number;
   year: string | null;
-  budget_type: number;
+  budget_type: number | null;
   limits: LimitType[];
 }
 

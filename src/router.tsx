@@ -31,7 +31,7 @@ export const Router = () => {
     const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
     const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
-    const budgetCreateRegex = /\/finance\/budget-create-(\d{4})/;
+    const budgetCreateRegex = /\/finance\/(\d+)\/budget-create-(\d{4})/;
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
 
