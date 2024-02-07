@@ -1,16 +1,14 @@
 import {Dropdown, Modal} from 'client-library';
 import {Controller, useForm} from 'react-hook-form';
-import {DropdownData} from '../../types/dropdownData';
-import {BudgetOverviewForm} from './styles';
-import {budgetTypeModal, budgetYearModal} from '../budgetList/constants';
-import useInsertBudget from '../../services/graphQL/insertBudget/useInsertBudget.ts';
 import useAppContext from '../../context/useAppContext.ts';
-import {MicroserviceProps} from '../../types/micro-service-props.ts';
+import {DropdownData} from '../../types/dropdownData';
+import {getYearOptions} from '../../utils/getYearOptions.ts';
+import {budgetTypeModal} from '../budgetList/constants';
+import {BudgetOverviewForm} from './styles';
 
 interface BudgetOverviewModalProps {
   onClose: () => void;
   id?: number;
-  refetch?: () => void;
 }
 
 interface BudgetOverviewModalForm {
@@ -18,21 +16,32 @@ interface BudgetOverviewModalForm {
   budget_type: DropdownData<number>;
 }
 
-const BudgetOverviewModal = ({onClose, refetch}: BudgetOverviewModalProps) => {
+const initialValues = {
+  year: {
+    id: '',
+    title: '',
+  },
+  budget_type: {id: 2, title: 'Tekući'},
+};
+
+const BudgetOverviewModal = ({onClose}: BudgetOverviewModalProps) => {
   const {
     handleSubmit,
     formState: {errors, isValid},
     control,
-  } = useForm<BudgetOverviewModalForm>();
+    watch,
+  } = useForm<BudgetOverviewModalForm>({defaultValues: initialValues});
 
   const context = useAppContext();
-  // const {insertBudget} = useInsertBudget();
+
+  const budgetType = watch('budget_type');
 
   const onAddNewBudget = async (data: BudgetOverviewModalForm) => {
     if (isValid) {
       context.navigation.navigate(`/finance/budget-create-${data.year.id}`, {
         state: {
           data,
+          budgetType,
         },
       });
     }
@@ -58,7 +67,7 @@ const BudgetOverviewModal = ({onClose, refetch}: BudgetOverviewModalProps) => {
                 name={name}
                 value={value}
                 onChange={onChange}
-                options={budgetYearModal}
+                options={getYearOptions(7, false, 1)}
                 label="GODINA:"
                 error={errors.year?.message as string}
               />

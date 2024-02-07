@@ -23,6 +23,7 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
         {name: 'Opis', width: 30},
         {name: `Budžet za ${year + 1}. godinu`, width: 13},
         {name: `Budžet za ${year + 2}. godinu`, width: 13},
+        {name: `Tekuća godina`, width: 13},
       ];
     case BudgetTableStep.BUDGETING_ACTUAL:
       return [

@@ -1,10 +1,12 @@
-import {Input, Modal} from 'client-library';
-import {Controller, useForm, useFieldArray} from 'react-hook-form';
+import {Input, Modal, Typography} from 'client-library';
+import {useForm} from 'react-hook-form';
 import useGetOrganizationUnits from '../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
-import {useEffect} from 'react';
+import {LimitType} from '../../types/graphQL/budgetInsert.ts';
+import {LabelWrapper, Row} from './styles.ts';
 
 interface BudgetOverviewModalProps {
   onClose: () => void;
+  onSubmit: (formData: LimitType[]) => void;
   id?: number;
 }
 
@@ -12,42 +14,50 @@ interface BudgetLimitModalForm {
   limits: number[];
 }
 
-const budgeLimitModal = ({onClose}: BudgetOverviewModalProps) => {
+const BudgetLimitModal = ({onClose, onSubmit}: BudgetOverviewModalProps) => {
   const {
     handleSubmit,
-    formState: {errors, isValid},
-    control,
+    formState: {errors},
     register,
-    reset,
   } = useForm<BudgetLimitModalForm>();
-  // const {insertBudget} = useInsertBudget();
-  // const {fields, append, remove} = useFieldArray({
-  //   control,
-  //   name: 'limits',
-  // });
 
   const {organizationUnits} = useGetOrganizationUnits(undefined, {allOption: true});
-  useEffect(() => {
-    reset({limits: organizationUnits.map(item => 0)});
-  }, [organizationUnits]);
+  const filteredOrganizationUnits = organizationUnits.filter(item => item.title !== 'Sve organizacione jedinice');
+
+  const handleSave = async (formData: any) => {
+    const limitsData = filteredOrganizationUnits.map(item => ({
+      organization_unit_id: item.id,
+      limit: Number(formData.limits[item.id]),
+    }));
+
+    onSubmit(limitsData);
+    onClose();
+  };
+
   return (
     <Modal
       open={true}
       onClose={onClose}
-      title="NOVI BUDŽET"
+      title="DODAJTE LIMIT"
       leftButtonOnClick={onClose}
-      rightButtonText="Kreiraj novi budžet"
+      rightButtonText="Dodajte limit"
       leftButtonText="Otkaži"
+      rightButtonOnClick={handleSubmit(handleSave)}
       content={
         <>
-          {organizationUnits.map(item => (
-            <Input
-              {...register(`limits.${item.id}`, {required: 'Ovo polje je obavezno'})}
-              label={item.title}
-              placeholder="Unesite limit..."
-              error={errors.limits?.message as string}
-              type="number"
-            />
+          {filteredOrganizationUnits.map(item => (
+            <Row key={`limits.${item?.title}`}>
+              <LabelWrapper>
+                <Typography variant="bodySmall" content={<b>ORGANIZACIONA JEDINICA:</b>} />
+                <Typography variant="bodySmall" content={item.title} />
+              </LabelWrapper>
+              <Input
+                {...register(`limits.${item.id}`, {required: 'Ovo polje je obavezno'})}
+                placeholder="Unesite limit..."
+                error={errors.limits?.message as string}
+                type="number"
+              />
+            </Row>
           ))}
         </>
       }
@@ -55,4 +65,4 @@ const budgeLimitModal = ({onClose}: BudgetOverviewModalProps) => {
   );
 };
 
-export default budgeLimitModal;
+export default BudgetLimitModal;

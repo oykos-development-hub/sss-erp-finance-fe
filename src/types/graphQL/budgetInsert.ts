@@ -8,7 +8,13 @@ export interface BudgetOverviewInsert {
 }
 
 export interface BudgetOverviewInsertData {
-  id: number;
-  year: string;
+  id?: number;
+  year: string | null;
   budget_type: number;
+  limits: LimitType[];
+}
+
+export interface LimitType {
+  organization_unit_id: number;
+  limit: number;
 }

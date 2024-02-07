@@ -1,8 +1,28 @@
-import {ReactElement, ReactNode} from 'react';
-import useAppContext from '../../context/useAppContext.ts';
-import {Container, StyledBreadcrumbs} from './styles.ts';
+import React, {FC, ReactElement, ReactNode} from 'react';
+import {Breadcrumbs} from 'client-library';
+import styled from 'styled-components';
+import useAppContext from '../../context/useAppContext';
 
-const ScreenWrapper = ({children}: {children: ReactNode}) => {
+const Container = styled.div`
+  font-family: 'Source Sans Pro', sans-serif;
+  background-color: #f8f8f8;
+  padding: 28px 40px;
+  height: calc(100vh - 157px);
+  overflow-y: auto;
+  box-sizing: border-box;
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+`;
+
+const StyledBreadcrumbs = styled(Breadcrumbs)`
+  padding: 0;
+  margin: 0;
+`;
+
+const ScreenWrapper: FC<{children: ReactNode; showBreadcrumbs?: boolean}> = ({children, showBreadcrumbs = true}) => {
   const {
     breadcrumbs,
     navigation: {navigate},
@@ -28,7 +48,7 @@ const ScreenWrapper = ({children}: {children: ReactNode}) => {
 
   return (
     <Container>
-      <StyledBreadcrumbs items={breadcrumbItems} onClick={handleNavigation} />
+      {showBreadcrumbs ? <StyledBreadcrumbs items={breadcrumbItems} onClick={handleNavigation} /> : null}
       {children}
     </Container>
   );

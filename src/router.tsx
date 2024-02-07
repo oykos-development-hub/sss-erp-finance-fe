@@ -12,6 +12,7 @@ import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.ts
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
+import BUDGET from './screens/budget/landingPage.tsx';
 
 export const Router = () => {
   const {
@@ -34,7 +35,8 @@ export const Router = () => {
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
 
-    if (pathname === '/finance/budget') return <BudgetOverview />;
+    if (pathname === '/finance/budget') return <BUDGET />;
+    if (pathname === '/finance/budget/planning') return <BudgetOverview />;
     if (pathname === '/finance/budget-template') return <BudgetTemplate />;
     if (pathname === '/finance/budget/nonFinance') return <NonFinance />;
     if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
