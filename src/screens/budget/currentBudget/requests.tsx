@@ -27,11 +27,11 @@ export const RequestsPage = () => {
       <Totals>
         <Column>
           <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST:" />
-          <Price variant="bodySmall" content={`€ `} />
+          <Price variant="bodySmall" content={'€ '} />
         </Column>
         <Column>
           <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST:" />
-          <Price variant="bodySmall" content={`€ `} />
+          <Price variant="bodySmall" content={'€ '} />
         </Column>
       </Totals>
       <Column>
