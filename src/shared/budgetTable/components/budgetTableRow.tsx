@@ -103,6 +103,17 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             </CountTableCell>
           </>
         );
+      case BudgetTableStep.CURRENT_BUDGET:
+        return (
+          <>
+            <CountTableCell level={level}>
+              <BudgetText content="" variant="bodySmall" />
+            </CountTableCell>
+            <CountTableCell level={level}>
+              <BudgetText content="" variant="bodySmall" />
+            </CountTableCell>
+          </>
+        );
       default:
         <></>;
     }

@@ -47,6 +47,8 @@ export enum BudgetTableStep {
   /
   */
   REBALANCING = 'rebalancing',
+
+  CURRENT_BUDGET = 'CurrentBudget',
 }
 
 export type BudgetTableHead = {

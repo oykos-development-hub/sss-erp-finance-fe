@@ -13,6 +13,7 @@ import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
 import BUDGET from './screens/budget/landingPage.tsx';
+import {CurrentBudgetTabs} from './screens/budget/currentBudget/currentBudgetTabs.tsx';
 
 export const Router = () => {
   const {
@@ -39,6 +40,9 @@ export const Router = () => {
     if (pathname === '/finance/budget/planning') return <BudgetOverview />;
     if (pathname === '/finance/budget-template') return <BudgetTemplate />;
     if (pathname === '/finance/budget/nonFinance') return <NonFinance />;
+    if (pathname === '/finance/budget/current') return <CurrentBudgetTabs />;
+    if (pathname === '/finance/budget/requests') return <CurrentBudgetTabs />;
+
     if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
     if (budgetDetails.test(pathname)) return <BudgetDetails />;
     if (invoicesRegex.test(pathname)) return <Invoices />;
