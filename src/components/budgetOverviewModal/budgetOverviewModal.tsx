@@ -2,13 +2,13 @@ import {Dropdown, Modal} from 'client-library';
 import {Controller, useForm} from 'react-hook-form';
 import useAppContext from '../../context/useAppContext.ts';
 import {DropdownData} from '../../types/dropdownData';
-import {getYearOptions} from '../../utils/getYearOptions.ts';
 import {budgetTypeModal} from '../budgetList/constants';
 import {BudgetOverviewForm} from './styles';
 
 interface BudgetOverviewModalProps {
   onClose: () => void;
   id?: number;
+  availableYearsForBudget: DropdownData<string>[];
 }
 
 interface BudgetOverviewModalForm {
@@ -24,7 +24,7 @@ const initialValues = {
   budget_type: {id: 2, title: 'Tekući'},
 };
 
-const BudgetOverviewModal = ({onClose}: BudgetOverviewModalProps) => {
+const BudgetOverviewModal = ({onClose, availableYearsForBudget}: BudgetOverviewModalProps) => {
   const {
     handleSubmit,
     formState: {errors, isValid},
@@ -67,7 +67,7 @@ const BudgetOverviewModal = ({onClose}: BudgetOverviewModalProps) => {
                 name={name}
                 value={value}
                 onChange={onChange}
-                options={getYearOptions(7, false, 1)}
+                options={availableYearsForBudget}
                 label="GODINA:"
                 error={errors.year?.message as string}
               />

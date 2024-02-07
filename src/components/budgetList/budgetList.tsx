@@ -1,5 +1,5 @@
 import {Button, Divider, Pagination, SendIcon, Table, Theme, TrashIcon} from 'client-library';
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import {PAGE_SIZE} from '../../constants.ts';
 import useAppContext from '../../context/useAppContext.ts';
 import {initialBudgetFilterValues} from '../../screens/budget/budgetOverview/constants.ts';
@@ -106,6 +106,15 @@ const BudgetList = () => {
     setFilterValues({...filterValues, [name]: name === 'search' ? value.target.value : value});
   };
 
+  const availableYearsForBudget = useMemo(() => {
+    const years = getYearOptions(6, false, 5);
+
+    const existingBudgetYears = budgets.items?.map(budget => budget.year) || [];
+    const filteredYears = years.filter(year => !existingBudgetYears.includes(Number(year.id)));
+
+    return filteredYears;
+  }, [budgets.items]);
+
   return (
     <ScreenWrapper>
       <OverviewBox>
@@ -162,7 +171,12 @@ const BudgetList = () => {
           ]}
           onRowClick={handleRedirect}
         />
-        {budgetOverviewModal && <BudgetOverviewModal onClose={() => setBudgetOverviewModal(false)} />}
+        {budgetOverviewModal && (
+          <BudgetOverviewModal
+            onClose={() => setBudgetOverviewModal(false)}
+            availableYearsForBudget={availableYearsForBudget}
+          />
+        )}
 
         <DeleteModal
           open={!!showDeleteModalBudgetId}
