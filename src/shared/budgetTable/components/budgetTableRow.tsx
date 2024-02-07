@@ -32,16 +32,16 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
         return (
           <>
             <CountTableCell level={level}>
-              <BudgetText content="0.00" variant="bodySmall" />
+              <BudgetText content="" variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level}>
               <Typography content="" variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level}>
-              <BudgetText content="0.00" variant="bodySmall" />
+              <BudgetText content="" variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level}>
-              <BudgetText content="0.00" variant="bodySmall" />
+              <BudgetText content="" variant="bodySmall" />
             </CountTableCell>
           </>
         );
@@ -127,7 +127,7 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
           )}
         />
       ) : (
-        <Typography content="Budzet" variant="bodySmall" />
+        <Typography content="" variant="bodySmall" />
       );
     }
 

@@ -55,6 +55,7 @@ const BudgetCreate = () => {
       () => alert?.error('Greška. Promjene nisu sačuvane.'),
     );
   };
+  const toggleModal = () => setLimitModal(prev => !prev);
 
   return (
     <ScreenWrapper>
@@ -100,7 +101,7 @@ const BudgetCreate = () => {
           />
         </Footer>
       </OverviewBox>
-      {limitModal && <BudgeLimitModal onClose={() => setLimitModal(false)} onSubmit={handleModalSubmit} />}
+      <BudgeLimitModal open={limitModal} onClose={toggleModal} onSubmit={handleModalSubmit} />
     </ScreenWrapper>
   );
 };

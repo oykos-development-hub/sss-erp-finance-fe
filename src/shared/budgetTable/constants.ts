@@ -2,8 +2,8 @@ import {DropdownData} from '../../types/dropdownData';
 import {BudgetTableHead, BudgetTableStep} from './types';
 
 export const baseTableHeads: BudgetTableHead[] = [
-  {name: 'Ekonomska Klasifikacija', width: 6},
-  {name: 'Opis Konta', width: 15},
+  {name: 'Ekonomska klasifikacija', width: 6},
+  {name: 'Opis konta', width: 15},
 ];
 
 const capitalizeFirstLetter = (text: string) => {
@@ -19,11 +19,11 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
     case BudgetTableStep.CREATING:
     case BudgetTableStep.BUDGETING:
       return [
+        {name: 'Tekuća godina', width: 13},
         {name: `Budžet za ${year}. godinu`, width: 13},
         {name: 'Opis', width: 30},
         {name: `Budžet za ${year + 1}. godinu`, width: 13},
         {name: `Budžet za ${year + 2}. godinu`, width: 13},
-        {name: 'Tekuća godina', width: 13},
       ];
     case BudgetTableStep.BUDGETING_ACTUAL:
       return [
