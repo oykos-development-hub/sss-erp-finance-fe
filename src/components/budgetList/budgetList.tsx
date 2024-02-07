@@ -1,4 +1,4 @@
-import {Button, Divider, Modal, Pagination, SendIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
+import {Button, Divider, Pagination, SendIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
 import {PAGE_SIZE} from '../../constants.ts';
 import useAppContext from '../../context/useAppContext.ts';
@@ -8,11 +8,12 @@ import useDeleteBudget from '../../services/graphQL/deleteBudget/useDeleteBudget
 import useGetBudgets from '../../services/graphQL/getBudgets/useGetBudgets.ts';
 import useSendBudget from '../../services/graphQL/sendBudget/useSendBudget.ts';
 import {DeleteModal} from '../../shared/deleteModal/deleteModal';
+import {NotificationsModal} from '../../shared/notifications/notificationsModal.tsx';
 import {BudgetOverviewItem} from '../../types/graphQL/budgetOverview';
+import {getYearOptions} from '../../utils/getYearOptions.ts';
 import BudgetOverviewModal from '../budgetOverviewModal/budgetOverviewModal';
 import {budgetOverviewTableHeads, budgetStatus, budgetType} from './constants';
 import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
-import {getYearOptions} from '../../utils/getYearOptions.ts';
 
 const BudgetList = () => {
   const [budgetOverviewModal, setBudgetOverviewModal] = useState(false);
@@ -170,23 +171,13 @@ const BudgetList = () => {
           }}
           handleDelete={handleDelete}
         />
-        <Modal
+
+        <NotificationsModal
           open={!!showSendModalBudgetId}
           onClose={handleCloseSendModal}
-          width={450}
-          leftButtonText="Pošalji"
-          rightButtonText="Otkaži"
-          content={
-            <Typography
-              content="Da li ste sigurni da želite da pošaljete ovaj budžet?"
-              variant="bodyLarge"
-              style={{fontWeight: 600}}
-            />
-          }
-          leftButtonOnClick={() => handleSend()}
-          rightButtonOnClick={() => handleCloseSendModal()}
+          handleRightButtomClick={() => handleSend()}
+          subTitle={'Ovaj budžet ce biti poslat organizacionim jedinicama na pregled.'}
         />
-
         <Pagination
           pageCount={budgets.total ? Math.ceil(budgets.total / PAGE_SIZE) : 0}
           onChange={onPageChange}
