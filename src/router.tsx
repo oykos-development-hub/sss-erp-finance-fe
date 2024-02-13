@@ -14,6 +14,7 @@ import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
 import BUDGET from './screens/budget/landingPage.tsx';
 import {CurrentBudgetTabs} from './screens/budget/currentBudget/currentBudgetTabs.tsx';
+import {CurrentAccountingTabs} from './screens/accounting/currentAccountingTabs.tsx';
 
 export const Router = () => {
   const {
@@ -42,6 +43,9 @@ export const Router = () => {
     if (pathname === '/finance/budget/nonFinance') return <NonFinance />;
     if (pathname === '/finance/budget/current') return <CurrentBudgetTabs />;
     if (pathname === '/finance/budget/requests') return <CurrentBudgetTabs />;
+
+    if (pathname === '/finance/accounting') return <CurrentAccountingTabs />;
+    if (pathname === '/finance/accounting-overview') return <CurrentAccountingTabs />;
 
     if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
     if (budgetDetails.test(pathname)) return <BudgetDetails />;
