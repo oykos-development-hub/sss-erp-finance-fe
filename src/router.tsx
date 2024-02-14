@@ -1,20 +1,21 @@
+import {UserRole} from './constants.ts';
+import useAppContext from './context/useAppContext.ts';
 import {NotFound404} from './screens/404';
+import {CurrentAccountingTabs} from './screens/accounting/currentAccountingTabs.tsx';
+import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
+import BudgetDetails from './screens/budget/budgetDetails/budgetDetails.tsx';
+import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import BudgetOverview from './screens/budget/budgetOverview/budgetOverview';
 import BudgetTemplate from './screens/budget/budgetTemplate/budgetTemplate.tsx';
-import useAppContext from './context/useAppContext.ts';
-import BudgetDetails from './screens/budget/budgetDetails/budgetDetails.tsx';
-import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
-import {UserRole} from './constants.ts';
-import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
-import NonFinancePreview from './screens/budget/nonFinancePreview/nonFinancePreview.tsx';
-import {NonFinance} from './screens/budget/nonFinance/nonFinance.tsx';
-import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
-import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
-import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
-import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
-import BUDGET from './screens/budget/landingPage.tsx';
 import {CurrentBudgetTabs} from './screens/budget/currentBudget/currentBudgetTabs.tsx';
-import {CurrentAccountingTabs} from './screens/accounting/currentAccountingTabs.tsx';
+import BUDGET from './screens/budget/landingPage.tsx';
+import {NonFinance} from './screens/budget/nonFinance/nonFinance.tsx';
+import NonFinancePreview from './screens/budget/nonFinancePreview/nonFinancePreview.tsx';
+import {FinanceDepositTabs} from './screens/deposit/fixedDeposit/financeDeposit/financeDepositTabs.tsx';
+import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
+import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
+import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
+import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landingPage.tsx';
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
 
@@ -49,6 +50,9 @@ export const Router = () => {
 
     if (pathname === '/finance/accounting') return <CurrentAccountingTabs />;
     if (pathname === '/finance/accounting-overview') return <CurrentAccountingTabs />;
+
+    if (pathname === '/finance/deposit/fixed/finance') return <FinanceDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/new-entry') return <FinanceDepositTabs />;
 
     if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
     if (budgetDetails.test(pathname)) return <BudgetDetails />;
