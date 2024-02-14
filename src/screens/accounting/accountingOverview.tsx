@@ -38,7 +38,9 @@ const AccountingOverview = () => {
         tableActions={[
           {
             name: 'send',
-            onClick: () => {},
+            onClick: () => {
+              console.log('budget sent');
+            },
             icon: <PrinterIcon stroke={Theme?.palette?.gray800} />,
           },
           {
@@ -53,11 +55,13 @@ const AccountingOverview = () => {
         onClose={() => {
           handleCloseDeleteModal();
         }}
-        handleDelete={() => {}}
+        handleDelete={() => console.log('delete')}
       />
       <Pagination
         pageCount={1}
-        onChange={() => {}}
+        onChange={() => {
+          console.log('page changed');
+        }}
         variant="filled"
         itemsPerPage={PAGE_SIZE}
         pageRangeDisplayed={3}

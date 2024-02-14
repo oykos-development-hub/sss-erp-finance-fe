@@ -37,12 +37,16 @@ const Accounting = () => {
         tableActions={[
           {
             name: 'delete',
-            onClick: () => {},
+            onClick: () => {
+              console.log('delete');
+            },
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
           },
           {
             name: 'send',
-            onClick: () => {},
+            onClick: () => {
+              console.log('send');
+            },
             icon: <SendIcon stroke={Theme?.palette?.gray800} />,
           },
         ]}
