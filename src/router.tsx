@@ -15,6 +15,8 @@ import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
 import BUDGET from './screens/budget/landingPage.tsx';
 import {CurrentBudgetTabs} from './screens/budget/currentBudget/currentBudgetTabs.tsx';
 import {CurrentAccountingTabs} from './screens/accounting/currentAccountingTabs.tsx';
+import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landingPage.tsx';
+import {LandingPage} from './screens/landingPage/landingPage.tsx';
 
 export const Router = () => {
   const {
@@ -37,6 +39,7 @@ export const Router = () => {
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
 
+    if (pathname === '/finance') return <LandingPage />;
     if (pathname === '/finance/budget') return <BUDGET />;
     if (pathname === '/finance/budget/planning') return <BudgetOverview />;
     if (pathname === '/finance/budget-template') return <BudgetTemplate />;
@@ -55,6 +58,8 @@ export const Router = () => {
     if (contractsRegex.test(pathname)) return <Contracts />;
     if (salariesRegex.test(pathname)) return <Salaries />;
     if (budgetFO.test(pathname)) return <BudgetFO />;
+
+    if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
 
     if (role_id === UserRole.ADMIN || role_id === UserRole.MANAGER_OJ) {
       // add role specific routes here

@@ -31,36 +31,6 @@ export const NotFound404 = () => {
         variant="bodyMedium"
       />
       <Button content="Go back" onClick={() => navigate('/')} />
-      {/*TODO remove after testing*/}
-      <Typography
-        content="Remove buttons below after correct routing has been set for those pages"
-        variant="bodyMedium"
-        style={{color: 'red'}}
-      />
-      <Button
-        variant={'secondary'}
-        style={{width: 170}}
-        content="Non finance page"
-        onClick={() => navigate('/finance/budget/nonFinance')}
-      />
-      <Button
-        variant={'secondary'}
-        style={{width: 170}}
-        content="Non finance page preview (sluzbenik)"
-        onClick={() => navigate('/finance/budget/nonFinancePreview/non-financial ')}
-      />
-      <Button
-        variant={'secondary'}
-        style={{width: 170}}
-        content="Budget template"
-        onClick={() => navigate('/finance/budget-template')}
-      />
-      <Button
-        variant={'secondary'}
-        style={{width: 170}}
-        content="Budget FO"
-        onClick={() => navigate('/finance/budgetFO/2023/')}
-      />
     </Container>
   );
 };
