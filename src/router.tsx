@@ -18,6 +18,7 @@ import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landingPage.tsx';
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
+import {MaterialDepositTabs} from './screens/deposit/fixedDeposit/materialDeposit/materialDepositTabs.tsx';
 
 export const Router = () => {
   const {
@@ -53,6 +54,9 @@ export const Router = () => {
 
     if (pathname === '/finance/deposit/fixed/finance') return <FinanceDepositTabs />;
     if (pathname === '/finance/deposit/fixed/new-entry') return <FinanceDepositTabs />;
+
+    if (pathname === '/finance/deposit/fixed/material') return <MaterialDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/new-material-entry') return <MaterialDepositTabs />;
 
     if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
     if (budgetDetails.test(pathname)) return <BudgetDetails />;
