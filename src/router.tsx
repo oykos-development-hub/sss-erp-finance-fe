@@ -22,6 +22,7 @@ import {MaterialDepositTabs} from './screens/deposit/fixedDeposit/materialDeposi
 import {TestamentTabs} from './screens/deposit/fixedDeposit/testament/testamentTabs.tsx';
 import Fines from './screens/finesAndTaxes/fines/fines.tsx';
 import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
+import TaxContributionCalculationOverview from './screens/deposit/demandDeposit/taxContributionCalculation/taxContributionCalculationOverview.tsx';
 
 export const Router = () => {
   const {
@@ -67,6 +68,9 @@ export const Router = () => {
 
     if (pathname === '/finance/deposit/demand/initial-state') return <InitialStateTabs />;
     if (pathname === '/finance/deposit/demand/initial-state-new-entry') return <InitialStateTabs />;
+
+    if (pathname === '/finance/deposit/demand/tax-contribution-calculation')
+      return <TaxContributionCalculationOverview />;
 
     if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
     if (budgetDetails.test(pathname)) return <BudgetDetails />;
