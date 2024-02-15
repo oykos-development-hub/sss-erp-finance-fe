@@ -20,6 +20,7 @@ import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landi
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
 import {MaterialDepositTabs} from './screens/deposit/fixedDeposit/materialDeposit/materialDepositTabs.tsx';
 import {TestamentTabs} from './screens/deposit/fixedDeposit/testament/testamentTabs.tsx';
+import Fines from './screens/finesAndTaxes/fines/fines.tsx';
 
 export const Router = () => {
   const {
@@ -38,6 +39,7 @@ export const Router = () => {
     const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
     const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
+    const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-fines)?$');
     const budgetCreateRegex = /\/finance\/(\d+)\/budget-create-(\d{4})/;
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
@@ -72,6 +74,7 @@ export const Router = () => {
     if (budgetFO.test(pathname)) return <BudgetFO />;
 
     if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
+    if (finesRegex.test(pathname)) return <Fines />;
 
     if (role_id === UserRole.ADMIN || role_id === UserRole.MANAGER_OJ) {
       // add role specific routes here
