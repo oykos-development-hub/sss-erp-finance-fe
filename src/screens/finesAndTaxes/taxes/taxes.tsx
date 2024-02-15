@@ -4,10 +4,10 @@ import {getCurrentTab, stockTabs, Tabs, getRouteName} from './constants.ts';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from '../../accounting/styles.tsx';
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
-import FinesOverview from './finesOverview.tsx';
-import AddFines from './addFines/addFines.tsx';
+import TaxesOverview from './taxesOverview.tsx';
+import AddTaxes from './addTaxes/addTaxes.tsx';
 
-const Fines = () => {
+const Taxes = () => {
   const {
     navigation: {
       navigate,
@@ -19,31 +19,29 @@ const Fines = () => {
 
   const getTitle = () => {
     switch (activeTab) {
-      case Tabs.AddFines:
-        return 'Dodaj kaznu';
+      case Tabs.AddTaxes:
+        return 'Dodaj takse';
 
       default:
-        return 'KAZNE - PREGLED';
+        return 'TAKSE - PREGLED';
     }
   };
 
-  const currentFinesRoute = useMemo(() => {
+  const currentTaxesRoute = useMemo(() => {
     switch (currentPath) {
-      case 'fines':
-        return <FinesOverview />;
-      case 'add-fines':
-        return <AddFines />;
+      case 'taxes':
+        return <TaxesOverview />;
+      case 'add-taxes':
+        return <AddTaxes />;
       default:
         return <></>;
     }
   }, [currentPath, activeTab]);
 
   const onTabChange = (tab: Tab) => {
-    console.log(tab, ' - tab');
-
     setActiveTab(tab.id as number);
     const routeName = getRouteName(tab.title as string);
-    navigate(routeName === 'fines' ? '/finance/fines-taxes/fines' : '/finance/fines-taxes/fines/add-fines');
+    navigate(routeName === 'taxes' ? '/finance/fines-taxes/taxes' : '/finance/fines-taxes/taxes/add-taxes');
   };
 
   useEffect(() => {
@@ -58,10 +56,10 @@ const Fines = () => {
           <StyledTabs tabs={stockTabs} activeTab={activeTab} onChange={onTabChange} />
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
-        {currentFinesRoute}
+        {currentTaxesRoute}
       </SectionBox>
     </ScreenWrapper>
   );
 };
 
-export default Fines;
+export default Taxes;
