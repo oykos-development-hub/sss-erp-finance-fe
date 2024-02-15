@@ -24,6 +24,9 @@ import Fines from './screens/finesAndTaxes/fines/fines.tsx';
 import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
 import TaxContributionCalculationOverview from './screens/deposit/demandDeposit/taxContributionCalculation/taxContributionCalculationOverview.tsx';
 import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
+import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
+import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
+import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDepositLandingPage.tsx';
 
 export const Router = () => {
   const {
@@ -59,6 +62,9 @@ export const Router = () => {
     if (pathname === '/finance/accounting') return <CurrentAccountingTabs />;
     if (pathname === '/finance/accounting-overview') return <CurrentAccountingTabs />;
 
+    if (pathname === '/finance/deposit') return <DepositLandingPage />;
+    if (pathname === '/finance/deposit/fixed') return <FixedDepositLandingPage />;
+
     if (pathname === '/finance/deposit/fixed/finance') return <FinanceDepositTabs />;
     if (pathname === '/finance/deposit/fixed/new-entry') return <FinanceDepositTabs />;
 
@@ -67,6 +73,8 @@ export const Router = () => {
 
     if (pathname === '/finance/deposit/fixed/will') return <TestamentTabs />;
     if (pathname === '/finance/deposit/fixed/new-testament-entry') return <TestamentTabs />;
+
+    if (pathname === '/finance/deposit/demand') return <DemandDepositLandingPage />;
 
     if (pathname === '/finance/deposit/demand/initial-state') return <InitialStateTabs />;
     if (pathname === '/finance/deposit/demand/initial-state-new-entry') return <InitialStateTabs />;
