@@ -21,6 +21,7 @@ import {LandingPage} from './screens/landingPage/landingPage.tsx';
 import {MaterialDepositTabs} from './screens/deposit/fixedDeposit/materialDeposit/materialDepositTabs.tsx';
 import {TestamentTabs} from './screens/deposit/fixedDeposit/testament/testamentTabs.tsx';
 import Fines from './screens/finesAndTaxes/fines/fines.tsx';
+import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
 
 export const Router = () => {
   const {
@@ -63,6 +64,9 @@ export const Router = () => {
 
     if (pathname === '/finance/deposit/fixed/will') return <TestamentTabs />;
     if (pathname === '/finance/deposit/fixed/new-testament-entry') return <TestamentTabs />;
+
+    if (pathname === '/finance/deposit/demand/initial-state') return <InitialStateTabs />;
+    if (pathname === '/finance/deposit/demand/initial-state-new-entry') return <InitialStateTabs />;
 
     if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
     if (budgetDetails.test(pathname)) return <BudgetDetails />;
