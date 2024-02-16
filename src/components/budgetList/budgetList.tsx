@@ -1,4 +1,4 @@
-import {Button, Divider, Pagination, SendIcon, Table, Theme, TrashIcon} from 'client-library';
+import {Button, Divider, Pagination, SendIcon, Table, Theme, TrashIcon, EditIconTwo} from 'client-library';
 import {useMemo, useState} from 'react';
 import {PAGE_SIZE} from '../../constants.ts';
 import useAppContext from '../../context/useAppContext.ts';
@@ -159,17 +159,25 @@ const BudgetList = () => {
           style={{marginBottom: 22}}
           tableActions={[
             {
-              name: 'delete',
-              onClick: onDelete,
-              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            },
-            {
-              name: 'send',
+              name: 'Pošalji',
               onClick: onSend,
               icon: <SendIcon stroke={Theme?.palette?.gray800} />,
+              shouldRender: row => row.status === 'Kreiran',
+            },
+            {
+              name: 'Izmijeni',
+              onClick: onDelete,
+              icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+              shouldRender: row => row.status === 'Kreiran',
+            },
+            {
+              name: 'Izbriši',
+              onClick: () => console.log('edit'),
+              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+              shouldRender: row => row.status !== 'Obradi',
             },
           ]}
-          onRowClick={handleRedirect}
+          onRowClick={row => row.status === 'Poslat' && handleRedirect(row.id)}
         />
         {budgetOverviewModal && (
           <BudgetOverviewModal
