@@ -20,7 +20,7 @@ export const LandingPage: React.FC = () => {
         </LandingPageTitle>
         <Container>
           <LandingPageContentBox title={'Kazne'} path={'/finance/fines-taxes/fines'} icon={<FinesIcon />} />
-          <LandingPageContentBox title={'Takse'} path={'/finance/fines-taxes/fees'} icon={<FeesIcon />} />
+          <LandingPageContentBox title={'Takse'} path={'/finance/fines-taxes/taxes'} icon={<FeesIcon />} />
           <LandingPageContentBox
             title={'Troškovi postupka'}
             path={'/finance/fines-taxes/procedural-costs'}
@@ -29,7 +29,7 @@ export const LandingPage: React.FC = () => {
           <LandingPageContentBox title={'Paušal'} path={'/finance/fines-taxes/flat-rate'} icon={<FlatRateIcon />} />
           <LandingPageContentBox
             title={'Oduzimanje imovinske koristi'}
-            path={'/finance/fines-taxes/confiscation-of-material-gains'}
+            path={'/finance/fines-taxes/confiscation'}
             icon={<ConfiscationOfIllGottenGainsIcon />}
           />
         </Container>

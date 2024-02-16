@@ -27,6 +27,9 @@ import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
 import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
 import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
 import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDepositLandingPage.tsx';
+import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
+import FlatRate from './screens/finesAndTaxes/flatRate/flatRate.tsx';
+import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralCosts.tsx';
 
 export const Router = () => {
   const {
@@ -47,6 +50,9 @@ export const Router = () => {
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
     const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-fines)?$');
     const taxesRegex = new RegExp('^/finance/fines-taxes/taxes(?:/add-taxes)?$');
+    const confiscationRegex = new RegExp('^/finance/fines-taxes/confiscation(?:/add-confiscation)?$');
+    const flatRateRegex = new RegExp('^/finance/fines-taxes/flat-rate(?:/add-flat-rate)?$');
+    const proceduralCostRegex = new RegExp('^/finance/fines-taxes/procedural-costs(?:/add-procedural-costs)?$');
     const budgetCreateRegex = /\/finance\/(\d+)\/budget-create-(\d{4})/;
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
@@ -91,9 +97,13 @@ export const Router = () => {
     if (salariesRegex.test(pathname)) return <Salaries />;
     if (budgetFO.test(pathname)) return <BudgetFO />;
 
+    // fines and taxes screen
     if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
     if (finesRegex.test(pathname)) return <Fines />;
     if (taxesRegex.test(pathname)) return <Taxes />;
+    if (confiscationRegex.test(pathname)) return <Confiscation />;
+    if (flatRateRegex.test(pathname)) return <FlatRate />;
+    if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;
 
     if (role_id === UserRole.ADMIN || role_id === UserRole.MANAGER_OJ) {
       // add role specific routes here

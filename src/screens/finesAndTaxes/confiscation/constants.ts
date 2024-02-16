@@ -1,12 +1,12 @@
 import {TableHead} from 'client-library';
 
 export enum Tabs {
-  TaxesOverview = 1,
-  AddTaxes = 2,
+  OverviewScreen = 1,
+  AddScreen = 2,
 }
 export const stockTabs = [
-  {id: Tabs.TaxesOverview, title: 'Pregled taksi', routeName: 'taxes'},
-  {id: Tabs.AddTaxes, title: 'Dodaj takse', routeName: 'add-taxes'},
+  {id: Tabs.OverviewScreen, title: 'Pregled oduzimanja imovinske koristi', routeName: 'confiscation'},
+  {id: Tabs.AddScreen, title: 'Dodaj oduzimanje imovinske koristi', routeName: 'add-confiscation'},
 ];
 
 export const getCurrentTab = (pathname: string) => {
@@ -20,7 +20,7 @@ export const getRouteName = (tabName: string) => {
   return stockTabs[tabIndex].routeName;
 };
 
-export const tableHeadsTaxesOverview: TableHead[] = [
+export const tableHeadsConfiscationOverview: TableHead[] = [
   {
     title: 'Subjekat',
     accessor: '',
@@ -42,17 +42,22 @@ export const tableHeadsTaxesOverview: TableHead[] = [
     type: 'text',
   },
   {
-    title: 'Konto',
-    accessor: '',
-    type: 'text',
-  },
-  {
     title: 'Poziv na broj odobrenja',
     accessor: '',
     type: 'text',
   },
   {
-    title: 'Visina takse',
+    title: 'Visina kazne',
+    accessor: '',
+    type: 'text',
+  },
+  {
+    title: 'Sudski troškovi',
+    accessor: '',
+    type: 'text',
+  },
+  {
+    title: 'Naplaćeno',
     accessor: '',
     type: 'text',
   },
@@ -64,7 +69,7 @@ export const tableHeadsTaxesOverview: TableHead[] = [
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
-export const tableHeadsAddTaxes: TableHead[] = [
+export const tableHeadsAddFines: TableHead[] = [
   {
     title: 'Način plaćanja',
     accessor: '',
