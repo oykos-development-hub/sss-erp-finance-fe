@@ -24,7 +24,7 @@ export const invoicesTabs: ExtendedTab[] = [
 ];
 
 export enum ScreenTitlesEnum {
-  summary = 'Summary',
+  summary = 'Budžet',
   financial = 'Financial',
   'non-financial' = 'Non-Financial',
   invoices = 'Pregled računa',

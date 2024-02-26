@@ -1,6 +1,6 @@
 import {Button, Divider, Pagination, SendIcon, Table, Theme, TrashIcon, EditIconTwo} from 'client-library';
 import {useMemo, useState} from 'react';
-import {PAGE_SIZE} from '../../constants.ts';
+import {PAGE_SIZE, UserRole} from '../../constants.ts';
 import useAppContext from '../../context/useAppContext.ts';
 import {initialBudgetFilterValues} from '../../screens/budget/budgetOverview/constants.ts';
 import {BudgetOverviewFilters} from '../../screens/budget/budgetOverview/types';
@@ -36,6 +36,7 @@ const BudgetList = () => {
     navigation: {navigate},
     alert,
     breadcrumbs,
+    contextMain: {role_id},
   } = useAppContext();
 
   const onDelete = (budget: BudgetOverviewItem) => {
@@ -90,12 +91,19 @@ const BudgetList = () => {
   };
 
   const handleRedirect = (budget: BudgetOverviewItem) => {
-    navigate(`/finance/budget/planning/${budget.id}/summary`);
-    breadcrumbs.add({
-      name: 'Summary',
-      to: '/finance/budget/summary',
-    });
-    // navigate(`/finance/budget-create-${budget.year}`);
+    role_id === UserRole.ADMIN
+      ? navigate(`/finance/budget/planning/${budget.id}/details`)
+      : navigate(`/finance/budget/${budget.id}/summary`);
+
+    role_id === UserRole.ADMIN
+      ? breadcrumbs.add({
+          name: 'Detalji',
+          to: '/finance/budget/planning/details',
+        })
+      : breadcrumbs.add({
+          name: 'Summary',
+          to: '/finance/budget/summary',
+        });
   };
 
   const onPageChange = (page: number) => {
@@ -166,18 +174,18 @@ const BudgetList = () => {
             },
             {
               name: 'Izmijeni',
-              onClick: onDelete,
+              onClick: row => navigate(`/finance/${row.budget_type}/budget-create-${row.year}/${row.id}`),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
               shouldRender: row => row.status === 'Kreiran',
             },
             {
               name: 'Izbriši',
-              onClick: () => console.log('edit'),
+              onClick: onDelete,
               icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
               shouldRender: row => row.status !== 'Obradi',
             },
           ]}
-          onRowClick={row => row.status === 'Poslat' && handleRedirect(row.id)}
+          onRowClick={row => row.status !== 'Kreiran' && handleRedirect(row)}
         />
         {budgetOverviewModal && (
           <BudgetOverviewModal

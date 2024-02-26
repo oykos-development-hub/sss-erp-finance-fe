@@ -1,17 +1,17 @@
+import {Button, Typography} from 'client-library';
+import {useState} from 'react';
+import {useForm} from 'react-hook-form';
+import BudgeLimitModal from '../../../components/budgeLimitModal/budgeLimitModal.tsx';
+import {MainTitle, OverviewBox} from '../../../components/budgetList/styles.ts';
 import useAppContext from '../../../context/useAppContext.ts';
-import {getYearFromPath} from '../../../utils/getYearFromPath.ts';
+import useInsertBudget from '../../../services/graphQL/insertBudget/useInsertBudget.ts';
 import BudgetTable from '../../../shared/budgetTable/budgetTable.tsx';
 import {BudgetTableStep} from '../../../shared/budgetTable/types.ts';
-import {MainTitle, OverviewBox} from '../../../components/budgetList/styles.ts';
-import {BoldText, Box, TableGrid, Controls} from './styles.tsx';
-import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
-import {Typography, Button} from 'client-library';
-import {useState} from 'react';
-import BudgeLimitModal from '../../../components/budgeLimitModal/budgeLimitModal.tsx';
-import useInsertBudget from '../../../services/graphQL/insertBudget/useInsertBudget.ts';
-import {useForm} from 'react-hook-form';
 import Footer from '../../../shared/footer.ts';
+import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
 import {LimitType} from '../../../types/graphQL/budgetInsert.ts';
+import {getYearFromPath} from '../../../utils/getYearFromPath.ts';
+import {BoldText, Box, Controls, TableGrid} from './styles.tsx';
 
 const BudgetCreate = () => {
   const [limitModal, setLimitModal] = useState(false);
@@ -28,6 +28,8 @@ const BudgetCreate = () => {
     alert,
   } = useAppContext();
 
+  const budgetID = pathname.split('/').at(-1);
+
   const year = getYearFromPath(pathname);
   const budgetTypeId = location.pathname.split('/').at(2);
 
@@ -37,13 +39,14 @@ const BudgetCreate = () => {
     setLimits(formData);
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: any) => {
     if (isSaving) return;
 
     const payload = {
-      year: year.toString(),
+      id: Number(budgetID) || null,
+      year: data.year || year.toString(),
       budget_type: Number(budgetTypeId) || null,
-      limits: limits,
+      limits: data.limits || limits,
     };
 
     await insertBudget(
@@ -55,6 +58,7 @@ const BudgetCreate = () => {
       () => alert?.error('Greška. Promjene nisu sačuvane.'),
     );
   };
+
   const toggleModal = () => setLimitModal(prev => !prev);
 
   return (

@@ -12,4 +12,9 @@ export interface BudgetOverviewItem {
   year: number;
   type_budget: string;
   status: string;
+  limits: {
+    id: number;
+    organization_unit_id: string;
+    limit: number;
+  }[];
 }

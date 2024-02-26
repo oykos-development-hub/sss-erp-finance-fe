@@ -19,6 +19,7 @@ const BudgetTabs = () => {
     },
     contextMain: {role_id},
   } = useAppContext();
+
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname, budgetTabs) || 1);
 
   const onTabChange = (tab: Tab) => {

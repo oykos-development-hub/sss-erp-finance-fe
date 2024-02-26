@@ -8,6 +8,11 @@ const budgetOverview = `query BudgetOverview($id: Int, $status: String, $year: I
             year
             budget_type
             status
+            limits {
+                id
+                organization_unit_id
+                limit
+            }
         }
     }
 }`;

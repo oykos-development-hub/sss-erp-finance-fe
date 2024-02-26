@@ -30,6 +30,7 @@ import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDep
 import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
 import FlatRate from './screens/finesAndTaxes/flatRate/flatRate.tsx';
 import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralCosts.tsx';
+import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
 
 export const Router = () => {
   const {
@@ -56,6 +57,8 @@ export const Router = () => {
     const budgetCreateRegex = /\/finance\/(\d+)\/budget-create-(\d{4})/;
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
+    const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');
+    const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
 
     if (pathname === '/finance') return <LandingPage />;
     if (pathname === '/finance/budget') return <BUDGET />;
@@ -64,6 +67,8 @@ export const Router = () => {
     if (pathname === '/finance/budget/nonFinance') return <NonFinance />;
     if (pathname === '/finance/budget/current') return <CurrentBudgetTabs />;
     if (pathname === '/finance/budget/requests') return <CurrentBudgetTabs />;
+    if (sentBudgetDetails.test(pathname)) return <BudgetSendTabs />;
+    if (sentBudgetRequests.test(pathname)) return <BudgetSendTabs />;
 
     if (pathname === '/finance/accounting') return <CurrentAccountingTabs />;
     if (pathname === '/finance/accounting-overview') return <CurrentAccountingTabs />;
@@ -89,7 +94,9 @@ export const Router = () => {
       return <TaxContributionCalculationOverview />;
 
     if (budgetCreateRegex.test(pathname)) return <BudgetCreate />;
+
     if (budgetDetails.test(pathname)) return <BudgetDetails />;
+
     if (invoicesRegex.test(pathname)) return <Invoices />;
     if (budgetPreviewDetails.test(pathname)) return <NonFinancePreview />;
     if (decisionsRegex.test(pathname)) return <Decisions />;
@@ -97,6 +104,7 @@ export const Router = () => {
     if (salariesRegex.test(pathname)) return <Salaries />;
     if (budgetFO.test(pathname)) return <BudgetFO />;
 
+    if (pathname === '/finance/deposit/demand/initial-state-new-entry') return <InitialStateTabs />;
     // fines and taxes screen
     if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
     if (finesRegex.test(pathname)) return <Fines />;

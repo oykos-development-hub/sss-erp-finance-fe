@@ -1,8 +1,8 @@
-import {FooterWrapper, OverviewBox} from '../../../components/budgetList/styles.ts';
-import {Table, Button} from 'client-library';
-import {budgetSummaryTableHeads} from './constants';
-import useGetBudgetDetails from '../../../services/graphQL/getBudgetDetails/useGetBudgetDetails.ts';
+import {Button, Table} from 'client-library';
+import {FooterWrapper} from '../../../components/budgetList/styles.ts';
 import useAppContext from '../../../context/useAppContext.ts';
+import useGetBudgetDetails from '../../../services/graphQL/getBudgetDetails/useGetBudgetDetails.ts';
+import {budgetSummaryTableHeads} from './constants';
 
 export interface BudgetSummaryProps {
   id?: number;
@@ -16,20 +16,20 @@ const BudgetSummary = ({id}: BudgetSummaryProps) => {
   const {navigation, breadcrumbs} = useAppContext();
 
   return (
-    <OverviewBox>
+    <>
       <Table tableHeads={budgetSummaryTableHeads} data={budgetDetails.items} style={{marginBottom: 22}} />
       <FooterWrapper>
         <Button
-          content="Back"
+          content="Nazad"
           variant="secondary"
           onClick={() => {
-            navigation.navigate('/finance/budget');
+            navigation.navigate('/finance/budget/planning');
             breadcrumbs.remove();
           }}
         />
-        <Button content="Send to SSS" variant="primary" disabled onClick={() => console.log('send')} />
+        <Button content="Pošalji" variant="primary" disabled onClick={() => console.log('send')} />
       </FooterWrapper>
-    </OverviewBox>
+    </>
   );
 };
 
