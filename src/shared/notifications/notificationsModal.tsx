@@ -21,7 +21,7 @@ export const NotificationsModal: React.FC<ModalProps> = ({
     <ModalContent>
       <TriangleIcon />
       <Typography content="Da li ste sigurni ?" variant="bodyMedium" style={{fontWeight: 600}} />
-      <Typography content={subTitle} variant="bodySmall" />
+      <Typography content={subTitle} variant="bodySmall" style={{textAlign: 'center'}} />
     </ModalContent>
   );
 

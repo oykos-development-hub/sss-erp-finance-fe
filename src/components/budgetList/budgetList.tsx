@@ -80,7 +80,7 @@ const BudgetList = () => {
     await sendBudget(
       showSendModalBudgetId,
       () => {
-        alert.success('Uspešno ste poslali budžet');
+        alert.success('Uspješno ste poslali budžet');
       },
       () => {
         alert.error('Došlo je do greške prilikom slanja budžeta');
@@ -206,7 +206,7 @@ const BudgetList = () => {
           open={!!showSendModalBudgetId}
           onClose={handleCloseSendModal}
           handleRightButtomClick={() => handleSend()}
-          subTitle={'Ovaj budžet ce biti poslat organizacionim jedinicama na pregled.'}
+          subTitle={'Ovaj budžet će biti poslat organizacionim jedinicama na pregled i popunjavanje.'}
         />
         <Pagination
           pageCount={budgets.total ? Math.ceil(budgets.total / PAGE_SIZE) : 0}
