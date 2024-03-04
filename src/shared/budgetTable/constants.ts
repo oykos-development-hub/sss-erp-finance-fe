@@ -1,10 +1,7 @@
 import {DropdownData} from '../../types/dropdownData';
 import {BudgetTableHead, BudgetTableStep} from './types';
 
-export const baseTableHeads: BudgetTableHead[] = [
-  {name: 'Ekonomska klasifikacija', width: 6},
-  {name: 'Opis konta', width: 15},
-];
+export const baseTableHeads: BudgetTableHead[] = [{name: 'Ekonomska klasifikacija', width: 6}];
 
 const capitalizeFirstLetter = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -40,7 +37,7 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
         {name: `Tekući budžet za ${year}. godinu`, width: 10},
       ];
     case BudgetTableStep.VIEW_MONTHLY:
-      return [{name: `Tekući budžet za ${year}. godinu`, width: 10}, ...months.map(month => ({name: month, width: 4}))];
+      return [...months.map(month => ({name: month, width: 4})), {name: `Ukupni iznos`, width: 10}];
     case BudgetTableStep.REBALANCING:
       return [
         {name: `Planirani budžet za ${year}. godinu`, width: 10},
@@ -54,6 +51,12 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
         {name: `Planirani budžet za ${year}. godinu`, width: 10},
         {name: `Odobreni budžet za ${year}. godinu`, width: 10},
         {name: 'Tekući budžet', width: 10},
+      ];
+    case BudgetTableStep.VIEW_MONTHLY_WITH_EDIT:
+      return [
+        ...months.map(month => ({name: month, width: 4})),
+        {name: `Ukupni iznos`, width: 10},
+        {name: `Izmijeni`, width: 10},
       ];
     default:
       return [];

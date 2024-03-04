@@ -49,6 +49,8 @@ export enum BudgetTableStep {
   REBALANCING = 'rebalancing',
 
   CURRENT_BUDGET = 'CurrentBudget',
+
+  VIEW_MONTHLY_WITH_EDIT = 'viewMonthlyWithEdit',
 }
 
 export type BudgetTableHead = {

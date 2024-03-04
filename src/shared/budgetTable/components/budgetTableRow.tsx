@@ -1,4 +1,4 @@
-import {Typography, ChevronRightIcon, Theme, Dropdown, ChevronDownIcon} from 'client-library';
+import {Typography, ChevronRightIcon, Theme, Dropdown, ChevronDownIcon, EditIconTwo, Input} from 'client-library';
 import {ReactNode, useState, useMemo} from 'react';
 import {Count} from '../../../types/graphQL/counts';
 import {months, sourceOptions} from '../constants';
@@ -73,14 +73,16 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
       case BudgetTableStep.VIEW_MONTHLY:
         return (
           <>
+            {months.map((value, index) => (
+              <CountTableCell level={level} key={`${value}-${index}`}>
+                <div style={{width: 50}}>
+                  <BudgetText content="0.00" variant="bodySmall" />
+                </div>
+              </CountTableCell>
+            ))}
             <CountTableCell level={level}>
               <BudgetText content="0.00" variant="bodySmall" />
             </CountTableCell>
-            {months.map((value, index) => (
-              <CountTableCell level={level} key={`${value}-${index}`}>
-                <BudgetText content="0.00" variant="bodySmall" />
-              </CountTableCell>
-            ))}
           </>
         );
       case BudgetTableStep.REBALANCING:
@@ -111,6 +113,28 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             </CountTableCell>
             <CountTableCell level={level}>
               <BudgetText content="" variant="bodySmall" />
+            </CountTableCell>
+          </>
+        );
+      case BudgetTableStep.VIEW_MONTHLY_WITH_EDIT:
+        return (
+          <>
+            {months.map((value, index) => (
+              <CountTableCell level={level} key={`${value}-${index}`}>
+                <div style={{width: 100}}>
+                  <Input />
+                  <BudgetText content="0.00" variant="bodySmall" style={{color: 'red'}} />
+                </div>
+              </CountTableCell>
+            ))}
+            <CountTableCell level={level}>
+              <BudgetText content="0.00" variant="bodySmall" />
+            </CountTableCell>
+            <CountTableCell level={level}>
+              <div style={{display: 'flex', justifyContent: 'center'}}>
+                {/*TO DO add logic for Edit, for now we do not have BE ready */}
+                <EditIconTwo />
+              </div>
             </CountTableCell>
           </>
         );
@@ -160,7 +184,7 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
           <FlexContainer>
             {level === 1 && generateChevronIcon()}
             <Typography
-              content={count.serial_number}
+              content={`${count.serial_number} - ${count.title}`}
               variant="bodySmall"
               style={{
                 marginLeft: level !== 1 ? 26 : 0,
@@ -170,10 +194,9 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             />
           </FlexContainer>
         </CountTableCell>
-        <CountTableCell level={level}>
-          <Typography content={count.title} variant="bodySmall" style={{fontWeight: level < 4 ? 600 : 400}} />
-        </CountTableCell>
-        <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
+        {step !== BudgetTableStep.VIEW_MONTHLY && step !== BudgetTableStep.VIEW_MONTHLY_WITH_EDIT && (
+          <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
+        )}
 
         {content}
       </tr>

@@ -31,6 +31,8 @@ import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx'
 import FlatRate from './screens/finesAndTaxes/flatRate/flatRate.tsx';
 import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralCosts.tsx';
 import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
+import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDynamicsTabs.tsx';
+import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
 
 export const Router = () => {
   const {
@@ -89,6 +91,10 @@ export const Router = () => {
 
     if (pathname === '/finance/deposit/demand/initial-state') return <InitialStateTabs />;
     if (pathname === '/finance/deposit/demand/initial-state-new-entry') return <InitialStateTabs />;
+
+    if (pathname === '/finance/budget/current/spending-dynamics') return <SpendingDynamicsTabs />;
+    if (pathname === '/finance/budget/current/requests') return <SpendingDynamicsTabs />;
+    if (pathname === '/finance/budget/current/requests-dynamics') return <RequestDynamics />;
 
     if (pathname === '/finance/deposit/demand/tax-contribution-calculation')
       return <TaxContributionCalculationOverview />;
