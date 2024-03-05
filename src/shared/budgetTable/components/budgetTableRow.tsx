@@ -1,4 +1,13 @@
-import {Typography, ChevronRightIcon, Theme, Dropdown, ChevronDownIcon, EditIconTwo, Input} from 'client-library';
+import {
+  Typography,
+  ChevronRightIcon,
+  Theme,
+  Dropdown,
+  ChevronDownIcon,
+  EditIconTwo,
+  Input,
+  Checkbox,
+} from 'client-library';
 import {ReactNode, useState, useMemo} from 'react';
 import {Count} from '../../../types/graphQL/counts';
 import {months, sourceOptions} from '../constants';
@@ -152,6 +161,23 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             </CountTableCell>
           </>
         );
+      case BudgetTableStep.REQUEST_FUND_RELEASE:
+        return (
+          <>
+            <CountTableCell level={level}>
+              <BudgetText content="0.00" variant="bodySmall" />
+            </CountTableCell>
+            <CountTableCell level={level}>
+              <Input />
+            </CountTableCell>
+            <CountTableCell level={level}>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                {/* TO DO add logic for check, for now we do not have BE */}
+                <Checkbox name={''} onChange={undefined} checked={false} style={{marginLeft: '20px'}} />
+              </div>
+            </CountTableCell>
+          </>
+        );
       default:
         <></>;
     }
@@ -212,7 +238,8 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
         {/* TO DO  When all the templates are finished, check which ones require this and write the condition more nicely */}
         {step !== BudgetTableStep.VIEW_MONTHLY &&
           step !== BudgetTableStep.VIEW_MONTHLY_WITH_EDIT &&
-          step !== BudgetTableStep.INTERNAL_REALLOCATION && (
+          step !== BudgetTableStep.INTERNAL_REALLOCATION &&
+          step !== BudgetTableStep.REQUEST_FUND_RELEASE && (
             <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
           )}
 

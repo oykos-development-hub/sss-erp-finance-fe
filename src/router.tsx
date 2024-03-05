@@ -35,6 +35,8 @@ import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDy
 import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
 import InternalReallocationOverview from './screens/budget/internalReallocation/internalReallocationOverview.tsx';
 import InternalReallocationBudget from './screens/budget/internalReallocation/internalReallocationBudgetTemplate.tsx';
+import FundReleaseOverview from './screens/budget/fundRelease/fundReleaseOverview.tsx';
+import FundReleaseRequest from './screens/budget/fundRelease/fundReleaseRequest.tsx';
 
 export const Router = () => {
   const {
@@ -124,6 +126,10 @@ export const Router = () => {
     if (flatRateRegex.test(pathname)) return <FlatRate />;
     if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;
 
+    if (role_id === UserRole.MANAGER_OJ) {
+      if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;
+      if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
+    }
     if (role_id === UserRole.ADMIN || role_id === UserRole.MANAGER_OJ) {
       // add role specific routes here
       if (pathname === '/blablabla') return <div />;

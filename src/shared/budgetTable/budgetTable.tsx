@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo} from 'react';
-import {Typography} from 'client-library';
+import {Typography, Checkbox} from 'client-library';
 import {BudgetTableStep} from './types';
 import {baseTableHeads, getBudgetTableHeads, sourceOptions} from './constants';
 import {CustomTable, CustomTableHead} from './styles';
@@ -134,7 +134,13 @@ const BudgetTable = ({step, organizationUnitId, year}: BudgetTableProps) => {
                 key={head.name}
                 style={{width: `${head.width}%`}}
                 rebalanceCol={['+', '-'].some(s => head.name.includes(s))}>
-                <Typography content={head.name} variant="bodySmall" />
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <Typography content={head.name} variant="bodySmall" />
+                  {/* TO DO add logic for check all, for now we do not have BE */}
+                  {head.checkbox && (
+                    <Checkbox name={''} onChange={undefined} checked={false} style={{marginLeft: '20px'}} />
+                  )}
+                </div>
               </CustomTableHead>
             ))}
           </tr>

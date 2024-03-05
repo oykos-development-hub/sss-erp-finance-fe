@@ -53,9 +53,12 @@ export enum BudgetTableStep {
   VIEW_MONTHLY_WITH_EDIT = 'viewMonthlyWithEdit',
 
   INTERNAL_REALLOCATION = 'internalReallocation',
+
+  REQUEST_FUND_RELEASE = 'requestFundRelease',
 }
 
 export type BudgetTableHead = {
   name: string;
   width: number;
+  checkbox?: boolean;
 };
