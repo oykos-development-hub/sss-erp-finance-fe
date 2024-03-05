@@ -138,6 +138,20 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             </CountTableCell>
           </>
         );
+      case BudgetTableStep.INTERNAL_REALLOCATION:
+        return (
+          <>
+            <CountTableCell level={level}>
+              <BudgetText content="0.00" variant="bodySmall" />
+            </CountTableCell>
+            <CountTableCell level={level}>
+              <Input />
+            </CountTableCell>
+            <CountTableCell level={level}>
+              <Input />
+            </CountTableCell>
+          </>
+        );
       default:
         <></>;
     }
@@ -194,9 +208,13 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             />
           </FlexContainer>
         </CountTableCell>
-        {step !== BudgetTableStep.VIEW_MONTHLY && step !== BudgetTableStep.VIEW_MONTHLY_WITH_EDIT && (
-          <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
-        )}
+
+        {/* TO DO  When all the templates are finished, check which ones require this and write the condition more nicely */}
+        {step !== BudgetTableStep.VIEW_MONTHLY &&
+          step !== BudgetTableStep.VIEW_MONTHLY_WITH_EDIT &&
+          step !== BudgetTableStep.INTERNAL_REALLOCATION && (
+            <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
+          )}
 
         {content}
       </tr>

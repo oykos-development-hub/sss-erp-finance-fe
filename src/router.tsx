@@ -33,6 +33,8 @@ import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralC
 import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
 import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDynamicsTabs.tsx';
 import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
+import InternalReallocationOverview from './screens/budget/internalReallocation/internalReallocationOverview.tsx';
+import InternalReallocationBudget from './screens/budget/internalReallocation/internalReallocationBudgetTemplate.tsx';
 
 export const Router = () => {
   const {
@@ -95,6 +97,9 @@ export const Router = () => {
     if (pathname === '/finance/budget/current/spending-dynamics') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests-dynamics') return <RequestDynamics />;
+
+    if (pathname === '/finance/budget/current/internal-reallocation') return <InternalReallocationOverview />;
+    if (pathname === '/finance/budget/current/internal-reallocation/create') return <InternalReallocationBudget />;
 
     if (pathname === '/finance/deposit/demand/tax-contribution-calculation')
       return <TaxContributionCalculationOverview />;

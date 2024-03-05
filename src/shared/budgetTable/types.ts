@@ -51,6 +51,8 @@ export enum BudgetTableStep {
   CURRENT_BUDGET = 'CurrentBudget',
 
   VIEW_MONTHLY_WITH_EDIT = 'viewMonthlyWithEdit',
+
+  INTERNAL_REALLOCATION = 'internalReallocation',
 }
 
 export type BudgetTableHead = {

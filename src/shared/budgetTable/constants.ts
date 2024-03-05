@@ -37,7 +37,7 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
         {name: `Tekući budžet za ${year}. godinu`, width: 10},
       ];
     case BudgetTableStep.VIEW_MONTHLY:
-      return [...months.map(month => ({name: month, width: 4})), {name: `Ukupni iznos`, width: 10}];
+      return [...months.map(month => ({name: month, width: 4})), {name: 'Ukupni iznos', width: 10}];
     case BudgetTableStep.REBALANCING:
       return [
         {name: `Planirani budžet za ${year}. godinu`, width: 10},
@@ -55,8 +55,14 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
     case BudgetTableStep.VIEW_MONTHLY_WITH_EDIT:
       return [
         ...months.map(month => ({name: month, width: 4})),
-        {name: `Ukupni iznos`, width: 10},
-        {name: `Izmijeni`, width: 10},
+        {name: 'Ukupni iznos', width: 10},
+        {name: 'Izmijeni', width: 10},
+      ];
+    case BudgetTableStep.INTERNAL_REALLOCATION:
+      return [
+        {name: `Odobreni budžet za ${year}. godinu`, width: 10},
+        {name: '-', width: 6},
+        {name: '+', width: 6},
       ];
     default:
       return [];
