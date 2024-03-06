@@ -20,7 +20,7 @@ const BudgetTable = ({step, organizationUnitId, year}: BudgetTableProps) => {
   const methods = useForm();
   console.log(organizationUnitId, 'organizationUnitId');
 
-  const {counts} = useGetCountOverview(0, true);
+  const {counts} = useGetCountOverview({id: 0, tree: true});
 
   const updateParentValues = (field: string) => {
     // Number of iterations - remove one because the last level contains the last level id and the fieldName

@@ -37,6 +37,7 @@ import InternalReallocationOverview from './screens/budget/internalReallocation/
 import InternalReallocationBudget from './screens/budget/internalReallocation/internalReallocationBudgetTemplate.tsx';
 import FundReleaseOverview from './screens/budget/fundRelease/fundReleaseOverview.tsx';
 import FundReleaseRequest from './screens/budget/fundRelease/fundReleaseRequest.tsx';
+import ExternalReallocationOverview from './screens/budget/externalReallocation/externalReallocationOverview.tsx';
 
 export const Router = () => {
   const {
@@ -102,6 +103,8 @@ export const Router = () => {
 
     if (pathname === '/finance/budget/current/internal-reallocation') return <InternalReallocationOverview />;
     if (pathname === '/finance/budget/current/internal-reallocation/create') return <InternalReallocationBudget />;
+
+    if (pathname === '/finance/budget/current/external-reallocation') return <ExternalReallocationOverview />;
 
     if (pathname === '/finance/deposit/demand/tax-contribution-calculation')
       return <TaxContributionCalculationOverview />;

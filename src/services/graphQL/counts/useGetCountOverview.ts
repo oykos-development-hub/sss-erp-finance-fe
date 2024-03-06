@@ -1,32 +1,34 @@
 import {useEffect, useState} from 'react';
-import {GraphQL} from '../index.ts';
-import {Count, CountResponse} from '../../../types/graphQL/counts';
 import useAppContext from '../../../context/useAppContext.ts';
+import {Count, CountResponse} from '../../../types/graphQL/counts';
+import getCountOverview from './getCountOverview.ts';
 
-const useGetCountOverview = (id: number, tree: boolean) => {
+interface ICountParams {
+  id?: number;
+  level?: number; // starts from 0
+  tree?: boolean;
+  page?: number;
+  size?: number;
+  search?: string;
+}
+
+const useGetCountOverview = ({id, level, page, search, size, tree}: ICountParams) => {
   const [counts, setCounts] = useState<Count[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState<number>(0);
+
   const {fetch} = useAppContext();
+  const fetchCounts = async () => {
+    const response: CountResponse['get'] = await fetch(getCountOverview, {level, page, search, size, tree, id});
+    const countList = response?.account_Overview.items;
+    const totalCounts = response?.account_Overview.total;
 
-  const fetchCount = async (onSuccess?: () => void, onError?: () => void) => {
-    setLoading(true);
-    const response: CountResponse['get'] = await fetch(GraphQL.getCountOverview, {id, tree});
-    if (response.account_Overview.status === 'success') {
-      const accounts = response?.account_Overview.items;
-      setCounts(accounts as Count[]);
-      onSuccess && onSuccess();
-    } else {
-      onError && onError();
-    }
-
-    setLoading(false);
+    if (countList) setCounts(countList);
+    if (totalCounts) setTotal(totalCounts);
   };
-
   useEffect(() => {
-    fetchCount();
-  }, [id]);
-
-  return {counts, loading, refetch: fetchCount};
+    fetchCounts();
+  }, [level, page, search, size, tree]);
+  return {counts, total};
 };
 
 export default useGetCountOverview;

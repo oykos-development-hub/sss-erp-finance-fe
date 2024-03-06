@@ -1,4 +1,5 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
+import {Count} from './types/graphQL/counts';
 
 export const PAGE_SIZE = 10;
 
@@ -69,3 +70,15 @@ export const invoiceTypeOptions = [
   {id: 1, title: 'Ručni unos'},
   {id: 2, title: 'Materijalno knjigovodstvo'},
 ];
+
+export function generateDropdownOptions(counts: Count[]) {
+  return counts?.map(item => {
+    const dropdownTitle = `${item.serial_number} - ${item.title}`;
+
+    return {
+      id: item.id,
+      title: dropdownTitle,
+      orginal_title: item.title,
+    };
+  });
+}
