@@ -96,6 +96,8 @@ export const Router = () => {
     if (pathname === '/finance/deposit/demand/initial-state') return <InitialStateTabs />;
     if (pathname === '/finance/deposit/demand/initial-state-new-entry') return <InitialStateTabs />;
 
+    if (pathname === '/finance/budget/current/non-financial') return <NonFinancialOverview />;
+
     if (pathname === '/finance/budget/current/spending-dynamics') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests-dynamics') return <RequestDynamics />;
@@ -131,7 +133,6 @@ export const Router = () => {
     if (role_id === UserRole.MANAGER_OJ) {
       if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;
       if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
-      if (pathname === '/finance/budget/current/non-financial') return <NonFinancialOverview />;
     }
     if (role_id === UserRole.ADMIN || role_id === UserRole.MANAGER_OJ) {
       // add role specific routes here
