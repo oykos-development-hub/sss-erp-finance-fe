@@ -1,4 +1,4 @@
-import {TableHead} from 'client-library';
+import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 
 export const invoicesOverviewTableHeads: TableHead[] = [
@@ -20,10 +20,25 @@ export const invoicesOverviewTableHeads: TableHead[] = [
 ];
 
 export const invoiceEntryTableHeads: TableHead[] = [
-  {title: 'Naziv stavke', accessor: 'name'},
-  {title: 'Neto iznos', accessor: 'value'},
-  {title: 'PDV', accessor: 'pdv'},
-  {title: 'Ukupan iznos', accessor: 'total'},
+  {title: 'Naziv stavke', accessor: 'title'},
+  {
+    title: 'Neto iznos',
+    accessor: 'price',
+    type: 'custom',
+    renderContents: (price: number) => <Typography content={price || '0'} />,
+  },
+  {
+    title: 'PDV',
+    accessor: 'pdv',
+    type: 'custom',
+    renderContents: (pdv: number) => <Typography content={pdv ? `${pdv}%` : '0%'} />,
+  },
+  {
+    title: 'Ukupan iznos',
+    accessor: 'total_price',
+    type: 'custom',
+    renderContents: (total_price: number) => <Typography content={total_price || '0'} />,
+  },
   {title: 'Opis', accessor: 'description'},
   {title: 'Konto', accessor: 'account'},
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
