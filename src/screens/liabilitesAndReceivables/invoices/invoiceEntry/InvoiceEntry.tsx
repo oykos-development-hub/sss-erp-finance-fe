@@ -3,7 +3,7 @@ import {Button, Datepicker, Dropdown, FileUpload, Input, Table, TableHead, Typog
 import {useEffect, useMemo} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
-import useAppContext from '../../../../context/useAppContext.ts';
+import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 import useGetOrderList from '../../../../services/graphQL/orders/useGetOrders.ts';
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
@@ -12,7 +12,6 @@ import Footer from '../../../../shared/footer.ts';
 import {invoiceAmountTableHeads} from '../constants';
 import {Amount, InvoiceAmount, InvoiceEntryForm, Row} from './styles';
 import {invoiceTypeOptions} from './types.ts';
-import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 
 const invoiceSchema = yup.object().shape({
   id: yup.number().nullable(),
@@ -71,11 +70,9 @@ const invoiceSchema = yup.object().shape({
   ),
 });
 
-interface InvoiceEntryForm extends yup.InferType<typeof invoiceSchema> {}
+type InvoiceEntryForm = yup.InferType<typeof invoiceSchema>;
 
 const InvoiceEntry = () => {
-  const {contextMain} = useAppContext();
-
   const {control, register, handleSubmit, reset, watch, setValue} = useForm<InvoiceEntryForm>({
     resolver: yupResolver(invoiceSchema),
   });
@@ -96,7 +93,7 @@ const InvoiceEntry = () => {
 
   const {suppliers} = useGetSuppliers({});
   const {orders} = useGetOrderList({supplier_id: watch('supplier_id')?.id});
-  const {counts} = useGetCountOverview(0, false);
+  const {counts} = useGetCountOverview({});
 
   useEffect(() => {
     // * When order is selecred, invoice number, date of invoice, receipt date and articles are set from its values
