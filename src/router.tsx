@@ -6,38 +6,38 @@ import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
 import BudgetDetails from './screens/budget/budgetDetails/budgetDetails.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import BudgetOverview from './screens/budget/budgetOverview/budgetOverview';
+import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
 import BudgetTemplate from './screens/budget/budgetTemplate/budgetTemplate.tsx';
 import {CurrentBudgetTabs} from './screens/budget/currentBudget/currentBudgetTabs.tsx';
+import ExternalReallocationOverview from './screens/budget/externalReallocation/externalReallocationOverview.tsx';
+import FundReleaseOverview from './screens/budget/fundRelease/fundReleaseOverview.tsx';
+import FundReleaseRequest from './screens/budget/fundRelease/fundReleaseRequest.tsx';
+import InternalReallocationBudget from './screens/budget/internalReallocation/internalReallocationBudgetTemplate.tsx';
+import InternalReallocationOverview from './screens/budget/internalReallocation/internalReallocationOverview.tsx';
 import BUDGET from './screens/budget/landingPage.tsx';
-import {NonFinance} from './screens/budget/nonFinance/nonFinance.tsx';
 import NonFinancePreview from './screens/budget/nonFinancePreview/nonFinancePreview.tsx';
+import NonFinancialOverview from './screens/budget/nonFinancialOverview/nonFinancialOverview.tsx';
+import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
+import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDynamicsTabs.tsx';
+import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
+import TaxContributionCalculationOverview from './screens/deposit/demandDeposit/taxContributionCalculation/taxContributionCalculationOverview.tsx';
 import {FinanceDepositTabs} from './screens/deposit/fixedDeposit/financeDeposit/financeDepositTabs.tsx';
+import {MaterialDepositTabs} from './screens/deposit/fixedDeposit/materialDeposit/materialDepositTabs.tsx';
+import {TestamentTabs} from './screens/deposit/fixedDeposit/testament/testamentTabs.tsx';
+import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDepositLandingPage.tsx';
+import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
+import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
+import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
+import Fines from './screens/finesAndTaxes/fines/fines.tsx';
+import FlatRate from './screens/finesAndTaxes/flatRate/flatRate.tsx';
+import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landingPage.tsx';
+import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralCosts.tsx';
+import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
+import {LandingPage} from './screens/landingPage/landingPage.tsx';
 import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
 import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
 import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
-import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landingPage.tsx';
-import {LandingPage} from './screens/landingPage/landingPage.tsx';
-import {MaterialDepositTabs} from './screens/deposit/fixedDeposit/materialDeposit/materialDepositTabs.tsx';
-import {TestamentTabs} from './screens/deposit/fixedDeposit/testament/testamentTabs.tsx';
-import Fines from './screens/finesAndTaxes/fines/fines.tsx';
-import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
-import TaxContributionCalculationOverview from './screens/deposit/demandDeposit/taxContributionCalculation/taxContributionCalculationOverview.tsx';
-import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
-import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
-import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
-import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDepositLandingPage.tsx';
-import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
-import FlatRate from './screens/finesAndTaxes/flatRate/flatRate.tsx';
-import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralCosts.tsx';
-import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
-import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDynamicsTabs.tsx';
-import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
-import InternalReallocationOverview from './screens/budget/internalReallocation/internalReallocationOverview.tsx';
-import InternalReallocationBudget from './screens/budget/internalReallocation/internalReallocationBudgetTemplate.tsx';
-import FundReleaseOverview from './screens/budget/fundRelease/fundReleaseOverview.tsx';
-import FundReleaseRequest from './screens/budget/fundRelease/fundReleaseRequest.tsx';
-import ExternalReallocationOverview from './screens/budget/externalReallocation/externalReallocationOverview.tsx';
 
 export const Router = () => {
   const {
@@ -71,7 +71,6 @@ export const Router = () => {
     if (pathname === '/finance/budget') return <BUDGET />;
     if (pathname === '/finance/budget/planning') return <BudgetOverview />;
     if (pathname === '/finance/budget-template') return <BudgetTemplate />;
-    if (pathname === '/finance/budget/nonFinance') return <NonFinance />;
     if (pathname === '/finance/budget/current') return <CurrentBudgetTabs />;
     if (pathname === '/finance/budget/requests') return <CurrentBudgetTabs />;
     if (sentBudgetDetails.test(pathname)) return <BudgetSendTabs />;
@@ -132,6 +131,7 @@ export const Router = () => {
     if (role_id === UserRole.MANAGER_OJ) {
       if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;
       if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
+      if (pathname === '/finance/budget/current/non-financial') return <NonFinancialOverview />;
     }
     if (role_id === UserRole.ADMIN || role_id === UserRole.MANAGER_OJ) {
       // add role specific routes here
