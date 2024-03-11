@@ -4,7 +4,7 @@ import {mockDropdownOptions} from '../../../../constants.ts';
 import {Dropdown, Datepicker, Input, Button, Typography, Table} from 'client-library';
 import {useEffect} from 'react';
 import Footer from '../../../../shared/footer.ts';
-import {tableHeadsAddFines} from '../constants.ts';
+import {tableHeadsAddFines} from '../constants.tsx';
 
 const initialValues = {
   vrsta_akta: null,

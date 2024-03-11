@@ -2,6 +2,7 @@ import {BudgetOverviewItem} from './budgetOverview';
 import {BudgetOverviewInsert} from './budgetInsert';
 import {BudgetDetailsItem} from './budgetDetails';
 import {NonFinancialGoal} from './nonFinancial.ts';
+import {FinesOverviewItem} from './finesOverview.ts';
 
 export interface GetResponse<T> {
   status: string;
@@ -60,4 +61,10 @@ export type GoalsResponse = {
     goalsNotFinancially_Insert: InsertResponse<NonFinancialGoal>;
   };
   // delete: {};
+};
+
+export type FinesResponse = {
+  get: {
+    fine_Overview: GetResponse<FinesOverviewItem>;
+  };
 };

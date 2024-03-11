@@ -1,11 +1,11 @@
 import useAppContext from '../../../context/useAppContext.ts';
 import {useEffect, useMemo, useState} from 'react';
-import {getCurrentTab, stockTabs, Tabs, getRouteName} from './constants.ts';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from '../../accounting/styles.tsx';
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import FinesOverview from './finesOverview.tsx';
 import AddFines from './addFines/addFines.tsx';
+import {Tabs, getCurrentTab, getRouteName, stockTabs} from './constants.tsx';
 
 const Fines = () => {
   const {

@@ -1,23 +1,60 @@
 import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
-import {FilterDropdown, Filters, FilterInput} from '../../../components/budgetList/styles.ts';
+import {useState} from 'react';
+import {FilterDropdown, FilterInput, Filters} from '../../../components/budgetList/styles.ts';
 import {PAGE_SIZE} from '../../../constants.ts';
-import {tableHeadsFinesOverview} from './constants.ts';
+import useGetFines from '../../../services/graphQL/fines/useGetFines.ts';
+import {useDebounce} from '../../../utils/useDebounce.ts';
 import {Header} from './styles.ts';
+import {TypeOfFines, tableHeadsFinesOverview} from './constants.tsx';
+
+const initialValues = {
+  act_type_id: undefined,
+};
 
 const FinesOverview = () => {
-  // TO DO implement the logic when the BE is done
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState(initialValues);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 500);
+
+  const {fine} = useGetFines({page: page, size: PAGE_SIZE, ...filters, search: debouncedSearch});
+
+  const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const onFilterChange = (value: any, name: string) => {
+    setFilters({...filters, [name]: value?.id});
+  };
+
+  const onPageChange = (page: number) => {
+    setPage(page + 1);
+  };
+
   return (
     <>
       <Header>
         <Filters>
-          <FilterDropdown label="SUBJEKAT:" options={[]} name="subject" />
-          <FilterDropdown label="VRSTA TAKSE:" options={[]} name="type" />
-          <FilterInput label="PRETRAGA:" rightContent={<SearchIcon />} />
+          <FilterDropdown
+            name="act_type_id"
+            value={filters?.act_type_id}
+            onChange={(value: any) => onFilterChange(value, 'act_type_id')}
+            label="VRSTA KAZNE:"
+            options={TypeOfFines || []}
+          />
+
+          <FilterInput
+            label="PRETRAGA:"
+            rightContent={<SearchIcon />}
+            name="search"
+            onChange={onSearch}
+            value={search}
+          />
         </Filters>
       </Header>
       <Table
         tableHeads={tableHeadsFinesOverview}
-        data={[]}
+        data={fine.items}
         style={{marginBottom: 22}}
         emptyMessage={'Još uvjek nema kazni'}
         tableActions={[
@@ -33,9 +70,10 @@ const FinesOverview = () => {
           },
         ]}
       />
+
       <Pagination
-        pageCount={1}
-        onChange={() => undefined}
+        pageCount={fine.total ? Math.ceil(fine.total / PAGE_SIZE) : 1}
+        onChange={onPageChange}
         variant="filled"
         itemsPerPage={PAGE_SIZE}
         pageRangeDisplayed={3}

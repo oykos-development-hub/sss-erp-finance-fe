@@ -7,6 +7,7 @@ import getBudgetDetails from './getBudgetDetails/getBudgetDetails.ts';
 import insertNonFinancial from './insertNonFinancial/insertNonFinancial.ts';
 import goalsInsert from './insertNonFinancial/goals/insertGoals.ts';
 import sendBudget from './sendBudget/sendBudget.ts';
+import finesOverview from './fines/finesOverview.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -33,4 +34,5 @@ export const GraphQL = {
   getBudgetDetails: getBudgetDetails,
   insertNonFinancial: insertNonFinancial,
   goalsInsert: goalsInsert,
+  finesOverview: finesOverview,
 };
