@@ -5,10 +5,11 @@ import {BudgetResponse} from '../../../types/graphQL/response';
 import {initialOverviewData} from '../../constants';
 import useAppContext from '../../../context/useAppContext.ts';
 
-const useGetBudgets = (params: BudgetOverviewParams, onSuccess?: () => void, onError?: () => void) => {
+const useGetBudgets = (params: BudgetOverviewParams, onSuccess?: () => void, onError?: () => void, skip?: boolean) => {
   const [budgets, setBudgets] = useState<BudgetResponse['get']['budget_Overview']>(initialOverviewData);
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
+
   const fetchBudgetOverview = async () => {
     setLoading(true);
     const response: BudgetResponse['get'] = await fetch(GraphQL.getBudgets, params);
@@ -24,8 +25,10 @@ const useGetBudgets = (params: BudgetOverviewParams, onSuccess?: () => void, onE
   };
 
   useEffect(() => {
-    fetchBudgetOverview();
-  }, [params.id, params.page, params.size, params.year, params.type_budget, params.status]);
+    if (!skip) {
+      fetchBudgetOverview();
+    }
+  }, [params.id, params.page, params.size, params.year, params.budget_type, params.status]);
 
   return {budgets, loading, refetch: fetchBudgetOverview};
 };

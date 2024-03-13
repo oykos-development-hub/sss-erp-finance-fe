@@ -1,4 +1,4 @@
-import {Button, Divider, Pagination, SendIcon, Table, Theme, TrashIcon, EditIconTwo} from 'client-library';
+import {Button, Divider, EditIconTwo, Pagination, SendIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useMemo, useState} from 'react';
 import {PAGE_SIZE, UserRole} from '../../constants.ts';
 import useAppContext from '../../context/useAppContext.ts';
@@ -11,12 +11,12 @@ import {DeleteModal} from '../../shared/deleteModal/deleteModal';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal.tsx';
 import {BudgetOverviewItem} from '../../types/graphQL/budgetOverview';
 import {getYearOptions} from '../../utils/getYearOptions.ts';
-import BudgetOverviewModal from '../budgetOverviewModal/budgetOverviewModal';
-import {budgetOverviewTableHeads, budgetStatus, budgetType} from './constants';
+import AddBudgetModal from '../addBudgetModal/addBudgetModal';
+import {budgetOverviewTableHeads, budgetStatus, budgetTypeOptions} from './constants';
 import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
 
 const BudgetList = () => {
-  const [budgetOverviewModal, setBudgetOverviewModal] = useState(false);
+  const [addBudgetModal, setAddBudgetModal] = useState(false);
   const [showDeleteModalBudgetId, setShowDeleteModalBudgetId] = useState<number | undefined>(undefined);
   const [showSendModalBudgetId, setShowSendModalBudgetId] = useState<number | undefined>(undefined);
   const [page, setPage] = useState(1);
@@ -26,12 +26,13 @@ const BudgetList = () => {
     page,
     size: PAGE_SIZE,
     status: filterValues.status ? filterValues.status.id : '',
-    type_budget: filterValues.type_budget ? filterValues.type_budget.id : '',
-    year: filterValues.year ? filterValues.year.id : null,
+    budget_type: filterValues.budget_type ? filterValues.budget_type.id : null,
+    year: filterValues.year ? filterValues.year?.id : null,
   });
 
   const {deleteBudget} = useDeleteBudget();
   const {sendBudget} = useSendBudget();
+
   const {
     navigation: {navigate},
     alert,
@@ -136,13 +137,15 @@ const BudgetList = () => {
               value={filterValues.year}
               name="year"
               onChange={value => onFilter(value, 'year')}
+              placeholder="Odaberite godinu"
             />
             <FilterDropdown
               label="TIP BUDŽETA:"
-              options={budgetType}
-              value={filterValues.type_budget}
+              options={budgetTypeOptions}
+              value={filterValues.budget_type}
               name="type"
-              onChange={value => onFilter(value, 'type_budget')}
+              onChange={value => onFilter(value, 'budget_type')}
+              placeholder="Odaberite tip"
             />
             <FilterDropdown
               label="STATUS:"
@@ -150,6 +153,7 @@ const BudgetList = () => {
               value={filterValues.status}
               name="status"
               onChange={value => onFilter(value, 'status')}
+              placeholder="Odaberite status"
             />
           </Filters>
           <Controls>
@@ -157,7 +161,7 @@ const BudgetList = () => {
               content="Novi budžet"
               variant="secondary"
               style={{width: 130}}
-              onClick={() => setBudgetOverviewModal(true)}
+              onClick={() => setAddBudgetModal(true)}
             />
           </Controls>
         </Header>
@@ -187,11 +191,8 @@ const BudgetList = () => {
           ]}
           onRowClick={row => row.status !== 'Kreiran' && handleRedirect(row)}
         />
-        {budgetOverviewModal && (
-          <BudgetOverviewModal
-            onClose={() => setBudgetOverviewModal(false)}
-            availableYearsForBudget={availableYearsForBudget}
-          />
+        {addBudgetModal && (
+          <AddBudgetModal onClose={() => setAddBudgetModal(false)} availableYearsForBudget={availableYearsForBudget} />
         )}
 
         <DeleteModal

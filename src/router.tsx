@@ -61,7 +61,7 @@ export const Router = () => {
     const confiscationRegex = new RegExp('^/finance/fines-taxes/confiscation(?:/add-confiscation)?$');
     const flatRateRegex = new RegExp('^/finance/fines-taxes/flat-rate(?:/add-flat-rate)?$');
     const proceduralCostRegex = new RegExp('^/finance/fines-taxes/procedural-costs(?:/add-procedural-costs)?$');
-    const budgetCreateRegex = /\/finance\/(\d+)\/budget-create-(\d{4})/;
+    const budgetCreateRegex = /\/finance\/(\d+)\/add-new/;
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
     const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');

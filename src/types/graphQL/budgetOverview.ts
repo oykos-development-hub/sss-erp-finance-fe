@@ -1,9 +1,9 @@
 export interface BudgetOverviewParams {
-  page: number;
-  size: number;
+  page?: number;
+  size?: number;
   id?: number;
   year?: number | null;
-  type_budget?: string | null;
+  budget_type?: string | null;
   status?: string | null;
 }
 

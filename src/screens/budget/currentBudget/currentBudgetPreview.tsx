@@ -1,4 +1,4 @@
-import {budgetType} from '../../../components/budgetList/constants.tsx';
+import {budgetTypeOptions} from '../../../components/budgetList/constants.tsx';
 import {FilterDropdown, Filters} from '../../../components/budgetList/styles.ts';
 import useAppContext from '../../../context/useAppContext.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
@@ -22,7 +22,7 @@ const CurrentBudget = () => {
       <Header>
         <Filters>
           <FilterDropdown label="ORGANIZACIONA JEDINICA:" options={organizationUnits} name="organization_unit" />
-          <FilterDropdown label="TIP BUDŽETA:" options={budgetType} name="type" />
+          <FilterDropdown label="TIP BUDŽETA:" options={budgetTypeOptions} name="type" />
         </Filters>
       </Header>
       <BudgetTable step={BudgetTableStep.CURRENT_BUDGET} year={year} organizationUnitId={1} />

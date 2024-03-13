@@ -1,23 +1,40 @@
+import {yupResolver} from '@hookform/resolvers/yup';
 import {Input, Modal, Typography} from 'client-library';
-import {useForm} from 'react-hook-form';
+import {useEffect} from 'react';
+import {useFieldArray, useForm} from 'react-hook-form';
+import * as yup from 'yup';
 import useAppContext from '../../context/useAppContext.ts';
 import useGetBudgets from '../../services/graphQL/getBudgets/useGetBudgets.ts';
 import useGetOrganizationUnits from '../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import {LimitType} from '../../types/graphQL/budgetInsert.ts';
 import {LabelWrapper, Row} from './styles.ts';
-import {useEffect} from 'react';
-interface BudgetOverviewModalProps {
+
+interface BudgetLimitModalProps {
   onClose: () => void;
   onSubmit: (formData: LimitType[]) => void;
   id?: number;
   open: boolean;
 }
 
-interface BudgetLimitModalForm {
-  limits: {[key: string]: number};
-}
+const limitSchema = yup.object().shape({
+  limits: yup.array().of(
+    yup.object().shape({
+      limit: yup.string().required('Ovo polje je obavezno'),
+      title: yup.string(),
+      organization_unit_id: yup.number().required(),
+    }),
+  ),
+});
 
-const BudgetLimitModal = ({onClose, onSubmit, open}: BudgetOverviewModalProps) => {
+type BudgetLimitModalForm = yup.InferType<typeof limitSchema>;
+
+type LimitObject = {
+  limit: string;
+  organization_unit_id: number;
+  title: string;
+};
+
+const BudgetLimitModal = ({onClose, onSubmit, open}: BudgetLimitModalProps) => {
   const {
     navigation: {
       location: {pathname},
@@ -25,76 +42,86 @@ const BudgetLimitModal = ({onClose, onSubmit, open}: BudgetOverviewModalProps) =
     alert,
   } = useAppContext();
 
+  // todo: fix this
   const budgetID = pathname.split('/').at(-1);
+  const isNew = budgetID === 'new-budget';
+
   const {
     handleSubmit,
     formState: {errors},
     register,
     reset,
-  } = useForm<BudgetLimitModalForm>();
+    control,
+  } = useForm<BudgetLimitModalForm>({resolver: yupResolver(limitSchema)});
+
+  const {replace, fields} = useFieldArray({name: 'limits', control, keyName: 'id'});
 
   const {organizationUnits} = useGetOrganizationUnits();
-  const {budgets} = useGetBudgets({
-    id: budgetID,
-    page: 1,
-    size: 1000,
-  });
+  const {budgets} = useGetBudgets({id: budgetID}, undefined, undefined, isNew);
 
-  const handleSave = async (formData: any) => {
-    const limitsData = organizationUnits.map(item => ({
-      organization_unit_id: item.id,
-      limit: Number(formData.limits[item.id]),
-    }));
+  const handleSave = async (data: BudgetLimitModalForm) => {
+    if (data.limits) {
+      const limitsData = data.limits.map(item => ({
+        organization_unit_id: item.organization_unit_id,
+        limit: Number(item.limit),
+      }));
 
-    alert.success('Uspješno ste dodali limite.');
-    onSubmit(limitsData);
-    onClose();
+      alert.success('Uspješno ste dodali limite.');
+      onSubmit(limitsData);
+      onClose();
+    }
   };
 
   useEffect(() => {
-    if (budgets && budgets.items.length > 0) {
-      const initialLimitsData = organizationUnits.map(item => {
-        const budget = budgets.items[0].limits.find(b => Number(b.organization_unit_id) === item.id);
-        return {
+    if (organizationUnits) {
+      const items = organizationUnits.map(item => {
+        const limitObj: LimitObject = {
+          limit: '',
           organization_unit_id: item.id,
-          limit: budget ? budget.limit : 0,
+          title: item.title,
         };
+
+        if (!isNew && budgets && budgets.items.length > 0) {
+          const budget = budgets.items[0].limits.find(b => Number(b.organization_unit_id) === item.id);
+
+          if (budget) {
+            limitObj.limit = budget.limit.toString();
+          }
+        }
+
+        return limitObj;
       });
 
-      const initialLimitsObject: {[key: string]: number} = {};
-
-      initialLimitsData.forEach(limit => {
-        initialLimitsObject[`${limit.organization_unit_id}`] = limit.limit;
-      });
-
-      reset({
-        limits: initialLimitsObject,
-      });
+      replace(items);
     }
   }, [budgets, organizationUnits, reset]);
 
+  const onModalClose = () => {
+    reset();
+    onClose();
+  };
+
   return (
     <Modal
-      onClose={onClose}
+      onClose={onModalClose}
       open={open}
       title="DODAJTE LIMIT"
-      leftButtonOnClick={onClose}
+      leftButtonOnClick={onModalClose}
       rightButtonText="Dodajte limit"
       leftButtonText="Otkaži"
       rightButtonOnClick={handleSubmit(handleSave)}
       content={
         <>
-          {organizationUnits.map(item => (
-            <Row key={`limits.${item?.title}`}>
+          {fields.map((item, index) => (
+            <Row key={`limits.${item?.id}`}>
               <LabelWrapper>
-                <Typography variant="bodySmall" content={<b>ORGANIZACIONA JEDINICA:</b>} />
                 <Typography variant="bodySmall" content={item.title} />
               </LabelWrapper>
               <Input
-                {...register(`limits.${item.id}`, {required: 'Ovo polje je obavezno'})}
+                {...register(`limits.${index}.limit`)}
                 placeholder="Unesite limit..."
-                error={errors.limits?.[item.id]?.message}
                 type="number"
+                error={errors.limits?.[index]?.limit?.message}
               />
             </Row>
           ))}
