@@ -24,12 +24,12 @@ export const budgetTypeFilterOptions: DropdownData<number | null>[] = [
   {id: null, title: 'Sve'},
   {id: 1, title: 'Kapitalni'},
   {id: 2, title: 'Tekući'},
-] as const;
+];
 
 export const budgetTypeOptions: DropdownData<number>[] = [
   {id: 1, title: 'Kapitalni'},
   {id: 2, title: 'Tekući'},
-] as const;
+];
 
 export const budgetStatus: DropdownData<string>[] = [
   {id: '', title: 'Sve'},
