@@ -1,9 +1,9 @@
-import {Typography} from 'client-library';
+import {Typography, Theme} from 'client-library';
 import styled from 'styled-components';
 
 export const Box = styled.div`
   border-radius: 4px;
-  border: 1px solid;
+  border: 1px solid ${Theme.palette.gray300};
   padding: 20px;
   margin-bottom: 10px;
 `;

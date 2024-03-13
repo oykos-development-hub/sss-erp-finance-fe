@@ -64,7 +64,7 @@ const flexComponentStyles = (props: FlexComponentProps) => css`
   align-items: ${props.align || 'start'};
 
   & > * {
-    flex: ${props.stretchChildren ? 1 : 'none'};
+    flex: ${props.stretchChildren ? 1 : 'auto'};
   }
 `;
 

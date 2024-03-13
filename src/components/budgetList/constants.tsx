@@ -20,16 +20,16 @@ export const budgetOverviewTableHeads: TableHead[] = [
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
-export const budgetTypeOptions: DropdownData<number | null>[] = [
+export const budgetTypeFilterOptions: DropdownData<number | null>[] = [
   {id: null, title: 'Sve'},
-  {id: 1, title: 'Tekući'},
-  {id: 2, title: 'Kapitalni'},
-];
-
-export const budgetTypeModal: DropdownData<number>[] = [
-  {id: 2, title: 'Tekući'},
   {id: 1, title: 'Kapitalni'},
-];
+  {id: 2, title: 'Tekući'},
+] as const;
+
+export const budgetTypeOptions: DropdownData<number>[] = [
+  {id: 1, title: 'Kapitalni'},
+  {id: 2, title: 'Tekući'},
+] as const;
 
 export const budgetStatus: DropdownData<string>[] = [
   {id: '', title: 'Sve'},
