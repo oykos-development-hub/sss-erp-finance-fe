@@ -1,5 +1,6 @@
 import {SearchIcon, Table} from 'client-library';
-import {FilterDropdown, FilterInput, Filters} from '../../../../components/budgetList/styles.ts';
+import {FilterInput} from '../../../accounting/styles.tsx';
+import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles.ts';
 import {tableHeads} from './constants.tsx';
 import {Header} from './styles.tsx';
 

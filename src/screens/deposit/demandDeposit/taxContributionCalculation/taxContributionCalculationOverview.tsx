@@ -1,7 +1,8 @@
-import {SearchIcon, Table, Divider} from 'client-library';
-import {FilterDropdown, FilterInput, Filters} from '../../../../components/budgetList/styles.ts';
+import {Divider, SearchIcon, Table} from 'client-library';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import SectionBox from '../../../../shared/sectionBox.ts';
+import {FilterInput} from '../../../accounting/styles.tsx';
+import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles.ts';
 import {Header, MainTitle} from '../initialState/styles.tsx';
 import {tableHeads} from './constants.tsx';
 

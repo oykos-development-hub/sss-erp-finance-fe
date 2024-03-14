@@ -1,12 +1,11 @@
 import {Button, Pagination, SearchIcon, SendIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
-import {FilterDropdown, Filters} from '../../components/budgetList/styles.ts';
+import {AccountingModal} from '../../components/accountingModal/accountingModal.tsx';
 import {PAGE_SIZE} from '../../constants.ts';
 import useGetOrganizationUnits from '../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
-import {Controls} from '../budget/budgetCreate/styles.tsx';
+import {Controls, FilterDropdown, Filters} from '../budget/planning/budgetList/styles.ts';
 import {tableHeads} from './constants.tsx';
 import {FilterInput, Header} from './styles.tsx';
-import {AccountingModal} from '../../components/accountingModal/accountingModal.tsx';
 
 const Accounting = () => {
   // TO DO implement the logic when the BE is done

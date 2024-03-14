@@ -2,10 +2,7 @@ import {UserRole} from './constants.ts';
 import useAppContext from './context/useAppContext.ts';
 import {NotFound404} from './screens/404';
 import {CurrentAccountingTabs} from './screens/accounting/currentAccountingTabs.tsx';
-import BudgetCreate from './screens/budget/budgetCreate/budgetCreate.tsx';
-import BudgetDetails from './screens/budget/budgetDetails/budgetDetails.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
-import BudgetOverview from './screens/budget/budgetOverview/budgetOverview';
 import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
 import BudgetTemplate from './screens/budget/budgetTemplate/budgetTemplate.tsx';
 import {CurrentBudgetTabs} from './screens/budget/currentBudget/currentBudgetTabs.tsx';
@@ -17,6 +14,8 @@ import InternalReallocationOverview from './screens/budget/internalReallocation/
 import BUDGET from './screens/budget/landingPage.tsx';
 import NonFinancePreview from './screens/budget/nonFinancePreview/nonFinancePreview.tsx';
 import NonFinancialOverview from './screens/budget/nonFinancialOverview/nonFinancialOverview.tsx';
+import SSSBudgetDetails from './screens/budget/planning/SSSBudgetDetails/SSSBudgetDetails.tsx';
+import BudgetList from './screens/budget/planning/budgetList/budgetList.tsx';
 import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
 import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDynamicsTabs.tsx';
 import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
@@ -51,7 +50,9 @@ export const Router = () => {
     const path = pathname.split('/');
     const name = path[path.length - 1];
 
-    const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
+    const SSSBudgetDetailsRegex = /^\/finance\/budget\/planning\/(add-new|\d+)$/;
+
+    // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
     const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
     const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
@@ -66,9 +67,15 @@ export const Router = () => {
     const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');
     const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
 
+    //todo: check if this is actually the role SSS will use here
+    if (role_id === UserRole.ADMIN) {
+      console.log(SSSBudgetDetailsRegex.test(pathname), pathname, 'regex');
+      if (SSSBudgetDetailsRegex.test(pathname)) return <SSSBudgetDetails />;
+    }
+
     if (pathname === '/finance') return <LandingPage />;
     if (pathname === '/finance/budget') return <BUDGET />;
-    if (pathname === '/finance/budget/planning') return <BudgetOverview />;
+    if (pathname === '/finance/budget/planning') return <BudgetList />;
     if (pathname === '/finance/budget-template') return <BudgetTemplate />;
     if (pathname === '/finance/budget/current') return <CurrentBudgetTabs />;
     if (pathname === '/finance/budget/requests') return <CurrentBudgetTabs />;
@@ -109,9 +116,7 @@ export const Router = () => {
     if (pathname === '/finance/deposit/demand/tax-contribution-calculation')
       return <TaxContributionCalculationOverview />;
 
-    if (pathname === '/finance/budget/planning/add-new') return <BudgetCreate />;
-
-    if (budgetDetails.test(pathname)) return <BudgetDetails />;
+    // if (budgetDetails.test(pathname)) return <BudgetDetails />;
 
     if (invoicesRegex.test(pathname)) return <Invoices />;
     if (budgetPreviewDetails.test(pathname)) return <NonFinancePreview />;

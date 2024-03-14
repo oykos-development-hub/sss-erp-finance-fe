@@ -1,11 +1,12 @@
 import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
-import {FilterDropdown, FilterInput, Filters} from '../../../components/budgetList/styles.ts';
 import {PAGE_SIZE} from '../../../constants.ts';
 import useGetFines from '../../../services/graphQL/fines/useGetFines.ts';
 import {useDebounce} from '../../../utils/useDebounce.ts';
-import {Header} from './styles.ts';
+import {FilterInput} from '../../accounting/styles.tsx';
+import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
 import {TypeOfFines, tableHeadsFinesOverview} from './constants.tsx';
+import {Header} from './styles.ts';
 
 const initialValues = {
   act_type_id: undefined,

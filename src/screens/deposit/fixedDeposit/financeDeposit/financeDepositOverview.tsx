@@ -1,7 +1,8 @@
 import {SearchIcon, Table} from 'client-library';
-import {FilterDropdown, FilterInput, Filters} from '../../../../components/budgetList/styles.ts';
 import {tableHeads} from './constants.tsx';
 import {Header} from './styles.tsx';
+import {FilterInput} from '../../../accounting/styles.tsx';
+import {Filters, FilterDropdown} from '../../../budget/planning/budgetList/styles.ts';
 
 const FinanceDepositOverview = () => {
   // TO DO add logic when the backend is ready

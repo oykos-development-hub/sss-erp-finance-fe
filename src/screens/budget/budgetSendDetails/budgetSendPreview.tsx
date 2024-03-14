@@ -1,10 +1,10 @@
-import {budgetTypeFilterOptions} from '../../../components/budgetList/constants.tsx';
-import {FilterDropdown, Filters} from '../../../components/budgetList/styles.ts';
 import useAppContext from '../../../context/useAppContext.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import BudgetTable from '../../../shared/budgetTable/budgetTable.tsx';
 import {BudgetTableStep} from '../../../shared/budgetTable/types.ts';
 import {getYearFromPath} from '../../../utils/getYearFromPath.ts';
+import {budgetTypeFilterOptions} from '../planning/budgetList/constants.tsx';
+import {FilterDropdown, Filters} from '../planning/budgetList/styles.ts';
 import {Header} from './styles.tsx';
 
 const BudgetSendPreview = () => {

@@ -1,6 +1,7 @@
 import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
-import {FilterDropdown, Filters, FilterInput} from '../../../components/budgetList/styles.ts';
 import {PAGE_SIZE} from '../../../constants.ts';
+import {FilterInput} from '../../accounting/styles.tsx';
+import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
 import {tableHeadsFinesOverview} from './constants.ts';
 import {Header} from './styles.ts';
 

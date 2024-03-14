@@ -5,10 +5,10 @@ import SectionBox from '../../shared/sectionBox';
 import {getRouteName} from '../../utils/getRouteName';
 import useAppContext from '../../context/useAppContext.ts';
 import {NotFound404} from '../../screens/404.tsx';
-import BudgetSummary from '../../screens/budget/budgetDetails/budgetSummary.tsx';
 import {getCurrentTab} from '../../utils/getCurrentTab.ts';
 import StyledTabsWithTitle from '../../shared/styledTabsWithTitle/styledTabsWithTitle.tsx';
 import BudgetNonFinancialOverview from '../../screens/budget/budgetNonFinancialOverview/budgetNonFinancialOverview.tsx';
+import BudgetSummary from '../../screens/budget/planning/budgetDetailsOU/budgetSummary.tsx';
 
 const BudgetTabs = () => {
   const {

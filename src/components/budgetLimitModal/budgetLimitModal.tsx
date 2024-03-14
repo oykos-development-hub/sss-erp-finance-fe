@@ -4,10 +4,10 @@ import {useEffect} from 'react';
 import {useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import useAppContext from '../../context/useAppContext.ts';
-import {LimitObject} from '../../screens/budget/budgetCreate/budgetCreate.tsx';
 import useGetBudgets from '../../services/graphQL/getBudgets/useGetBudgets.ts';
 import useGetOrganizationUnits from '../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import {LabelWrapper, Row} from './styles.ts';
+import {LimitObject} from '../../screens/budget/planning/SSSBudgetDetails/SSSBudgetDetails.tsx';
 
 interface BudgetLimitModalProps {
   open: boolean;
@@ -107,7 +107,7 @@ const BudgetLimitModal = ({onClose, open, onSubmit}: BudgetLimitModalProps) => {
       open={open}
       title="DODAJTE LIMIT"
       leftButtonOnClick={onModalClose}
-      rightButtonText="Dodajte limit"
+      rightButtonText={isNew ? 'Sačuvaj limite' : 'Izmjeni limite'}
       leftButtonText="Otkaži"
       rightButtonOnClick={handleSubmit(handleSave)}
       content={

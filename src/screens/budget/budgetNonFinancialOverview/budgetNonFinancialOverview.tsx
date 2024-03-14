@@ -1,8 +1,8 @@
-import {NonFinanceAccordion} from '../../../components/nonFinanceAccordion/nonFinanceAccordion.tsx';
-import {ButtonsContainer, StatusUpdateContainer, StyledDropdown} from './styles.ts';
-import {budgetStatusModal} from '../../../components/budgetList/constants.tsx';
 import {Button, Input} from 'client-library';
 import {Controller, useForm} from 'react-hook-form';
+import {NonFinanceAccordion} from '../../../components/nonFinanceAccordion/nonFinanceAccordion.tsx';
+import {budgetStatusModal} from '../planning/budgetList/constants.tsx';
+import {ButtonsContainer, StatusUpdateContainer, StyledDropdown} from './styles.ts';
 
 const initialValues = {
   status: null,

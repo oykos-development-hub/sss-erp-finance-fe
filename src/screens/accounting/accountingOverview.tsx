@@ -1,10 +1,10 @@
 import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
-import {FilterDropdown, Filters} from '../../components/budgetList/styles.ts';
 import {PAGE_SIZE} from '../../constants.ts';
 import useGetOrganizationUnits from '../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import {DeleteModal} from '../../shared/deleteModal/deleteModal.tsx';
 import {BudgetOverviewItem} from '../../types/graphQL/budgetOverview.ts';
+import {FilterDropdown, Filters} from '../budget/planning/budgetList/styles.ts';
 import {tableHeadsAccountingOverview} from './constants.tsx';
 import {FilterInput, Header} from './styles.tsx';
 

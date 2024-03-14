@@ -1,8 +1,9 @@
 import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
-import {FilterDropdown, Filters, FilterInput} from '../../../components/budgetList/styles.ts';
 import {PAGE_SIZE} from '../../../constants.ts';
 import {tableHeadsConfiscationOverview} from './constants.ts';
 import {Header} from './styles.ts';
+import {FilterInput} from '../../accounting/styles.tsx';
+import {Filters, FilterDropdown} from '../../budget/planning/budgetList/styles.ts';
 
 const ConfiscationOverview = () => {
   // TO DO implement the logic when the BE is done
