@@ -1,7 +1,7 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {Button, Dropdown, Typography} from 'client-library';
 import {useMemo, useState} from 'react';
-import {Controller, FormProvider, useForm} from 'react-hook-form';
+import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import BudgetLimitModal from '../../../components/budgetLimitModal/budgetLimitModal.tsx';
 import {budgetTypeOptions} from '../../../components/budgetList/constants.tsx';
@@ -19,18 +19,24 @@ import {optionsNumberSchema, optionsStringSchema} from '../../../utils/formSchem
 import {getYearOptions} from '../../../utils/getYearOptions.ts';
 import {BoldText, Box, Controls, TableGrid} from './styles.tsx';
 
-export const limitSchema = yup.array().of(
-  yup.object().shape({
-    limit: yup.string().required('Ovo polje je obavezno'),
-    title: yup.string(),
-    organization_unit_id: yup.number().required(),
-  }),
-);
+export type LimitObject = {
+  organization_unit_id: number;
+  limit: number;
+};
 
 const addBudgetSchema = yup.object().shape({
   year: optionsStringSchema.required('Ovo polje je obavezno').default(null),
-  budget_type: optionsNumberSchema.required('Ovo polje je obavezno'),
-  limits: limitSchema.required(),
+  budget_type: optionsNumberSchema.required('Ovo polje je obavezno').default(null),
+  limits: yup
+    .array()
+    .of(
+      yup.object().shape({
+        limit: yup.number().required(),
+        organization_unit_id: yup.number().required(),
+      }),
+    )
+    .required()
+    .default(null),
 });
 
 export type AddBudgetFormType = yup.InferType<typeof addBudgetSchema>;
@@ -47,31 +53,28 @@ const BudgetCreate = () => {
     alert,
   } = useAppContext();
 
-  const methods = useForm<AddBudgetFormType>({resolver: yupResolver(addBudgetSchema)});
+  const {
+    control,
+    formState: {errors, isValid},
+    handleSubmit,
+    watch,
+    setValue,
+  } = useForm<AddBudgetFormType>({resolver: yupResolver(addBudgetSchema)});
 
   const budgetID = pathname.split('/').at(-1);
 
-  const budgetTypeId = location.pathname.split('/').at(2);
-
   const {insertBudget, loading: isSaving} = useInsertBudget();
   const {budgets} = useGetBudgets({});
-
-  console.log(methods.formState.errors);
 
   //todo check if the same api endpoint is used when the OJ manager is filling the budget
   const onSubmit = async (data: AddBudgetFormType) => {
     if (isSaving) return;
 
-    const limitsData = data.limits.map(item => ({
-      organization_unit_id: item.organization_unit_id,
-      limit: Number(item.limit),
-    }));
-
     const payload = {
       id: budgetID === 'add-new' ? parseInt(budgetID) : null,
-      year: data.year.toString(),
-      budget_type: Number(budgetTypeId) || null,
-      limits: limitsData,
+      year: data.year.id.toString(),
+      budget_type: data.budget_type.id,
+      limits: data.limits,
     };
 
     await insertBudget(
@@ -82,6 +85,10 @@ const BudgetCreate = () => {
       },
       () => alert?.error('Greška. Promjene nisu sačuvane.'),
     );
+  };
+
+  const onLimitModalSubmit = (data: LimitObject[]) => {
+    setValue('limits', data);
   };
 
   const availableYearsForBudget = useMemo(() => {
@@ -95,8 +102,7 @@ const BudgetCreate = () => {
     return filteredYears;
   }, [budgets]);
 
-  const year = methods.watch('year')?.id;
-  const isValid = methods.formState.isValid;
+  const year = watch('year')?.id;
 
   return (
     <ScreenWrapper>
@@ -114,7 +120,7 @@ const BudgetCreate = () => {
 
           <FlexRow gap="1rem" style={{marginTop: '1rem'}}>
             <Controller
-              control={methods.control}
+              control={control}
               name="year"
               render={({field: {name, onChange, value}}) => (
                 <Dropdown
@@ -122,12 +128,13 @@ const BudgetCreate = () => {
                   value={value}
                   onChange={onChange}
                   options={availableYearsForBudget}
+                  error={errors.year?.message}
                   placeholder="Odaberite godinu"
                 />
               )}
             />
             <Controller
-              control={methods.control}
+              control={control}
               name="budget_type"
               render={({field: {name, onChange, value}}) => (
                 <Dropdown
@@ -135,6 +142,7 @@ const BudgetCreate = () => {
                   value={value}
                   onChange={onChange}
                   options={budgetTypeOptions}
+                  error={errors.year?.message}
                   placeholder="Odaberite tip"
                 />
               )}
@@ -170,14 +178,13 @@ const BudgetCreate = () => {
             content="Sačuvaj"
             variant="primary"
             style={{width: 130}}
-            onClick={methods.handleSubmit(onSubmit)}
-            disabled={isValid}
+            onClick={handleSubmit(onSubmit)}
+            disabled={!isValid}
           />
         </Footer>
       </OverviewBox>
-      <FormProvider {...methods}>
-        <BudgetLimitModal open={limitModal} onClose={() => setLimitModal(false)} />
-      </FormProvider>
+
+      <BudgetLimitModal open={limitModal} onClose={() => setLimitModal(false)} onSubmit={onLimitModalSubmit} />
     </ScreenWrapper>
   );
 };

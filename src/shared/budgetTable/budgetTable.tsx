@@ -18,7 +18,6 @@ type BudgetTableProps = {
 
 const BudgetTable = ({step, organizationUnitId, year}: BudgetTableProps) => {
   const methods = useForm();
-  console.log(organizationUnitId, 'organizationUnitId');
 
   const {counts} = useGetCountOverview({id: 0, tree: true});
 

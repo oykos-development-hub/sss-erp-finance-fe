@@ -18,6 +18,7 @@ export const TableGrid = styled.div`
   grid-gap: 10px;
   align-items: center;
 `;
+
 export const Controls = styled.div`
   display: flex;
   justify-content: space-between;
