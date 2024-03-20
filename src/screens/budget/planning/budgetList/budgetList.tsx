@@ -10,8 +10,9 @@ import {NotificationsModal} from '../../../../shared/notifications/notifications
 import {DropdownData} from '../../../../types/dropdownData';
 import {BudgetOverviewItem} from '../../../../types/graphQL/budgetOverview';
 import {getYearOptions} from '../../../../utils/getYearOptions';
-import {budgetOverviewTableHeads, budgetStatus, budgetTypeFilterOptions} from './constants';
+import {budgetListTableHeads, budgetStatus, budgetTypeFilterOptions} from './constants';
 import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
+import {BudgetStatusOptions} from '../../../../types/config';
 
 /*
  * This is a component used to show a list of budgets for both SSS official and managers of OUs.
@@ -107,22 +108,6 @@ const BudgetList = () => {
     refetch();
   };
 
-  // const handleRedirect = (budget: BudgetOverviewItem) => {
-  //   role_id === UserRole.ADMIN
-  //     ? navigate(`/finance/budget/planning/${budget.id}/details`)
-  //     : navigate(`/finance/budget/${budget.id}/summary`);
-
-  //   role_id === UserRole.ADMIN
-  //     ? breadcrumbs.add({
-  //         name: 'Detalji',
-  //         to: '/finance/budget/planning/details',
-  //       })
-  //     : breadcrumbs.add({
-  //         name: 'Summary',
-  //         to: '/finance/budget/summary',
-  //       });
-  // };
-
   const onPageChange = (page: number) => {
     setPage(page + 1);
   };
@@ -172,7 +157,7 @@ const BudgetList = () => {
             />
             <FilterDropdown
               label="STATUS:"
-              options={budgetStatus}
+              options={BudgetStatusOptions}
               value={filterValues.status}
               name="status"
               onChange={value => onFilter(value, 'status')}
@@ -191,7 +176,7 @@ const BudgetList = () => {
           </Controls>
         </Header>
         <Table
-          tableHeads={budgetOverviewTableHeads}
+          tableHeads={budgetListTableHeads}
           data={budgets.items}
           style={{marginBottom: 22}}
           tableActions={[
