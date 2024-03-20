@@ -22,9 +22,10 @@ export type SimpleResponse = {
   message: string;
 };
 
-export type DetailsResponse = {
+export type DetailsResponse<T> = {
   status: string;
   message: string;
+  item: T | null;
 };
 
 export type BudgetResponse = {

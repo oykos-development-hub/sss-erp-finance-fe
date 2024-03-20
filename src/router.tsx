@@ -14,6 +14,7 @@ import InternalReallocationOverview from './screens/budget/internalReallocation/
 import BUDGET from './screens/budget/landingPage.tsx';
 import NonFinancePreview from './screens/budget/nonFinancePreview/nonFinancePreview.tsx';
 import NonFinancialOverview from './screens/budget/nonFinancialOverview/nonFinancialOverview.tsx';
+import OUBudgetSubmission from './screens/budget/planning/OUBudgetSubmission/OUBudgetSubmission.tsx';
 import SSSBudgetDetails from './screens/budget/planning/SSSBudgetDetails/SSSBudgetDetails.tsx';
 import BudgetList from './screens/budget/planning/budgetList/budgetList.tsx';
 import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
@@ -38,6 +39,9 @@ import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.ts
 import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 
+//* OU - organization unit
+//* SSS - judicial council official
+
 export const Router = () => {
   const {
     navigation: {
@@ -51,6 +55,7 @@ export const Router = () => {
     const name = path[path.length - 1];
 
     const SSSBudgetDetailsRegex = /^\/finance\/budget\/planning\/(add-new|\d+)$/;
+    const OUBudgetDetailsSummary = /^\/finance\/budget\/planning\/\d+\/summary$/;
 
     // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
@@ -69,8 +74,11 @@ export const Router = () => {
 
     //todo: check if this is actually the role SSS will use here
     if (role_id === UserRole.ADMIN) {
-      console.log(SSSBudgetDetailsRegex.test(pathname), pathname, 'regex');
       if (SSSBudgetDetailsRegex.test(pathname)) return <SSSBudgetDetails />;
+    }
+
+    if (role_id === UserRole.MANAGER_OJ) {
+      if (OUBudgetDetailsSummary.test(pathname)) return <OUBudgetSubmission />;
     }
 
     if (pathname === '/finance') return <LandingPage />;

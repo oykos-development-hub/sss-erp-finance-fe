@@ -76,7 +76,7 @@ const BudgetLimitModal = ({onClose, open, onSubmit}: BudgetLimitModalProps) => {
     if (organizationUnits) {
       const items = organizationUnits.map(item => {
         const limitObj: LimitFormObject = {
-          limit: '',
+          limit: '1000',
           organization_unit_id: item.id,
           title: item.title,
         };

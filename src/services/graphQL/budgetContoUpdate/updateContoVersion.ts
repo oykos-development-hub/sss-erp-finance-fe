@@ -1,15 +1,11 @@
-const getCountOverview = `query AccountOverview($id: Int, $tree: Boolean, $search: String, $page: Int, $level: Int,$size: Int, $version: Int) {
-    account_Overview(id: $id, tree: $tree, search: $search, page: $page, size: $size, level: $level, version: $version) {
-        status
-        message
-        total
-        version
-        items {
-            id
-            parent_id
-            title
-            serial_number
-            children {
+const updateContoVersionMutation = `mutation($budget_id: Int!) {
+    financialBudgetVersion_Update(budget_id: $budget_id) {
+        status 
+        message 
+        item {
+            version
+            latest_version
+            accounts {
                 id
                 parent_id
                 title
@@ -39,6 +35,12 @@ const getCountOverview = `query AccountOverview($id: Int, $tree: Boolean, $searc
                                     parent_id
                                     title
                                     serial_number
+                                    children {
+                                        id
+                                        parent_id
+                                        title
+                                        serial_number
+                                    }
                                 }
                             }
                         }
@@ -49,4 +51,4 @@ const getCountOverview = `query AccountOverview($id: Int, $tree: Boolean, $searc
     }
 }`;
 
-export default getCountOverview;
+export default updateContoVersionMutation;

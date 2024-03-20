@@ -14,7 +14,7 @@ export interface ExtendedTab extends Tab {
   routeName: string;
 }
 export const budgetTabs: ExtendedTab[] = [
-  {id: 1, title: 'Summary', routeName: '', disabled: false},
+  {id: 1, title: 'Summary', routeName: 'summary', disabled: false},
   {id: 2, title: 'Financial', routeName: 'financial', disabled: false},
   {id: 3, title: 'Non-Financial', routeName: 'non-financial', disabled: false},
 ];

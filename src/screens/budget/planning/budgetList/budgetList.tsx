@@ -13,6 +13,12 @@ import {getYearOptions} from '../../../../utils/getYearOptions';
 import {budgetOverviewTableHeads, budgetStatus, budgetTypeFilterOptions} from './constants';
 import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
 
+/*
+ * This is a component used to show a list of budgets for both SSS official and managers of OUs.
+ * Navigation is different for each role as well as the actions that can be performed on the budget.
+ * The button for adding a new budget is only visible for the SSS officials.
+ */
+
 export interface BudgetOverviewFilters {
   year?: DropdownData<number> | null;
   budget_type?: DropdownData<string> | null;
@@ -96,6 +102,7 @@ const BudgetList = () => {
         alert.error('Došlo je do greške prilikom slanja budžeta');
       },
     );
+
     handleCloseSendModal();
     refetch();
   };
@@ -132,10 +139,10 @@ const BudgetList = () => {
         to: `/finance/budget/planning/${row.id}`,
       });
     } else {
-      navigate(`/finance/budget/${row.id}/summary`);
+      navigate(`/finance/budget/planning/${row.id}/summary`);
       breadcrumbs.add({
         name: 'Summary',
-        to: `/finance/budget/${row.id}/summary`,
+        to: `/finance/budget/planning/${row.id}/summary`,
       });
     }
   };
@@ -173,12 +180,14 @@ const BudgetList = () => {
             />
           </Filters>
           <Controls>
-            <Button
-              content="Novi budžet"
-              variant="secondary"
-              style={{width: 130}}
-              onClick={() => navigate('/finance/budget/planning/add-new')}
-            />
+            {role_id === UserRole.ADMIN && (
+              <Button
+                content="Novi budžet"
+                variant="secondary"
+                style={{width: 130}}
+                onClick={() => navigate('/finance/budget/planning/add-new')}
+              />
+            )}
           </Controls>
         </Header>
         <Table
@@ -207,7 +216,6 @@ const BudgetList = () => {
           ]}
           onRowClick={row => onRowClick(row)}
         />
-
         <DeleteModal
           open={!!showDeleteModalBudgetId}
           onClose={() => {
@@ -215,7 +223,6 @@ const BudgetList = () => {
           }}
           handleDelete={handleDelete}
         />
-
         <NotificationsModal
           open={!!showSendModalBudgetId}
           onClose={handleCloseSendModal}

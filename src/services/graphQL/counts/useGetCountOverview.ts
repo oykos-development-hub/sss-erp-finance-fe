@@ -10,15 +10,24 @@ interface ICountParams {
   page?: number;
   size?: number;
   search?: string;
+  version?: number;
 }
 
-const useGetCountOverview = ({id, level, page, search, size, tree}: ICountParams) => {
+const useGetCountOverview = ({id, level, page, search, size, tree, version}: ICountParams) => {
   const [counts, setCounts] = useState<Count[]>([]);
   const [total, setTotal] = useState<number>(0);
 
   const {fetch} = useAppContext();
   const fetchCounts = async () => {
-    const response: CountResponse['get'] = await fetch(getCountOverview, {level, page, search, size, tree, id});
+    const response: CountResponse['get'] = await fetch(getCountOverview, {
+      level,
+      page,
+      search,
+      size,
+      tree,
+      id: undefined,
+      version: version || 1,
+    });
     const countList = response?.account_Overview.items;
     const totalCounts = response?.account_Overview.total;
 
@@ -27,7 +36,7 @@ const useGetCountOverview = ({id, level, page, search, size, tree}: ICountParams
   };
   useEffect(() => {
     fetchCounts();
-  }, [level, page, search, size, tree]);
+  }, [level, page, search, size, tree, version]);
   return {counts, total};
 };
 

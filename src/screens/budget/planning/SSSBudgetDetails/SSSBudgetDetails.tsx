@@ -58,7 +58,8 @@ const SSSBudgetDetails = () => {
     handleSubmit,
     watch,
     setValue,
-  } = useForm<AddBudgetFormType>({resolver: yupResolver(addBudgetSchema)});
+    trigger,
+  } = useForm<AddBudgetFormType>({resolver: yupResolver(addBudgetSchema), mode: 'onBlur'});
 
   const budgetID = pathname.split('/').at(-1);
   const isNew = budgetID === 'add-new';
@@ -88,7 +89,7 @@ const SSSBudgetDetails = () => {
   };
 
   const onLimitModalSubmit = (data: LimitObject[]) => {
-    setValue('limits', data);
+    setValue('limits', data, {shouldValidate: true});
   };
 
   const availableYearsForBudget = useMemo(() => {

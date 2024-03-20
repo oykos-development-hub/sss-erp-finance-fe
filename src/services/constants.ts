@@ -11,3 +11,9 @@ export const initialOverviewData = {
   items: [],
   total: 0,
 };
+
+export const initialDetailsData = {
+  status: '',
+  message: '',
+  item: null,
+};
