@@ -8,7 +8,7 @@ export interface BudgetSummaryProps {
   budgetDetails: any;
 }
 
-const BudgetSummary = ({id, budgetDetails}: BudgetSummaryProps) => {
+const BudgetSummary = (_: BudgetSummaryProps) => {
   const {navigation, breadcrumbs} = useAppContext();
 
   return (

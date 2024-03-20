@@ -58,7 +58,6 @@ const SSSBudgetDetails = () => {
     handleSubmit,
     watch,
     setValue,
-    trigger,
   } = useForm<AddBudgetFormType>({resolver: yupResolver(addBudgetSchema), mode: 'onBlur'});
 
   const budgetID = pathname.split('/').at(-1);

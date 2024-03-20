@@ -1,6 +1,6 @@
 import BudgetTabs from '../planning/OUBudgetSubmission/budgetSubmissionTabs.tsx';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
-import {Container} from './styles.ts';
+import {Container} from '../nonFinance/styles.ts';
 
 const BudgetDetails = () => {
   return (

@@ -13,7 +13,7 @@ interface ICountParams {
   version?: number;
 }
 
-const useGetCountOverview = ({id, level, page, search, size, tree, version}: ICountParams) => {
+const useGetCountOverview = ({level, page, search, size, tree, version}: ICountParams) => {
   const [counts, setCounts] = useState<Count[]>([]);
   const [total, setTotal] = useState<number>(0);
 

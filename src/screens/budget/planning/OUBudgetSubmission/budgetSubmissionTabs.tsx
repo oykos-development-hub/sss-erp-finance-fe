@@ -27,7 +27,7 @@ const BudgetSubmissionTabs = () => {
   }, [pathname]);
 
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname, budgetTabs) || 1);
-  const {budgetFinancial, loading} = useGetBudgetFinancial({budget_id: id});
+  const {budgetFinancial} = useGetBudgetFinancial({budget_id: id});
 
   console.log(budgetFinancial);
 
