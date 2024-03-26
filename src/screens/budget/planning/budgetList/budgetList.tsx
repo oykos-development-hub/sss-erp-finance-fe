@@ -1,5 +1,8 @@
+import {yupResolver} from '@hookform/resolvers/yup';
 import {Button, Divider, EditIconTwo, Pagination, SendIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import * as yup from 'yup';
 import {PAGE_SIZE, UserRole} from '../../../../constants';
 import useAppContext from '../../../../context/useAppContext';
 import useDeleteBudget from '../../../../services/graphQL/deleteBudget/useDeleteBudget';
@@ -7,12 +10,12 @@ import useGetBudgets from '../../../../services/graphQL/getBudgets/useGetBudgets
 import useSendBudget from '../../../../services/graphQL/sendBudget/useSendBudget';
 import {DeleteModal} from '../../../../shared/deleteModal/deleteModal';
 import {NotificationsModal} from '../../../../shared/notifications/notificationsModal';
-import {DropdownData} from '../../../../types/dropdownData';
-import {BudgetOverviewItem} from '../../../../types/graphQL/budgetOverview';
-import {getYearOptions} from '../../../../utils/getYearOptions';
-import {budgetListTableHeads, budgetStatus, budgetTypeFilterOptions} from './constants';
-import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
 import {BudgetStatusOptions} from '../../../../types/config';
+import {BudgetOverviewItem} from '../../../../types/graphQL/budgetOverview';
+import {optionsNumberSchema} from '../../../../utils/formSchemas';
+import {getYearOptions} from '../../../../utils/getYearOptions';
+import {budgetListTableHeads, budgetTypeFilterOptions} from './constants';
+import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
 
 /*
  * This is a component used to show a list of budgets for both SSS official and managers of OUs.
@@ -20,30 +23,31 @@ import {BudgetStatusOptions} from '../../../../types/config';
  * The button for adding a new budget is only visible for the SSS officials.
  */
 
-export interface BudgetOverviewFilters {
-  year?: DropdownData<number> | null;
-  budget_type?: DropdownData<string> | null;
-  status?: DropdownData<string> | null;
-}
+const budgetListSchema = yup.object().shape({
+  year: optionsNumberSchema.nullable(),
+  budget_type: optionsNumberSchema.nullable(),
+  status: optionsNumberSchema.nullable(),
+});
 
-const initialBudgetFilterValues = {
-  year: null,
-  budget_type: null,
-  status: null,
-};
+type BudgetListFilters = yup.InferType<typeof budgetListSchema>;
 
 const BudgetList = () => {
   const [showDeleteModalBudgetId, setShowDeleteModalBudgetId] = useState<number | undefined>(undefined);
   const [showSendModalBudgetId, setShowSendModalBudgetId] = useState<number | undefined>(undefined);
   const [page, setPage] = useState(1);
-  const [filterValues, setFilterValues] = useState<BudgetOverviewFilters>(initialBudgetFilterValues);
+
+  const {control, watch} = useForm<BudgetListFilters>({
+    resolver: yupResolver(budgetListSchema),
+  });
+
+  const {year, budget_type, status} = watch();
 
   const {budgets, refetch} = useGetBudgets({
     page,
     size: PAGE_SIZE,
-    status: filterValues.status ? filterValues.status.id : '',
-    budget_type: filterValues.budget_type ? filterValues.budget_type.id : null,
-    year: filterValues.year ? filterValues.year?.id : null,
+    status: status ? status.id : null,
+    budget_type: budget_type ? budget_type?.id : null,
+    year: year ? year?.id : null,
   });
 
   const {deleteBudget} = useDeleteBudget();
@@ -112,10 +116,6 @@ const BudgetList = () => {
     setPage(page + 1);
   };
 
-  const onFilter = (value: any, name: string) => {
-    setFilterValues({...filterValues, [name]: name === 'search' ? value.target.value : value});
-  };
-
   const onRowClick = (row: BudgetOverviewItem) => {
     if (role_id === UserRole.ADMIN) {
       navigate(`/finance/budget/planning/${row.id}`);
@@ -139,29 +139,47 @@ const BudgetList = () => {
         <Divider color="#615959" height="1px" />
         <Header>
           <Filters>
-            <FilterDropdown
-              label="GODINA:"
-              options={getYearOptions(7, true, 1)}
-              value={filterValues.year}
+            <Controller
+              control={control}
               name="year"
-              onChange={value => onFilter(value, 'year')}
-              placeholder="Odaberite godinu"
+              render={({field: {name, onChange, value}}) => (
+                <FilterDropdown
+                  label="GODINA:"
+                  options={getYearOptions(7, true, 1)}
+                  value={value}
+                  name={name}
+                  onChange={onChange}
+                  placeholder="Odaberite godinu"
+                />
+              )}
             />
-            <FilterDropdown
-              label="TIP BUDŽETA:"
-              options={budgetTypeFilterOptions}
-              value={filterValues.budget_type}
-              name="type"
-              onChange={value => onFilter(value, 'budget_type')}
-              placeholder="Odaberite tip"
+            <Controller
+              control={control}
+              name="budget_type"
+              render={({field: {name, onChange, value}}) => (
+                <FilterDropdown
+                  label="TIP BUDŽETA:"
+                  options={budgetTypeFilterOptions}
+                  value={value}
+                  name={name}
+                  onChange={onChange}
+                  placeholder="Odaberite tip"
+                />
+              )}
             />
-            <FilterDropdown
-              label="STATUS:"
-              options={BudgetStatusOptions}
-              value={filterValues.status}
+            <Controller
+              control={control}
               name="status"
-              onChange={value => onFilter(value, 'status')}
-              placeholder="Odaberite status"
+              render={({field: {name, onChange, value}}) => (
+                <FilterDropdown
+                  label="STATUS:"
+                  options={BudgetStatusOptions}
+                  value={value}
+                  name={name}
+                  onChange={onChange}
+                  placeholder="Odaberite status"
+                />
+              )}
             />
           </Filters>
           <Controls>

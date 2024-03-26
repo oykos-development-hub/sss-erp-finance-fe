@@ -16,7 +16,7 @@ export const budgetListTableHeads: TableHead[] = [
     title: 'Status',
     accessor: 'status',
     type: 'custom',
-    renderContents: (status: BudgetStatusTypeEnum) => <StatusTableCell status={BudgetStatusTypeDisplay[status]} />,
+    renderContents: ({id}: {id: BudgetStatusTypeEnum}) => <StatusTableCell status={BudgetStatusTypeDisplay[id]} />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

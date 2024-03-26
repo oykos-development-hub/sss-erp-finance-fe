@@ -1,11 +1,11 @@
 import {useEffect, useState} from 'react';
-import {BudgetOverviewParams} from '../../../types/graphQL/budgetOverview';
 import {GraphQL} from '..';
+import useAppContext from '../../../context/useAppContext.ts';
+import {BudgetListParams} from '../../../types/graphQL/budgetOverview';
 import {BudgetResponse} from '../../../types/graphQL/response';
 import {initialOverviewData} from '../../constants';
-import useAppContext from '../../../context/useAppContext.ts';
 
-const useGetBudgets = (params: BudgetOverviewParams, onSuccess?: () => void, onError?: () => void, skip?: boolean) => {
+const useGetBudgets = (params: BudgetListParams, onSuccess?: () => void, onError?: () => void, skip?: boolean) => {
   const [budgets, setBudgets] = useState<BudgetResponse['get']['budget_Overview']>(initialOverviewData);
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();

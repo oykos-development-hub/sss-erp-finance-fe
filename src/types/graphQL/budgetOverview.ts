@@ -1,10 +1,10 @@
-export interface BudgetOverviewParams {
+export interface BudgetListParams {
   page?: number;
   size?: number;
   id?: number | null;
   year?: number | null;
-  budget_type?: string | null;
-  status?: string | null;
+  budget_type?: number | null;
+  status?: number | null;
 }
 
 export interface BudgetOverviewItem {
