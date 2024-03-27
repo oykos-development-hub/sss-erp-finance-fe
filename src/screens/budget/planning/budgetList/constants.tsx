@@ -1,7 +1,6 @@
 import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../../shared/statusTableCell/statusTableCell';
 import {DropdownData} from '../../../../types/dropdownData';
-import {BudgetStatusTypeDisplay, BudgetStatusTypeEnum} from '../../../../types/config';
 
 export const budgetListTableHeads: TableHead[] = [
   {title: 'ID', accessor: 'id'},
@@ -16,7 +15,7 @@ export const budgetListTableHeads: TableHead[] = [
     title: 'Status',
     accessor: 'status',
     type: 'custom',
-    renderContents: ({id}: {id: BudgetStatusTypeEnum}) => <StatusTableCell status={BudgetStatusTypeDisplay[id]} />,
+    renderContents: (status: DropdownData<number>) => <StatusTableCell status={status.title} />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
