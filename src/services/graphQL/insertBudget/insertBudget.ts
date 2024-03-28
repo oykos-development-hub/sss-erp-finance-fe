@@ -7,7 +7,10 @@ const budgetInsert = `mutation($data: BudgetMutation!) {
             id
             year
             budget_type
-            status
+            status {
+              id
+              title
+            }
             limits {
                 id
                 organization_unit_id
