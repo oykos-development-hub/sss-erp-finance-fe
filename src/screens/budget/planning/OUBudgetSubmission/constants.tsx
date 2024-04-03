@@ -2,7 +2,7 @@ import {TableHead} from 'client-library';
 import StatusTableCell from '../../../../shared/statusTableCell/statusTableCell';
 
 export const budgetSummaryTableHeads: TableHead[] = [
-  {title: 'Step', accessor: 'step'},
+  {title: 'Tip', accessor: 'type'},
   {
     title: 'Status',
     accessor: 'status',

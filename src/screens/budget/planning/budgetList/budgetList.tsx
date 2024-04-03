@@ -206,9 +206,24 @@ const BudgetList = () => {
             },
             {
               name: 'Izmijeni',
-              onClick: row => navigate(`/finance/${row.budget_type}/budget-create-${row.year}/${row.id}`),
+              onClick: row => {
+                if (role_id === UserRole.ADMIN) {
+                  navigate(`/finance/budget/planning/budget-create-${row.year}/${row.id}`);
+                } else {
+                  navigate(`/finance/budget/planning/${row.id}/summary`);
+                }
+              },
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status.id === BudgetStatusTypeEnum.Created,
+              shouldRender: row => {
+                if (role_id === UserRole.ADMIN) {
+                  return row.status.id === BudgetStatusTypeEnum.Created;
+                } else if (role_id === UserRole.MANAGER_OJ) {
+                  return row.status.id !== BudgetSubmissionStatusEnum.Completed;
+                } else {
+                  //* Do we need a separate condition for the finance official or will he have the same rights as the admin?
+                  return false;
+                }
+              },
             },
             {
               name: 'Izbriši',

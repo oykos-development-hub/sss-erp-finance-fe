@@ -1,5 +1,7 @@
 import {createOptions} from '../utils/createOptions';
 
+//* BudgetStatusTypeEnum and BudgetSubmissionStatusEnum are meant for a single, mutual status field.
+
 export enum BudgetStatusTypeEnum {
   Created = 1,
   Sent = 2,
@@ -15,12 +17,12 @@ export const BudgetStatusTypeDisplay: {[key in BudgetStatusTypeEnum]: string} = 
 export const BudgetStatusOptions = createOptions(BudgetStatusTypeDisplay);
 
 export enum BudgetSubmissionStatusEnum {
-  ToBeFilled = 1,
-  InProgress = 2,
-  Completed = 3,
+  ToBeFilled = 4,
+  InProgress = 5,
+  Completed = 6,
 }
 
-export const BudgetSubmissionStatusDisplay: {[key in BudgetStatusTypeEnum]: string} = {
+export const BudgetSubmissionStatusDisplay: {[key in BudgetSubmissionStatusEnum]: string} = {
   [BudgetSubmissionStatusEnum.ToBeFilled]: 'Obradi',
   [BudgetSubmissionStatusEnum.InProgress]: 'U toku',
   [BudgetSubmissionStatusEnum.Completed]: 'Zaključen',
