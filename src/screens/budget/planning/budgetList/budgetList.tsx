@@ -9,7 +9,7 @@ import useDeleteBudget from '../../../../services/graphQL/deleteBudget/useDelete
 import useGetBudgets from '../../../../services/graphQL/getBudgets/useGetBudgets';
 import useSendBudget from '../../../../services/graphQL/sendBudget/useSendBudget';
 import {DeleteModal} from '../../../../shared/deleteModal/deleteModal';
-import {NotificationsModal} from '../../../../shared/notifications/notificationsModal';
+import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import {BudgetStatusOptions, BudgetStatusTypeEnum, BudgetSubmissionStatusEnum} from '../../../../types/config';
 import {BudgetOverviewItem} from '../../../../types/graphQL/budgetOverview';
 import {optionsNumberSchema} from '../../../../utils/formSchemas';
@@ -226,10 +226,10 @@ const BudgetList = () => {
           }}
           handleDelete={handleDelete}
         />
-        <NotificationsModal
+        <ConfirmationModal
           open={!!showSendModalBudgetId}
           onClose={handleCloseSendModal}
-          handleRightButtomClick={() => handleSend()}
+          onConfirm={() => handleSend()}
           subTitle={'Ovaj budžet će biti poslat organizacionim jedinicama na pregled i popunjavanje.'}
         />
         <Pagination

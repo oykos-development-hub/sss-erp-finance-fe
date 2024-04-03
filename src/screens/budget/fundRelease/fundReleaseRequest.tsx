@@ -4,7 +4,7 @@ import useAppContext from '../../../context/useAppContext';
 import BudgetTable from '../../../shared/budgetTable/budgetTable';
 import {BudgetTableStep} from '../../../shared/budgetTable/types';
 import Footer from '../../../shared/footer';
-import {NotificationsModal} from '../../../shared/notifications/notificationsModal';
+import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {MainTitle, SectionBox} from './styles';
 
@@ -38,14 +38,14 @@ const FundReleaseRequest = () => {
         </Footer>
 
         {isOpen && (
-          <NotificationsModal
+          <ConfirmationModal
             open={isOpen}
             onClose={toogleModal}
             subTitle={
               /* TO DO add total amount instead of ______ */
               'Da li želite kreirati zahtjev za otpuštanje sredstava u ukupnom iznosu _____'
             }
-            handleRightButtomClick={() => {
+            onConfirm={() => {
               'TO DO add logic whan BE is ready';
             }}
           />

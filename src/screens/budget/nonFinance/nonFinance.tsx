@@ -48,8 +48,6 @@ export const NonFinance = () => {
   const {insertNonFinancial} = useInsertNonFinancial();
   const onSubmit = async (data: NonFinanceForm) => {
     if (isValid) {
-      console.log(data);
-
       await insertNonFinancial(
         data,
         () => {

@@ -1,10 +1,10 @@
-const finesOverview = `query fineOverview($id: Int, $subject: String, $search: String, $act_type_id: Int, $page:Int, $size:Int) {
-    fine_Overview(id: $id, subject: $subject, search: $search, act_type_id: $act_type_id,    page:$page, size:$size) {
-        status
-        message
-        total
-        items {
-            id
+const insertFine = ` mutation($data: FineMutation!) {
+    fine_Insert(data: $data) {
+        status 
+        message 
+        data
+        item {
+           id
             act_type
             decision_number
             decision_date
@@ -46,8 +46,9 @@ const finesOverview = `query fineOverview($id: Int, $subject: String, $search: S
             }
             created_at
             updated_at
+           
         }
     }
 }`;
 
-export default finesOverview;
+export default insertFine;

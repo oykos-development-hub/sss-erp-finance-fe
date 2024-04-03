@@ -14,7 +14,7 @@ export interface GetResponse<T> {
 export interface InsertResponse<T> {
   status: string;
   message: string;
-  item: T[];
+  item: T;
 }
 
 export type SimpleResponse = {
@@ -67,5 +67,20 @@ export type GoalsResponse = {
 export type FinesResponse = {
   get: {
     fine_Overview: GetResponse<FinesOverviewItem>;
+  };
+  insert: {
+    fine_Insert: InsertResponse<FinesOverviewItem>;
+  };
+};
+
+export type PaymentsResponse = {
+  get: {
+    finePayment_Overview: GetResponse<any>;
+  };
+  insert: {
+    finePayment_Insert: InsertResponse<any>;
+  };
+  delete: {
+    finePayment_Delete: SimpleResponse;
   };
 };

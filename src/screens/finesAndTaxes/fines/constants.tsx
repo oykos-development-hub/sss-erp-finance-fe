@@ -1,4 +1,6 @@
 import {TableHead, Typography} from 'client-library';
+import {parseDate} from '../../../utils/dateUtils.ts';
+import {DropdownData} from '../../../types/dropdownData.ts';
 
 export enum Tabs {
   FinesOverview = 1,
@@ -7,7 +9,7 @@ export enum Tabs {
 
 export const stockTabs = [
   {id: Tabs.FinesOverview, title: 'Pregled kazni', routeName: 'fines'},
-  {id: Tabs.AddFines, title: 'Dodaj kaznu', routeName: 'add-fines'},
+  {id: Tabs.AddFines, title: 'Dodaj kaznu', routeName: 'add-new'},
 ];
 
 export const getCurrentTab = (pathname: string) => {
@@ -30,7 +32,8 @@ export const tableHeadsFinesOverview: TableHead[] = [
   {
     title: 'Datum izvršnosti',
     accessor: 'execution_date',
-    type: 'text',
+    type: 'custom',
+    renderContents: value => <Typography content={parseDate(value)} variant="bodyMedium" />,
   },
   {
     title: 'Broj rešenja/presude',
@@ -58,52 +61,28 @@ export const tableHeadsFinesOverview: TableHead[] = [
   {
     title: 'Status',
     accessor: 'status',
-    type: 'text',
+    type: 'custom',
+    renderContents: value => {
+      return <Typography content={value?.title} />;
+    },
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
-export const tableHeadsAddFines: TableHead[] = [
-  {
-    title: 'Način plaćanja',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Iznos',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Datum uplate',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Uplatiti do',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Broj izvoda',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Poziv na broj odobrenja',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Poziv na broj zaduženja',
-    accessor: '',
-    type: 'text',
-  },
-  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
-];
-
-export const TypeOfFines = [
-  {id: null, title: 'Sve'},
+export const defaultDropdownOption = {id: null, title: 'Sve'};
+export const TypeOfFines: DropdownData<number>[] = [
   {id: 1, title: 'Rješenje'},
   {id: 2, title: 'Presuda'},
+];
+
+export const FinePaymentMethods: DropdownData<number>[] = [
+  {id: 1, title: 'Uplata'},
+  {id: 2, title: 'Prinudna naplata'},
+  {id: 3, title: 'Sudski troškovi'},
+];
+
+export const FineStatuses: DropdownData<number>[] = [
+  {id: 1, title: 'Uplaćeno'},
+  {id: 2, title: 'Stornirano'},
+  {id: 3, title: 'Povraćaj'},
 ];

@@ -1,13 +1,13 @@
 import {useEffect, useState} from 'react';
 import {GraphQL} from '..';
 import useAppContext from '../../../context/useAppContext.ts';
-import {FinesOverviewParams} from '../../../types/graphQL/finesOverview.ts';
+import {FinesOverviewItem, FinesOverviewParams} from '../../../types/graphQL/finesOverview.ts';
 import {FinesResponse} from '../../../types/graphQL/response';
-import {initialOverviewData} from '../../constants';
 
-const useGetFines = (params: FinesOverviewParams, onSuccess?: () => void, onError?: () => void) => {
-  const [fine, setFines] = useState<FinesResponse['get']['fine_Overview']>(initialOverviewData);
+const useGetFines = (params: FinesOverviewParams) => {
+  const [fines, setFines] = useState<FinesOverviewItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
   const {fetch} = useAppContext();
 
   const fetchFinesOverview = async () => {
@@ -15,10 +15,8 @@ const useGetFines = (params: FinesOverviewParams, onSuccess?: () => void, onErro
     const response: FinesResponse['get'] = await fetch(GraphQL.finesOverview, params);
 
     if (response.fine_Overview.status === 'success') {
-      setFines(response.fine_Overview);
-      onSuccess && onSuccess();
-    } else {
-      onError && onError();
+      setFines(response.fine_Overview.items);
+      setTotal(response.fine_Overview.total || 0);
     }
 
     setLoading(false);
@@ -28,7 +26,7 @@ const useGetFines = (params: FinesOverviewParams, onSuccess?: () => void, onErro
     fetchFinesOverview();
   }, [params.id, params.page, params.size, params.search, params.subject, params.act_type_id]);
 
-  return {fine, loading, refetch: fetchFinesOverview};
+  return {fines, loading, total, refetch: fetchFinesOverview};
 };
 
 export default useGetFines;

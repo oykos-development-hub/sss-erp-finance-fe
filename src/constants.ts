@@ -71,6 +71,11 @@ export const invoiceTypeOptions = [
   {id: 2, title: 'Materijalno knjigovodstvo'},
 ];
 
+export const actTypeOptions = [
+  {id: 1, title: 'Rješenje'},
+  {id: 2, title: 'Presuda'},
+];
+
 export function generateDropdownOptions(counts: Count[]) {
   return counts?.map(item => {
     const dropdownTitle = `${item.serial_number} - ${item.title}`;
@@ -78,7 +83,9 @@ export function generateDropdownOptions(counts: Count[]) {
     return {
       id: item.id,
       title: dropdownTitle,
-      orginal_title: item.title,
+      original_title: item.title,
     };
   });
 }
+
+export const requiredError = 'Ovo polje je obavezno';

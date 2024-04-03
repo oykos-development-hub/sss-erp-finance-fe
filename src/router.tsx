@@ -38,6 +38,7 @@ import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.ts
 import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
 import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
+import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -62,7 +63,8 @@ export const Router = () => {
     const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
     const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
-    const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-fines)?$');
+    const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-new)?$');
+    const fineDetailsRegex = new RegExp('^/finance/fines-taxes/fines/\\d+$');
     const taxesRegex = new RegExp('^/finance/fines-taxes/taxes(?:/add-taxes)?$');
     const confiscationRegex = new RegExp('^/finance/fines-taxes/confiscation(?:/add-confiscation)?$');
     const flatRateRegex = new RegExp('^/finance/fines-taxes/flat-rate(?:/add-flat-rate)?$');
@@ -137,6 +139,8 @@ export const Router = () => {
     // fines and taxes screen
     if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
     if (finesRegex.test(pathname)) return <Fines />;
+    if (fineDetailsRegex.test(pathname)) return <FineDetails />;
+
     if (taxesRegex.test(pathname)) return <Taxes />;
     if (confiscationRegex.test(pathname)) return <Confiscation />;
     if (flatRateRegex.test(pathname)) return <FlatRate />;

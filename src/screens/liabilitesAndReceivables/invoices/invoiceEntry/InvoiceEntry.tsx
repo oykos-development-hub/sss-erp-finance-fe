@@ -245,7 +245,7 @@ const InvoiceEntry = () => {
         </Row>
 
         {/* TODO: This date is being added by the accountant of SSS */}
-        {/* FLex row shared flex component is being tested here */}
+        {/* Flex row shared flex component is being tested here */}
         <FlexRow gap="0.5rem" justify="between" style={{marginBottom: 25}} stretchChildren>
           <Controller
             name={'date_of_invoice'}

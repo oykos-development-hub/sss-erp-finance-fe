@@ -1,12 +1,13 @@
-import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
+import {FilterDropdown, FilterInput, Filters} from '../../../screens/budget/planning/budgetList/styles.ts';
 import {PAGE_SIZE} from '../../../constants.ts';
 import useGetFines from '../../../services/graphQL/fines/useGetFines.ts';
 import {useDebounce} from '../../../utils/useDebounce.ts';
-import {FilterInput} from '../../accounting/styles.tsx';
-import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
-import {TypeOfFines, tableHeadsFinesOverview} from './constants.tsx';
 import {Header} from './styles.ts';
+import {TypeOfFines, tableHeadsFinesOverview, defaultDropdownOption} from './constants.tsx';
+import useAppContext from '../../../context/useAppContext.ts';
+import {FinesOverviewItem} from '../../../types/graphQL/finesOverview.ts';
 
 const initialValues = {
   act_type_id: undefined,
@@ -17,8 +18,11 @@ const FinesOverview = () => {
   const [filters, setFilters] = useState(initialValues);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
+  const {
+    navigation: {navigate},
+  } = useAppContext();
 
-  const {fine} = useGetFines({page: page, size: PAGE_SIZE, ...filters, search: debouncedSearch});
+  const {fines, total} = useGetFines({page: page, size: PAGE_SIZE, ...filters, search: debouncedSearch});
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -41,7 +45,7 @@ const FinesOverview = () => {
             value={filters?.act_type_id}
             onChange={(value: any) => onFilterChange(value, 'act_type_id')}
             label="VRSTA KAZNE:"
-            options={TypeOfFines || []}
+            options={[defaultDropdownOption, ...TypeOfFines] || []}
           />
 
           <FilterInput
@@ -55,25 +59,23 @@ const FinesOverview = () => {
       </Header>
       <Table
         tableHeads={tableHeadsFinesOverview}
-        data={fine.items}
+        data={fines}
         style={{marginBottom: 22}}
         emptyMessage={'Još uvjek nema kazni'}
+        onRowClick={(row: FinesOverviewItem) => navigate(`/finance/fines-taxes/fines/${row.id}`)}
         tableActions={[
           {
-            name: 'send',
-            onClick: () => undefined,
-            icon: <PrinterIcon stroke={Theme?.palette?.gray800} />,
-          },
-          {
             name: 'delete',
-            onClick: () => undefined,
+            onClick: () => {
+              console.log('delete');
+            },
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
           },
         ]}
       />
 
       <Pagination
-        pageCount={fine.total ? Math.ceil(fine.total / PAGE_SIZE) : 1}
+        pageCount={total ? Math.ceil(total / PAGE_SIZE) : 1}
         onChange={onPageChange}
         variant="filled"
         itemsPerPage={PAGE_SIZE}

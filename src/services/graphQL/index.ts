@@ -8,6 +8,10 @@ import insertNonFinancial from './insertNonFinancial/insertNonFinancial.ts';
 import goalsInsert from './insertNonFinancial/goals/insertGoals.ts';
 import sendBudget from './sendBudget/sendBudget.ts';
 import finesOverview from './fines/finesOverview.ts';
+import insertFine from './fines/insertFine.ts';
+import deletePayment from './payments/deletePayment.ts';
+import getPayments from './payments/getPayments.ts';
+import insertPayment from './payments/insertPayment.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -35,4 +39,8 @@ export const GraphQL = {
   insertNonFinancial: insertNonFinancial,
   goalsInsert: goalsInsert,
   finesOverview: finesOverview,
+  insertFine: insertFine,
+  insertPayment: insertPayment,
+  deletePayment: deletePayment,
+  getPayments: getPayments,
 };

@@ -1,6 +1,6 @@
 export interface FinesOverviewParams {
-  page: number;
-  size: number;
+  page?: number;
+  size?: number;
   id?: number;
   subject?: string | null;
   search?: string | null;
@@ -8,26 +8,26 @@ export interface FinesOverviewParams {
 }
 
 export interface FineFeeDetails {
-  fee_all_payments_amount: string;
-  fee_amount_grace_period: string;
+  fee_all_payments_amount: number;
+  fee_amount_grace_period: number;
   fee_amount_grace_period_due_date: string;
-  fee_amount_grace_period_available: string;
-  fee_left_to_pay_amount: string;
-  fee_court_costs_paid: string;
-  fee_court_costs_left_to_pay_amount: string;
+  fee_amount_grace_period_available: boolean;
+  fee_left_to_pay_amount: number;
+  fee_court_costs_paid: number;
+  fee_court_costs_left_to_pay_amount: number;
 }
 
 export interface FinesOverviewItem {
   id: number;
   act_type: number;
-  decision_number: number;
+  decision_number: string;
   decision_date: string;
   subject: string;
   jmbg: string;
   residence: string;
   amount: number;
-  payment_reference_number: number;
-  debit_reference_number: number;
+  payment_reference_number: string;
+  debit_reference_number: string;
   account: {
     id: number;
     title: string;
@@ -35,8 +35,11 @@ export interface FinesOverviewItem {
   execution_date: string;
   payment_deadline_date: string;
   description: string;
-  status: string;
-  court_costs: string;
+  status: {
+    id: number;
+    title: string;
+  };
+  court_costs: number;
   court_account: {
     id: number;
     title: string;
@@ -46,7 +49,7 @@ export interface FinesOverviewItem {
     id: number;
     name: string;
     type: string;
-  };
+  }[];
   created_at: string;
   updated_at: string;
 }
