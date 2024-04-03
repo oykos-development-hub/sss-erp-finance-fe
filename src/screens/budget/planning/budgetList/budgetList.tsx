@@ -10,7 +10,7 @@ import useGetBudgets from '../../../../services/graphQL/getBudgets/useGetBudgets
 import useSendBudget from '../../../../services/graphQL/sendBudget/useSendBudget';
 import {DeleteModal} from '../../../../shared/deleteModal/deleteModal';
 import {NotificationsModal} from '../../../../shared/notifications/notificationsModal';
-import {BudgetStatusOptions} from '../../../../types/config';
+import {BudgetStatusOptions, BudgetStatusTypeEnum, BudgetSubmissionStatusEnum} from '../../../../types/config';
 import {BudgetOverviewItem} from '../../../../types/graphQL/budgetOverview';
 import {optionsNumberSchema} from '../../../../utils/formSchemas';
 import {getYearOptions} from '../../../../utils/getYearOptions';
@@ -202,19 +202,19 @@ const BudgetList = () => {
               name: 'Pošalji',
               onClick: onSend,
               icon: <SendIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status === 'Kreiran',
+              shouldRender: row => row.status.id === BudgetStatusTypeEnum.Created,
             },
             {
               name: 'Izmijeni',
               onClick: row => navigate(`/finance/${row.budget_type}/budget-create-${row.year}/${row.id}`),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status === 'Kreiran',
+              shouldRender: row => row.status.id === BudgetStatusTypeEnum.Created,
             },
             {
               name: 'Izbriši',
               onClick: onDelete,
               icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status !== 'Obradi',
+              shouldRender: row => row.status.id !== BudgetSubmissionStatusEnum.ToBeFilled,
             },
           ]}
           onRowClick={row => onRowClick(row)}
