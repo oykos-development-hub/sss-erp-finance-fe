@@ -28,8 +28,8 @@ const fineSchema = yup.object().shape({
     .length(13, 'JMBG mora da ima 13 cifara')
     .required(requiredError),
   account_id: yup.object().shape({
-    id: yup.number().required(),
-    title: yup.string().required(),
+    id: yup.number().required(requiredError),
+    title: yup.string().required(requiredError),
   }),
   residence: yup.string().required(requiredError),
   amount: yup.number().typeError('Morate unijeti broj').required(requiredError),
@@ -40,8 +40,8 @@ const fineSchema = yup.object().shape({
   court_costs: yup.number(),
   description: yup.string(),
   court_account_id: yup.object().shape({
-    id: yup.number().required(),
-    title: yup.string().required(),
+    id: yup.number().required(requiredError),
+    title: yup.string().required(requiredError),
   }),
 });
 
@@ -70,8 +70,9 @@ const FineForm = ({fine}: FineFormProps) => {
     return generateDropdownOptions(counts);
   }, [counts]);
   const onSubmit = async (data: any) => {
+    const {account, court_account, created_at, updated_at, file, status, fine_fee_details, ...rest} = data;
     let payload: FineForm = {
-      ...data,
+      ...rest,
       amount: Number(data.amount),
       court_costs: Number(data.court_costs),
       act_type: data.act_type.id,
@@ -101,6 +102,8 @@ const FineForm = ({fine}: FineFormProps) => {
       );
 
       insertOrUpdateFine(payload);
+    } else {
+      insertOrUpdateFine(payload);
     }
   };
 
@@ -123,12 +126,24 @@ const FineForm = ({fine}: FineFormProps) => {
   };
 
   const insertOrUpdateFine = async (payload: FineForm) => {
-    // TODO add submit api call
+    // update fine
     if (fine && fine.id) {
-      console.log('update', payload);
+      const updatedPayload = {...payload, id: fine.id};
+
+      await insertFine(
+        updatedPayload,
+        () => {
+          // refetch && refetch();
+          alert.success('Kazna uspješno izmijenjena');
+        },
+        () => {
+          alert.error('Došlo je do greške prilikom izmjene kazne');
+        },
+      );
       return;
     }
 
+    // create fine
     await insertFine(
       payload,
       id => {

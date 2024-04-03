@@ -71,6 +71,9 @@ export type FinesResponse = {
   insert: {
     fine_Insert: InsertResponse<FinesOverviewItem>;
   };
+  delete: {
+    fine_Delete: SimpleResponse;
+  };
 };
 
 export type PaymentsResponse = {

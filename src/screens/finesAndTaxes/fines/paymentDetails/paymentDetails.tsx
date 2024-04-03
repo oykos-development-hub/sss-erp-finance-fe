@@ -126,9 +126,6 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
     appendLastRow();
   }, [payments]);
 
-  useEffect(() => {
-    console.log(errors, 'errors');
-  }, [errors]);
   const isRowDisabled = (row: any) => {
     return editRowId ? editRowId !== row.originalID : !!row.originalID;
   };

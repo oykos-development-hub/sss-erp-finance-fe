@@ -15,4 +15,5 @@ export interface FineForm {
   court_costs?: number;
   court_account_id?: number;
   file?: number[];
+  id?: number;
 }

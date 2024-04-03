@@ -12,6 +12,7 @@ import insertFine from './fines/insertFine.ts';
 import deletePayment from './payments/deletePayment.ts';
 import getPayments from './payments/getPayments.ts';
 import insertPayment from './payments/insertPayment.ts';
+import deleteFine from './fines/deleteFine.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -40,6 +41,7 @@ export const GraphQL = {
   goalsInsert: goalsInsert,
   finesOverview: finesOverview,
   insertFine: insertFine,
+  deleteFine: deleteFine,
   insertPayment: insertPayment,
   deletePayment: deletePayment,
   getPayments: getPayments,

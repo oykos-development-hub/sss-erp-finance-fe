@@ -8,6 +8,8 @@ import {Header} from './styles.ts';
 import {TypeOfFines, tableHeadsFinesOverview, defaultDropdownOption} from './constants.tsx';
 import useAppContext from '../../../context/useAppContext.ts';
 import {FinesOverviewItem} from '../../../types/graphQL/finesOverview.ts';
+import useDeleteFine from '../../../services/graphQL/fines/useDeleteFine.ts';
+import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 
 const initialValues = {
   act_type_id: undefined,
@@ -17,12 +19,29 @@ const FinesOverview = () => {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState(initialValues);
   const [search, setSearch] = useState('');
+  const [showDeleteFineModal, setShowDeleteFineModal] = useState<number | null>(null);
+
   const debouncedSearch = useDebounce(search, 500);
   const {
     navigation: {navigate},
+    alert,
   } = useAppContext();
 
-  const {fines, total} = useGetFines({page: page, size: PAGE_SIZE, ...filters, search: debouncedSearch});
+  const {fines, total, refetch} = useGetFines({page: page, size: PAGE_SIZE, ...filters, search: debouncedSearch});
+  const {deleteFine} = useDeleteFine();
+
+  const handleDeleteFine = async () => {
+    if (!showDeleteFineModal) return;
+    await deleteFine(
+      showDeleteFineModal,
+      () => {
+        refetch();
+        alert.success('Uspješno obrisano.');
+      },
+      () => alert.error('Greška. Brisanje nije uspjelo.'),
+    );
+    setShowDeleteFineModal(null);
+  };
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -66,9 +85,7 @@ const FinesOverview = () => {
         tableActions={[
           {
             name: 'delete',
-            onClick: () => {
-              console.log('delete');
-            },
+            onClick: row => setShowDeleteFineModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
           },
         ]}
@@ -81,6 +98,11 @@ const FinesOverview = () => {
         itemsPerPage={PAGE_SIZE}
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
+      />
+      <ConfirmationModal
+        open={!!showDeleteFineModal}
+        onClose={() => setShowDeleteFineModal(null)}
+        onConfirm={() => handleDeleteFine()}
       />
     </>
   );
