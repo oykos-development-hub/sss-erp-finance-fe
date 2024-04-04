@@ -11,8 +11,8 @@ import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {FineForm} from '../../../../types/graphQL/fineForm.ts';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {FinesOverviewItem} from '../../../../types/graphQL/finesOverview.ts';
 import FileList from '../../../../components/fileList/fileList.tsx';
+import {FinesOverviewItem} from '../../../../types/graphQL/finesOverview.ts';
 
 const fineSchema = yup.object().shape({
   act_type: yup.object().shape({
@@ -115,8 +115,8 @@ const FineForm = ({fine}: FineFormProps) => {
         account_id: countsDropdownOptions?.find(count => count.id === fine.account.id),
         court_account_id: countsDropdownOptions?.find(count => count.id === fine.court_account.id),
         decision_date: new Date(fine.decision_date),
-        execution_date: new Date(fine.execution_date),
         payment_deadline_date: new Date(fine.payment_deadline_date),
+        execution_date: new Date(fine.execution_date),
       });
     }
   }, [fine]);
