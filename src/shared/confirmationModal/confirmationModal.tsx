@@ -6,8 +6,8 @@ import {ModalProps} from './types';
 export const ConfirmationModal: React.FC<ModalProps> = ({open, onClose, onConfirm, customContent, subTitle}) => {
   const buttonControls = (
     <ModalControlButtons>
-      <Button content={'Otkaži'} onClick={onClose} variant="secondary" />
       <Button content={'Potvrdi'} onClick={onConfirm} variant="primary" />
+      <Button content={'Otkaži'} onClick={onClose} variant="secondary" />
     </ModalControlButtons>
   );
 

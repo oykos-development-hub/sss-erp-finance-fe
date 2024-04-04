@@ -13,12 +13,10 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FileList from '../../../../components/fileList/fileList.tsx';
 import {FinesOverviewItem} from '../../../../types/graphQL/finesOverview.ts';
+import {optionsNumberSchema} from '../../../../utils/formSchemas.ts';
 
 const fineSchema = yup.object().shape({
-  act_type: yup.object().shape({
-    id: yup.number().required(requiredError),
-    title: yup.string().required(),
-  }),
+  act_type: optionsNumberSchema.required(requiredError).default(null),
   decision_number: yup.string().required(requiredError),
   decision_date: yup.date().required(requiredError),
   subject: yup.string().required(requiredError),
@@ -27,10 +25,7 @@ const fineSchema = yup.object().shape({
     .matches(/^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])(\d{3})(2[1-9]|29)\d{3}\d{1}$/, 'Neispravan JMBG format')
     .length(13, 'JMBG mora da ima 13 cifara')
     .required(requiredError),
-  account_id: yup.object().shape({
-    id: yup.number().required(requiredError),
-    title: yup.string().required(requiredError),
-  }),
+  account_id: optionsNumberSchema.required(requiredError).default(null),
   residence: yup.string().required(requiredError),
   amount: yup.number().typeError('Morate unijeti broj').required(requiredError),
   payment_reference_number: yup.string().required(requiredError),
@@ -39,10 +34,7 @@ const fineSchema = yup.object().shape({
   payment_deadline_date: yup.date().required(requiredError),
   court_costs: yup.number(),
   description: yup.string(),
-  court_account_id: yup.object().shape({
-    id: yup.number().required(requiredError),
-    title: yup.string().required(requiredError),
-  }),
+  court_account_id: optionsNumberSchema.nullable(),
 });
 
 type FineEntryForm = yup.InferType<typeof fineSchema>;
@@ -133,7 +125,6 @@ const FineForm = ({fine}: FineFormProps) => {
       await insertFine(
         updatedPayload,
         () => {
-          // refetch && refetch();
           alert.success('Kazna uspješno izmijenjena');
         },
         () => {
@@ -154,9 +145,11 @@ const FineForm = ({fine}: FineFormProps) => {
         alert.error('Došlo je do greške prilikom kreiranja kazne');
       },
     );
-
-    console.log('create', payload);
   };
+
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
   return (
     <Container>
       <Row>
@@ -179,10 +172,13 @@ const FineForm = ({fine}: FineFormProps) => {
         <Input {...register('subject')} label="Subjekat:" isRequired error={errors.subject?.message} />
       </Row>
       <Row>
+        <Input {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} />
+        <Input {...register('residence')} label="PREBIVALIŠTE:" isRequired error={errors.residence?.message} />
+      </Row>
+      <Row>
         <Input
           {...register('decision_number')}
           label="BROJ RJEŠENJA / PRESUDE:"
-          type={'number'}
           isRequired
           error={errors.decision_number?.message}
         />
@@ -193,7 +189,7 @@ const FineForm = ({fine}: FineFormProps) => {
             <Datepicker
               name={name}
               selected={value ? new Date(value) : ''}
-              label="DATUM RJEŠENJA:"
+              label="DATUM RJEŠENJA / PRESUDE:"
               onChange={onChange}
               isRequired
               error={errors.decision_date?.message}
@@ -202,8 +198,18 @@ const FineForm = ({fine}: FineFormProps) => {
         />
       </Row>
       <Row>
-        <Input {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} />
-        <Input {...register('residence')} label="PREBIVALIŠTE:" isRequired error={errors.residence?.message} />
+        <Input
+          {...register('debit_reference_number')}
+          label="POZIV NA BROJ ZADUŽENJA:"
+          isRequired
+          error={errors.debit_reference_number?.message}
+        />
+        <Input
+          {...register('payment_reference_number')}
+          label="POZIV NA BROJ ODOBRENJA:"
+          isRequired
+          error={errors.payment_reference_number?.message}
+        />
       </Row>
       <Row>
         <Input
@@ -227,53 +233,6 @@ const FineForm = ({fine}: FineFormProps) => {
         />
       </Row>
       <Row>
-        <Input
-          {...register('payment_reference_number')}
-          label="POZIV NA BROJ ODOBRENJA:"
-          isRequired
-          error={errors.payment_reference_number?.message}
-        />
-        <Input
-          {...register('debit_reference_number')}
-          label="POZIV NA BROJ ZADUŽENJA:"
-          isRequired
-          error={errors.debit_reference_number?.message}
-        />
-      </Row>
-      <Row>
-        <Controller
-          name={'execution_date'}
-          control={control}
-          render={({field: {name, value, onChange}}) => (
-            <Datepicker
-              name={name}
-              selected={value ? new Date(value) : ''}
-              label="DATUM IZVRŠNOSTI:"
-              onChange={onChange}
-              isRequired
-              error={errors.execution_date?.message}
-            />
-          )}
-        />
-        <Controller
-          name={'payment_deadline_date'}
-          control={control}
-          render={({field: {name, value, onChange}}) => (
-            <Datepicker
-              name={name}
-              selected={value ? new Date(value) : ''}
-              label="ROK ZA PLAĆANJE UKUPNE KAZNE:"
-              onChange={onChange}
-              isRequired
-              error={errors.payment_deadline_date?.message}
-            />
-          )}
-        />
-      </Row>
-      <Row>
-        <Input {...register('description')} label="OPIS:" textarea />
-      </Row>
-      <Row>
         <Controller
           name="account_id"
           control={control}
@@ -290,6 +249,14 @@ const FineForm = ({fine}: FineFormProps) => {
             />
           )}
         />
+        <Input
+          {...register('court_costs')}
+          label="SUDSKI TROŠKOVI:"
+          type={'number'}
+          inputMode={'decimal'}
+          leftContent={<div>€</div>}
+          style={{flexGrow: 1 / 2}}
+        />
         <Controller
           name="court_account_id"
           control={control}
@@ -301,20 +268,44 @@ const FineForm = ({fine}: FineFormProps) => {
               label="KONTO ZA SUDSKE TROŠKOVE:"
               placeholder={'Odaberite konto za sudske troškove'}
               options={countsDropdownOptions}
-              isRequired
             />
           )}
         />
-
-        <Input
-          {...register('court_costs')}
-          label="SUDSKI TROŠKOVI:"
-          type={'number'}
-          inputMode={'decimal'}
-          leftContent={<div>€</div>}
-          style={{flexGrow: 1 / 2}}
+      </Row>
+      <Row>
+        <Controller
+          name={'payment_deadline_date'}
+          control={control}
+          render={({field: {name, value, onChange}}) => (
+            <Datepicker
+              name={name}
+              selected={value ? new Date(value) : ''}
+              label="ROK ZA PLAĆANJE UKUPNE KAZNE:"
+              onChange={onChange}
+              isRequired
+              error={errors.payment_deadline_date?.message}
+            />
+          )}
+        />
+        <Controller
+          name={'execution_date'}
+          control={control}
+          render={({field: {name, value, onChange}}) => (
+            <Datepicker
+              name={name}
+              selected={value ? new Date(value) : ''}
+              label="DATUM IZVRŠNOSTI:"
+              onChange={onChange}
+              isRequired
+              error={errors.execution_date?.message}
+            />
+          )}
         />
       </Row>
+      <Row>
+        <Input {...register('description')} label="OPIS:" textarea />
+      </Row>
+
       <Row>
         <FileUpload
           icon={null}

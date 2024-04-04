@@ -429,6 +429,7 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
       </FinePaymentDetailsWrapper>
       <ConfirmationModal
         open={!!showDeletePaymentModal}
+        subTitle={'Ova uplata će biti trajno izbrisana iz sistema.'}
         onClose={() => setShowDeletePaymentModal(null)}
         onConfirm={() => handleDeletePayment()}
       />

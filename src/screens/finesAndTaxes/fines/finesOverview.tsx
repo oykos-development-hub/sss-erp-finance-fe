@@ -101,6 +101,7 @@ const FinesOverview = () => {
       />
       <ConfirmationModal
         open={!!showDeleteFineModal}
+        subTitle={'Ova kazna će biti trajno izbrisana iz sistema.'}
         onClose={() => setShowDeleteFineModal(null)}
         onConfirm={() => handleDeleteFine()}
       />
