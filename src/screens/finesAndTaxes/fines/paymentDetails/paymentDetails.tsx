@@ -20,7 +20,6 @@ import {useEffect, useState} from 'react';
 import {requiredError} from '../../../../constants.ts';
 import {FinePaymentMethods} from '../constants.tsx';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
-import {PaymentDetails} from './types.ts';
 import useInsertPayment from '../../../../services/graphQL/payments/useInsertPayment.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
@@ -35,7 +34,6 @@ const singlePaymentSchema = yup.object().shape({
   }),
   amount: yup.number().required(requiredError).min(1, 'Iznos mora biti veći od 0'),
   payment_date: yup.date().required(requiredError),
-  payment_due_date: yup.date().required(requiredError),
   receipt_number: yup.string().required(requiredError),
   payment_reference_number: yup.string().required(requiredError),
   debit_reference_number: yup.string().required(requiredError),
@@ -88,7 +86,6 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
       },
       amount: 0,
       payment_date: new Date(),
-      payment_due_date: new Date(),
       receipt_number: '',
       payment_reference_number: '',
       debit_reference_number: '',
@@ -114,7 +111,6 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
             title: '',
           },
           payment_date: new Date(payment?.payment_date),
-          payment_due_date: new Date(payment?.payment_due_date),
         });
 
         paidSum += payment.amount;
@@ -156,14 +152,12 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
       const payment = data.payments![selectedRow];
       const {originalID, created_at, updated_at, status, ...updatedPayment} = payment;
       const parsedPaymentDate = parseDateForBackend(payment.payment_date);
-      const parsedPaymentDueDate = parseDateForBackend(payment.payment_due_date);
-      if (!parsedPaymentDate || !parsedPaymentDueDate) return;
+      if (!parsedPaymentDate) return;
 
       const payload = {
         ...updatedPayment,
         payment_method: payment.payment_method.id,
         payment_date: parsedPaymentDate,
-        payment_due_date: parsedPaymentDueDate,
       };
       await insertPayment(
         payload,
@@ -252,32 +246,6 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
                 selected={value ? new Date(value) : ''}
                 disabled={isRowDisabled(row)}
                 error={errors?.payments?.[index]?.payment_date?.message}
-                popperProps={{
-                  strategy: 'fixed', // fixes datepicker going behind other elements
-                  placement: 'top',
-                }}
-              />
-            )}
-          />
-        );
-      },
-    },
-    {
-      title: 'Uplatiti do',
-      accessor: 'payment_due_date',
-      type: 'custom',
-      renderContents: (_item, row, index) => {
-        return (
-          <Controller
-            name={`payments.${index}.payment_due_date`}
-            control={control}
-            render={({field: {name, onChange, value}}) => (
-              <Datepicker
-                name={name}
-                onChange={onChange}
-                selected={value ? new Date(value) : ''}
-                disabled={isRowDisabled(row)}
-                error={errors?.payments?.[index]?.payment_due_date?.message}
                 popperProps={{
                   strategy: 'fixed', // fixes datepicker going behind other elements
                   placement: 'top',
