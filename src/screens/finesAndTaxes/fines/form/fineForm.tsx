@@ -32,10 +32,28 @@ const fineSchema = yup.object().shape({
   debit_reference_number: yup.string().required(requiredError),
   execution_date: yup.date().required(requiredError),
   payment_deadline_date: yup.date().required(requiredError),
-  court_costs: yup.number(),
+  court_costs: yup.number().optional(),
   description: yup.string(),
-  court_account_id: optionsNumberSchema.nullable(),
+  court_account_id: optionsNumberSchema.nullable().default(null),
 });
+
+const defaultValues = {
+  act_type: undefined,
+  decision_number: '',
+  decision_date: undefined,
+  subject: '',
+  jmbg: '',
+  account_id: undefined,
+  residence: '',
+  amount: 0,
+  payment_reference_number: '',
+  debit_reference_number: '',
+  execution_date: undefined,
+  payment_deadline_date: undefined,
+  court_costs: 0,
+  description: '',
+  court_account_id: undefined,
+};
 
 type FineEntryForm = yup.InferType<typeof fineSchema>;
 interface FineFormProps {
@@ -48,7 +66,7 @@ const FineForm = ({fine}: FineFormProps) => {
     handleSubmit,
     reset,
     formState: {errors},
-  } = useForm<FineEntryForm>({resolver: yupResolver(fineSchema)});
+  } = useForm<FineEntryForm>({resolver: yupResolver(fineSchema), defaultValues: defaultValues});
   const [uploadedFile, setUploadedFile] = useState<FileList>();
   const {counts} = useGetCountOverview({});
   const {insertFine} = useInsertFine();
@@ -69,7 +87,7 @@ const FineForm = ({fine}: FineFormProps) => {
       court_costs: Number(data.court_costs),
       act_type: data.act_type.id,
       account_id: data.account_id.id,
-      court_account_id: data.court_account_id.id,
+      court_account_id: data.court_account_id?.id,
       decision_date: parseDateForBackend(data.decision_date),
       execution_date: parseDateForBackend(data.execution_date),
       payment_deadline_date: parseDateForBackend(data.payment_deadline_date),
@@ -105,7 +123,7 @@ const FineForm = ({fine}: FineFormProps) => {
         ...fine,
         act_type: actTypeOptions.find(option => option.id === fine.act_type),
         account_id: countsDropdownOptions?.find(count => count.id === fine.account.id),
-        court_account_id: countsDropdownOptions?.find(count => count.id === fine.court_account.id),
+        court_account_id: countsDropdownOptions?.find(count => count?.id === fine.court_account?.id),
         decision_date: new Date(fine.decision_date),
         payment_deadline_date: new Date(fine.payment_deadline_date),
         execution_date: new Date(fine.execution_date),
@@ -147,9 +165,6 @@ const FineForm = ({fine}: FineFormProps) => {
     );
   };
 
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
   return (
     <Container>
       <Row>
@@ -165,7 +180,7 @@ const FineForm = ({fine}: FineFormProps) => {
               placeholder={'Odaberite vrstu akta'}
               options={actTypeOptions}
               isRequired
-              error={errors.act_type?.id?.message}
+              error={errors.act_type?.message}
             />
           )}
         />
