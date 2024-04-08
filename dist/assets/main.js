@@ -3356,7 +3356,10 @@ attempted value: ${o}
         data
         item {
            id
-            act_type
+            act_type{
+                id
+                title
+            }
             decision_number
             decision_date
             subject

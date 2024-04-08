@@ -5,7 +5,10 @@ const insertFine = ` mutation($data: FineMutation!) {
         data
         item {
            id
-            act_type
+            act_type{
+                id
+                title
+            }
             decision_number
             decision_date
             subject
