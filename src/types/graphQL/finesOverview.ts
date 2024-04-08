@@ -1,3 +1,5 @@
+import {DropdownData} from '../dropdownData.ts';
+
 export interface FinesOverviewParams {
   page?: number;
   size?: number;
@@ -19,7 +21,7 @@ export interface FineFeeDetails {
 
 export interface FinesOverviewItem {
   id: number;
-  act_type: number;
+  act_type: DropdownData<number>;
   decision_number: string;
   decision_date: string;
   subject: string;
@@ -28,22 +30,13 @@ export interface FinesOverviewItem {
   amount: number;
   payment_reference_number: string;
   debit_reference_number: string;
-  account: {
-    id: number;
-    title: string;
-  };
+  account: DropdownData<number>;
   execution_date: string;
   payment_deadline_date: string;
   description: string;
-  status: {
-    id: number;
-    title: string;
-  };
+  status: DropdownData<number>;
   court_costs: number;
-  court_account: {
-    id: number;
-    title: string;
-  };
+  court_account: DropdownData<number>;
   fine_fee_details: FineFeeDetails;
   file: {
     id: number;

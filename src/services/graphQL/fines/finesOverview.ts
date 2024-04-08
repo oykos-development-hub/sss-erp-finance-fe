@@ -5,7 +5,10 @@ const finesOverview = `query fineOverview($id: Int, $subject: String, $search: S
         total
         items {
             id
-            act_type
+            act_type{
+                id
+                title
+            }
             decision_number
             decision_date
             subject

@@ -121,8 +121,8 @@ const FineForm = ({fine}: FineFormProps) => {
     if (fine) {
       reset({
         ...fine,
-        act_type: actTypeOptions.find(option => option.id === fine.act_type),
-        account_id: countsDropdownOptions?.find(count => count.id === fine.account.id),
+        act_type: actTypeOptions.find(option => option?.id === fine.act_type?.id),
+        account_id: countsDropdownOptions?.find(count => count?.id === fine.account?.id),
         court_account_id: countsDropdownOptions?.find(count => count?.id === fine.court_account?.id),
         decision_date: new Date(fine.decision_date),
         payment_deadline_date: new Date(fine.payment_deadline_date),
