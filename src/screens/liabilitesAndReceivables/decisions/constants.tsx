@@ -4,9 +4,9 @@ import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx
 export const decisionsOverviewTableHeads: TableHead[] = [
   // TODO change accessors to correct ones
   {title: 'Broj', accessor: 'broj'},
-  {title: 'Subjekt', accessor: 'subjekt'},
-  {title: 'Datum rješenja', accessor: 'datum-rješenja'},
-  {title: 'Datum valute', accessor: 'datum-valute'},
+  {title: 'Subjekt', accessor: 'supplier_title'},
+  {title: 'Datum rješenja', accessor: 'date_of_invoice'},
+  {title: 'Datum valute', accessor: 'date_of_payment'},
   {title: 'Broj predmeta', accessor: 'broj-predmeta'},
   {title: 'Neto iznos', accessor: 'neto-iznos'},
   {

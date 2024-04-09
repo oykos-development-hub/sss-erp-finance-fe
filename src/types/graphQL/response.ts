@@ -3,6 +3,7 @@ import {BudgetOverviewInsert} from './budgetInsert';
 import {BudgetDetailsItem} from './budgetDetails';
 import {NonFinancialGoal} from './nonFinancial.ts';
 import {FinesOverviewItem} from './finesOverview.ts';
+import {InvoiceItem} from './invoice.ts';
 
 export interface GetResponse<T> {
   status: string;
@@ -85,5 +86,17 @@ export type PaymentsResponse = {
   };
   delete: {
     finePayment_Delete: SimpleResponse;
+  };
+};
+
+export type InvoiceResponse = {
+  get: {
+    invoice_Overview: GetResponse<InvoiceItem>;
+  };
+  insert: {
+    invoice_Insert: InsertResponse<InvoiceItem>;
+  };
+  delete: {
+    invoice_Delete: SimpleResponse;
   };
 };

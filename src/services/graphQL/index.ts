@@ -13,6 +13,9 @@ import deletePayment from './payments/deletePayment.ts';
 import getPayments from './payments/getPayments.ts';
 import insertPayment from './payments/insertPayment.ts';
 import deleteFine from './fines/deleteFine.ts';
+import getInvoice from './invoice/getInvoice.ts';
+import insertInvoice from './invoice/insertInvoice.ts';
+import deleteInvoice from './invoice/deleteInvoice.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -45,4 +48,7 @@ export const GraphQL = {
   insertPayment: insertPayment,
   deletePayment: deletePayment,
   getPayments: getPayments,
+  getInvoice: getInvoice,
+  insertInvoice: insertInvoice,
+  deleteInvoice: deleteInvoice,
 };

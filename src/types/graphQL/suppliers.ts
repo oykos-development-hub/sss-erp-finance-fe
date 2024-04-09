@@ -1,7 +1,7 @@
 import {SimpleResponse, GetResponse, InsertResponse} from './response';
 
 export interface Supplier {
-  id: number;
+  id: number | null;
   title: string;
   abbreviation: string;
   official_id: string;

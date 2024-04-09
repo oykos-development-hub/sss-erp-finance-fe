@@ -10,7 +10,7 @@ export interface OrderListArticleType {
   amount: number;
   total_price: number;
   available?: number;
-  price: number;
+  net_price: number;
 }
 
 export interface OrderListItem {
@@ -45,6 +45,8 @@ export interface OrderListItem {
     type: string;
   };
   group_of_articles: DropdownData<string>;
+  pro_forma_invoice_number: string;
+  pro_forma_invoice_date: string;
 }
 
 export type GetOrderListResponse = {orderList_Overview: GetResponse<OrderListItem>};
@@ -56,6 +58,7 @@ export interface GetOrderListParams {
   supplier_id?: number;
   status?: string;
   search?: string;
+  finance_overview?: boolean;
 }
 
 export interface OrderListReceiveParams {

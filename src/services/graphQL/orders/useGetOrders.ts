@@ -24,7 +24,7 @@ const useGetOrderList = (params: GetOrderListParams) => {
     if (params.supplier_id) {
       fetchOrders();
     }
-  }, [params.page, params.size, params.id, params.supplier_id, params.status, params.search]);
+  }, [params.page, params.size, params.id, params.supplier_id, params.status, params.search, params.finance_overview]);
 
   return {orders, loading, total: total, fetch: fetchOrders};
 };

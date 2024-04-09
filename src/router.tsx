@@ -28,6 +28,7 @@ import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDep
 import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
 import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
 import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
+import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
 import Fines from './screens/finesAndTaxes/fines/fines.tsx';
 import FlatRate from './screens/finesAndTaxes/flatRate/flatRate.tsx';
 import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landingPage.tsx';
@@ -36,9 +37,9 @@ import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
 import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
 import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
+import InvoiceDetails from './screens/liabilitesAndReceivables/invoices/invoiceDetails/invoiceDetails.tsx';
 import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
-import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -60,6 +61,7 @@ export const Router = () => {
 
     // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
+    const invoiceEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices/\\d+$');
     const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
     const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
@@ -129,6 +131,8 @@ export const Router = () => {
     // if (budgetDetails.test(pathname)) return <BudgetDetails />;
 
     if (invoicesRegex.test(pathname)) return <Invoices />;
+    if (invoiceEditRegex.test(pathname)) return <InvoiceDetails />;
+
     if (budgetPreviewDetails.test(pathname)) return <NonFinancePreview />;
     if (decisionsRegex.test(pathname)) return <Decisions />;
     if (contractsRegex.test(pathname)) return <Contracts />;

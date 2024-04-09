@@ -1,20 +1,85 @@
-import {Table, SearchIcon, Dropdown, Input} from 'client-library';
-import {Row} from './styles.ts';
-import {invoicesOverviewTableHeads} from '../constants.tsx';
-import {ChangeEvent, useEffect, useState} from 'react';
+import {Dropdown, FileIcon, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {ChangeEvent, useMemo, useState} from 'react';
+import FileModalView from '../../../../components/fileModalView/fileModalView.tsx';
+import {PAGE_SIZE} from '../../../../constants.ts';
+import useAppContext from '../../../../context/useAppContext.ts';
+import useDeleteInvoice from '../../../../services/graphQL/invoice/useDeleteInvoice.ts';
+import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts';
+import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
+import {DeleteModal} from '../../../../shared/deleteModal/deleteModal.tsx';
 import {DropdownData} from '../../../../types/dropdownData.ts';
+import {FileItem} from '../../../../types/fileUploadType.ts';
+import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
+import {Supplier} from '../../../../types/graphQL/suppliers.ts';
+import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {useDebounce} from '../../../../utils/useDebounce.ts';
-import usePrependedDropdownOptions from '../../../../utils/usePrependedDropdownOptions.ts';
-import {mockDropdownOptions} from '../../../../constants.ts';
-import {Theme} from '@oykos-development/devkit-react-ts-styled-components';
+import {StatusOptions, invoicesOverviewTableHeads} from '../constants.tsx';
+import {Row} from './styles.ts';
+
+export interface InvoiceOverviewFilters {
+  year?: DropdownData<string> | null;
+  supplier_id?: DropdownData<number> | null;
+  status?: DropdownData<string> | null;
+  search?: string;
+}
+
+const initialInvoiceFilterValues = {
+  year: null,
+  supplier_id: null,
+  status: null,
+  search: '',
+};
 
 const InvoicesOverview = () => {
-  const [filterValues, setFilterValues] = useState({
-    supplier: null,
-    year: null,
-    status: null,
-    search: '',
+  const {
+    alert,
+    navigation: {navigate},
+    contextMain,
+  } = useAppContext();
+  const [fileToView, setFileToView] = useState<FileItem>();
+  const [showDeleteModalInvoiceId, setShowDeleteModalInvoiceId] = useState<number | undefined>(undefined);
+  const [page, setPage] = useState(1);
+  const [filterValues, setFilterValues] = useState<InvoiceOverviewFilters>(initialInvoiceFilterValues);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 500);
+
+  const {invoice, total, fetch} = useGetInvoice({
+    page: page,
+    size: PAGE_SIZE,
+    type: 'invoice',
+    status: filterValues.status ? filterValues.status.id : '',
+    supplier_id: filterValues.supplier_id ? filterValues.supplier_id.id : null,
+    year: filterValues.year ? filterValues.year.id : null,
+    search: debouncedSearch,
+    organization_unit_id: contextMain?.organization_unit?.id,
   });
+
+  const {deleteInvoice} = useDeleteInvoice();
+  const {suppliers} = useGetSuppliers({});
+
+  const onDelete = (invoice: InvoiceItem) => {
+    setShowDeleteModalInvoiceId(invoice.id);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModalInvoiceId(undefined);
+  };
+
+  const handleDelete = async () => {
+    if (!showDeleteModalInvoiceId) return;
+
+    await deleteInvoice(
+      showDeleteModalInvoiceId,
+      () => {
+        alert.success('Uspješno ste obrisali račun.');
+        fetch();
+      },
+      () => {
+        alert.error('Došlo je do greške prilikom brisanja računa.');
+      },
+    );
+    setShowDeleteModalInvoiceId(undefined);
+  };
 
   const onFilter = (value: DropdownData<string> | ChangeEvent<HTMLInputElement>, name: string) => {
     if ('target' in value) {
@@ -24,49 +89,99 @@ const InvoicesOverview = () => {
     }
   };
 
-  const debouncedFilterValues = useDebounce(filterValues, 300);
+  const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
 
-  useEffect(() => {
-    //TODO add logic for fetching data
-    console.log(debouncedFilterValues);
-  }, [debouncedFilterValues]);
+  const onPageChange = (page: number) => {
+    setPage(page + 1);
+  };
+
+  const suppliersOptions = useMemo(() => {
+    const options = suppliers.map((supplier: Supplier) => ({
+      id: supplier.id,
+      title: supplier.title,
+    }));
+    options.unshift({id: null, title: 'Svi dobavljači'});
+    return options;
+  }, [suppliers]);
+
   return (
     <>
       <Row>
         <Dropdown
-          label={'DOBAVLJAČ:'}
-          placeholder={'Odaberi dobavljača'}
-          options={usePrependedDropdownOptions(mockDropdownOptions)}
-          value={filterValues.supplier}
-          onChange={value => onFilter(value as DropdownData<string>, 'supplier')}
+          name="supplier_id"
+          label="DOBAVLJAČ:"
+          placeholder="Odaberi dobavljača"
+          options={suppliersOptions}
+          value={filterValues.supplier_id}
+          onChange={value => onFilter(value as DropdownData<string>, 'supplier_id')}
         />
         <Dropdown
-          label={'GODINA:'}
-          placeholder={'Odaberi godinu'}
-          options={usePrependedDropdownOptions(mockDropdownOptions)}
+          label="GODINA:"
+          options={getYearOptions(10, true, 1)}
           value={filterValues.year}
+          name="year"
           onChange={value => onFilter(value as DropdownData<string>, 'year')}
+          placeholder="Odaberite godinu"
         />
         <Dropdown
-          label={'STATUS:'}
-          placeholder={'Odaberi status'}
-          options={usePrependedDropdownOptions(mockDropdownOptions)}
+          name="status"
+          label="STATUS:"
+          placeholder="Odaberi status"
+          options={StatusOptions}
           value={filterValues.status}
           onChange={value => onFilter(value as DropdownData<string>, 'status')}
         />
         <Input
-          label={'PRETRAGA:'}
-          placeholder={'Unesi pojam'}
-          value={filterValues.search}
-          onChange={value => onFilter(value, 'search')}
+          name="search"
+          label="PRETRAGA:"
+          placeholder="Unesi pojam"
+          onChange={onSearch}
+          value={search}
           rightContent={<SearchIcon style={{marginLeft: 10, marginRight: 10}} stroke={Theme.palette.gray500} />}
         />
       </Row>
       <Table
         tableHeads={invoicesOverviewTableHeads}
-        data={[]}
+        data={invoice}
         style={{marginBottom: 22}}
-        emptyMessage={'Još nema računa'}
+        emptyMessage="Još nema računa"
+        onRowClick={(row: InvoiceItem) => navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`)}
+        tableActions={[
+          {
+            name: 'showFile',
+            icon: <FileIcon stroke={Theme.palette.gray600} />,
+            onClick: (row: any) => {
+              setFileToView(row?.file);
+            },
+            shouldRender: (row: any) => row?.file?.id,
+          },
+          {
+            name: 'Izbriši',
+            onClick: onDelete,
+            icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => row.status !== 'Obradi',
+          },
+        ]}
+      />
+      {fileToView && <FileModalView file={fileToView} onClose={() => setFileToView(undefined)} />}
+
+      <DeleteModal
+        open={!!showDeleteModalInvoiceId}
+        onClose={() => {
+          handleCloseDeleteModal();
+        }}
+        handleDelete={handleDelete}
+      />
+
+      <Pagination
+        pageCount={total ? Math.ceil(total / PAGE_SIZE) : 0}
+        onChange={onPageChange}
+        variant="filled"
+        itemsPerPage={PAGE_SIZE}
+        pageRangeDisplayed={3}
+        style={{marginTop: '20px'}}
       />
     </>
   );

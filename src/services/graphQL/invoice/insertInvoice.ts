@@ -1,0 +1,64 @@
+const insertInvoice = `mutation($data: InvoiceMutation!) {
+    invoice_Insert(data: $data) {
+        status 
+        message 
+        data
+        item {
+             id
+            status
+            type
+            type_of_contract{
+                id
+                title
+            }
+            type_of_subject{
+                id
+                title
+            }
+            source_of_funding{
+                id
+                title
+            }
+            invoice_number
+            supplier_title
+            supplier{
+                id
+                title
+            }
+            order_id
+            organization_unit{
+                id
+                title
+            }
+            date_of_invoice
+            receipt_date
+            sss_invoice_receipt_date
+            date_of_payment
+            date_of_start
+            file{
+                id
+                name
+                type
+            }
+            bank_account
+            description
+            articles{
+                id
+                title
+                net_price
+                vat_price
+                description
+                account{
+                    id
+                    title
+                }
+                cost_account{
+                    id
+                    title
+                }
+            }
+        }
+    }
+}`;
+
+export default insertInvoice;
