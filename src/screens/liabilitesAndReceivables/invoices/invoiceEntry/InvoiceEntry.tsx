@@ -125,7 +125,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         title: 'Neto iznos',
         accessor: 'net_price',
         type: 'custom',
-        renderContents: (_, row, index) => {
+        renderContents: (_item, _row, index) => {
           return (
             <Input
               {...register(`articles.${index}.net_price`)}
@@ -141,7 +141,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         title: 'Stopa PDV-a',
         accessor: 'vat_percentage',
         type: 'custom',
-        renderContents: (vat_percentage: string, _, index) => {
+        renderContents: (_item, _row, index) => {
           return (
             <Controller
               name={`articles.${index}.vat_percentage`}
@@ -159,7 +159,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         title: 'PDV',
         accessor: 'vat_price',
         type: 'custom',
-        renderContents: (_, row, index) => {
+        renderContents: (_item, _row, index) => {
           const vatPercentage = watch(`articles.${index}.vat_percentage`);
           const vatPrice = vatPercentage?.id !== 0 ? calculateVatPrice(index) : 0.0;
 
@@ -170,7 +170,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         title: 'Količina',
         accessor: 'amount',
         type: 'custom',
-        renderContents: (_, row, index) => {
+        renderContents: (_item, _row, index) => {
           return (
             <Input
               {...register(`articles.${index}.amount`)}
@@ -185,7 +185,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         title: 'Ukupan iznos',
         accessor: '',
         type: 'custom',
-        renderContents: (total_price: string, _, index) => {
+        renderContents: (_item, _row, index) => {
           const vatPercentage = watch(`articles.${index}.vat_percentage`);
           const total = vatPercentage ? calculateTotalPrice(index) : 0;
 
@@ -196,7 +196,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         title: 'Konto',
         accessor: 'account',
         type: 'custom',
-        renderContents: (_, row, index) => (
+        renderContents: (_item, _row, index) => (
           <Controller
             name={`articles.${index}.account`}
             control={control}
