@@ -1,4 +1,6 @@
-import {TableHead} from 'client-library';
+import {TableHead, Typography} from 'client-library';
+import {DropdownData} from '../../../../types/dropdownData';
+import {parseDate} from '../../../../utils/dateUtils';
 
 export enum Tabs {
   Overview = 1,
@@ -24,27 +26,29 @@ export const getRouteName = (tabName: string) => {
 export const tableHeads: TableHead[] = [
   {
     title: 'ID',
-    accessor: '',
+    accessor: 'id',
     type: 'text',
   },
   {
     title: 'Subjekat',
-    accessor: '',
+    accessor: 'subject',
     type: 'text',
   },
   {
     title: 'Sudija',
-    accessor: '',
-    type: 'text',
+    accessor: 'judge',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
   {
     title: 'Datum rješenja',
-    accessor: '',
-    type: 'text',
+    accessor: 'date_of_case',
+    type: 'custom',
+    renderContents: (value: string) => <Typography variant="bodyMedium" content={parseDate(value)} />,
   },
   {
     title: 'Broj predmeta',
-    accessor: '',
+    accessor: 'case_number',
     type: 'text',
   },
   {

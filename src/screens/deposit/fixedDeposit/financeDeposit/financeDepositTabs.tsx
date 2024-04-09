@@ -4,8 +4,8 @@ import useAppContext from '../../../../context/useAppContext';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper';
 import {Tabs, getCurrentTab, getRouteName, stockTabs} from './constants';
 import FinanceDepositOverview from './financeDepositOverview';
+import NewEntry from './financeDepositDetails';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from './styles';
-import NewEntry from './newEntry';
 
 export const FinanceDepositTabs = () => {
   const {
@@ -14,6 +14,7 @@ export const FinanceDepositTabs = () => {
       location: {pathname},
     },
   } = useAppContext();
+
   const [activeTab, setActiveTab] = useState(getCurrentTab(location.pathname) || 1);
   const currentFinancePath = pathname && pathname.split('/')[pathname.split('/').length - 1];
 
@@ -28,11 +29,10 @@ export const FinanceDepositTabs = () => {
   };
 
   const currentFinanceDepositRoute = useMemo(() => {
-    switch (currentFinancePath) {
-      case 'new-entry':
-        return <NewEntry />;
-      default:
-        return <FinanceDepositOverview />;
+    if (/(add-new|\d+)$/.test(currentFinancePath)) {
+      return <NewEntry />;
+    } else {
+      return <FinanceDepositOverview />;
     }
   }, [currentFinancePath]);
 

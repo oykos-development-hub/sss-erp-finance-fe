@@ -5,6 +5,11 @@ import {NonFinancialGoal} from './nonFinancial.ts';
 import {FinesOverviewItem} from './finesOverview.ts';
 import {InvoiceItem} from './invoice.ts';
 
+export type PageParams = {
+  page?: number;
+  size?: number;
+};
+
 export interface GetResponse<T> {
   status: string;
   message: string;

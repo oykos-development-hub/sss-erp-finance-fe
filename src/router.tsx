@@ -58,6 +58,7 @@ export const Router = () => {
 
     const SSSBudgetDetailsRegex = /^\/finance\/budget\/planning\/(add-new|\d+)$/;
     const OUBudgetDetailsSummary = /^\/finance\/budget\/planning\/\d+\/summary$/;
+    const FinancialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/finance\/(add-new|\d+)$/;
 
     // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
@@ -101,7 +102,7 @@ export const Router = () => {
     if (pathname === '/finance/deposit/fixed') return <FixedDepositLandingPage />;
 
     if (pathname === '/finance/deposit/fixed/finance') return <FinanceDepositTabs />;
-    if (pathname === '/finance/deposit/fixed/new-entry') return <FinanceDepositTabs />;
+    if (FinancialDepositDetailsRegex.test(pathname)) return <FinanceDepositTabs />;
 
     if (pathname === '/finance/deposit/fixed/material') return <MaterialDepositTabs />;
     if (pathname === '/finance/deposit/fixed/new-material-entry') return <MaterialDepositTabs />;
