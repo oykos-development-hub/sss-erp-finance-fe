@@ -89,3 +89,10 @@ export function generateDropdownOptions(counts: Count[]) {
 }
 
 export const requiredError = 'Ovo polje je obavezno';
+
+export const feeTypeOptions = [
+  {id: 1, title: 'Tužba'},
+  {id: 2, title: 'Presuda'},
+];
+
+export const feeSubcategoryOptions = [{id: 1, title: 'Kopiranje'}];

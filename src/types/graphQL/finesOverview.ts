@@ -1,4 +1,5 @@
 import {DropdownData} from '../dropdownData.ts';
+import {FileItem} from '../fileUploadType.ts';
 
 export interface FinesOverviewParams {
   page?: number;
@@ -38,11 +39,7 @@ export interface FinesOverviewItem {
   court_costs: number;
   court_account: DropdownData<number>;
   fine_fee_details: FineFeeDetails;
-  file: {
-    id: number;
-    name: string;
-    type: string;
-  }[];
+  file: FileItem[];
   created_at: string;
   updated_at: string;
 }

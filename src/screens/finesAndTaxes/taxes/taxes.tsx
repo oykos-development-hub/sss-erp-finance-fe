@@ -1,11 +1,11 @@
 import useAppContext from '../../../context/useAppContext.ts';
 import {useEffect, useMemo, useState} from 'react';
-import {getCurrentTab, stockTabs, Tabs, getRouteName} from './constants.ts';
+import {getCurrentTab, stockTabs, Tabs, getRouteName} from './constants.tsx';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from '../../accounting/styles.tsx';
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import TaxesOverview from './taxesOverview.tsx';
-import AddTaxes from './addTaxes/addTaxes.tsx';
+import AddFee from './addFee/addFee.tsx';
 
 const Taxes = () => {
   const {
@@ -32,7 +32,7 @@ const Taxes = () => {
       case 'taxes':
         return <TaxesOverview />;
       case 'add-taxes':
-        return <AddTaxes />;
+        return <AddFee />;
       default:
         return <></>;
     }

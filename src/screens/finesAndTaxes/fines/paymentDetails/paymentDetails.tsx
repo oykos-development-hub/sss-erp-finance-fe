@@ -15,15 +15,15 @@ import {Amount, FinePaymentDetailsWrapper, LabeledDivider} from './styles.ts';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {FineFeeDetails, FinesOverviewItem} from '../../../../types/graphQL/finesOverview.ts';
-import useGetPayments from '../../../../services/graphQL/payments/useGetPayments.ts';
+import useGetFinePayments from '../../../../services/graphQL/fines/finePayments/useGetFinePayments.ts';
 import {useEffect, useState} from 'react';
 import {requiredError} from '../../../../constants.ts';
 import {FinePaymentMethods} from '../constants.tsx';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
-import useInsertPayment from '../../../../services/graphQL/payments/useInsertPayment.ts';
+import useInsertFinePayment from '../../../../services/graphQL/fines/finePayments/useInsertFinePayment.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import useDeletePayment from '../../../../services/graphQL/payments/useDeletePayment.ts';
+import useDeleteFinePayment from '../../../../services/graphQL/fines/finePayments/useDeleteFinePayment.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 
 const singlePaymentSchema = yup.object().shape({
@@ -60,9 +60,9 @@ interface PaymentFormProps {
 }
 const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
   const fineFeeDetails: FineFeeDetails = fine?.fine_fee_details;
-  const {payments, refetch} = useGetPayments(fine?.id);
-  const {insertPayment} = useInsertPayment();
-  const {deletePayment} = useDeletePayment();
+  const {payments, refetch} = useGetFinePayments(fine?.id);
+  const {insertFinePayment} = useInsertFinePayment();
+  const {deleteFinePayment} = useDeleteFinePayment();
   const {alert} = useAppContext();
 
   const [editRowId, setEditRowId] = useState<number | null>(null);
@@ -99,7 +99,6 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
 
   useEffect(() => {
     remove();
-    let paidSum = 0;
     if (payments.length) {
       payments.forEach(payment => {
         append({
@@ -112,8 +111,6 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
           },
           payment_date: new Date(payment?.payment_date),
         });
-
-        paidSum += payment.amount;
       });
       appendLastRow();
       return;
@@ -159,7 +156,7 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
         payment_method: payment.payment_method.id,
         payment_date: parsedPaymentDate,
       };
-      await insertPayment(
+      await insertFinePayment(
         payload,
         () => {
           refetch();
@@ -175,7 +172,7 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
   const handleDeletePayment = async () => {
     const paymentIndex = payments.findIndex(payment => payment.id === showDeletePaymentModal);
     if (!showDeletePaymentModal || paymentIndex === -1) return;
-    await deletePayment(
+    await deleteFinePayment(
       showDeletePaymentModal,
       () => {
         remove(paymentIndex);

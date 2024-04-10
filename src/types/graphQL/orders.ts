@@ -1,5 +1,6 @@
 import {DropdownData} from '../dropdownData';
 import {GetResponse} from './response';
+import {FileItem} from '../fileUploadType.ts';
 
 export interface OrderListArticleType {
   id: number;
@@ -29,21 +30,9 @@ export interface OrderListItem {
   recipient_user: DropdownData<string>;
   office: DropdownData<string>;
   price: number;
-  order_file: {
-    id: number;
-    name: string;
-    type: string;
-  };
-  receive_file: {
-    id: number;
-    name: string;
-    type: string;
-  };
-  movement_file: {
-    id: number;
-    name: string;
-    type: string;
-  };
+  order_file: FileItem;
+  receive_file: FileItem;
+  movement_file: FileItem;
   group_of_articles: DropdownData<string>;
   pro_forma_invoice_number: string;
   pro_forma_invoice_date: string;

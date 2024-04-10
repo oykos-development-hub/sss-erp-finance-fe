@@ -103,15 +103,15 @@ const SSSBudgetDetails = () => {
   }, [budgets]);
 
   useEffect(() => {
-    if (budgets && budgets.items && budgets.items.length > 0) {
+    if (budgets && budgets.items && budgets.items.length > 0 && !isNew) {
       setValue('year', {id: budgets.items[0].year.toString(), title: budgets.items[0].year.toString()});
       setValue('budget_type', budgetTypeOptions.find(option => option.id === parseInt(budgets.items[0].budget_type))!);
       setValue('limits', budgets.items[0].limits);
     }
-  }, [budgets]);
+  }, [budgets, isNew]);
 
   const year = watch('year')?.id;
-
+  console.log(errors);
   return (
     <ScreenWrapper>
       <OverviewBox>
@@ -151,7 +151,7 @@ const SSSBudgetDetails = () => {
                   value={value}
                   onChange={onChange}
                   options={budgetTypeOptions}
-                  error={errors.year?.message}
+                  error={errors.budget_type?.message}
                   placeholder="Odaberite tip"
                   isDisabled={!isNew}
                 />
@@ -189,7 +189,7 @@ const SSSBudgetDetails = () => {
             variant="primary"
             style={{width: 130}}
             onClick={handleSubmit(onSubmit)}
-            disabled={!isValid && isNew}
+            // disabled={!isValid && isNew}
           />
         </Footer>
       </OverviewBox>

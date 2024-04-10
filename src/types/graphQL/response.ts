@@ -4,6 +4,9 @@ import {BudgetDetailsItem} from './budgetDetails';
 import {NonFinancialGoal} from './nonFinancial.ts';
 import {FinesOverviewItem} from './finesOverview.ts';
 import {InvoiceItem} from './invoice.ts';
+import {PaymentDetails as FinePaymentDetails} from '../../screens/finesAndTaxes/fines/paymentDetails/types.ts';
+import {PaymentDetails as FeePaymentDetails} from '../../screens/finesAndTaxes/taxes/paymentDetails/types.ts';
+import {ProceduralCostOverviewItem} from './proceduralCosts.ts';
 
 export type PageParams = {
   page?: number;
@@ -82,12 +85,12 @@ export type FinesResponse = {
   };
 };
 
-export type PaymentsResponse = {
+export type FinesPaymentsResponse = {
   get: {
-    finePayment_Overview: GetResponse<any>;
+    finePayment_Overview: GetResponse<FinePaymentDetails>;
   };
   insert: {
-    finePayment_Insert: InsertResponse<any>;
+    finePayment_Insert: InsertResponse<FinePaymentDetails>;
   };
   delete: {
     finePayment_Delete: SimpleResponse;
@@ -103,5 +106,41 @@ export type InvoiceResponse = {
   };
   delete: {
     invoice_Delete: SimpleResponse;
+  };
+};
+
+export type FeesPaymentsResponse = {
+  get: {
+    feePayment_Overview: GetResponse<FeePaymentDetails>;
+  };
+  insert: {
+    feePayment_Insert: InsertResponse<FeePaymentDetails>;
+  };
+  delete: {
+    feePayment_Delete: SimpleResponse;
+  };
+};
+
+export type ProceduralCostResponse = {
+  get: {
+    procedureCost_Overview: GetResponse<ProceduralCostOverviewItem>;
+  };
+  insert: {
+    procedureCost_Insert: InsertResponse<ProceduralCostOverviewItem>;
+  };
+  delete: {
+    procedureCost_Delete: SimpleResponse;
+  };
+};
+
+export type ProceduralCostPaymentsResponse = {
+  get: {
+    procedureCostPayment_Overview: GetResponse<any>;
+  };
+  insert: {
+    procedureCostPayment_Insert: InsertResponse<any>;
+  };
+  delete: {
+    procedureCostPayment_Delete: SimpleResponse;
   };
 };

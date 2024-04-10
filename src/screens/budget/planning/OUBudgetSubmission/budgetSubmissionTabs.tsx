@@ -64,8 +64,6 @@ const BudgetSubmissionTabs = () => {
     const path = pathname.split('/');
     const id = path[path.length - 2];
 
-    console.log(pathname);
-
     if (pathname === `/finance/budget/planning/${id}/summary`)
       return <BudgetSummary id={id} budgetDetails={undefined} />;
     if (pathname === `/finance/budget/${id}/financial`) return <BudgetFinancial />;

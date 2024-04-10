@@ -1,6 +1,6 @@
 import {Controller, useForm} from 'react-hook-form';
 import {Dropdown, Datepicker, Input, Typography, FileUpload, Button, Theme} from 'client-library';
-import {Container, Row} from './styles.ts';
+import {Container, Row} from '../../taxes/addFee/styles.ts';
 import {actTypeOptions, generateDropdownOptions, requiredError} from '../../../../constants.ts';
 import {useEffect, useMemo, useState} from 'react';
 import Footer from '../../../../shared/footer.ts';
@@ -184,7 +184,7 @@ const FineForm = ({fine}: FineFormProps) => {
             />
           )}
         />
-        <Input {...register('subject')} label="Subjekat:" isRequired error={errors.subject?.message} />
+        <Input {...register('subject')} label="SUBJEKAT:" isRequired error={errors.subject?.message} />
       </Row>
       <Row>
         <Input {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} />

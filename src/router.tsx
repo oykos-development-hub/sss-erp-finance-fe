@@ -28,7 +28,6 @@ import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDep
 import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
 import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
 import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
-import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
 import Fines from './screens/finesAndTaxes/fines/fines.tsx';
 import FlatRate from './screens/finesAndTaxes/flatRate/flatRate.tsx';
 import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landingPage.tsx';
@@ -40,6 +39,9 @@ import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.ts
 import InvoiceDetails from './screens/liabilitesAndReceivables/invoices/invoiceDetails/invoiceDetails.tsx';
 import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
+import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
+import FeeDetails from './screens/finesAndTaxes/taxes/feeDetails/feeDetails.tsx';
+import ProceduralCostDetails from './screens/finesAndTaxes/proceduralCosts/proceduralCostDetails/proceduralCostDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -68,6 +70,8 @@ export const Router = () => {
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
     const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-new)?$');
     const fineDetailsRegex = new RegExp('^/finance/fines-taxes/fines/\\d+$');
+    const feeDetailsRegex = new RegExp('^/finance/fines-taxes/taxes/\\d+$');
+    const proceduralCostDetailsRegex = new RegExp('^/finance/fines-taxes/procedural-costs/\\d+$');
     const taxesRegex = new RegExp('^/finance/fines-taxes/taxes(?:/add-taxes)?$');
     const confiscationRegex = new RegExp('^/finance/fines-taxes/confiscation(?:/add-confiscation)?$');
     const flatRateRegex = new RegExp('^/finance/fines-taxes/flat-rate(?:/add-flat-rate)?$');
@@ -147,9 +151,13 @@ export const Router = () => {
     if (fineDetailsRegex.test(pathname)) return <FineDetails />;
 
     if (taxesRegex.test(pathname)) return <Taxes />;
+    if (feeDetailsRegex.test(pathname)) return <FeeDetails />;
+
     if (confiscationRegex.test(pathname)) return <Confiscation />;
     if (flatRateRegex.test(pathname)) return <FlatRate />;
+
     if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;
+    if (proceduralCostDetailsRegex.test(pathname)) return <ProceduralCostDetails />;
 
     if (role_id === UserRole.MANAGER_OJ) {
       if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;

@@ -1,46 +1,113 @@
-import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
-import {PAGE_SIZE} from '../../../constants.ts';
-import {tableHeadsTaxesOverview} from './constants.ts';
-import {Header} from './styles.ts';
+import {Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {feeTypeOptions, PAGE_SIZE} from '../../../constants.ts';
+import useGetFees from '../../../services/graphQL/fees/useGetFees.ts';
 import {FilterInput} from '../../accounting/styles.tsx';
-import {Filters, FilterDropdown} from '../../budget/planning/budgetList/styles.ts';
+import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
+import {tableHeadsTaxesOverview} from './constants.tsx';
+import {Header} from './styles.ts';
+import {FinesOverviewItem} from '../../../types/graphQL/finesOverview.ts';
+import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
+import {useState} from 'react';
+import useAppContext from '../../../context/useAppContext.ts';
+import useDeleteFee from '../../../services/graphQL/fees/useDeleteFee.ts';
+import {useDebounce} from '../../../utils/useDebounce.ts';
+import {defaultDropdownOption} from '../fines/constants.tsx';
 
+const initialValues = {
+  act_type_id: undefined,
+};
 const TaxesOverview = () => {
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState(initialValues);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 500);
+
+  const {fees, refetch, total} = useGetFees({page: page, size: PAGE_SIZE, ...filters, search: debouncedSearch});
+  const [showDeleteFeeModal, setShowDeleteFeeModal] = useState<number | null>(null);
+
+  const {
+    navigation: {navigate},
+    alert,
+  } = useAppContext();
   // TO DO implement the logic when the BE is done
+  const {deleteFee} = useDeleteFee();
+
+  const handleDeleteFee = async () => {
+    if (!showDeleteFeeModal) return;
+
+    await deleteFee(
+      showDeleteFeeModal,
+      () => {
+        refetch();
+        alert.success('Uspješno obrisano.');
+      },
+      () => {
+        alert.error('Greška. Brisanje nije uspjelo.');
+      },
+    );
+  };
+
+  const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const onFilterChange = (value: any, name: string) => {
+    setFilters({...filters, [name]: value?.id});
+  };
+
+  const onPageChange = (page: number) => {
+    setPage(page + 1);
+  };
+
   return (
     <>
       <Header>
         <Filters>
-          <FilterDropdown label="SUBJEKAT:" options={[]} name="subject" />
-          <FilterDropdown label="VRSTA TAKSE:" options={[]} name="type" />
-          <FilterInput label="PRETRAGA:" rightContent={<SearchIcon />} />
+          {/*  TODO filters not working, wating for BE changes*/}
+          <FilterDropdown
+            name="act_type_id"
+            value={filters?.act_type_id}
+            onChange={(value: any) => onFilterChange(value, 'act_type_id')}
+            label="VRSTA TAKSE:"
+            options={[defaultDropdownOption, ...feeTypeOptions]}
+          />
+
+          <FilterInput
+            label="PRETRAGA:"
+            rightContent={<SearchIcon />}
+            name="search"
+            onChange={onSearch}
+            value={search}
+          />
         </Filters>
       </Header>
       <Table
         tableHeads={tableHeadsTaxesOverview}
-        data={[]}
+        data={fees}
         style={{marginBottom: 22}}
         emptyMessage={'Još uvjek nema taksi'}
+        onRowClick={(row: FinesOverviewItem) => navigate(`/finance/fines-taxes/taxes/${row.id}`)}
         tableActions={[
           {
-            name: 'send',
-            onClick: () => undefined,
-            icon: <PrinterIcon stroke={Theme?.palette?.gray800} />,
-          },
-          {
             name: 'delete',
-            onClick: () => undefined,
+            onClick: row => setShowDeleteFeeModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
           },
         ]}
       />
       <Pagination
-        pageCount={1}
-        onChange={() => undefined}
+        pageCount={total ? Math.ceil(total / PAGE_SIZE) : 1}
+        onChange={onPageChange}
         variant="filled"
         itemsPerPage={PAGE_SIZE}
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
+      />
+      <ConfirmationModal
+        open={!!showDeleteFeeModal}
+        subTitle={'Ova taksa će biti trajno izbrisana iz sistema.'}
+        onClose={() => setShowDeleteFeeModal(null)}
+        onConfirm={() => handleDeleteFee()}
       />
     </>
   );

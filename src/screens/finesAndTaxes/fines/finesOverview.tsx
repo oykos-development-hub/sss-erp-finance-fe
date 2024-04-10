@@ -12,7 +12,7 @@ import useDeleteFine from '../../../services/graphQL/fines/useDeleteFine.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 
 const initialValues = {
-  act_type_id: undefined,
+  act_type_id: defaultDropdownOption.id,
 };
 
 const FinesOverview = () => {
@@ -55,16 +55,18 @@ const FinesOverview = () => {
     setPage(page + 1);
   };
 
+  const filterDropdownOptions = [defaultDropdownOption, ...TypeOfFines] || [];
+
   return (
     <>
       <Header>
         <Filters>
           <FilterDropdown
             name="act_type_id"
-            value={filters?.act_type_id}
+            value={filterDropdownOptions.find(option => option.id === filters?.act_type_id)}
             onChange={(value: any) => onFilterChange(value, 'act_type_id')}
             label="VRSTA KAZNE:"
-            options={[defaultDropdownOption, ...TypeOfFines] || []}
+            options={filterDropdownOptions}
           />
 
           <FilterInput
