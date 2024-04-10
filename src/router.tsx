@@ -160,7 +160,6 @@ export const Router = () => {
     if (confiscationRegex.test(pathname)) return <Confiscation />;
     if (confiscationDetailsRegex.test(pathname)) return <PropertyBenefitsConfiscationDetails />;
 
-
     if (flatRateRegex.test(pathname)) return <FlatRate />;
     if (flatRateDetailsRegex.test(pathname)) return <FlatRateDetails />;
 
