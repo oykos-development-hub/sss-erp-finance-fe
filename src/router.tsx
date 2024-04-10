@@ -42,6 +42,7 @@ import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
 import FeeDetails from './screens/finesAndTaxes/taxes/feeDetails/feeDetails.tsx';
 import ProceduralCostDetails from './screens/finesAndTaxes/proceduralCosts/proceduralCostDetails/proceduralCostDetails.tsx';
+import PropertyBenefitsConfiscationDetails from './screens/finesAndTaxes/confiscation/propertyBenefitsConfiscationDetails/propertyBenefitsConfiscationDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -71,6 +72,7 @@ export const Router = () => {
     const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-new)?$');
     const fineDetailsRegex = new RegExp('^/finance/fines-taxes/fines/\\d+$');
     const feeDetailsRegex = new RegExp('^/finance/fines-taxes/taxes/\\d+$');
+    const confiscationDetailsRegex = new RegExp('^/finance/fines-taxes/confiscation/\\d+$');
     const proceduralCostDetailsRegex = new RegExp('^/finance/fines-taxes/procedural-costs/\\d+$');
     const taxesRegex = new RegExp('^/finance/fines-taxes/taxes(?:/add-taxes)?$');
     const confiscationRegex = new RegExp('^/finance/fines-taxes/confiscation(?:/add-confiscation)?$');
@@ -154,6 +156,8 @@ export const Router = () => {
     if (feeDetailsRegex.test(pathname)) return <FeeDetails />;
 
     if (confiscationRegex.test(pathname)) return <Confiscation />;
+    if (confiscationDetailsRegex.test(pathname)) return <PropertyBenefitsConfiscationDetails />;
+
     if (flatRateRegex.test(pathname)) return <FlatRate />;
 
     if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;

@@ -30,6 +30,12 @@ import deleteProceduralCost from './proceduralCosts/deleteProceduralCost.ts';
 import getProceduralCostPayment from './proceduralCosts/proceduralCostsPayments/getProceduralCostPayment.ts';
 import insertProceduralCostPayment from './proceduralCosts/proceduralCostsPayments/insertProceduralCostPayment.ts';
 import deleteProceduralCostPayment from './proceduralCosts/proceduralCostsPayments/deleteProceduralCostPayment.ts';
+import insertPropertyBenefitsConfiscation from './propertyBenefitsConfiscation/insertPropertyBenefitsConfiscation.ts';
+import deletePropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/deletePropertyBenefitsConfiscationPayment.ts';
+import propertyBenefitsConfiscationOverview from './propertyBenefitsConfiscation/propertyBenefitsConfiscationOverview.ts';
+import deletePropertyBenefitsConfiscation from './propertyBenefitsConfiscation/deletePropertyBenefitsConfiscation.ts';
+import insertPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/insertPropertyBenefitsConfiscationPayment.ts';
+import getPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/getPropertyBenefitsConfiscationPayment.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -79,4 +85,10 @@ export const GraphQL = {
   getProceduralCostPayments: getProceduralCostPayment,
   insertProceduralCostPayment: insertProceduralCostPayment,
   deleteProceduralCostPayment: deleteProceduralCostPayment,
+  propertyBenefitsConfiscationOverview: propertyBenefitsConfiscationOverview,
+  insertPropertyBenefitsConfiscation: insertPropertyBenefitsConfiscation,
+  deletePropertyBenefitsConfiscation: deletePropertyBenefitsConfiscation,
+  getPropertyBenefitsConfiscationPayment: getPropertyBenefitsConfiscationPayment,
+  insertPropertyBenefitsConfiscationPayment: insertPropertyBenefitsConfiscationPayment,
+  deletePropertyBenefitsConfiscationPayment: deletePropertyBenefitsConfiscationPayment,
 };

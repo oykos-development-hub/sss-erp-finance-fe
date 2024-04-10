@@ -7,6 +7,7 @@ import {InvoiceItem} from './invoice.ts';
 import {PaymentDetails as FinePaymentDetails} from '../../screens/finesAndTaxes/fines/paymentDetails/types.ts';
 import {PaymentDetails as FeePaymentDetails} from '../../screens/finesAndTaxes/taxes/paymentDetails/types.ts';
 import {ProceduralCostOverviewItem} from './proceduralCosts.ts';
+import {PropertyBenefitsConfiscationOverviewItem} from './propertyBenefitsConfiscation.ts';
 
 export type PageParams = {
   page?: number;
@@ -142,5 +143,29 @@ export type ProceduralCostPaymentsResponse = {
   };
   delete: {
     procedureCostPayment_Delete: SimpleResponse;
+  };
+};
+
+export type PropertyBenefitsConfiscationResponse = {
+  get: {
+    propertyBenefitConfiscation_Overview: GetResponse<PropertyBenefitsConfiscationOverviewItem>;
+  };
+  insert: {
+    propertyBenefitConfiscation_Insert: InsertResponse<PropertyBenefitsConfiscationOverviewItem>;
+  };
+  delete: {
+    propertyBenefitConfiscation_Delete: SimpleResponse;
+  };
+};
+
+export type PropertyBenefitsConfiscationPaymentsResponse = {
+  get: {
+    propertyBenefitConfiscationPayment_Overview: GetResponse<any>;
+  };
+  insert: {
+    propertyBenefitConfiscationPayment_Insert: InsertResponse<any>;
+  };
+  delete: {
+    propertyBenefitConfiscationPayment_Delete: SimpleResponse;
   };
 };

@@ -1,11 +1,11 @@
 import useAppContext from '../../../context/useAppContext.ts';
 import {useEffect, useMemo, useState} from 'react';
-import {getCurrentTab, stockTabs, Tabs, getRouteName} from './constants.ts';
+import {getCurrentTab, stockTabs, Tabs, getRouteName} from './constants.tsx';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from '../../accounting/styles.tsx';
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import ConfiscationOverview from './confiscationOverview.tsx';
-import AddConfiscation from './addConfiscation/addConfiscation.tsx';
+import AddPropertyBenefitsConfiscation from './addPropertyBenefitsConfiscation/addPropertyBenefitsConfiscation.tsx';
 
 const Confiscation = () => {
   const {
@@ -32,7 +32,7 @@ const Confiscation = () => {
       case 'confiscation':
         return <ConfiscationOverview />;
       case 'add-confiscation':
-        return <AddConfiscation />;
+        return <AddPropertyBenefitsConfiscation />;
       default:
         return <></>;
     }

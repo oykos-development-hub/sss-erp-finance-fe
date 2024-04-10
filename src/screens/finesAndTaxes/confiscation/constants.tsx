@@ -6,8 +6,8 @@ export enum Tabs {
   AddScreen = 2,
 }
 export const stockTabs = [
-  {id: Tabs.OverviewScreen, title: 'Pregled troškova postupka', routeName: 'procedural-costs'},
-  {id: Tabs.AddScreen, title: 'Dodaj troškove postupka', routeName: 'add-procedural-costs'},
+  {id: Tabs.OverviewScreen, title: 'Pregled oduzimanja imovinske koristi', routeName: 'confiscation'},
+  {id: Tabs.AddScreen, title: 'Dodaj oduzimanje imovinske koristi', routeName: 'add-confiscation'},
 ];
 
 export const getCurrentTab = (pathname: string) => {
@@ -21,7 +21,7 @@ export const getRouteName = (tabName: string) => {
   return stockTabs[tabIndex].routeName;
 };
 
-export const tableHeadsProceduralCostsOverview: TableHead[] = [
+export const tableHeadsConfiscationOverview: TableHead[] = [
   {
     title: 'Subjekat',
     accessor: 'subject',
@@ -50,10 +50,10 @@ export const tableHeadsProceduralCostsOverview: TableHead[] = [
   },
   {
     title: 'Naplaćeno',
-    accessor: 'procedure_cost_details',
+    accessor: 'property_benefits_confiscation_details',
     type: 'custom',
-    renderContents: procedure_cost_details => {
-      return <Typography content={procedure_cost_details?.all_payments_amount} />;
+    renderContents: property_benefits_confiscation_details => {
+      return <Typography content={property_benefits_confiscation_details?.all_payments_amount} />;
     },
   },
   {
