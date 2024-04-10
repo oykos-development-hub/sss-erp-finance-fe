@@ -1,12 +1,18 @@
-const getFeesOverview = `query feeOverview($id: Int,   $fee_subcategory: Int, $search: String, $fee_type: Int, $page:Int, $size:Int) {
-    fee_Overview(id: $id, fee_subcategory: $fee_subcategory, search: $search, fee_type: $fee_type,    page:$page, size:$size) {
+const getFeesOverview = `query feeOverview($id: Int,   $fee_subcategory_id: Int, $search: String, $fee_type_id: Int, $page:Int, $size:Int) {
+    fee_Overview(id: $id, fee_subcategory_id: $fee_subcategory_id, search: $search, fee_type_id: $fee_type_id,    page:$page, size:$size) {
         message
         status
         total
         items {
             id
-             fee_type
-            fee_subcategory
+             fee_type{
+                id
+                title
+            }
+            fee_subcategory{
+                id
+                title
+            }
             decision_number
             decision_date
             subject

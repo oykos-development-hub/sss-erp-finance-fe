@@ -1,5 +1,5 @@
 import {Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
-import {feeTypeOptions, PAGE_SIZE} from '../../../constants.ts';
+import {feeSubcategoryOptions, feeTypeOptions, PAGE_SIZE} from '../../../constants.ts';
 import useGetFees from '../../../services/graphQL/fees/useGetFees.ts';
 import {FilterInput} from '../../accounting/styles.tsx';
 import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
@@ -14,7 +14,8 @@ import {useDebounce} from '../../../utils/useDebounce.ts';
 import {defaultDropdownOption} from '../fines/constants.tsx';
 
 const initialValues = {
-  act_type_id: undefined,
+  fee_type_id: undefined,
+  fee_subcategory_id: undefined,
 };
 const TaxesOverview = () => {
   const [page, setPage] = useState(1);
@@ -59,17 +60,26 @@ const TaxesOverview = () => {
     setPage(page + 1);
   };
 
+  const filterDropdownOptionsType = [defaultDropdownOption, ...feeTypeOptions] || [];
+  const filterDropdownOptionsSubcategory = [defaultDropdownOption, ...feeSubcategoryOptions] || [];
+
   return (
     <>
       <Header>
         <Filters>
-          {/*  TODO filters not working, wating for BE changes*/}
           <FilterDropdown
-            name="act_type_id"
-            value={filters?.act_type_id}
-            onChange={(value: any) => onFilterChange(value, 'act_type_id')}
+            name="fee_type_id"
+            value={filterDropdownOptionsType.find(option => option.id === filters?.fee_type_id)}
+            onChange={(value: any) => onFilterChange(value, 'fee_type_id')}
             label="VRSTA TAKSE:"
-            options={[defaultDropdownOption, ...feeTypeOptions]}
+            options={filterDropdownOptionsType}
+          />
+          <FilterDropdown
+            name="fee_subcategory_id"
+            value={filterDropdownOptionsSubcategory.find(option => option.id === filters?.fee_subcategory_id)}
+            onChange={(value: any) => onFilterChange(value, 'fee_subcategory_id')}
+            label="POTKATEGORIJA TAKSE:"
+            options={filterDropdownOptionsSubcategory}
           />
 
           <FilterInput

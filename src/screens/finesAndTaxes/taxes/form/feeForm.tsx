@@ -119,11 +119,8 @@ const FeeForm = ({fee}: FeeFormProps) => {
     if (fee) {
       reset({
         ...fee,
-        // TODO this is a temporary fix, need to fix the backend to return the correct data
-        fee_type: feeTypeOptions.find(option => option?.title === fee.fee_type),
-        fee_subcategory: feeSubcategoryOptions.find(option => option?.title === fee.fee_subcategory),
-        // fee_type: feeTypeOptions.find(option => option?.id === fee.fee_type?.id),
-        // fee_subcategory: feeSubcategoryOptions.find(option => option?.id === fee.fee_type?.id),
+        fee_type: feeTypeOptions.find(option => option?.id === fee.fee_type?.id),
+        fee_subcategory: feeSubcategoryOptions.find(option => option?.id === fee.fee_type?.id),
         court_account: countsDropdownOptions?.find(count => count?.id === fee.court_account?.id),
         decision_date: new Date(fee.decision_date),
         payment_deadline_date: new Date(fee.payment_deadline_date),

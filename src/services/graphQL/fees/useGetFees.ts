@@ -7,9 +7,9 @@ import {Fee} from '../../../screens/finesAndTaxes/taxes/constants.tsx';
 
 type GetFeesParams = PageParams & {
   id?: number;
-  fee_subcategory?: number;
+  fee_subcategory_id?: number;
   search?: string;
-  fee_type?: number;
+  fee_type_id?: number;
 };
 
 const useGetFees = (params: GetFeesParams) => {
@@ -32,7 +32,7 @@ const useGetFees = (params: GetFeesParams) => {
 
   useEffect(() => {
     fetchFeesOverview();
-  }, [params.id, params.fee_subcategory, params.fee_type, params.page, params.search, params.size]);
+  }, [params.id, params.fee_subcategory_id, params.fee_type_id, params.page, params.search, params.size]);
 
   return {fees, loading, total, refetch: fetchFeesOverview};
 };

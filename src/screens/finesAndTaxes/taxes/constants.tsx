@@ -124,8 +124,8 @@ export type Fee = {
   description: string;
   execution_date: string;
   fee_details: FeeDetails;
-  fee_subcategory: DropdownData<string>;
-  fee_type: DropdownData<string>;
+  fee_subcategory: DropdownData<number>;
+  fee_type: DropdownData<number>;
   file: FileItem[];
   id: number;
   jmbg: string;

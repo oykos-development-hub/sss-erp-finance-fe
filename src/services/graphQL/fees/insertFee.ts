@@ -6,8 +6,14 @@ mutation($data: FeeMutation!) {
         data
         item {
            id
-            fee_type
-            fee_subcategory
+            fee_type{
+                id
+                title
+            }
+            fee_subcategory{
+                id
+                title
+            }
             decision_number
             decision_date
             subject
