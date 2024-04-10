@@ -54,7 +54,7 @@ const SSSBudgetDetails = () => {
 
   const {
     control,
-    formState: {errors, isValid},
+    formState: {errors},
     handleSubmit,
     watch,
     setValue,

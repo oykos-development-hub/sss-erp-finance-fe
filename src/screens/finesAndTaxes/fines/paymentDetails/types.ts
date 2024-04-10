@@ -1,6 +1,6 @@
 export interface PaymentDetails {
   id: number;
-  procedure_cost_id: number;
+  fine_id: number;
   payment_method: {
     id: number;
     title: string;

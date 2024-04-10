@@ -1,7 +1,7 @@
-import {FeesResponse, FinesResponse} from '../../../types/graphQL/response.ts';
 import {GraphQL} from '../index.ts';
 import {useState} from 'react';
 import useAppContext from '../../../context/useAppContext.ts';
+import {FeesResponse} from '../../../types/graphQL/fees.ts';
 
 const useDeleteFee = () => {
   const [loading, setLoading] = useState(false);

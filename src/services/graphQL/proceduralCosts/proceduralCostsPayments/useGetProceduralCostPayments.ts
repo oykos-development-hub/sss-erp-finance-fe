@@ -2,10 +2,11 @@ import {useEffect, useState} from 'react';
 import useAppContext from '../../../../context/useAppContext.ts';
 import {GraphQL} from '../../index.ts';
 import {ProceduralCostPaymentsResponse} from '../../../../types/graphQL/response.ts';
+import {PaymentDetails} from '../../../../screens/finesAndTaxes/proceduralCosts/paymentDetails/types.ts';
 
 const useGetProceduralCostPayments = (procedure_cost_id: number) => {
   // TODO add type
-  const [payments, setPayments] = useState<any[]>([]);
+  const [payments, setPayments] = useState<PaymentDetails[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const {fetch} = useAppContext();
