@@ -8,6 +8,7 @@ import {PaymentDetails as FinePaymentDetails} from '../../screens/finesAndTaxes/
 import {PaymentDetails as FeePaymentDetails} from '../../screens/finesAndTaxes/taxes/paymentDetails/types.ts';
 import {ProceduralCostOverviewItem} from './proceduralCosts.ts';
 import {PropertyBenefitsConfiscationOverviewItem} from './propertyBenefitsConfiscation.ts';
+import {FlatRateOverviewItem} from './flatRate.ts';
 
 export type PageParams = {
   page?: number;
@@ -167,5 +168,29 @@ export type PropertyBenefitsConfiscationPaymentsResponse = {
   };
   delete: {
     propertyBenefitConfiscationPayment_Delete: SimpleResponse;
+  };
+};
+
+export type FlatRateResponse = {
+  get: {
+    flatRate_Overview: GetResponse<FlatRateOverviewItem>;
+  };
+  insert: {
+    flatRate_Insert: InsertResponse<FlatRateOverviewItem>;
+  };
+  delete: {
+    flatRate_Delete: SimpleResponse;
+  };
+};
+
+export type FlatRatePaymentsResponse = {
+  get: {
+    flatRatePayment_Overview: GetResponse<any>;
+  };
+  insert: {
+    flatRatePayment_Insert: InsertResponse<any>;
+  };
+  delete: {
+    flatRatePayment_Delete: SimpleResponse;
   };
 };

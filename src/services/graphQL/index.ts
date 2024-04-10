@@ -36,6 +36,12 @@ import propertyBenefitsConfiscationOverview from './propertyBenefitsConfiscation
 import deletePropertyBenefitsConfiscation from './propertyBenefitsConfiscation/deletePropertyBenefitsConfiscation.ts';
 import insertPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/insertPropertyBenefitsConfiscationPayment.ts';
 import getPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/getPropertyBenefitsConfiscationPayment.ts';
+import insertFlatRate from './flatRate/insertFlatRate.ts';
+import deleteFlatRate from './flatRate/deleteFlatRate.ts';
+import getFlatRatePayment from './flatRate/flatRatePayments/getFlatRatePayment.ts';
+import insertFlatRatePayment from './flatRate/flatRatePayments/insertFlatRatePayment.ts';
+import deleteFlatRatePayment from './flatRate/flatRatePayments/deleteFlatRatePayment.ts';
+import flatRateOverview from './flatRate/flatRateOverview.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -91,4 +97,10 @@ export const GraphQL = {
   getPropertyBenefitsConfiscationPayment: getPropertyBenefitsConfiscationPayment,
   insertPropertyBenefitsConfiscationPayment: insertPropertyBenefitsConfiscationPayment,
   deletePropertyBenefitsConfiscationPayment: deletePropertyBenefitsConfiscationPayment,
+  flatRateOverview: flatRateOverview,
+  insertFlatRate: insertFlatRate,
+  deleteFlatRate: deleteFlatRate,
+  getFlatRatePayments: getFlatRatePayment,
+  insertFlatRatePayment: insertFlatRatePayment,
+  deleteFlatRatePayment: deleteFlatRatePayment,
 };

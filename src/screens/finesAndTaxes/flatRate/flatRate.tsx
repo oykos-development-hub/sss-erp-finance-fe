@@ -1,6 +1,6 @@
 import useAppContext from '../../../context/useAppContext.ts';
 import {useEffect, useMemo, useState} from 'react';
-import {getCurrentTab, stockTabs, Tabs, getRouteName} from './constants.ts';
+import {getCurrentTab, stockTabs, Tabs, getRouteName} from './constants.tsx';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from '../../accounting/styles.tsx';
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
@@ -39,8 +39,6 @@ const FlatRate = () => {
   }, [currentPath, activeTab]);
 
   const onTabChange = (tab: Tab) => {
-    console.log(tab, ' - tab');
-
     setActiveTab(tab.id as number);
     const routeName = getRouteName(tab.title as string);
     navigate(

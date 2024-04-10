@@ -11,11 +11,11 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FileList from '../../../../components/fileList/fileList.tsx';
 import {optionsNumberSchema} from '../../../../utils/formSchemas.ts';
-import {ProceduralCostOverviewItem, ProceduralCostsForm} from '../../../../types/graphQL/proceduralCosts.ts';
-import useInsertProceduralCost from '../../../../services/graphQL/proceduralCosts/useInsertProceduralCost.ts';
+import {FlatRateOverviewItem, FlatRateForm} from '../../../../types/graphQL/flatRate.ts';
+import useInsertFlatRate from '../../../../services/graphQL/flatRate/useInsertFlatRate.ts';
 
-const proceduralCostSchema = yup.object().shape({
-  procedure_cost_type: optionsNumberSchema.required(requiredError).default(null),
+const flatRateSchema = yup.object().shape({
+  flat_rate_type: optionsNumberSchema.required(requiredError).default(null),
   decision_number: yup.string().required(requiredError),
   decision_date: yup.date().required(requiredError),
   subject: yup.string().required(requiredError),
@@ -37,7 +37,7 @@ const proceduralCostSchema = yup.object().shape({
 });
 
 const defaultValues = {
-  procedure_cost_type: undefined,
+  flat_rate_type: undefined,
   decision_number: '',
   decision_date: undefined,
   subject: '',
@@ -54,21 +54,21 @@ const defaultValues = {
   court_account_id: undefined,
 };
 
-type ProceduralCostEntryForm = yup.InferType<typeof proceduralCostSchema>;
-interface ProceduralCostFormProps {
-  procedural_cost?: ProceduralCostOverviewItem;
+type FlatRateEntryForm = yup.InferType<typeof flatRateSchema>;
+interface FlatRateFormProps {
+  flat_rate?: FlatRateOverviewItem;
 }
-const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
+const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
   const {
     control,
     register,
     handleSubmit,
     reset,
     formState: {errors},
-  } = useForm<ProceduralCostEntryForm>({resolver: yupResolver(proceduralCostSchema), defaultValues: defaultValues});
+  } = useForm<FlatRateEntryForm>({resolver: yupResolver(flatRateSchema), defaultValues: defaultValues});
   const [uploadedFile, setUploadedFile] = useState<FileList>();
   const {counts} = useGetCountOverview({});
-  const {insertProceduralCost} = useInsertProceduralCost();
+  const {insertFlatRate} = useInsertFlatRate();
   const {
     alert,
     fileService: {uploadFile},
@@ -79,12 +79,12 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
     return generateDropdownOptions(counts);
   }, [counts]);
   const onSubmit = async (data: any) => {
-    const {account, court_account, created_at, updated_at, file, status, procedure_cost_details, ...rest} = data;
-    let payload: ProceduralCostsForm = {
+    const {account, court_account, created_at, updated_at, file, status, flat_rate_details, ...rest} = data;
+    let payload: FlatRateForm = {
       ...rest,
       amount: Number(data.amount),
       court_costs: Number(data.court_costs),
-      procedure_cost_type: data.procedure_cost_type.id,
+      flat_rate_type: data.flat_rate_type.id,
       account_id: data.account_id.id,
       court_account_id: data.court_account_id?.id,
       decision_date: parseDateForBackend(data.decision_date),
@@ -110,56 +110,56 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
         },
       );
 
-      insertOrUpdateProceduralCost(payload);
+      insertOrUpdateFlatRate(payload);
     } else {
-      insertOrUpdateProceduralCost(payload);
+      insertOrUpdateFlatRate(payload);
     }
   };
 
   useEffect(() => {
-    if (procedural_cost) {
+    if (flat_rate) {
       reset({
-        ...procedural_cost,
-        procedure_cost_type: actTypeOptions.find(option => option?.id === procedural_cost.procedure_cost_type?.id),
-        account_id: countsDropdownOptions?.find(count => count?.id === procedural_cost.account?.id),
-        court_account_id: countsDropdownOptions?.find(count => count?.id === procedural_cost.court_account?.id),
-        decision_date: new Date(procedural_cost.decision_date),
-        payment_deadline_date: new Date(procedural_cost.payment_deadline_date),
-        execution_date: new Date(procedural_cost.execution_date),
+        ...flat_rate,
+        flat_rate_type: actTypeOptions.find(option => option?.id === flat_rate.flat_rate_type?.id),
+        account_id: countsDropdownOptions?.find(count => count?.id === flat_rate.account?.id),
+        court_account_id: countsDropdownOptions?.find(count => count?.id === flat_rate.court_account?.id),
+        decision_date: new Date(flat_rate.decision_date),
+        payment_deadline_date: new Date(flat_rate.payment_deadline_date),
+        execution_date: new Date(flat_rate.execution_date),
       });
     }
-  }, [procedural_cost]);
+  }, [flat_rate]);
 
   const handleUpload = (files: FileList) => {
     setUploadedFile(files);
   };
 
-  const insertOrUpdateProceduralCost = async (payload: ProceduralCostsForm) => {
-    // update procedural cost
-    if (procedural_cost && procedural_cost.id) {
-      const updatedPayload = {...payload, id: procedural_cost.id};
+  const insertOrUpdateFlatRate = async (payload: FlatRateForm) => {
+    // update flat rate
+    if (flat_rate && flat_rate.id) {
+      const updatedPayload = {...payload, id: flat_rate.id};
 
-      await insertProceduralCost(
+      await insertFlatRate(
         updatedPayload,
         () => {
-          alert.success('Trošak postupka uspješno izmijenjen');
+          alert.success('Paušal uspješno izmijenjen');
         },
         () => {
-          alert.error('Došlo je do greške prilikom izmjene troška postupka');
+          alert.error('Došlo je do greške prilikom izmjene paušala');
         },
       );
       return;
     }
 
-    // create procedural cost
-    await insertProceduralCost(
+    // create flat rate
+    await insertFlatRate(
       payload,
       id => {
-        navigate(`/finance/fines-taxes/procedural-costs/${id}`);
-        alert.success('Trošak postupka uspješno kreiran');
+        navigate(`/finance/fines-taxes/flat-rate/${id}`);
+        alert.success('Paušal uspješno kreiran');
       },
       () => {
-        alert.error('Došlo je do greške prilikom kreiranja troška postupka');
+        alert.error('Došlo je do greške prilikom kreiranja paušala');
       },
     );
   };
@@ -168,7 +168,7 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
     <Container>
       <Row>
         <Controller
-          name="procedure_cost_type"
+          name="flat_rate_type"
           control={control}
           render={({field: {name, value, onChange}}) => (
             <Dropdown
@@ -179,7 +179,7 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
               placeholder={'Odaberite vrstu akta'}
               options={actTypeOptions}
               isRequired
-              error={errors.procedure_cost_type?.message}
+              error={errors.flat_rate_type?.message}
             />
           )}
         />
@@ -228,7 +228,7 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
       <Row>
         <Input
           {...register('amount')}
-          label="VISINA TROŠKA POSTUPKA:"
+          label="VISINA PAUŠALA:"
           type={'number'}
           inputMode={'decimal'}
           leftContent={<div>€</div>}
@@ -236,9 +236,9 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
           error={errors.amount?.message}
         />
         <Input
-          value={procedural_cost?.procedure_cost_details.amount_grace_period.toFixed(2)}
-          label={`2/3 TROŠKA POSTUPKA - UKOLIKO UPLATITE DO ${parseDate(
-            procedural_cost?.procedure_cost_details.amount_grace_period_due_date ?? null,
+          value={flat_rate?.flat_rate_details.amount_grace_period.toFixed(2)}
+          label={`2/3 PAUŠALA - UKOLIKO UPLATITE DO ${parseDate(
+            flat_rate?.flat_rate_details.amount_grace_period_due_date ?? null,
           )}`}
           type={'number'}
           inputMode={'decimal'}
@@ -329,7 +329,7 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
           note={<Typography variant="bodySmall" content="Dodaj fajl" />}
           buttonText="Učitaj"
         />
-        <FileList files={(procedural_cost?.file && procedural_cost?.file) ?? []} />
+        <FileList files={(flat_rate?.file && flat_rate?.file) ?? []} />
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
@@ -339,4 +339,4 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
   );
 };
 
-export default ProceduralCostForm;
+export default FlatRateForm;
