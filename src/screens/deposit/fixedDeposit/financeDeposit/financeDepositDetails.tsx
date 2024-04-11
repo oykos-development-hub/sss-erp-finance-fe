@@ -1,20 +1,20 @@
 import {Divider} from '@oykos-development/devkit-react-ts-styled-components';
 import {EditIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
 import {useState} from 'react';
-import ConfiscationModal from '../../../../components/confiscationModal/FinancialConfiscationModal.tsx';
+import DepositConfiscationModal from '../../../../components/depositConfiscationModal/depositConfiscationModal.tsx';
+import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
 import FixedDepositForm from '../../../../components/financeDepositForm.tsx/financialDepositForm.tsx';
 import useAppContext from '../../../../context/useAppContext.ts';
+import useDeleteDepositDispatch from '../../../../services/graphQL/fixedDeposits/useDeleteDepositDispatch.ts';
 import useDeleteFixedDepositItem from '../../../../services/graphQL/fixedDeposits/useDeleteFixedDepositItem.ts';
 import useGetFixedDeposits from '../../../../services/graphQL/fixedDeposits/useGetFixedDeposits.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import PlusButton from '../../../../shared/plusButton.tsx';
+import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import {TableTitle} from '../../../../shared/tableTitle.tsx';
 import {DepositConfiscation, DepositDispatch} from '../../../../types/graphQL/fixedDeposits.ts';
 import {fixedDepositDispatchTableHeads, fixedFinancialDepositItemTableHeads} from './constants.tsx';
 import {MainTitle, PlusButtonWrapper, SectionBox} from './styles.tsx';
-import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
-import useDeleteDepositDispatch from '../../../../services/graphQL/fixedDeposits/useDeleteDepositDispatch.ts';
-import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 
 const FinanceDepositDetails = () => {
   const [confiscationModal, setConfiscationModal] = useState(false);
@@ -122,7 +122,7 @@ const FinanceDepositDetails = () => {
           style={{marginBottom: 22}}
         />
         {confiscationModal && (
-          <ConfiscationModal
+          <DepositConfiscationModal
             data={itemEditData}
             open={confiscationModal}
             onClose={() => setConfiscationModal(false)}

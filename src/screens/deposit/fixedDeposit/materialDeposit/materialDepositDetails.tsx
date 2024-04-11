@@ -1,7 +1,7 @@
 import {Divider} from '@oykos-development/devkit-react-ts-styled-components';
 import {EditIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
 import {useState} from 'react';
-import ConfiscationModal from '../../../../components/confiscationModal/FinancialConfiscationModal.tsx';
+import DepositConfiscationModal from '../../../../components/depositConfiscationModal/depositConfiscationModal.tsx';
 import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
 import MaterialDepositForm from '../../../../components/materialDepositForm/materialDepositForm.tsx';
 import useAppContext from '../../../../context/useAppContext.ts';
@@ -123,7 +123,7 @@ const MaterialDepositDetails = () => {
           style={{marginBottom: 22}}
         />
         {confiscationModal && (
-          <ConfiscationModal
+          <DepositConfiscationModal
             data={itemEditData}
             open={confiscationModal}
             onClose={() => setConfiscationModal(false)}

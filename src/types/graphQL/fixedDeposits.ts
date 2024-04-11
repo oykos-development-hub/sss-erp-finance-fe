@@ -129,7 +129,9 @@ export type FixedDepositItemInsertData = {
 export type FixedDepositDispatchData = {
   deposit_id: number;
   amount: number;
-  currency: string;
+  currency?: string;
+  unit?: string;
+  category_id?: number;
   // serial_number: string;
   date_of_action: string;
   // case_number: string;

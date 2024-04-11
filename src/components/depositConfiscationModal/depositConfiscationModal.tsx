@@ -5,24 +5,24 @@ import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {requiredError} from '../../constants';
 import useAppContext from '../../context/useAppContext';
-import useInsertDepositDispatch from '../../services/graphQL/fixedDeposits/useInsertDepositDispatch';
-import useGetJudges from '../../services/graphQL/judges/useGetJudges';
+import useInsertFixedDepositItem from '../../services/graphQL/fixedDeposits/useInsertDepositItem';
 import {DropdownData} from '../../types/dropdownData';
-import {DepositDispatch} from '../../types/graphQL/fixedDeposits';
+import {DepositConfiscation} from '../../types/graphQL/fixedDeposits';
 import {parseDateForBackend} from '../../utils/dateUtils';
 import {optionsNumberSchema, optionsStringSchema} from '../../utils/formSchemas';
 import FileList from '../fileList/fileList';
+import useGetJudges from '../../services/graphQL/judges/useGetJudges';
 import useGetSettings from '../../services/graphQL/getSettings/useGetSettings';
 import {CONFISCATED_PROPERTY_TYPES_SETTINGS} from '../../screens/deposit/fixedDeposit/constants';
 
-type DepositDispatchModal = {
+type DepositConfiscationModalProps = {
   open: boolean;
   onClose: () => void;
-  data: DepositDispatch | null;
+  data: DepositConfiscation | null;
   refetch: () => void;
 };
 
-const depositDispatchSchema = yup.object({
+const depositConfiscationSchema = yup.object({
   type: yup.string(),
   amount: yup.string().required(requiredError),
   currency: optionsStringSchema.when('type', {
@@ -41,18 +41,15 @@ const depositDispatchSchema = yup.object({
     is: 'material',
     then: schema => schema.required(requiredError),
   }),
-  date_of_action: yup.date().required(requiredError).default(null),
+  date_of_confiscation: yup.date().required(requiredError).default(null),
   judge_id: optionsNumberSchema.required(requiredError),
   file_id: yup.number().nullable().default(null),
   id: yup.number().nullable().default(null),
-  action: yup.string().required(requiredError),
-  subject: yup.string().required(requiredError),
-  case_number: yup.string().required(requiredError),
 });
 
-type DepositDispatchSchemaType = yup.InferType<typeof depositDispatchSchema>;
+type DepositConfiscationSchemaType = yup.InferType<typeof depositConfiscationSchema>;
 
-const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchModal) => {
+const DepositConfiscationModal = ({open, onClose, data, refetch}: DepositConfiscationModalProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
 
   const isNew = !data;
@@ -71,8 +68,6 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
     return pathnameSegments[pathnameSegments.length - 2];
   }, [pathname]);
 
-  const {data: confiscationCategories} = useGetSettings({entity: CONFISCATED_PROPERTY_TYPES_SETTINGS});
-
   const deposit_id = pathname.split('/').pop();
 
   const {
@@ -81,27 +76,27 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
     formState: {errors},
     reset,
     control,
-  } = useForm<DepositDispatchSchemaType>({resolver: yupResolver(depositDispatchSchema)});
+  } = useForm<DepositConfiscationSchemaType>({resolver: yupResolver(depositConfiscationSchema)});
 
-  const {insertDepositDispatch} = useInsertDepositDispatch();
+  const {insertFixedDepositItem} = useInsertFixedDepositItem();
   const {judges} = useGetJudges({});
+  const {data: confiscationCategories} = useGetSettings({entity: CONFISCATED_PROPERTY_TYPES_SETTINGS});
 
   const handleUpload = (files: FileList) => {
     setUploadedFiles(files);
   };
 
-  const onSubmit = async (data: DepositDispatchSchemaType) => {
+  const onSubmit = async (data: DepositConfiscationSchemaType) => {
     const payload = {
       ...data,
       amount: parseFloat(data.amount),
-      date_of_action: parseDateForBackend(data.date_of_action) as string,
+      date_of_confiscation: parseDateForBackend(data.date_of_confiscation) as string,
       file_id: data.file_id ? data.file_id : null,
       currency: data.currency?.id,
       deposit_id: parseInt(deposit_id as string),
       judge_id: data.judge_id.id,
-      id: isNew ? null : data.id,
-      case_number: data.case_number,
       category_id: data.category_id?.id,
+      id: isNew ? null : data.id,
     };
 
     if (uploadedFiles?.length) {
@@ -123,15 +118,15 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
       );
     }
 
-    await insertDepositDispatch(
+    await insertFixedDepositItem(
       payload,
       () => {
-        alert.success(isNew ? 'Akcija uspješno kreirana!' : 'Akcija uspješno izmijenjena!');
+        alert.success(isNew ? 'Depozit uspješno kreiran!' : 'Depozit uspješno izmijenjen!');
         refetch();
         onClose();
       },
       () => {
-        alert.error(isNew ? 'Greška pri kreiranju akcije!' : 'Greška pri izmjeni akcije!');
+        alert.error(isNew ? 'Greška pri kreiranju depozita!' : 'Greška pri izmjeni depozita!');
       },
     );
   };
@@ -140,17 +135,15 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
     if (data) {
       reset({
         type,
-        unit: data.unit,
-        serial_number: data.serial_number,
-        category_id: data.category,
         id: data.id,
         file_id: data.file.id,
         judge_id: data.judge,
-        date_of_action: new Date(data.date_of_action),
+        unit: data.unit,
+        serial_number: data.serial_number,
+        category_id: data.category,
+        date_of_confiscation: new Date(data.date_of_confiscation),
         currency: currencies.find((currency: DropdownData<string>) => currency.id === data.currency),
         amount: data.amount.toString(),
-        subject: data.subject,
-        case_number: data.case_number,
       });
     }
   }, [data]);
@@ -159,23 +152,28 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
     <Modal
       open={open}
       onClose={onClose}
-      title={isNew ? 'KREIRAJ POVRAT DEPOZITA' : 'UREDI POVRAT DEPOZITA'}
+      title={isNew ? 'KREIRAJ DEPOZIT' : 'UREDI DEPOZIT'}
       leftButtonOnClick={onClose}
       rightButtonOnClick={handleSubmit(onSubmit)}
       rightButtonText="Sačuvaj"
       leftButtonText="Otkaži"
       content={
         <div>
-          {type === 'material' && (
+          <div style={{marginBottom: 15}}>
+            {type === 'material' && (
+              <div style={{marginBottom: 15}}>
+                <Input {...register('serial_number')} label="SERIJSKI BROJ:" error={errors.serial_number?.message} />
+              </div>
+            )}
             <div style={{marginBottom: 15}}>
-              <Input {...register('serial_number')} label="SERIJSKI BROJ:" error={errors.serial_number?.message} />
+              <Input
+                {...register('amount')}
+                label={type === 'financial' ? 'IZNOS' : 'KOLIČINA'}
+                error={errors.amount?.message}
+              />
             </div>
-          )}
-          <div style={{marginBottom: 15}}>
-            <Input {...register('action')} label="AKCIJA:" error={errors.action?.message} />
-          </div>
-          <div style={{marginBottom: 15}}>
-            <Input {...register('amount')} label="KOLIČINA:" error={errors.amount?.message} />
+
+            {type === 'material' && <Input {...register('unit')} label="JEDINICA:" error={errors.amount?.message} />}
           </div>
           {type === 'financial' ? (
             <div style={{marginBottom: 15}}>
@@ -212,27 +210,20 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
               />
             </div>
           )}
-
-          <div style={{marginBottom: 15}}>
-            <Input {...register('subject')} label="PRIMALAC:" error={errors.subject?.message} />
-          </div>
           <Controller
-            name="date_of_action"
+            name="date_of_confiscation"
             control={control}
             render={({field: {name, value, onChange}}) => (
               <Datepicker
                 name={name}
                 selected={value ? new Date(value) : ''}
                 onChange={onChange}
-                label="DATUM AKTA:"
-                error={errors.date_of_action?.message}
+                label="DATUM ODUZIMANJA:"
+                error={errors.date_of_confiscation?.message}
                 style={{marginBottom: 15}}
               />
             )}
           />
-          <div style={{marginBottom: 15}}>
-            <Input {...register('case_number')} label="BROJ AKTA:" error={errors.case_number?.message} />
-          </div>
           <div style={{marginBottom: 25}}>
             <Controller
               name="judge_id"
@@ -258,8 +249,9 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
               onUpload={handleUpload}
               note={<Typography variant="bodySmall" content="Dodaj fajl" />}
               buttonText="Učitaj"
+              style={{marginBottom: 10}}
             />
-            <FileList files={data?.file ? [data.file] : null} />
+            <FileList files={data?.file.id ? [data.file] : null} />
           </div>
         </div>
       }
@@ -267,4 +259,4 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
   );
 };
 
-export default DepositDispatchModal;
+export default DepositConfiscationModal;

@@ -58,8 +58,14 @@ export const tableHeads: TableHead[] = [
 
 export const fixedMaterialDepositItemTableHeads: TableHead[] = [
   {
-    title: 'Valuta',
-    accessor: 'currency',
+    title: 'Kategorija',
+    accessor: 'category',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+  },
+  {
+    title: 'Jedinica',
+    accessor: 'unit',
     type: 'text',
   },
   {
