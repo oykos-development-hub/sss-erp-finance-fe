@@ -1,10 +1,9 @@
-const getFixedDeposits = `query fixedDeposit_Overview($id: Int,$status: String, $search: String, $organization_unit_id: Int, $page:Int, $size:Int, $type: String, $judge_id: Int) {
-    fixedDeposit_Overview(id: $id, status: $status, judge_id: $judge_id search: $search, organization_unit_id: $organization_unit_id, page:$page, size:$size, type: $type) {
+const insertFixedDeposit = `mutation($data: FixedDepositMutation!) {
+    fixedDeposit_Insert(data: $data) {
         status 
         message 
         data
-        items {
-            id
+        item {
             id
             organization_unit{
                 id
@@ -20,7 +19,6 @@ const getFixedDeposits = `query fixedDeposit_Overview($id: Int,$status: String, 
             date_of_case
             date_of_finality
             date_of_enforceability
-						date_of_end
             account{
                 id
                 title
@@ -53,6 +51,7 @@ const getFixedDeposits = `query fixedDeposit_Overview($id: Int,$status: String, 
                  serial_number
                  amount
                  date_of_confiscation
+                 date_of_case
                  file{
                     id
                     name
@@ -113,7 +112,7 @@ const getFixedDeposits = `query fixedDeposit_Overview($id: Int,$status: String, 
             created_at
             updated_at   
         }
-        }
-    }`;
+    }
+}`;
 
-export default getFixedDeposits;
+export default insertFixedDeposit;

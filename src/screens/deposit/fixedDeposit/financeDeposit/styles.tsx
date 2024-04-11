@@ -1,4 +1,4 @@
-import {Input, Dropdown, Datepicker, Divider, Tabs, Theme, Typography} from 'client-library';
+import {Divider, Tabs, Theme, Typography} from 'client-library';
 import styled from 'styled-components';
 
 export const SectionBox = styled.div`
@@ -53,36 +53,8 @@ export const Row = styled.div`
   align-items: center;
 `;
 
-export const CustomDropdown = styled(Dropdown)`
-  width: 100%;
-
-  :first-child {
-    margin-right: 20px;
-  }
-`;
-
-export const CustomDatepicker = styled(Datepicker)`
-  width: 100%;
-
-  :first-child {
-    margin-right: 20px;
-  }
-`;
-
-export const CustomInput = styled(Input)`
-  width: 100%;
-
-  :first-child {
-    margin-right: 20px;
-  }
-`;
-
 export const PlusButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-block: 5%;
-`;
-
-export const Price = styled(Typography)`
-  padding-left: 10px;
 `;

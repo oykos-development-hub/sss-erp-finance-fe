@@ -1,7 +1,7 @@
 import {FixedDepositType, FixedDepositStatus} from '../deposits';
 import {DropdownData} from '../dropdownData';
 import {FileItem} from '../fileUploadType';
-import {GetResponse} from './response';
+import {GetResponse, InsertResponse, SimpleResponse} from './response';
 
 export type DepositConfiscation = {
   id: number;
@@ -15,7 +15,6 @@ export type DepositConfiscation = {
   serial_number: string;
   amount: number;
   date_of_confiscation: string;
-  date_of_case: string;
   file: FileItem;
   created_at: string;
   updated_at: string;
@@ -78,4 +77,62 @@ export type FixedDepositResponse = {
   get: {
     fixedDeposit_Overview: GetResponse<FixedDeposit>;
   };
+  insert: {
+    fixedDeposit_Insert: InsertResponse<FixedDeposit>;
+  };
+  delete: {
+    fixedDeposit_Delete: SimpleResponse;
+  };
+};
+
+export type FixedDepositItemResponse = {
+  insert: {
+    fixedDepositItem_Insert: InsertResponse<DepositConfiscation>;
+  };
+  delete: {
+    fixedDepositItem_Delete: SimpleResponse;
+  };
+};
+
+export type FixedDepositDispatchResponse = {
+  insert: {
+    fixedDepositDispatch_Insert: InsertResponse<DepositDispatch>;
+  };
+  delete: {
+    fixedDepositDispatch_Delete: SimpleResponse;
+  };
+};
+
+export type FixedDepositInsertData = {
+  organization_unit_id: number;
+  subject: string;
+  case_number: string;
+  date_of_recipiet: string;
+  date_of_case: string;
+  type: string;
+  date_of_end: string;
+};
+
+export type FixedDepositItemInsertData = {
+  deposit_id: number;
+  amount: number;
+  currency?: string;
+  serial_number?: string;
+  date_of_confiscation: string;
+  case_number?: string;
+  unit?: string;
+  category?: number;
+  file_id?: number | null;
+  judge_id: number;
+};
+
+export type FixedDepositDispatchData = {
+  deposit_id: number;
+  amount: number;
+  currency: string;
+  // serial_number: string;
+  date_of_action: string;
+  // case_number: string;
+  judge_id: number;
+  action: string;
 };

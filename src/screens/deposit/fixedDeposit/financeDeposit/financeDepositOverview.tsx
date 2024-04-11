@@ -1,18 +1,21 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {SearchIcon, Table} from 'client-library';
+import {SearchIcon, Table, EditIcon, TrashIcon, Theme} from 'client-library';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import useAppContext from '../../../../context/useAppContext.ts';
-import useGetFixedDeposits from '../../../../services/graphQL/fixedDeposits/useGetFixedDeposits.ts';
-import {FixedDepositStatus, FixedDepositsOptions} from '../../../../types/deposits.ts';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas.ts';
 import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {FilterInput} from '../../../accounting/styles.tsx';
 import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles.ts';
 import {tableHeads} from './constants.tsx';
 import {Header} from './styles.tsx';
+import useGetFixedDeposits from '../../../../services/graphQL/fixedDeposits/useGetFixedDeposits.ts';
 import useGetJudges from '../../../../services/graphQL/judges/useGetJudges.ts';
+import {FixedDepositStatus, FixedDepositsOptions} from '../../../../types/deposits.ts';
 import {FixedDeposit} from '../../../../types/graphQL/fixedDeposits.ts';
+import {useState} from 'react';
+import useDeleteFixedDeposit from '../../../../services/graphQL/fixedDeposits/useDeleteFixedDeposit.ts';
+import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 
 const financeDepositFilterSchema = yup.object({
   judge_id: optionsNumberSchema.default(null),
@@ -23,9 +26,12 @@ const financeDepositFilterSchema = yup.object({
 type FinancialDepositFilterType = yup.InferType<typeof financeDepositFilterSchema>;
 
 const FinanceDepositOverview = () => {
+  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
+
   const {
     contextMain: {organization_unit_id},
     navigation: {navigate},
+    alert,
   } = useAppContext();
 
   const {judges} = useGetJudges({});
@@ -38,13 +44,29 @@ const FinanceDepositOverview = () => {
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const {data, loading} = useGetFixedDeposits({
+  const {data, loading, refetch} = useGetFixedDeposits({
     judge_id: judge_id?.id,
     search: debouncedSearch,
     status: status?.title as FixedDepositStatus,
     organization_unit_id: organization_unit_id,
     type: 'financial',
   });
+  const {deleteFixedDeposit} = useDeleteFixedDeposit();
+
+  const handleDelete = async () => {
+    if (!deleteItemId) return;
+
+    await deleteFixedDeposit(
+      deleteItemId,
+      () => {
+        refetch();
+        alert.success('Uspješno obrisan depozit.');
+      },
+      () => alert.error('Greška. Brisanje depozita nije uspjelo.'),
+    );
+
+    setDeleteItemId(null);
+  };
 
   return (
     <>
@@ -87,9 +109,31 @@ const FinanceDepositOverview = () => {
         style={{marginBottom: 22}}
         isLoading={loading}
         onRowClick={(row: FixedDeposit) => {
-          navigate(`/finance/deposit/fixed/finance/${row.id}`);
+          navigate(`/finance/deposit/fixed/financial/${row.id}`);
         }}
+        tableActions={[
+          {
+            name: 'edit',
+            onClick: row => {
+              navigate(`/finance/deposit/fixed/financial/${row.id}`);
+            },
+            icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+          },
+          {
+            name: 'delete',
+            onClick: row => setDeleteItemId(row.id),
+            icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+          },
+        ]}
       />
+      {deleteItemId && (
+        <ConfirmationModal
+          open={true}
+          onClose={() => setDeleteItemId(null)}
+          onConfirm={handleDelete}
+          subTitle="Da li ste sigurni da želite da izbrišete ovaj depozit?"
+        />
+      )}
     </>
   );
 };

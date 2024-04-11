@@ -34,10 +34,8 @@ const renderMicroService = (App: React.FC) => {
 
 renderMicroService((props: MicroserviceProps) => {
   return (
-    <React.StrictMode>
-      <AppContextProvider microserviceProps={props}>
-        <Router />
-      </AppContextProvider>
-    </React.StrictMode>
+    <AppContextProvider microserviceProps={props}>
+      <Router />
+    </AppContextProvider>
   );
 });

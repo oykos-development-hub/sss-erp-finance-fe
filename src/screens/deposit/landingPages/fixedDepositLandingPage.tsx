@@ -15,7 +15,7 @@ export const FixedDepositLandingPage: React.FC = () => {
         <Container>
           <LandingPageContentBox
             title={'Finansijski depozit'}
-            path={'/finance/deposit/fixed/finance'}
+            path={'/finance/deposit/fixed/financial'}
             icon={<DepositIcon />}
           />
           <LandingPageContentBox

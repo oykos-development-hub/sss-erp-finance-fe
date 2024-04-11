@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react';
 import useAppContext from '../../../context/useAppContext.ts';
 import {FixedDepositStatus, FixedDepositType} from '../../../types/deposits.ts';
-import {BudgetFinancialResponseData} from '../../../types/graphQL/budgetFinancial.ts';
 import {FixedDepositResponse} from '../../../types/graphQL/fixedDeposits.ts';
 import {PageParams} from '../../../types/graphQL/response.ts';
 import {QueryOptions} from '../../../types/queries.ts';
@@ -20,7 +19,7 @@ type GetBudgetFinancialParams = {
 
 const useGetFixedDeposits = (
   {judge_id, id, status, search, organization_unit_id, page, size, type}: GetBudgetFinancialParams,
-  opts?: QueryOptions<BudgetFinancialResponseData>,
+  opts?: QueryOptions<FixedDepositResponse['get']['fixedDeposit_Overview']>,
 ) => {
   const [fixedDeposits, setFixedDeposits] =
     useState<FixedDepositResponse['get']['fixedDeposit_Overview']>(initialOverviewData);

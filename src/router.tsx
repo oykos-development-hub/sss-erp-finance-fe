@@ -21,6 +21,7 @@ import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.t
 import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDynamicsTabs.tsx';
 import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
 import TaxContributionCalculationOverview from './screens/deposit/demandDeposit/taxContributionCalculation/taxContributionCalculationOverview.tsx';
+import FinanceDepositDetails from './screens/deposit/fixedDeposit/financeDeposit/financeDepositDetails.tsx';
 import {FinanceDepositTabs} from './screens/deposit/fixedDeposit/financeDeposit/financeDepositTabs.tsx';
 import {MaterialDepositTabs} from './screens/deposit/fixedDeposit/materialDeposit/materialDepositTabs.tsx';
 import {TestamentTabs} from './screens/deposit/fixedDeposit/testament/testamentTabs.tsx';
@@ -62,7 +63,7 @@ export const Router = () => {
 
     const SSSBudgetDetailsRegex = /^\/finance\/budget\/planning\/(add-new|\d+)$/;
     const OUBudgetDetailsSummary = /^\/finance\/budget\/planning\/\d+\/summary$/;
-    const FinancialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/finance\/(add-new|\d+)$/;
+    const FinancialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/financial\/\d+$/;
 
     // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
@@ -109,8 +110,9 @@ export const Router = () => {
     if (pathname === '/finance/deposit') return <DepositLandingPage />;
     if (pathname === '/finance/deposit/fixed') return <FixedDepositLandingPage />;
 
-    if (pathname === '/finance/deposit/fixed/finance') return <FinanceDepositTabs />;
-    if (FinancialDepositDetailsRegex.test(pathname)) return <FinanceDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/financial') return <FinanceDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/add-new') return <FinanceDepositTabs />;
+    if (FinancialDepositDetailsRegex.test(pathname)) return <FinanceDepositDetails />;
 
     if (pathname === '/finance/deposit/fixed/material') return <MaterialDepositTabs />;
     if (pathname === '/finance/deposit/fixed/new-material-entry') return <MaterialDepositTabs />;

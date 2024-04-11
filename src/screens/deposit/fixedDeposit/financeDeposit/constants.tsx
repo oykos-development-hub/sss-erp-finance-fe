@@ -8,8 +8,8 @@ export enum Tabs {
 }
 
 export const stockTabs = [
-  {id: Tabs.Overview, title: 'Pregled', routeName: 'finance'},
-  {id: Tabs.NewEntry, title: 'Unos', routeName: 'new-entry'},
+  {id: Tabs.Overview, title: 'Pregled', routeName: 'financial'},
+  {id: Tabs.NewEntry, title: 'Unos', routeName: 'add-new'},
 ];
 
 export const getCurrentTab = (pathname: string) => {
@@ -56,37 +56,67 @@ export const tableHeads: TableHead[] = [
     accessor: 'status',
     type: 'text',
   },
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
-export const newEntrytableHeads: TableHead[] = [
+export const fixedDepositItemTableHeads: TableHead[] = [
   {
     title: 'Valuta',
-    accessor: '',
+    accessor: 'currency',
     type: 'text',
   },
   {
     title: 'Iznos',
-    accessor: '',
+    accessor: 'amount',
     type: 'text',
   },
   {
-    title: 'Vraćeni iznos',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Datum akta',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Broj akta',
-    accessor: '',
-    type: 'text',
+    title: 'Datum oduzimanja',
+    accessor: 'date_of_confiscation',
+    type: 'custom',
+    renderContents: (value: string) => <Typography variant="bodyMedium" content={parseDate(value)} />,
   },
   {
     title: 'Sudija',
-    accessor: '',
+    accessor: 'judge',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+  },
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
+];
+
+export const fixedDepositDispatchTableHeads: TableHead[] = [
+  {
+    title: 'Valuta',
+    accessor: 'currency',
     type: 'text',
   },
+  {
+    title: 'Iznos',
+    accessor: 'amount',
+    type: 'text',
+  },
+  {
+    title: 'Datum akcije',
+    accessor: 'date_of_action',
+    type: 'custom',
+    renderContents: (value: string) => <Typography variant="bodyMedium" content={parseDate(value)} />,
+  },
+  {
+    title: 'Sudija',
+    accessor: 'judge',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+  },
+  {
+    title: 'Akcija',
+    accessor: 'action',
+    type: 'text',
+  },
+  {
+    title: 'Subjekt',
+    accessor: 'subject',
+    type: 'text',
+  },
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

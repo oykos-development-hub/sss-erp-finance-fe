@@ -1,121 +1,179 @@
-import {yupResolver} from '@hookform/resolvers/yup';
-import {Button, FileUpload, Table, Typography} from 'client-library';
+import {Divider} from '@oykos-development/devkit-react-ts-styled-components';
+import {EditIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
 import {useState} from 'react';
-import {Controller, useForm} from 'react-hook-form';
-import * as yup from 'yup';
-import {requiredError} from '../../../../constants.ts';
+import ConfiscationModal from '../../../../components/confiscationModal/FinancialConfiscationModal.tsx';
+import FixedDepositForm from '../../../../components/financeDepositForm.tsx/fixedDepositForm.tsx';
 import useAppContext from '../../../../context/useAppContext.ts';
-import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
-import Footer from '../../../../shared/footer.ts';
+import useDeleteFixedDepositItem from '../../../../services/graphQL/fixedDeposits/useDeleteFixedDepositItem.ts';
+import useGetFixedDeposits from '../../../../services/graphQL/fixedDeposits/useGetFixedDeposits.ts';
+import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import PlusButton from '../../../../shared/plusButton.tsx';
-import {optionsNumberSchema} from '../../../../utils/formSchemas.ts';
-import {newEntrytableHeads} from './constants.tsx';
-import {CustomDatepicker, CustomDropdown, CustomInput, PlusButtonWrapper, Price, Row, SubTitle} from './styles.tsx';
-
-const fixedDepositSchema = yup.object({
-  case_number: yup.string().required(requiredError),
-  subject: yup.string().required(requiredError),
-  account_id: optionsNumberSchema,
-  // date_of_recipiet: yup.date().required(requiredError).default(null),
-  // date_of_case: yup.date().required(requiredError).default(null),
-});
-
-type FixedDepositForm = yup.InferType<typeof fixedDepositSchema>;
+import {TableTitle} from '../../../../shared/tableTitle.tsx';
+import {DepositConfiscation, DepositDispatch} from '../../../../types/graphQL/fixedDeposits.ts';
+import {ScreenWrapper} from '../../../budget/budgetTemplate/styles.ts';
+import {fixedDepositItemTableHeads} from './constants.tsx';
+import {MainTitle, PlusButtonWrapper, SectionBox} from './styles.tsx';
+import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
+import useDeleteDepositDispatch from '../../../../services/graphQL/fixedDeposits/useDeleteDepositDispatch.ts';
 
 const FinanceDepositDetails = () => {
-  const [uploadedFile, setUploadedFile] = useState<FileList>();
+  const [confiscationModal, setConfiscationModal] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
+  const [itemEditData, setItemEditData] = useState<DepositConfiscation | null>(null);
+
+  const [dispatchModal, setDispatchModal] = useState(false);
+  const [deleteDispatchId, setDeleteDispatchId] = useState<number | null>(null);
+  const [dispatchEditData, setDispatchEditData] = useState<DepositDispatch | null>(null);
+
   const {
     navigation: {
-      navigate,
-      // location: {pathname},
+      location: {pathname},
     },
-    // contextMain: {organization_unit_id},
+    contextMain: {organization_unit_id},
+    alert,
   } = useAppContext();
 
-  // const id = pathname.split('/').pop();
+  const id = pathname.split('/').pop();
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: {errors},
-  } = useForm<FixedDepositForm>({
-    resolver: yupResolver(fixedDepositSchema),
+  const {data: currentDeposit, refetch} = useGetFixedDeposits({
+    id: id ? parseInt(id) : null,
+    organization_unit_id,
+    type: 'financial',
   });
 
-  // const {data: currentDeposit} = useGetFixedDeposits({
-  //   id: id ? parseInt(id) : null,
-  //   organization_unit_id,
-  //   type: 'financial',
-  // });
+  const {deleteFixedDepositItem} = useDeleteFixedDepositItem();
+  const {deleteDepositDispatch} = useDeleteDepositDispatch();
 
-  const {counts} = useGetCountOverview({});
+  const handleDeleteItem = async () => {
+    if (!deleteItemId) return;
 
-  const handleUpload = (files: FileList) => {
-    setUploadedFile(files);
+    await deleteFixedDepositItem(
+      deleteItemId,
+      () => {
+        refetch();
+        alert.success('Uspješno obrisan depozit.');
+      },
+      () => alert.error('Greška. Brisanje depozita nije uspjelo.'),
+    );
+
+    setDeleteItemId(null);
   };
-  console.log(errors);
 
-  const onSubmit = (data: FixedDepositForm) => {
-    console.log(data, 'asdasdasdasd');
+  const handleDeleteDispatch = async () => {
+    if (!deleteDispatchId) return;
+
+    await deleteDepositDispatch(
+      deleteDispatchId,
+      () => {
+        refetch();
+        alert.success('Uspješno obrisana akcija.');
+      },
+      () => alert.error('Greška. Brisanje akcije nije uspjelo.'),
+    );
+
+    setDeleteDispatchId(null);
   };
-
-  // TO DO add logic when the backend is ready
 
   return (
-    <>
-      <Row>
-        <CustomInput {...register('case_number')} label="BROJ PREDMETA:" error={errors.case_number?.message} />
-        <CustomInput {...register('subject')} label="IME I PREZIME STRANKE:" error={errors.subject?.message} />
-      </Row>
-      <Row>
-        {/* <Controller control={control} /> */}
-        <CustomDatepicker options={[]} label="DATUM PREDMETA" onChange={() => console.log('changed')} />
-      </Row>
-      <Row>
-        <Controller
-          name="account_id"
-          control={control}
-          render={({field: {name, value, onChange}}) => (
-            <CustomDropdown
-              value={value}
-              onChange={onChange}
-              name={name}
-              options={counts}
-              label="KONTO"
-              error={errors.account_id?.message}
-            />
-          )}
+    <ScreenWrapper>
+      <SectionBox>
+        <MainTitle content={`STALNI FINANSKIJSKI DEPOZIT - ${currentDeposit?.items[0]?.case_number}`} />
+        <Divider color={Theme?.palette?.gray200} height="1px" style={{marginBottom: 20}} />
+        <FixedDepositForm />
+      </SectionBox>
+
+      <SectionBox>
+        {/* FIRST TABLE - CONFISCATIONS */}
+        <TableTitle>
+          <Typography variant="bodyLarge" content="Depoziti" style={{fontWeight: 'bold'}} />
+          <PlusButtonWrapper>
+            <PlusButton onClick={() => setConfiscationModal(true)} />
+          </PlusButtonWrapper>
+        </TableTitle>
+        <Table
+          tableHeads={fixedDepositItemTableHeads}
+          data={currentDeposit?.items[0]?.items || []}
+          tableActions={[
+            {
+              name: 'edit',
+              onClick: row => {
+                setItemEditData(row);
+                setConfiscationModal(true);
+              },
+              icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+            },
+            {
+              name: 'delete',
+              onClick: row => setDeleteItemId(row.id),
+              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            },
+          ]}
+          style={{marginBottom: 22}}
         />
-        <CustomDatepicker options={[]} label="DATUM ZAKLJUČENJA" onChange={() => console.log('changed')} />
-      </Row>
-      <Row>
-        <FileUpload
-          icon={null}
-          files={uploadedFile}
-          variant="secondary"
-          onUpload={handleUpload}
-          note={<Typography variant="bodySmall" content="Dodaj fajl" />}
-          buttonText="Učitaj"
+        {confiscationModal && (
+          <ConfiscationModal
+            data={itemEditData}
+            open={confiscationModal}
+            onClose={() => setConfiscationModal(false)}
+            refetch={refetch}
+          />
+        )}
+        {deleteItemId && (
+          <ConfirmationModal
+            open={true}
+            onClose={() => setDeleteItemId(null)}
+            onConfirm={handleDeleteItem}
+            subTitle="Da li ste sigurni da želite da izbrišete ovaj depozit?"
+          />
+        )}
+      </SectionBox>
+
+      <SectionBox>
+        {/* SECOND TABLE - RETURNS (DISPATCHES IN BACKEND) */}
+        <TableTitle>
+          <Typography variant="bodyLarge" content="Akcije" style={{fontWeight: 'bold'}} />
+          <PlusButtonWrapper>
+            <PlusButton onClick={() => setDispatchModal(true)} />
+          </PlusButtonWrapper>
+        </TableTitle>
+        <Table
+          tableHeads={fixedDepositItemTableHeads}
+          data={currentDeposit?.items[0]?.dispatches || []}
+          tableActions={[
+            {
+              name: 'edit',
+              onClick: row => {
+                setDispatchEditData(row);
+                setConfiscationModal(true);
+              },
+              icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+            },
+            {
+              name: 'delete',
+              onClick: row => setDeleteItemId(row.id),
+              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            },
+          ]}
+          style={{marginBottom: 22}}
         />
-        {/* <FileList files={[currentDeposit.items[0]?.file && currentDeposit.items[0].file]} /> */}
-      </Row>
-      <Footer>
-        <Button content="Odustani" variant="secondary" onClick={() => navigate('/finance/deposit/fixed/finance')} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
-      </Footer>
-
-      <PlusButtonWrapper>
-        <PlusButton onClick={() => console.log('click')} />
-      </PlusButtonWrapper>
-
-      <Table tableHeads={newEntrytableHeads} data={[]} style={{marginBottom: 22}} />
-
-      <Row>
-        <SubTitle variant="bodySmall" content="SALDO/IZNOS:" />
-        <Price variant="bodySmall" content="100,00 Є" />
-      </Row>
-    </>
+        {dispatchModal && (
+          <DepositDispatchModal
+            data={dispatchEditData}
+            open={true}
+            onClose={() => setDispatchModal(false)}
+            refetch={refetch}
+          />
+        )}
+        {deleteDispatchId && (
+          <ConfirmationModal
+            open={true}
+            onClose={() => setDeleteDispatchId(null)}
+            onConfirm={handleDeleteDispatch}
+            subTitle="Da li ste sigurni da želite da izbrišete ovu akciju?"
+          />
+        )}
+      </SectionBox>
+    </ScreenWrapper>
   );
 };
 

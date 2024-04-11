@@ -2,10 +2,10 @@ import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {useEffect, useMemo, useState} from 'react';
 import useAppContext from '../../../../context/useAppContext';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper';
-import {Tabs, getCurrentTab, getRouteName, stockTabs} from './constants';
+import {Tabs, getRouteName, getCurrentTab, stockTabs} from './constants';
 import FinanceDepositOverview from './financeDepositOverview';
-import NewEntry from './financeDepositDetails';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from './styles';
+import NewEntryFinancial from './newEntryFinancial';
 
 export const FinanceDepositTabs = () => {
   const {
@@ -29,21 +29,22 @@ export const FinanceDepositTabs = () => {
   };
 
   const currentFinanceDepositRoute = useMemo(() => {
-    if (/(add-new|\d+)$/.test(currentFinancePath)) {
-      return <NewEntry />;
+    if (currentFinancePath === 'add-new') {
+      return <NewEntryFinancial />;
     } else {
       return <FinanceDepositOverview />;
     }
   }, [currentFinancePath]);
 
-  const getTitle = () => {
+  const getTitle = useMemo(() => {
     switch (activeTab) {
       case Tabs.NewEntry:
-        return 'UNOS';
+        return 'STALNI FINANSIJSKI DEPOZIT - UNOS';
       default:
-        return 'STALNI FINANSIJSKI - PREGLED';
+        return 'STALNI FINANSIJSKI DEPOZIT - PREGLED';
     }
-  };
+  }, [activeTab]);
+
   useEffect(() => {
     setActiveTab(getCurrentTab(location.pathname) || 1);
   }, [location.pathname]);
@@ -52,10 +53,10 @@ export const FinanceDepositTabs = () => {
     <ScreenWrapper>
       <SectionBox>
         <TitleTabsWrapper>
-          <MainTitle variant="bodyMedium" content={getTitle()} style={{marginBottom: 0}} />
+          <MainTitle variant="bodyMedium" content={getTitle} style={{marginBottom: 0}} />
           <StyledTabs tabs={stockTabs} activeTab={activeTab} onChange={onTabChange} />
         </TitleTabsWrapper>
-        <CustomDivider style={{marginTop: 0}} />
+        <CustomDivider style={{marginTop: 0, marginBottom: 20}} />
         {currentFinanceDepositRoute}
       </SectionBox>
     </ScreenWrapper>

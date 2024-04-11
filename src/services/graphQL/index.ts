@@ -13,7 +13,13 @@ import deleteFee from './fees/deleteFee.ts';
 import deleteFeesPayment from './fees/feesPayments/deleteFeesPayment.ts';
 import insertFeesPayment from './fees/feesPayments/insertFeesPayment.ts';
 import getFeesPayments from './fees/feesPayments/getFeesPayments.ts';
+import deleteDepositDispatch from './fixedDeposits/deleteDepositDispatch.ts';
+import deleteFixedDeposit from './fixedDeposits/deleteFixedDeposit.ts';
+import deleteFixedDepositItem from './fixedDeposits/deleteFixedDepositItem.ts';
 import getFixedDeposits from './fixedDeposits/getFixedDeposits.ts';
+import insertDepositDispatch from './fixedDeposits/insertDepositDispatch.ts';
+import insertFixedDeposit from './fixedDeposits/insertFixedDeposit.ts';
+import insertFixedDepositItem from './fixedDeposits/insertFixedDepositItem.ts';
 import getBudgetDetails from './getBudgetDetails/getBudgetDetails.ts';
 import getBudgets from './getBudgets/getBudgets';
 import insertBudget from './insertBudget/insertBudget.ts';
@@ -103,4 +109,10 @@ export const GraphQL = {
   getFlatRatePayments: getFlatRatePayment,
   insertFlatRatePayment: insertFlatRatePayment,
   deleteFlatRatePayment: deleteFlatRatePayment,
+  insertFixedDeposit: insertFixedDeposit,
+  deleteFixedDeposit: deleteFixedDeposit,
+  insertFixedDepositItem: insertFixedDepositItem,
+  deleteFixedDepositItem: deleteFixedDepositItem,
+  insertDepositDispatch: insertDepositDispatch,
+  deleteDepositDispatch: deleteDepositDispatch,
 };
