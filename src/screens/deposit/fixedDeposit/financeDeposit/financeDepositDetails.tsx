@@ -35,7 +35,11 @@ const FinanceDepositDetails = () => {
 
   const id = pathname.split('/').pop();
 
-  const {data: currentDeposit, refetch} = useGetFixedDeposits({
+  const {
+    data: currentDeposit,
+    refetch,
+    loading,
+  } = useGetFixedDeposits({
     id: id ? parseInt(id) : null,
     organization_unit_id,
     type: 'financial',
@@ -74,40 +78,47 @@ const FinanceDepositDetails = () => {
     setDeleteDispatchId(null);
   };
 
+  const disabled = currentDeposit?.items[0]?.status === 'Zakljucen';
+
   return (
     <ScreenWrapper>
       <SectionBox>
         <MainTitle content={`STALNI FINANSKIJSKI DEPOZIT - ${currentDeposit?.items[0]?.case_number}`} />
         <Divider color={Theme?.palette?.gray200} height="1px" style={{marginBottom: 20}} />
-        <FixedDepositForm />
+        <FixedDepositForm data={currentDeposit?.items[0]} />
       </SectionBox>
 
       <SectionBox>
         {/* FIRST TABLE - CONFISCATIONS */}
         <TableTitle>
-          <Typography variant="bodyLarge" content="Depoziti" style={{fontWeight: 'bold'}} />
+          <Typography variant="bodyLarge" content="Dodavanje depozita" style={{fontWeight: 'bold'}} />
           <PlusButtonWrapper>
-            <PlusButton onClick={() => setConfiscationModal(true)} />
+            <PlusButton onClick={() => setConfiscationModal(true)} disabled={disabled} />
           </PlusButtonWrapper>
         </TableTitle>
         <Table
           tableHeads={fixedDepositItemTableHeads}
           data={currentDeposit?.items[0]?.items || []}
-          tableActions={[
-            {
-              name: 'edit',
-              onClick: row => {
-                setItemEditData(row);
-                setConfiscationModal(true);
-              },
-              icon: <EditIcon stroke={Theme?.palette?.gray800} />,
-            },
-            {
-              name: 'delete',
-              onClick: row => setDeleteItemId(row.id),
-              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            },
-          ]}
+          isLoading={loading}
+          tableActions={
+            disabled
+              ? undefined
+              : [
+                  {
+                    name: 'edit',
+                    onClick: row => {
+                      setItemEditData(row);
+                      setConfiscationModal(true);
+                    },
+                    icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                  },
+                  {
+                    name: 'delete',
+                    onClick: row => setDeleteItemId(row.id),
+                    icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                  },
+                ]
+          }
           style={{marginBottom: 22}}
         />
         {confiscationModal && (
@@ -131,29 +142,34 @@ const FinanceDepositDetails = () => {
       <SectionBox>
         {/* SECOND TABLE - RETURNS (DISPATCHES IN BACKEND) */}
         <TableTitle>
-          <Typography variant="bodyLarge" content="Akcije" style={{fontWeight: 'bold'}} />
+          <Typography variant="bodyLarge" content="Vraćanje depozita" style={{fontWeight: 'bold'}} />
           <PlusButtonWrapper>
-            <PlusButton onClick={() => setDispatchModal(true)} />
+            <PlusButton onClick={() => setDispatchModal(true)} disabled={disabled} />
           </PlusButtonWrapper>
         </TableTitle>
         <Table
           tableHeads={fixedDepositItemTableHeads}
           data={currentDeposit?.items[0]?.dispatches || []}
-          tableActions={[
-            {
-              name: 'edit',
-              onClick: row => {
-                setDispatchEditData(row);
-                setConfiscationModal(true);
-              },
-              icon: <EditIcon stroke={Theme?.palette?.gray800} />,
-            },
-            {
-              name: 'delete',
-              onClick: row => setDeleteItemId(row.id),
-              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            },
-          ]}
+          isLoading={loading}
+          tableActions={
+            disabled
+              ? undefined
+              : [
+                  {
+                    name: 'edit',
+                    onClick: row => {
+                      setDispatchEditData(row);
+                      setConfiscationModal(true);
+                    },
+                    icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                  },
+                  {
+                    name: 'delete',
+                    onClick: row => setDeleteItemId(row.id),
+                    icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                  },
+                ]
+          }
           style={{marginBottom: 22}}
         />
         {dispatchModal && (

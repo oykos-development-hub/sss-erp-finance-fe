@@ -6,7 +6,6 @@ import * as yup from 'yup';
 import {requiredError} from '../../constants';
 import useAppContext from '../../context/useAppContext';
 import useGetCountOverview from '../../services/graphQL/counts/useGetCountOverview';
-import useGetFixedDeposits from '../../services/graphQL/fixedDeposits/useGetFixedDeposits';
 import useInsertFixedDeposit from '../../services/graphQL/fixedDeposits/useInsertFixedDeposit';
 import {FlexColumn, FlexRow} from '../../shared/flex';
 import Footer from '../../shared/footer';
@@ -27,7 +26,7 @@ const fixedDepositSchema = yup.object({
 
 type FixedDepositForm = yup.InferType<typeof fixedDepositSchema>;
 
-const FixedDepositForm = () => {
+const FixedDepositForm = ({data}: {data?: FixedDeposit}) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
 
   const {
@@ -51,12 +50,6 @@ const FixedDepositForm = () => {
     reset,
   } = useForm<FixedDepositForm>({
     resolver: yupResolver(fixedDepositSchema),
-  });
-
-  const {data: currentDeposit} = useGetFixedDeposits({
-    id: id ? parseInt(id) : null,
-    organization_unit_id,
-    type: 'financial',
   });
 
   const {counts} = useGetCountOverview({});
@@ -114,24 +107,36 @@ const FixedDepositForm = () => {
   };
 
   useEffect(() => {
-    if (currentDeposit?.items[0] && !isNew) {
+    if (data && !isNew) {
       reset({
-        file_id: currentDeposit?.items[0].file.id,
-        case_number: currentDeposit?.items[0].case_number,
-        subject: currentDeposit?.items[0].subject,
-        account_id: currentDeposit?.items[0].account,
-        date_of_recipiet: new Date(currentDeposit?.items[0].date_of_recipiet),
-        date_of_case: new Date(currentDeposit?.items[0].date_of_case),
-        date_of_end: currentDeposit?.items[0].date_of_end ? new Date(currentDeposit?.items[0].date_of_end) : null,
+        file_id: data?.file.id,
+        case_number: data?.case_number,
+        subject: data?.subject,
+        account_id: data?.account,
+        date_of_recipiet: new Date(data?.date_of_recipiet),
+        date_of_case: new Date(data?.date_of_case),
+        date_of_end: data?.date_of_end ? new Date(data?.date_of_end) : null,
       });
     }
-  }, [currentDeposit]);
+  }, [data]);
+
+  const disabled = data?.status === 'Zakljucen';
 
   return (
     <FlexColumn gap={20} style={{alignItems: 'stretch'}}>
       <FlexRow gap={8}>
-        <Input {...register('case_number')} label="BROJ PREDMETA:" error={errors.case_number?.message} />
-        <Input {...register('subject')} label="IME I PREZIME STRANKE:" error={errors.subject?.message} />
+        <Input
+          {...register('case_number')}
+          label="BROJ PREDMETA:"
+          error={errors.case_number?.message}
+          disabled={disabled}
+        />
+        <Input
+          {...register('subject')}
+          label="IME I PREZIME STRANKE:"
+          error={errors.subject?.message}
+          disabled={disabled}
+        />
       </FlexRow>
       <FlexRow gap={8}>
         <Controller
@@ -144,6 +149,7 @@ const FixedDepositForm = () => {
               label="DATUM PRIJEMA AKTA"
               onChange={onChange}
               error={errors.date_of_recipiet?.message}
+              disabled={disabled}
             />
           )}
         />
@@ -157,6 +163,7 @@ const FixedDepositForm = () => {
               label="DATUM PREDMETA"
               onChange={onChange}
               error={errors.date_of_case?.message}
+              disabled={disabled}
             />
           )}
         />
@@ -173,10 +180,11 @@ const FixedDepositForm = () => {
               options={counts}
               label="KONTO"
               error={errors.account_id?.message}
+              isDisabled={disabled}
             />
           )}
         />
-        <div>
+        <div style={{width: '100%'}}>
           <Controller
             name="date_of_end"
             control={control}
@@ -184,9 +192,10 @@ const FixedDepositForm = () => {
               <Datepicker
                 name={name}
                 selected={value ? new Date(value) : ''}
-                label="DATUM PREDMETA"
+                label="DATUM ZAKLJUČENJA"
                 onChange={onChange}
                 error={errors.date_of_end?.message}
+                disabled={isNew || disabled}
               />
             )}
           />
@@ -200,14 +209,17 @@ const FixedDepositForm = () => {
           onUpload={handleUpload}
           note={<Typography variant="bodySmall" content="Dodaj fajl" />}
           buttonText="Učitaj"
+          disabled={disabled}
         />
-        <FileList files={currentDeposit?.items[0]?.file.id ? [currentDeposit?.items[0]?.file] : null} />
+        <FileList files={data?.file.id ? [data.file] : null} />
       </div>
 
-      <Footer>
-        <Button content="Odustani" variant="secondary" onClick={() => navigate('/finance/deposit/fixed/financial')} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
-      </Footer>
+      {!disabled && (
+        <Footer>
+          <Button content="Odustani" variant="secondary" onClick={() => navigate('/finance/deposit/fixed/financial')} />
+          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+        </Footer>
+      )}
     </FlexColumn>
   );
 };

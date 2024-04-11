@@ -29,6 +29,7 @@ const depositDispatchSchema = yup.object({
   id: yup.number().nullable().default(null),
   action: yup.string().required(requiredError),
   subject: yup.string().required(requiredError),
+  case_number: yup.string().required(requiredError),
 });
 
 type DepositDispatchSchemaType = yup.InferType<typeof depositDispatchSchema>;
@@ -71,12 +72,14 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
       date_of_action: parseDateForBackend(data.date_of_action) as string,
       file_id: data.file_id ? data.file_id : null,
       currency: data.currency.id,
-      deposit_id,
+      deposit_id: parseInt(deposit_id as string),
       judge_id: data.judge_id.id,
       id: isNew ? null : data.id,
+      case_number: data.case_number,
     };
 
     if (uploadedFiles?.length) {
+      console.log(uploadedFiles);
       const formData = new FormData();
       const fileArray = Array.from(uploadedFiles);
 
@@ -118,6 +121,7 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
         currency: currencies.find((currency: DropdownData<string>) => currency.id === data.currency),
         amount: data.amount.toString(),
         subject: data.subject,
+        case_number: data.case_number,
       });
     }
   }, [data]);
@@ -156,7 +160,7 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
             />
           </div>
           <div style={{marginBottom: 15}}>
-            <Input {...register('subject')} label="SUBJEKT:" error={errors.subject?.message} />
+            <Input {...register('subject')} label="PRIMALAC:" error={errors.subject?.message} />
           </div>
           <Controller
             name="date_of_action"
@@ -166,12 +170,15 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
                 name={name}
                 selected={value ? new Date(value) : ''}
                 onChange={onChange}
-                label="DATUM AKCIJE:"
+                label="DATUM AKTA:"
                 error={errors.date_of_action?.message}
                 style={{marginBottom: 15}}
               />
             )}
           />
+          <div style={{marginBottom: 15}}>
+            <Input {...register('case_number')} label="BROJ AKTA:" error={errors.case_number?.message} />
+          </div>
           <div style={{marginBottom: 25}}>
             <Controller
               name="judge_id"

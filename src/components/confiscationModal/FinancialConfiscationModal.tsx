@@ -69,7 +69,7 @@ const FinancialConfiscationModal = ({open, onClose, data, refetch}: FinancialCon
       date_of_confiscation: parseDateForBackend(data.date_of_confiscation) as string,
       file_id: data.file_id ? data.file_id : null,
       currency: data.currency.id,
-      deposit_id,
+      deposit_id: parseInt(deposit_id as string),
       judge_id: data.judge_id.id,
       id: isNew ? null : data.id,
     };
@@ -131,7 +131,7 @@ const FinancialConfiscationModal = ({open, onClose, data, refetch}: FinancialCon
       content={
         <div>
           <div style={{marginBottom: 15}}>
-            <Input {...register('amount')} label="KOLIČINA:" error={errors.amount?.message} />
+            <Input {...register('amount')} label="IZNOS:" error={errors.amount?.message} />
           </div>
           <div style={{marginBottom: 15}}>
             <Controller
@@ -188,8 +188,9 @@ const FinancialConfiscationModal = ({open, onClose, data, refetch}: FinancialCon
               onUpload={handleUpload}
               note={<Typography variant="bodySmall" content="Dodaj fajl" />}
               buttonText="Učitaj"
+              style={{marginBottom: 10}}
             />
-            <FileList files={data?.file ? [data.file] : null} />
+            <FileList files={data?.file.id ? [data.file] : null} />
           </div>
         </div>
       }

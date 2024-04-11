@@ -1,4 +1,4 @@
-import {FixedDepositType, FixedDepositStatus} from '../deposits';
+import {FixedDepositType} from '../deposits';
 import {DropdownData} from '../dropdownData';
 import {FileItem} from '../fileUploadType';
 import {GetResponse, InsertResponse, SimpleResponse} from './response';
@@ -63,7 +63,7 @@ export type FixedDeposit = {
   date_of_enforceability: string;
   date_of_end: string;
   account: DropdownData<number>;
-  status: FixedDepositStatus;
+  status: 'U radu' | 'Zakljucen';
   type: FixedDepositType;
   file: FileItem;
   items: DepositConfiscation[];

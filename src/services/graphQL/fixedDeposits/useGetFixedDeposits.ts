@@ -9,7 +9,6 @@ import {initialOverviewData} from '../../constants.ts';
 import {GraphQL} from '../index.ts';
 
 type GetBudgetFinancialParams = {
-  judge_id?: number | null;
   id?: number | null;
   status?: FixedDepositStatus;
   search?: string;
@@ -18,7 +17,7 @@ type GetBudgetFinancialParams = {
 } & PageParams;
 
 const useGetFixedDeposits = (
-  {judge_id, id, status, search, organization_unit_id, page, size, type}: GetBudgetFinancialParams,
+  {id, status, search, organization_unit_id, page, size, type}: GetBudgetFinancialParams,
   opts?: QueryOptions<FixedDepositResponse['get']['fixedDeposit_Overview']>,
 ) => {
   const [fixedDeposits, setFixedDeposits] =
@@ -30,7 +29,6 @@ const useGetFixedDeposits = (
     setLoading(true);
 
     const response: FixedDepositResponse['get'] = await fetch(GraphQL.getFixedDeposits, {
-      judge_id,
       id,
       status,
       search,
@@ -53,7 +51,7 @@ const useGetFixedDeposits = (
 
   useEffect(() => {
     fetchFixedDeposits();
-  }, [judge_id, id, organization_unit_id, status, search, page, size, type]);
+  }, [id, organization_unit_id, status, search, page, size, type]);
 
   return {data: fixedDeposits, loading, refetch: fetchFixedDeposits};
 };

@@ -8,7 +8,7 @@ export enum Tabs {
 }
 
 export const stockTabs = [
-  {id: Tabs.Overview, title: 'Pregled', routeName: 'financial'},
+  {id: Tabs.Overview, title: 'Pregled', routeName: 'overview'},
   {id: Tabs.NewEntry, title: 'Unos', routeName: 'add-new'},
 ];
 
@@ -25,20 +25,9 @@ export const getRouteName = (tabName: string) => {
 
 export const tableHeads: TableHead[] = [
   {
-    title: 'ID',
-    accessor: 'id',
-    type: 'text',
-  },
-  {
     title: 'Subjekat',
     accessor: 'subject',
     type: 'text',
-  },
-  {
-    title: 'Sudija',
-    accessor: 'judge',
-    type: 'custom',
-    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
   {
     title: 'Datum rješenja',

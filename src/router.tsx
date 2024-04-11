@@ -22,17 +22,21 @@ import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDy
 import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
 import TaxContributionCalculationOverview from './screens/deposit/demandDeposit/taxContributionCalculation/taxContributionCalculationOverview.tsx';
 import FinanceDepositDetails from './screens/deposit/fixedDeposit/financeDeposit/financeDepositDetails.tsx';
-import {FinanceDepositTabs} from './screens/deposit/fixedDeposit/financeDeposit/financeDepositTabs.tsx';
-import {MaterialDepositTabs} from './screens/deposit/fixedDeposit/materialDeposit/materialDepositTabs.tsx';
+import {FixedDepositTabs} from './screens/deposit/fixedDeposit/fixedDepositTabs.tsx';
 import {TestamentTabs} from './screens/deposit/fixedDeposit/testament/testamentTabs.tsx';
 import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDepositLandingPage.tsx';
 import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
 import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
 import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
+import PropertyBenefitsConfiscationDetails from './screens/finesAndTaxes/confiscation/propertyBenefitsConfiscationDetails/propertyBenefitsConfiscationDetails.tsx';
+import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
 import Fines from './screens/finesAndTaxes/fines/fines.tsx';
 import FlatRate from './screens/finesAndTaxes/flatRate/flatRate.tsx';
+import FlatRateDetails from './screens/finesAndTaxes/flatRate/flatRateDetails/flatRateDetails.tsx';
 import {LandingPage as FinesAndTaxesLanding} from './screens/finesAndTaxes/landingPage.tsx';
+import ProceduralCostDetails from './screens/finesAndTaxes/proceduralCosts/proceduralCostDetails/proceduralCostDetails.tsx';
 import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralCosts.tsx';
+import FeeDetails from './screens/finesAndTaxes/taxes/feeDetails/feeDetails.tsx';
 import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
 import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
@@ -40,11 +44,6 @@ import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.ts
 import InvoiceDetails from './screens/liabilitesAndReceivables/invoices/invoiceDetails/invoiceDetails.tsx';
 import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
-import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
-import FeeDetails from './screens/finesAndTaxes/taxes/feeDetails/feeDetails.tsx';
-import ProceduralCostDetails from './screens/finesAndTaxes/proceduralCosts/proceduralCostDetails/proceduralCostDetails.tsx';
-import PropertyBenefitsConfiscationDetails from './screens/finesAndTaxes/confiscation/propertyBenefitsConfiscationDetails/propertyBenefitsConfiscationDetails.tsx';
-import FlatRateDetails from './screens/finesAndTaxes/flatRate/flatRateDetails/flatRateDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -53,6 +52,7 @@ export const Router = () => {
   const {
     navigation: {
       location: {pathname},
+      navigate,
     },
     contextMain: {role_id},
   } = useAppContext();
@@ -110,12 +110,14 @@ export const Router = () => {
     if (pathname === '/finance/deposit') return <DepositLandingPage />;
     if (pathname === '/finance/deposit/fixed') return <FixedDepositLandingPage />;
 
-    if (pathname === '/finance/deposit/fixed/financial') return <FinanceDepositTabs />;
-    if (pathname === '/finance/deposit/fixed/add-new') return <FinanceDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/financial') navigate('/finance/deposit/fixed/financial/overview');
+    if (pathname === '/finance/deposit/fixed/financial/overview') return <FixedDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/financial/add-new') return <FixedDepositTabs />;
     if (FinancialDepositDetailsRegex.test(pathname)) return <FinanceDepositDetails />;
 
-    if (pathname === '/finance/deposit/fixed/material') return <MaterialDepositTabs />;
-    if (pathname === '/finance/deposit/fixed/new-material-entry') return <MaterialDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/material') navigate('/finance/deposit/fixed/material/overview');
+    if (pathname === '/finance/deposit/fixed/material/overview') return <FixedDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/material/add-new') return <FixedDepositTabs />;
 
     if (pathname === '/finance/deposit/fixed/will') return <TestamentTabs />;
     if (pathname === '/finance/deposit/fixed/new-testament-entry') return <TestamentTabs />;
