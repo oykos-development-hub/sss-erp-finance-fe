@@ -91,7 +91,7 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
         style={{marginBottom: 22}}
         isLoading={loading}
         onRowClick={(row: FixedDeposit) => {
-          navigate(`/finance/deposit/fixed/financial/${row.id}`);
+          navigate(`/finance/deposit/fixed/${type}/${row.id}`);
         }}
         tableActions={[
           {

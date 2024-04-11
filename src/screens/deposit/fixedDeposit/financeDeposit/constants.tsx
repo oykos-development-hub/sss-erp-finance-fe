@@ -48,7 +48,7 @@ export const tableHeads: TableHead[] = [
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
-export const fixedDepositItemTableHeads: TableHead[] = [
+export const fixedFinancialDepositItemTableHeads: TableHead[] = [
   {
     title: 'Valuta',
     accessor: 'currency',

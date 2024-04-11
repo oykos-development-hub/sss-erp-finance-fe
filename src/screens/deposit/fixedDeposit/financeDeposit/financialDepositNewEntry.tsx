@@ -1,6 +1,6 @@
-import FixedDepositForm from '../../../../components/financeDepositForm.tsx/fixedDepositForm';
+import FixedDepositForm from '../../../../components/financeDepositForm.tsx/financialDepositForm';
 
-const NewEntryFinancial = () => {
+const FinancialDepositNewEntry = () => {
   return (
     <>
       <FixedDepositForm />
@@ -8,4 +8,4 @@ const NewEntryFinancial = () => {
   );
 };
 
-export default NewEntryFinancial;
+export default FinancialDepositNewEntry;

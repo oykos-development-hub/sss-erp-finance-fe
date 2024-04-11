@@ -2,21 +2,22 @@ import {Divider} from '@oykos-development/devkit-react-ts-styled-components';
 import {EditIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
 import {useState} from 'react';
 import ConfiscationModal from '../../../../components/confiscationModal/FinancialConfiscationModal.tsx';
-import FixedDepositForm from '../../../../components/financeDepositForm.tsx/financialDepositForm.tsx';
+import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
+import MaterialDepositForm from '../../../../components/materialDepositForm/materialDepositForm.tsx';
 import useAppContext from '../../../../context/useAppContext.ts';
+import useDeleteDepositDispatch from '../../../../services/graphQL/fixedDeposits/useDeleteDepositDispatch.ts';
 import useDeleteFixedDepositItem from '../../../../services/graphQL/fixedDeposits/useDeleteFixedDepositItem.ts';
 import useGetFixedDeposits from '../../../../services/graphQL/fixedDeposits/useGetFixedDeposits.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import PlusButton from '../../../../shared/plusButton.tsx';
+import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import {TableTitle} from '../../../../shared/tableTitle.tsx';
 import {DepositConfiscation, DepositDispatch} from '../../../../types/graphQL/fixedDeposits.ts';
-import {fixedDepositDispatchTableHeads, fixedFinancialDepositItemTableHeads} from './constants.tsx';
+import {fixedDepositDispatchTableHeads} from '../financeDeposit/constants.tsx';
+import {fixedMaterialDepositItemTableHeads} from './constants.tsx';
 import {MainTitle, PlusButtonWrapper, SectionBox} from './styles.tsx';
-import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
-import useDeleteDepositDispatch from '../../../../services/graphQL/fixedDeposits/useDeleteDepositDispatch.ts';
-import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 
-const FinanceDepositDetails = () => {
+const MaterialDepositDetails = () => {
   const [confiscationModal, setConfiscationModal] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
   const [itemEditData, setItemEditData] = useState<DepositConfiscation | null>(null);
@@ -42,7 +43,7 @@ const FinanceDepositDetails = () => {
   } = useGetFixedDeposits({
     id: id ? parseInt(id) : null,
     organization_unit_id,
-    type: 'financial',
+    type: 'material',
   });
 
   const {deleteFixedDepositItem} = useDeleteFixedDepositItem();
@@ -83,9 +84,9 @@ const FinanceDepositDetails = () => {
   return (
     <ScreenWrapper showBreadcrumbs={true}>
       <SectionBox>
-        <MainTitle content={`STALNI FINANSKIJSKI DEPOZIT - ${currentDeposit?.items[0]?.case_number}`} />
+        <MainTitle content={`STALNI MATERIJALNI DEPOZIT - ${currentDeposit?.items[0]?.case_number}`} />
         <Divider color={Theme?.palette?.gray200} height="1px" style={{marginBottom: 20}} />
-        <FixedDepositForm data={currentDeposit?.items[0]} />
+        <MaterialDepositForm data={currentDeposit?.items[0]} />
       </SectionBox>
 
       <SectionBox>
@@ -97,7 +98,7 @@ const FinanceDepositDetails = () => {
           </PlusButtonWrapper>
         </TableTitle>
         <Table
-          tableHeads={fixedFinancialDepositItemTableHeads}
+          tableHeads={fixedMaterialDepositItemTableHeads}
           data={currentDeposit?.items[0]?.items || []}
           isLoading={loading}
           tableActions={
@@ -193,4 +194,4 @@ const FinanceDepositDetails = () => {
   );
 };
 
-export default FinanceDepositDetails;
+export default MaterialDepositDetails;

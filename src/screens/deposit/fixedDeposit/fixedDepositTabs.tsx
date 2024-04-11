@@ -3,10 +3,11 @@ import {useEffect, useMemo, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {FixedDepositType} from '../../../types/deposits';
-import FixedDepositOverview from './fixedDepositOverview';
 import {Tabs, getCurrentTab, getRouteName, stockTabs} from './financeDeposit/constants';
-import NewEntryFinancial from './financeDeposit/financialDepositNewEntry';
+import FinancialDepositNewEntry from './financeDeposit/financialDepositNewEntry';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from './financeDeposit/styles';
+import FixedDepositOverview from './fixedDepositOverview';
+import MaterialDepositNewEntry from './materialDeposit/materialDepositNewEntry';
 
 export const FixedDepositTabs = () => {
   const {
@@ -34,7 +35,7 @@ export const FixedDepositTabs = () => {
 
   const currentFinanceDepositRoute = useMemo(() => {
     if (currentFinancePath === 'add-new') {
-      return <NewEntryFinancial />;
+      return type === 'financial' ? <FinancialDepositNewEntry /> : <MaterialDepositNewEntry />;
     } else {
       return <FixedDepositOverview type={type} key={type} />;
     }

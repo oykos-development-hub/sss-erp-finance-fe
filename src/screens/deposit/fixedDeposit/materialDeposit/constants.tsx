@@ -1,4 +1,6 @@
-import {TableHead} from 'client-library';
+import {TableHead, Typography} from 'client-library';
+import {DropdownData} from '../../../../types/dropdownData';
+import {parseDate} from '../../../../utils/dateUtils';
 
 export enum Tabs {
   Overview = 1,
@@ -54,35 +56,28 @@ export const tableHeads: TableHead[] = [
   },
 ];
 
-export const newMaterialEntrytableHeads: TableHead[] = [
+export const fixedMaterialDepositItemTableHeads: TableHead[] = [
   {
-    title: 'Kategorija',
-    accessor: '',
+    title: 'Valuta',
+    accessor: 'currency',
     type: 'text',
   },
   {
-    title: 'Serijski broj',
-    accessor: '',
+    title: 'Iznos',
+    accessor: 'amount',
     type: 'text',
   },
   {
-    title: 'Jedinica',
-    accessor: '',
-    type: 'text',
+    title: 'Datum oduzimanja',
+    accessor: 'date_of_confiscation',
+    type: 'custom',
+    renderContents: (value: string) => <Typography variant="bodyMedium" content={parseDate(value)} />,
   },
   {
-    title: 'Količina',
-    accessor: '',
-    type: 'text',
+    title: 'Sudija',
+    accessor: 'judge',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
-  {
-    title: 'Vraćena količina',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Datum akta',
-    accessor: '',
-    type: 'text',
-  },
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
