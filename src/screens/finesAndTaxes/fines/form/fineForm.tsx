@@ -69,7 +69,7 @@ const FineForm = ({fine}: FineFormProps) => {
   } = useForm<FineEntryForm>({resolver: yupResolver(fineSchema), defaultValues: defaultValues});
   const [uploadedFile, setUploadedFile] = useState<FileList>();
   const {counts} = useGetCountOverview({});
-  const {insertFine} = useInsertFine();
+  const {insertFine, loading} = useInsertFine();
   const {
     alert,
     fileService: {uploadFile},
@@ -334,7 +334,7 @@ const FineForm = ({fine}: FineFormProps) => {
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
       </Footer>
     </Container>
   );

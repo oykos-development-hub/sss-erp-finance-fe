@@ -23,7 +23,12 @@ const TaxesOverview = () => {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 
-  const {fees, refetch, total} = useGetFees({page: page, size: PAGE_SIZE, ...filters, search: debouncedSearch});
+  const {fees, refetch, total, loading} = useGetFees({
+    page: page,
+    size: PAGE_SIZE,
+    ...filters,
+    search: debouncedSearch,
+  });
   const [showDeleteFeeModal, setShowDeleteFeeModal] = useState<number | null>(null);
 
   const {
@@ -94,6 +99,7 @@ const TaxesOverview = () => {
       <Table
         tableHeads={tableHeadsTaxesOverview}
         data={fees}
+        isLoading={loading}
         style={{marginBottom: 22}}
         emptyMessage={'Još uvjek nema taksi'}
         onRowClick={(row: FinesOverviewItem) => navigate(`/finance/fines-taxes/taxes/${row.id}`)}

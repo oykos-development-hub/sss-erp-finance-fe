@@ -29,7 +29,7 @@ const FlatRateOverview = () => {
     alert,
   } = useAppContext();
 
-  const {flatRates, total, refetch} = useGetFlatRate({
+  const {flatRates, total, refetch, loading} = useGetFlatRate({
     page: page,
     size: PAGE_SIZE,
     ...filters,
@@ -88,6 +88,7 @@ const FlatRateOverview = () => {
       <Table
         tableHeads={tableHeadsFlatRateOverview}
         data={flatRates}
+        isLoading={loading}
         style={{marginBottom: 22}}
         emptyMessage={'Još uvjek nema paušala'}
         onRowClick={(row: FlatRateOverviewItem) => navigate(`/finance/fines-taxes/flat-rate/${row.id}`)}

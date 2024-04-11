@@ -27,7 +27,12 @@ const FinesOverview = () => {
     alert,
   } = useAppContext();
 
-  const {fines, total, refetch} = useGetFines({page: page, size: PAGE_SIZE, ...filters, search: debouncedSearch});
+  const {fines, total, refetch, loading} = useGetFines({
+    page: page,
+    size: PAGE_SIZE,
+    ...filters,
+    search: debouncedSearch,
+  });
   const {deleteFine} = useDeleteFine();
 
   const handleDeleteFine = async () => {
@@ -79,6 +84,7 @@ const FinesOverview = () => {
         </Filters>
       </Header>
       <Table
+        isLoading={loading}
         tableHeads={tableHeadsFinesOverview}
         data={fines}
         style={{marginBottom: 22}}

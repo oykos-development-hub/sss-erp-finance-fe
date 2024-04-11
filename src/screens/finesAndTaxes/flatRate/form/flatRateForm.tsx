@@ -68,7 +68,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
   } = useForm<FlatRateEntryForm>({resolver: yupResolver(flatRateSchema), defaultValues: defaultValues});
   const [uploadedFile, setUploadedFile] = useState<FileList>();
   const {counts} = useGetCountOverview({});
-  const {insertFlatRate} = useInsertFlatRate();
+  const {insertFlatRate, loading} = useInsertFlatRate();
   const {
     alert,
     fileService: {uploadFile},
@@ -333,7 +333,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
       </Footer>
     </Container>
   );

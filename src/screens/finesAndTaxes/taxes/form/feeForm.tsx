@@ -68,7 +68,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
   } = useForm<FeeEntryForm>({resolver: yupResolver(feeSchema), defaultValues: defaultValues});
   const [uploadedFile, setUploadedFile] = useState<FileList>();
   const {counts} = useGetCountOverview({});
-  const {insertFee} = useInsertFee();
+  const {insertFee, loading} = useInsertFee();
   const {
     alert,
     fileService: {uploadFile},
@@ -324,7 +324,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
       </Footer>
     </Container>
   );

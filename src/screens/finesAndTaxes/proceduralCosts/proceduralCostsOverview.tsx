@@ -29,7 +29,7 @@ const ProceduralCostsOverview = () => {
     alert,
   } = useAppContext();
 
-  const {proceduralCosts, total, refetch} = useGetProceduralCosts({
+  const {proceduralCosts, total, refetch, loading} = useGetProceduralCosts({
     page: page,
     size: PAGE_SIZE,
     ...filters,
@@ -88,6 +88,7 @@ const ProceduralCostsOverview = () => {
       <Table
         tableHeads={tableHeadsProceduralCostsOverview}
         data={proceduralCosts}
+        isLoading={loading}
         style={{marginBottom: 22}}
         emptyMessage={'Još uvjek nema troškova postupka.'}
         onRowClick={(row: ProceduralCostOverviewItem) => navigate(`/finance/fines-taxes/procedural-costs/${row.id}`)}

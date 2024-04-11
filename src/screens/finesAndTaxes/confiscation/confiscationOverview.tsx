@@ -28,7 +28,7 @@ const ConfiscationOverview = () => {
     alert,
   } = useAppContext();
 
-  const {propertyBenefitsConfiscations, total, refetch} = useGetPropertyBenefitsConfiscations({
+  const {propertyBenefitsConfiscations, total, refetch, loading} = useGetPropertyBenefitsConfiscations({
     page: page,
     size: PAGE_SIZE,
     ...filters,
@@ -88,6 +88,7 @@ const ConfiscationOverview = () => {
       <Table
         tableHeads={tableHeadsConfiscationOverview}
         data={propertyBenefitsConfiscations}
+        isLoading={loading}
         style={{marginBottom: 22}}
         emptyMessage={'Još uvjek nema podataka o oduzimanju imovine'}
         onRowClick={(row: ProceduralCostOverviewItem) => navigate(`/finance/fines-taxes/confiscation/${row.id}`)}

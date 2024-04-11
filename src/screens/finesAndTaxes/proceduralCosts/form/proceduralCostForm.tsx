@@ -68,7 +68,7 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
   } = useForm<ProceduralCostEntryForm>({resolver: yupResolver(proceduralCostSchema), defaultValues: defaultValues});
   const [uploadedFile, setUploadedFile] = useState<FileList>();
   const {counts} = useGetCountOverview({});
-  const {insertProceduralCost} = useInsertProceduralCost();
+  const {insertProceduralCost, loading} = useInsertProceduralCost();
   const {
     alert,
     fileService: {uploadFile},
@@ -333,7 +333,7 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
       </Footer>
     </Container>
   );

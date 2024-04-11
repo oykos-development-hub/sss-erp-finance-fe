@@ -74,7 +74,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
   });
   const [uploadedFile, setUploadedFile] = useState<FileList>();
   const {counts} = useGetCountOverview({});
-  const {insertPropertyBenefitsConfiscation} = useInsertPropertyBenefitsConfiscation();
+  const {insertPropertyBenefitsConfiscation, loading} = useInsertPropertyBenefitsConfiscation();
   const {
     alert,
     fileService: {uploadFile},
@@ -352,7 +352,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
       </Footer>
     </Container>
   );
