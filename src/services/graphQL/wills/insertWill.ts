@@ -1,0 +1,69 @@
+const insertWill = `mutation($data: FixedDepositWillMutation!) {
+    fixedDepositWill_Insert(data: $data) {
+        status 
+        message 
+        data
+        item {
+            id
+            organization_unit{
+                id
+                title
+            }
+            subject
+            father_name
+            date_of_birth
+            jmbg
+            case_number_si
+            case_number_rs
+            date_of_end
+            status
+            description
+            file{
+                id
+                name
+                type
+            }
+            dispatches{
+                id
+                will_id
+                dispatch_type
+                judge{
+                    id
+                    title
+                }
+                case_number
+                date_of_dispatch
+                date_of_case
+                file{
+                    id
+                    name
+                    type
+                }
+                created_at
+                updated_at
+            }
+            judges{
+                id
+                deposit_id
+                will_id
+                judge{
+                    id
+                    title
+                }
+                date_of_start
+                date_of_end
+                file{
+                    id
+                    name
+                    type
+                }
+                created_at
+                updated_at
+            }
+            created_at
+            updated_at   
+        }
+    }
+}`;
+
+export default insertWill;

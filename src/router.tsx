@@ -24,7 +24,7 @@ import TaxContributionCalculationOverview from './screens/deposit/demandDeposit/
 import FinanceDepositDetails from './screens/deposit/fixedDeposit/financeDeposit/financeDepositDetails.tsx';
 import {FixedDepositTabs} from './screens/deposit/fixedDeposit/fixedDepositTabs.tsx';
 import MaterialDepositDetails from './screens/deposit/fixedDeposit/materialDeposit/materialDepositDetails.tsx';
-import {TestamentTabs} from './screens/deposit/fixedDeposit/testament/testamentTabs.tsx';
+import WillDetails from './screens/deposit/fixedDeposit/wills/willDetails.tsx';
 import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDepositLandingPage.tsx';
 import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
 import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
@@ -66,6 +66,7 @@ export const Router = () => {
     const OUBudgetDetailsSummary = /^\/finance\/budget\/planning\/\d+\/summary$/;
     const FinancialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/financial\/\d+$/;
     const MaterialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/material\/\d+$/;
+    const WillDetailsRegex = /^\/finance\/deposit\/fixed\/wills\/\d+$/;
 
     // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
@@ -122,8 +123,10 @@ export const Router = () => {
     if (pathname === '/finance/deposit/fixed/material/add-new') return <FixedDepositTabs />;
     if (MaterialDepositDetailsRegex.test(pathname)) return <MaterialDepositDetails />;
 
-    if (pathname === '/finance/deposit/fixed/will') return <TestamentTabs />;
-    if (pathname === '/finance/deposit/fixed/new-testament-entry') return <TestamentTabs />;
+    if (pathname === '/finance/deposit/fixed/wills') navigate('/finance/deposit/fixed/wills/overview');
+    if (pathname === '/finance/deposit/fixed/wills/overview') return <FixedDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/wills/add-new') return <FixedDepositTabs />;
+    if (WillDetailsRegex.test(pathname)) return <WillDetails />;
 
     if (pathname === '/finance/deposit/demand') return <DemandDepositLandingPage />;
 

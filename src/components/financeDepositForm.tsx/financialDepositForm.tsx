@@ -152,7 +152,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
             <Datepicker
               name={name}
               selected={value ? new Date(value) : ''}
-              label="DATUM PRIJEMA AKTA"
+              label="DATUM PRIJEMA AKTA:"
               onChange={onChange}
               error={errors.date_of_recipiet?.message}
               disabled={disabled}
@@ -166,7 +166,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
             <Datepicker
               name={name}
               selected={value ? new Date(value) : ''}
-              label="DATUM PREDMETA"
+              label="DATUM PREDMETA:"
               onChange={onChange}
               error={errors.date_of_case?.message}
               disabled={disabled}
@@ -184,7 +184,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
               onChange={onChange}
               name={name}
               options={counts}
-              label="KONTO"
+              label="KONTO:"
               error={errors.account_id?.message}
               isDisabled={disabled}
             />
@@ -198,7 +198,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
               <Datepicker
                 name={name}
                 selected={value ? new Date(value) : ''}
-                label="DATUM ZAKLJUČENJA"
+                label="DATUM ZAKLJUČENJA:"
                 onChange={onChange}
                 error={errors.date_of_end?.message}
                 disabled={isNew || disabled}
@@ -226,9 +226,8 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
             content="Odustani"
             variant="secondary"
             onClick={() => navigate('/finance/deposit/fixed/financial/overview')}
-            isLoading={isSaving}
           />
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={isSaving} />
         </Footer>
       )}
     </FlexColumn>

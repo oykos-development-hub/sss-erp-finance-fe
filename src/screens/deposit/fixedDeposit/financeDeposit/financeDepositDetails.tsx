@@ -3,7 +3,7 @@ import {EditIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
 import {useState} from 'react';
 import DepositConfiscationModal from '../../../../components/depositConfiscationModal/depositConfiscationModal.tsx';
 import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
-import FixedDepositForm from '../../../../components/financeDepositForm.tsx/financialDepositForm.tsx';
+import FinancialDepositForm from '../../../../components/financeDepositForm.tsx/financialDepositForm.tsx';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useDeleteDepositDispatch from '../../../../services/graphQL/fixedDeposits/useDeleteDepositDispatch.ts';
 import useDeleteFixedDepositItem from '../../../../services/graphQL/fixedDeposits/useDeleteFixedDepositItem.ts';
@@ -13,8 +13,8 @@ import PlusButton from '../../../../shared/plusButton.tsx';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import {TableTitle} from '../../../../shared/tableTitle.tsx';
 import {DepositConfiscation, DepositDispatch} from '../../../../types/graphQL/fixedDeposits.ts';
+import {MainTitle, PlusButtonWrapper, SectionBox} from '../styles.ts';
 import {fixedDepositDispatchTableHeads, fixedFinancialDepositItemTableHeads} from './constants.tsx';
-import {MainTitle, PlusButtonWrapper, SectionBox} from './styles.tsx';
 
 const FinanceDepositDetails = () => {
   const [confiscationModal, setConfiscationModal] = useState(false);
@@ -85,7 +85,7 @@ const FinanceDepositDetails = () => {
       <SectionBox>
         <MainTitle content={`STALNI FINANSKIJSKI DEPOZIT - ${currentDeposit?.items[0]?.case_number}`} />
         <Divider color={Theme?.palette?.gray200} height="1px" style={{marginBottom: 20}} />
-        <FixedDepositForm data={currentDeposit?.items[0]} />
+        <FinancialDepositForm data={currentDeposit?.items[0]} />
       </SectionBox>
 
       <SectionBox>

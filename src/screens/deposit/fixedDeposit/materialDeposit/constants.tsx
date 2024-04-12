@@ -23,39 +23,6 @@ export const getRouteName = (tabName: string) => {
   return stockTabs[tabIndex].routeName;
 };
 
-export const tableHeads: TableHead[] = [
-  {
-    title: 'ID',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Subjekat',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Sudija',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Datum rješenja',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Broj predmeta',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Status',
-    accessor: 'status',
-    type: 'text',
-  },
-];
-
 export const materialDepositItemTableHeads: TableHead[] = [
   {
     title: 'Kategorija',
@@ -96,7 +63,7 @@ export const materialDepositItemTableHeads: TableHead[] = [
 
 export const materialDispatchTableHeads: TableHead[] = [
   {
-    title: 'Akcija',
+    title: 'Način vraćanja',
     accessor: 'action',
     type: 'text',
   },
@@ -118,7 +85,7 @@ export const materialDispatchTableHeads: TableHead[] = [
     type: 'text',
   },
   {
-    title: 'Datum akcije',
+    title: 'Datum akta',
     accessor: 'date_of_action',
     type: 'custom',
     renderContents: (value: string) => <Typography variant="bodyMedium" content={parseDate(value)} />,

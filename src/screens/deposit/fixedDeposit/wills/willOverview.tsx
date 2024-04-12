@@ -3,27 +3,27 @@ import {EditIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
-import useAppContext from '../../../context/useAppContext.ts';
-import useDeleteFixedDeposit from '../../../services/graphQL/fixedDeposits/useDeleteFixedDeposit.ts';
-import useGetFixedDeposits from '../../../services/graphQL/fixedDeposits/useGetFixedDeposits.ts';
-import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
-import {FixedDepositStatus, FixedDepositType, FixedDepositsOptions} from '../../../types/deposits.ts';
-import {FixedDeposit} from '../../../types/graphQL/fixedDeposits.ts';
-import {optionsStringSchema} from '../../../utils/formSchemas.ts';
-import {useDebounce} from '../../../utils/useDebounce.ts';
-import {FilterInput} from '../../accounting/styles.tsx';
-import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
-import {tableHeads} from './constants.tsx';
-import {Header} from './styles.ts';
+import useAppContext from '../../../../context/useAppContext';
+import useDeleteWill from '../../../../services/graphQL/wills/useDeleteWill';
+import useGetWills from '../../../../services/graphQL/wills/useGetWills';
+import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal';
+import {FixedDepositStatus} from '../../../../types/deposits';
+import {FixedDeposit} from '../../../../types/graphQL/fixedDeposits';
+import {optionsStringSchema} from '../../../../utils/formSchemas';
+import {useDebounce} from '../../../../utils/useDebounce';
+import {FilterInput} from '../../../accounting/styles';
+import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles';
+import {Header} from '../styles';
+import {willStatusOptions, willTableHeads} from './constants';
 
-const financeDepositFilterSchema = yup.object({
+const willDepositSchema = yup.object({
   status: optionsStringSchema.default(null),
   search: yup.string(),
 });
 
-type FinancialDepositFilterType = yup.InferType<typeof financeDepositFilterSchema>;
+type WillDepositFilterType = yup.InferType<typeof willDepositSchema>;
 
-const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
+const WillOverview = () => {
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
 
   const {
@@ -32,33 +32,36 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
     alert,
   } = useAppContext();
 
-  const {register, control, watch} = useForm<FinancialDepositFilterType>({
-    resolver: yupResolver(financeDepositFilterSchema),
+  const {register, control, watch} = useForm<WillDepositFilterType>({
+    resolver: yupResolver(willDepositSchema),
   });
 
   const {search, status} = watch();
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const {data, loading, refetch} = useGetFixedDeposits({
+  const {
+    data: wills,
+    loading,
+    refetch,
+  } = useGetWills({
     search: debouncedSearch,
     status: status?.title as FixedDepositStatus,
     organization_unit_id: organization_unit_id,
-    type,
   });
 
-  const {deleteFixedDeposit} = useDeleteFixedDeposit();
+  const {deleteWill} = useDeleteWill();
 
   const handleDelete = async () => {
     if (!deleteItemId) return;
 
-    await deleteFixedDeposit(
+    await deleteWill(
       deleteItemId,
       () => {
         refetch();
-        alert.success('Uspješno obrisan depozit.');
+        alert.success('Uspješno obrisan testament.');
       },
-      () => alert.error('Greška. Brisanje depozita nije uspjelo.'),
+      () => alert.error('Greška. Brisanje testament nije uspjelo.'),
     );
 
     setDeleteItemId(null);
@@ -74,7 +77,7 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
             render={({field: {name, value, onChange}}) => (
               <FilterDropdown
                 label="STATUS:"
-                options={FixedDepositsOptions}
+                options={willStatusOptions}
                 onChange={onChange}
                 value={value}
                 name={name}
@@ -86,18 +89,18 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
         </Filters>
       </Header>
       <Table
-        tableHeads={tableHeads}
-        data={data.items}
+        tableHeads={willTableHeads}
+        data={wills}
         style={{marginBottom: 22}}
         isLoading={loading}
         onRowClick={(row: FixedDeposit) => {
-          navigate(`/finance/deposit/fixed/${type}/${row.id}`);
+          navigate(`/finance/deposit/fixed/wills/${row.id}`);
         }}
         tableActions={[
           {
             name: 'edit',
             onClick: row => {
-              navigate(`/finance/deposit/fixed/financial/${row.id}`);
+              navigate(`/finance/deposit/fixed/wills/${row.id}`);
             },
             icon: <EditIcon stroke={Theme?.palette?.gray800} />,
           },
@@ -113,11 +116,11 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
           open={true}
           onClose={() => setDeleteItemId(null)}
           onConfirm={handleDelete}
-          subTitle="Da li ste sigurni da želite da izbrišete ovaj depozit?"
+          subTitle="Da li ste sigurni da želite da izbrišete ovaj testament?"
         />
       )}
     </>
   );
 };
 
-export default FixedDepositOverview;
+export default WillOverview;

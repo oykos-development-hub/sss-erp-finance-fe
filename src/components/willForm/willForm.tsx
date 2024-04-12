@@ -5,29 +5,31 @@ import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {requiredError} from '../../constants';
 import useAppContext from '../../context/useAppContext';
-import useInsertFixedDeposit from '../../services/graphQL/fixedDeposits/useInsertFixedDeposit';
+import useInsertWill from '../../services/graphQL/wills/useInsertWill';
 import {FlexColumn, FlexRow} from '../../shared/flex';
 import Footer from '../../shared/footer';
-import {FixedDeposit} from '../../types/graphQL/fixedDeposits';
 import {parseDateForBackend} from '../../utils/dateUtils';
-import {optionsNumberSchema} from '../../utils/formSchemas';
 import FileList from '../fileList/fileList';
+import {Will} from '../../types/graphQL/wills';
 
-const materialDepositSchema = yup.object({
-  case_number: yup.string().required(requiredError),
+const willFormSchema = yup.object({
   subject: yup.string().required(requiredError),
-  account_id: optionsNumberSchema,
-  date_of_recipiet: yup.date().required(requiredError).default(null),
-  date_of_case: yup.date().required(requiredError).default(null),
-  date_of_enforceability: yup.date().nullable().default(null),
-  date_of_finality: yup.date().nullable().default(null),
+  case_number_si: yup.string().required(requiredError),
+  case_number_rs: yup.string().required(requiredError),
+  date_of_receipt_si: yup.date().required(requiredError),
+  date_of_receipt_rs: yup.date().required(requiredError),
   date_of_end: yup.date().nullable().default(null),
+  father_name: yup.string().required(requiredError),
+  date_of_birth: yup.date().required(requiredError),
+  jmbg: yup.string().required(requiredError),
+  description: yup.string().default(''),
   file_id: yup.number().nullable().default(null),
+  id: yup.number().nullable().default(null),
 });
 
-type MaterialDepositForm = yup.InferType<typeof materialDepositSchema>;
+type WillFormSchemaType = yup.InferType<typeof willFormSchema>;
 
-const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
+const WillForm = ({data}: {data?: Will}) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
 
   const {
@@ -35,7 +37,6 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
       navigate,
       location: {pathname},
     },
-    contextMain: {organization_unit_id},
     fileService: {uploadFile},
     alert,
   } = useAppContext();
@@ -49,28 +50,25 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
     handleSubmit,
     formState: {errors},
     reset,
-  } = useForm<MaterialDepositForm>({
-    resolver: yupResolver(materialDepositSchema),
+  } = useForm<WillFormSchemaType>({
+    resolver: yupResolver(willFormSchema),
   });
 
-  const {insertFixedDeposit, loading: isSaving} = useInsertFixedDeposit();
+  const {insertWill, loading: isSaving} = useInsertWill();
 
   const handleUpload = (files: FileList) => {
     setUploadedFiles(files);
   };
 
-  const onSubmit = async (data: MaterialDepositForm) => {
+  const onSubmit = async (data: WillFormSchemaType) => {
     const payload = {
       ...data,
-      date_of_recipiet: parseDateForBackend(data.date_of_recipiet) as string,
-      date_of_case: parseDateForBackend(data.date_of_case) as string,
-      date_of_end: parseDateForBackend(data.date_of_end) as string,
-      date_of_finality: parseDateForBackend(data.date_of_finality) as string,
-      date_of_enforceability: parseDateForBackend(data.date_of_enforceability) as string,
-      organization_unit_id,
-      type: 'material',
-      id: id ? parseInt(id) : null,
+      date_of_receipt_si: parseDateForBackend(data.date_of_receipt_si) as string,
+      date_of_receipt_rs: parseDateForBackend(data.date_of_receipt_rs) as string,
+      date_of_end: data.date_of_end ? parseDateForBackend(data.date_of_end) : null,
+      date_of_birth: parseDateForBackend(data.date_of_birth) as string,
       file_id: data.file_id ? data.file_id : null,
+      id: data.id ? data.id : null,
     };
 
     if (uploadedFiles?.length) {
@@ -92,40 +90,39 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
       );
     }
 
-    await insertFixedDeposit(
+    await insertWill(
       payload,
-      (data: FixedDeposit) => {
-        alert.success(
-          isNew ? 'Uspešno ste dodali novi materijalni depozit' : 'Uspešno ste izmjenili materijalni depozit',
-        );
+      (id: number) => {
+        alert.success(isNew ? 'Uspešno ste dodali novi testament.' : 'Uspešno ste izmjenili testament.');
         if (isNew) {
-          navigate(`/finance/deposit/fixed/material/${data.id}`);
+          navigate(`/finance/deposit/fixed/wills/${id}`);
         }
       },
       () => {
-        alert.error(
-          isNew
-            ? 'Greška prilikom dodavanja novog materijalnog depozita'
-            : 'Greška prilikom izmjene materijalnog depozita',
-        );
+        alert.error(isNew ? 'Greška prilikom dodavanja novog testamenta.' : 'Greška prilikom izmjene testamenta.');
       },
     );
   };
 
   useEffect(() => {
-    if (data && !isNew) {
+    if (data) {
       reset({
         file_id: data?.file.id,
-        case_number: data?.case_number,
         subject: data?.subject,
-        date_of_recipiet: new Date(data?.date_of_recipiet),
-        date_of_case: new Date(data?.date_of_case),
-        date_of_enforceability: data?.date_of_enforceability ? new Date(data?.date_of_enforceability) : null,
-        date_of_finality: data?.date_of_finality ? new Date(data?.date_of_finality) : null,
+        date_of_birth: new Date(data?.date_of_birth),
+        date_of_receipt_si: new Date(data?.date_of_receipt_si),
+        date_of_receipt_rs: new Date(data?.date_of_receipt_rs),
         date_of_end: data?.date_of_end ? new Date(data?.date_of_end) : null,
+        case_number_rs: data?.case_number_rs,
+        case_number_si: data?.case_number_si,
+        father_name: data?.father_name,
+        jmbg: data?.jmbg,
+        id: data?.id,
       });
     }
   }, [data]);
+
+  console.log(errors);
 
   const disabled = data?.status === 'Zakljucen';
 
@@ -133,77 +130,77 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
     <FlexColumn gap={20} style={{alignItems: 'stretch'}}>
       <FlexRow gap={8}>
         <Input
-          {...register('case_number')}
-          label="BROJ PREDMETA:"
-          error={errors.case_number?.message}
+          {...register('case_number_si')}
+          label="BROJ PREDMETA (SI BROJ):"
+          error={errors.case_number_si?.message}
           disabled={disabled}
         />
         <Input
-          {...register('subject')}
-          label="IME I PREZIME STRANKE:"
-          error={errors.subject?.message}
+          {...register('case_number_rs')}
+          label="BROJ PREDMETA (RS BROJ):"
+          error={errors.case_number_rs?.message}
           disabled={disabled}
         />
       </FlexRow>
       <FlexRow gap={8}>
         <Controller
-          name="date_of_recipiet"
+          name="date_of_receipt_si"
           control={control}
           render={({field: {name, value, onChange}}) => (
             <Datepicker
               name={name}
               selected={value ? new Date(value) : ''}
-              label="DATUM PRIJEMA AKTA"
+              label="DATUM PRIJEMA (SI BROJ):"
               onChange={onChange}
-              error={errors.date_of_recipiet?.message}
+              error={errors.date_of_receipt_si?.message}
               disabled={disabled}
             />
           )}
         />
         <Controller
-          name="date_of_case"
+          name="date_of_receipt_rs"
           control={control}
           render={({field: {name, value, onChange}}) => (
             <Datepicker
               name={name}
               selected={value ? new Date(value) : ''}
-              label="DATUM PREDMETA"
+              label="DATUM PRIJEMA (SI BROJ):"
               onChange={onChange}
-              error={errors.date_of_case?.message}
-              disabled={disabled}
-            />
-          )}
-        />
-        <Controller
-          name="date_of_enforceability"
-          control={control}
-          render={({field: {name, value, onChange}}) => (
-            <Datepicker
-              name={name}
-              selected={value ? new Date(value) : ''}
-              label="DATUM IZVRŠNOSTI"
-              onChange={onChange}
-              error={errors.date_of_enforceability?.message}
+              error={errors.date_of_receipt_rs?.message}
               disabled={disabled}
             />
           )}
         />
       </FlexRow>
       <FlexRow gap={8}>
-        <Controller
-          name="date_of_finality"
-          control={control}
-          render={({field: {name, value, onChange}}) => (
-            <Datepicker
-              name={name}
-              selected={value ? new Date(value) : ''}
-              label="DATUM PRAVOSNAŽNOSTI"
-              onChange={onChange}
-              error={errors.date_of_finality?.message}
-              disabled={disabled}
-            />
-          )}
+        <Input
+          {...register('subject')}
+          label="IME I PREZIME TESTATORA:"
+          error={errors.subject?.message}
+          disabled={disabled}
         />
+        <Input {...register('father_name')} label="IME OCA:" error={errors.father_name?.message} disabled={disabled} />
+      </FlexRow>
+      <FlexRow gap={8}>
+        <div style={{width: '100%'}}>
+          <Controller
+            name="date_of_birth"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Datepicker
+                name={name}
+                selected={value ? new Date(value) : ''}
+                label="DATUM ROĐENJA:"
+                onChange={onChange}
+                error={errors.date_of_birth?.message}
+                disabled={disabled}
+              />
+            )}
+          />
+        </div>
+        <Input {...register('jmbg')} label="JMBG:" error={errors.jmbg?.message} disabled={disabled} />
+      </FlexRow>
+      <div style={{width: '50%'}}>
         <Controller
           name="date_of_end"
           control={control}
@@ -211,14 +208,22 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
             <Datepicker
               name={name}
               selected={value ? new Date(value) : ''}
-              label="DATUM ZAKLJUČENJA"
+              label="DATUM ZAKLJUČENJA:"
               onChange={onChange}
               error={errors.date_of_end?.message}
               disabled={isNew || disabled}
             />
           )}
         />
-      </FlexRow>
+      </div>
+      <Input
+        {...register('description')}
+        textarea={true}
+        label="OPIS:"
+        error={errors.description?.message}
+        disabled={disabled}
+      />
+
       <div style={{marginBottom: 10}}>
         <FileUpload
           icon={null}
@@ -237,7 +242,7 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
           <Button
             content="Odustani"
             variant="secondary"
-            onClick={() => navigate('/finance/deposit/fixed/material/overview')}
+            onClick={() => navigate('/finance/deposit/fixed/wills/overview')}
           />
           <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={isSaving} />
         </Footer>
@@ -246,4 +251,4 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
   );
 };
 
-export default MaterialDepositForm;
+export default WillForm;

@@ -1,9 +1,9 @@
-import FixedDepositForm from '../../../../components/financeDepositForm.tsx/financialDepositForm';
+import FinancialDepositForm from '../../../../components/financeDepositForm.tsx/financialDepositForm';
 
 const FinancialDepositNewEntry = () => {
   return (
     <>
-      <FixedDepositForm />
+      <FinancialDepositForm />
     </>
   );
 };

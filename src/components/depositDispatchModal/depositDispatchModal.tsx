@@ -16,7 +16,7 @@ import {parseDateForBackend} from '../../utils/dateUtils';
 import {optionsNumberSchema, optionsStringSchema} from '../../utils/formSchemas';
 import FileList from '../fileList/fileList';
 
-type DepositDispatchModal = {
+type DepositDispatchModalProps = {
   open: boolean;
   onClose: () => void;
   data: DepositDispatch | null;
@@ -57,7 +57,7 @@ const depositDispatchSchema = yup.object({
 
 type DepositDispatchSchemaType = yup.InferType<typeof depositDispatchSchema>;
 
-const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchModal) => {
+const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchModalProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
 
   const isNew = !data;
@@ -143,12 +143,12 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
     await insertDepositDispatch(
       payload,
       () => {
-        alert.success(isNew ? 'Akcija uspješno kreirana!' : 'Akcija uspješno izmijenjena!');
+        alert.success(isNew ? 'Povrat uspješno kreiran!' : 'Povrat uspješno izmijenjena!');
         refetch();
         onClose();
       },
       () => {
-        alert.error(isNew ? 'Greška pri kreiranju akcije!' : 'Greška pri izmjeni akcije!');
+        alert.error(isNew ? 'Greška pri kreiranju povrata!' : 'Greška pri izmjeni povrata!');
       },
     );
   };

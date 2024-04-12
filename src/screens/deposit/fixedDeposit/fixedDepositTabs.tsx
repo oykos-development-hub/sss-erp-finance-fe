@@ -5,9 +5,11 @@ import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {FixedDepositType} from '../../../types/deposits';
 import {Tabs, getCurrentTab, getRouteName, stockTabs} from './financeDeposit/constants';
 import FinancialDepositNewEntry from './financeDeposit/financialDepositNewEntry';
-import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from './financeDeposit/styles';
+import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from './styles';
 import FixedDepositOverview from './fixedDepositOverview';
 import MaterialDepositNewEntry from './materialDeposit/materialDepositNewEntry';
+import WillNewEntry from './wills/willNewEntry';
+import WillOverview from './wills/willOverview';
 
 export const FixedDepositTabs = () => {
   const {
@@ -21,7 +23,7 @@ export const FixedDepositTabs = () => {
 
   const pathnameSegments = pathname.split('/');
   const currentFinancePath = pathnameSegments[pathnameSegments.length - 1];
-  const type = pathnameSegments[pathnameSegments.length - 2] as FixedDepositType;
+  const type = pathnameSegments[pathnameSegments.length - 2] as FixedDepositType | 'wills';
 
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
@@ -35,14 +37,20 @@ export const FixedDepositTabs = () => {
 
   const currentFinanceDepositRoute = useMemo(() => {
     if (currentFinancePath === 'add-new') {
-      return type === 'financial' ? <FinancialDepositNewEntry /> : <MaterialDepositNewEntry />;
+      return type === 'financial' ? (
+        <FinancialDepositNewEntry />
+      ) : type === 'material' ? (
+        <MaterialDepositNewEntry />
+      ) : (
+        <WillNewEntry />
+      );
     } else {
-      return <FixedDepositOverview type={type} key={type} />;
+      return type === 'wills' ? <WillOverview /> : <FixedDepositOverview type={type} key={type} />;
     }
   }, [currentFinancePath]);
 
   const getTitle = useMemo(() => {
-    const typeString = type === 'financial' ? 'FINANSIJSKI' : 'MATERIJALNI';
+    const typeString = type === 'financial' ? 'FINANSIJSKI' : type === 'material' ? 'MATERIJALNI' : 'TESTAMENTNI';
 
     switch (activeTab) {
       case Tabs.NewEntry:

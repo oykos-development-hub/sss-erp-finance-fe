@@ -1,6 +1,5 @@
 import {TableHead, Typography} from 'client-library';
 import {DropdownData} from '../../../../types/dropdownData';
-import {parseDate} from '../../../../utils/dateUtils';
 
 export enum Tabs {
   Overview = 1,
@@ -23,53 +22,35 @@ export const getRouteName = (tabName: string) => {
   return stockTabs[tabIndex].routeName;
 };
 
-export const fixedFinancialDepositItemTableHeads: TableHead[] = [
+export const willTableHeads: TableHead[] = [
   {
-    title: 'Valuta',
-    accessor: 'currency',
+    title: 'Testator',
+    accessor: 'subject',
     type: 'text',
   },
   {
-    title: 'Iznos',
-    accessor: 'amount',
+    title: 'Broj predmeta SI',
+    accessor: 'case_number_si',
     type: 'text',
   },
   {
-    title: 'Datum oduzimanja',
-    accessor: 'date_of_confiscation',
-    type: 'custom',
-    renderContents: (value: string) => <Typography variant="bodyMedium" content={parseDate(value)} />,
+    title: 'Broj predmeta RS',
+    accessor: 'case_number_rs',
+    type: 'text',
   },
   {
-    title: 'Sudija',
-    accessor: 'judge',
-    type: 'custom',
-    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+    title: 'Status',
+    accessor: 'status',
+    type: 'text',
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
-export const fixedDepositDispatchTableHeads: TableHead[] = [
+export const willDispatchTableHeads: TableHead[] = [
   {
-    title: 'Način vraćanja',
-    accessor: 'action',
+    title: 'Tip kretanja',
+    accessor: 'dispatch_type',
     type: 'text',
-  },
-  {
-    title: 'Valuta',
-    accessor: 'currency',
-    type: 'text',
-  },
-  {
-    title: 'Iznos',
-    accessor: 'amount',
-    type: 'text',
-  },
-  {
-    title: 'Datum akta',
-    accessor: 'date_of_action',
-    type: 'custom',
-    renderContents: (value: string) => <Typography variant="bodyMedium" content={parseDate(value)} />,
   },
   {
     title: 'Sudija',
@@ -78,9 +59,22 @@ export const fixedDepositDispatchTableHeads: TableHead[] = [
     renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
   {
-    title: 'Subjekt',
-    accessor: 'subject',
+    title: 'Broj predmeta',
+    accessor: 'case_number',
     type: 'text',
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
+
+export const willDispatchOptions = [
+  {id: 'U radu', title: 'U radu'},
+  {id: 'Depozit', title: 'Depozit'},
+];
+
+export const willStatusOptions = [
+  {id: 'U toku', title: 'U toku'},
+  {id: 'Depozit', title: 'Depozit'},
+  {id: 'Zakljucen', title: 'Zakljucen'},
+];
+
+export type WillStatusType = 'U toku' | 'Depozit' | 'Zakljucen';

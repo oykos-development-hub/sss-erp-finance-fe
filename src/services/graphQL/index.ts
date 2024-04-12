@@ -48,6 +48,11 @@ import getFlatRatePayment from './flatRate/flatRatePayments/getFlatRatePayment.t
 import insertFlatRatePayment from './flatRate/flatRatePayments/insertFlatRatePayment.ts';
 import deleteFlatRatePayment from './flatRate/flatRatePayments/deleteFlatRatePayment.ts';
 import flatRateOverview from './flatRate/flatRateOverview.ts';
+import getWill from './wills/getWill.ts';
+import insertWill from './wills/insertWill.ts';
+import deleteWill from './wills/deleteWill.ts';
+import insertWillDispatch from './wills/insertWillDispatch.ts';
+import deleteWillDispatch from './wills/deleteWillDispatch.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -115,4 +120,9 @@ export const GraphQL = {
   deleteFixedDepositItem: deleteFixedDepositItem,
   insertDepositDispatch: insertDepositDispatch,
   deleteDepositDispatch: deleteDepositDispatch,
+  getWill: getWill,
+  insertWill: insertWill,
+  deleteWill: deleteWill,
+  insertWillDispatch: insertWillDispatch,
+  deleteWillDispatch: deleteWillDispatch,
 };

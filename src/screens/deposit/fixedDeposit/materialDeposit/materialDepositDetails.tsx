@@ -13,8 +13,8 @@ import PlusButton from '../../../../shared/plusButton.tsx';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import {TableTitle} from '../../../../shared/tableTitle.tsx';
 import {DepositConfiscation, DepositDispatch} from '../../../../types/graphQL/fixedDeposits.ts';
+import {MainTitle, PlusButtonWrapper, SectionBox} from '../styles.ts';
 import {materialDepositItemTableHeads, materialDispatchTableHeads} from './constants.tsx';
-import {MainTitle, PlusButtonWrapper, SectionBox} from './styles.tsx';
 
 const MaterialDepositDetails = () => {
   const [confiscationModal, setConfiscationModal] = useState(false);
