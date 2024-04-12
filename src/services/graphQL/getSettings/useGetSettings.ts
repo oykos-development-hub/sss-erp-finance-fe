@@ -1,17 +1,19 @@
 import {useEffect, useState} from 'react';
-import {initialOverviewData} from '../../constants';
 import useAppContext from '../../../context/useAppContext';
 import {DropdownData} from '../../../types/dropdownData';
 import {createDropdownOptions} from '../../../utils/createOptions';
+import {initialOverviewData} from '../../constants';
+import {GeneralSettingsResponse} from '../../../types/graphQL/generalSettings';
 
-export interface ClassTypesParams {
+type GeneralSettingsParams = {
   search?: string;
-  id?: number;
+  id?: number | null;
   entity?: string;
-}
+  parent_id?: number | null;
+};
 
-const useGetSettings = ({search, id, entity}: ClassTypesParams) => {
-  const [data, setData] = useState(initialOverviewData);
+const useGetSettings = ({search, id, entity, parent_id}: GeneralSettingsParams) => {
+  const [data, setData] = useState<GeneralSettingsResponse['get']['settingsDropdown_Overview']>(initialOverviewData);
   const [options, setOptions] = useState<DropdownData<number>[]>([]);
   const [loading, setLoading] = useState(true);
   const {fetch, graphQl} = useAppContext();
@@ -19,7 +21,12 @@ const useGetSettings = ({search, id, entity}: ClassTypesParams) => {
   const fetchClassTypes = async () => {
     setLoading(true);
     try {
-      const response = await fetch(graphQl.getSettings, {search, id, entity});
+      const response: GeneralSettingsResponse['get'] = await fetch(graphQl.getSettings, {
+        search,
+        id,
+        entity,
+        parent_id,
+      });
       const options = createDropdownOptions(response.settingsDropdown_Overview.items || []);
       setOptions(options);
 
@@ -32,7 +39,7 @@ const useGetSettings = ({search, id, entity}: ClassTypesParams) => {
 
   useEffect(() => {
     fetchClassTypes();
-  }, [search, id]);
+  }, [search, id, parent_id]);
 
   return {data: data, loading, refetch: fetchClassTypes, options};
 };

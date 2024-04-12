@@ -56,10 +56,16 @@ export const tableHeads: TableHead[] = [
   },
 ];
 
-export const fixedMaterialDepositItemTableHeads: TableHead[] = [
+export const materialDepositItemTableHeads: TableHead[] = [
   {
     title: 'Kategorija',
     accessor: 'category',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+  },
+  {
+    title: 'Vrsta',
+    accessor: 'type',
     type: 'custom',
     renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
@@ -84,6 +90,49 @@ export const fixedMaterialDepositItemTableHeads: TableHead[] = [
     accessor: 'judge',
     type: 'custom',
     renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+  },
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
+];
+
+export const materialDispatchTableHeads: TableHead[] = [
+  {
+    title: 'Akcija',
+    accessor: 'action',
+    type: 'text',
+  },
+  {
+    title: 'Kategorija',
+    accessor: 'category',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+  },
+  {
+    title: 'Vrsta',
+    accessor: 'type',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+  },
+  {
+    title: 'Količina',
+    accessor: 'amount',
+    type: 'text',
+  },
+  {
+    title: 'Datum akcije',
+    accessor: 'date_of_action',
+    type: 'custom',
+    renderContents: (value: string) => <Typography variant="bodyMedium" content={parseDate(value)} />,
+  },
+  {
+    title: 'Sudija',
+    accessor: 'judge',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
+  },
+  {
+    title: 'Subjekt',
+    accessor: 'subject',
+    type: 'text',
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

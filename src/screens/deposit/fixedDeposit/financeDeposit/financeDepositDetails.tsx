@@ -159,13 +159,13 @@ const FinanceDepositDetails = () => {
                     name: 'edit',
                     onClick: row => {
                       setDispatchEditData(row);
-                      setConfiscationModal(true);
+                      setDispatchModal(true);
                     },
                     icon: <EditIcon stroke={Theme?.palette?.gray800} />,
                   },
                   {
                     name: 'delete',
-                    onClick: row => setDeleteItemId(row.id),
+                    onClick: row => setDeleteDispatchId(row.id),
                     icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
                   },
                 ]

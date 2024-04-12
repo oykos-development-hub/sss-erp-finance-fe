@@ -8,7 +8,7 @@ export type DepositConfiscation = {
   deposit_id: number;
   category: DropdownData<number>;
   judge: DropdownData<number>;
-  type: string;
+  type: DropdownData<number>;
   unit: string;
   currency: string;
   case_number: string;
@@ -25,7 +25,7 @@ export type DepositDispatch = {
   deposit_id: number;
   category: DropdownData<number>;
   judge: DropdownData<number>;
-  type: string;
+  type: DropdownData<number>;
   unit: string;
   currency: string;
   case_number: string;
@@ -131,7 +131,8 @@ export type FixedDepositDispatchData = {
   amount: number;
   currency?: string;
   unit?: string;
-  category_id?: number;
+  category_id?: number | null;
+  type_id?: number | null;
   // serial_number: string;
   date_of_action: string;
   // case_number: string;

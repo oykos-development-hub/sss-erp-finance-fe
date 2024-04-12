@@ -5,15 +5,16 @@ import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {requiredError} from '../../constants';
 import useAppContext from '../../context/useAppContext';
+import {CONFISCATED_PROPERTY_TYPES_SETTINGS} from '../../screens/deposit/fixedDeposit/constants';
 import useInsertDepositDispatch from '../../services/graphQL/fixedDeposits/useInsertDepositDispatch';
+import useGetSettings from '../../services/graphQL/getSettings/useGetSettings';
 import useGetJudges from '../../services/graphQL/judges/useGetJudges';
+import {FormGroup} from '../../shared/form';
 import {DropdownData} from '../../types/dropdownData';
 import {DepositDispatch} from '../../types/graphQL/fixedDeposits';
 import {parseDateForBackend} from '../../utils/dateUtils';
 import {optionsNumberSchema, optionsStringSchema} from '../../utils/formSchemas';
 import FileList from '../fileList/fileList';
-import useGetSettings from '../../services/graphQL/getSettings/useGetSettings';
-import {CONFISCATED_PROPERTY_TYPES_SETTINGS} from '../../screens/deposit/fixedDeposit/constants';
 
 type DepositDispatchModal = {
   open: boolean;
@@ -30,6 +31,10 @@ const depositDispatchSchema = yup.object({
     then: schema => schema.required(requiredError),
   }),
   unit: yup.string().when('type', {
+    is: 'material',
+    then: schema => schema.required(requiredError),
+  }),
+  type_id: optionsNumberSchema.when('type', {
     is: 'material',
     then: schema => schema.required(requiredError),
   }),
@@ -71,8 +76,6 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
     return pathnameSegments[pathnameSegments.length - 2];
   }, [pathname]);
 
-  const {data: confiscationCategories} = useGetSettings({entity: CONFISCATED_PROPERTY_TYPES_SETTINGS});
-
   const deposit_id = pathname.split('/').pop();
 
   const {
@@ -81,10 +84,20 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
     formState: {errors},
     reset,
     control,
+    watch,
+    setValue,
   } = useForm<DepositDispatchSchemaType>({resolver: yupResolver(depositDispatchSchema)});
+
+  const category = watch('category_id');
 
   const {insertDepositDispatch} = useInsertDepositDispatch();
   const {judges} = useGetJudges({});
+
+  const {data: confiscationCategories} = useGetSettings({entity: CONFISCATED_PROPERTY_TYPES_SETTINGS});
+  const {data: confiscationTypes} = useGetSettings({
+    entity: CONFISCATED_PROPERTY_TYPES_SETTINGS,
+    parent_id: category?.id,
+  });
 
   const handleUpload = (files: FileList) => {
     setUploadedFiles(files);
@@ -92,7 +105,9 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
 
   const onSubmit = async (data: DepositDispatchSchemaType) => {
     const payload = {
-      ...data,
+      unit: data.unit,
+      action: data.action,
+      serial_number: data.serial_number,
       amount: parseFloat(data.amount),
       date_of_action: parseDateForBackend(data.date_of_action) as string,
       file_id: data.file_id ? data.file_id : null,
@@ -101,7 +116,9 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
       judge_id: data.judge_id.id,
       id: isNew ? null : data.id,
       case_number: data.case_number,
-      category_id: data.category_id?.id,
+      category_id: data.category_id?.id ? data.category_id.id : null,
+      type_id: data.type_id?.id ? data.type_id.id : null,
+      subject: data.subject,
     };
 
     if (uploadedFiles?.length) {
@@ -142,7 +159,8 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
         type,
         unit: data.unit,
         serial_number: data.serial_number,
-        category_id: data.category,
+        type_id: data.type.id ? data.type : null,
+        category_id: data.category.id ? data.category : null,
         id: data.id,
         file_id: data.file.id,
         judge_id: data.judge,
@@ -151,6 +169,7 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
         amount: data.amount.toString(),
         subject: data.subject,
         case_number: data.case_number,
+        action: data.action,
       });
     }
   }, [data]);
@@ -166,19 +185,8 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
       leftButtonText="Otkaži"
       content={
         <div>
-          {type === 'material' && (
-            <div style={{marginBottom: 15}}>
-              <Input {...register('serial_number')} label="SERIJSKI BROJ:" error={errors.serial_number?.message} />
-            </div>
-          )}
-          <div style={{marginBottom: 15}}>
-            <Input {...register('action')} label="AKCIJA:" error={errors.action?.message} />
-          </div>
-          <div style={{marginBottom: 15}}>
-            <Input {...register('amount')} label="KOLIČINA:" error={errors.amount?.message} />
-          </div>
-          {type === 'financial' ? (
-            <div style={{marginBottom: 15}}>
+          {type === 'financial' && (
+            <FormGroup style={{marginBottom: 15}}>
               <Controller
                 control={control}
                 name="currency"
@@ -193,29 +201,65 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
                   />
                 )}
               />
-            </div>
-          ) : (
-            <div style={{marginBottom: 15}}>
-              <Controller
-                control={control}
-                name="category_id"
-                render={({field: {name, value, onChange}}) => (
-                  <Dropdown
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    label="KATEGORIJA:"
-                    options={confiscationCategories.items}
-                    error={errors.category_id?.message}
-                  />
-                )}
-              />
-            </div>
+            </FormGroup>
           )}
-
-          <div style={{marginBottom: 15}}>
-            <Input {...register('subject')} label="PRIMALAC:" error={errors.subject?.message} />
-          </div>
+          {type === 'material' && (
+            <>
+              <FormGroup style={{marginBottom: 15}}>
+                <Controller
+                  control={control}
+                  name="category_id"
+                  render={({field: {name, value, onChange}}) => (
+                    <Dropdown
+                      name={name}
+                      value={value}
+                      onChange={value => {
+                        onChange(value);
+                        setValue('type_id', null);
+                      }}
+                      label="KATEGORIJA:"
+                      options={confiscationCategories.items}
+                      error={errors.category_id?.message}
+                    />
+                  )}
+                />
+              </FormGroup>
+              <FormGroup style={{marginBottom: 15}}>
+                <Controller
+                  control={control}
+                  name="type_id"
+                  render={({field: {name, value, onChange}}) => (
+                    <Dropdown
+                      name={name}
+                      value={value}
+                      onChange={onChange}
+                      label="VRSTA:"
+                      options={confiscationTypes.items}
+                      error={errors.type_id?.message}
+                      isDisabled={!category}
+                    />
+                  )}
+                />
+              </FormGroup>
+            </>
+          )}
+          {type === 'material' && (
+            <FormGroup>
+              <Input {...register('unit')} label="JEDINICA:" error={errors.amount?.message} />
+            </FormGroup>
+          )}
+          <FormGroup style={{marginBottom: 15}}>
+            <Input
+              {...register('amount')}
+              label={type === 'material' ? 'KOLIČINA' : 'IZNOS'}
+              error={errors.amount?.message}
+            />
+          </FormGroup>
+          {type === 'material' && (
+            <FormGroup style={{marginBottom: 15}}>
+              <Input {...register('serial_number')} label="SERIJSKI BROJ:" error={errors.serial_number?.message} />
+            </FormGroup>
+          )}
           <Controller
             name="date_of_action"
             control={control}
@@ -230,10 +274,10 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
               />
             )}
           />
-          <div style={{marginBottom: 15}}>
+          <FormGroup style={{marginBottom: 15}}>
             <Input {...register('case_number')} label="BROJ AKTA:" error={errors.case_number?.message} />
-          </div>
-          <div style={{marginBottom: 25}}>
+          </FormGroup>
+          <FormGroup>
             <Controller
               name="judge_id"
               control={control}
@@ -248,9 +292,15 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
                 />
               )}
             />
-          </div>
+          </FormGroup>
+          <FormGroup style={{marginBottom: 15}}>
+            <Input {...register('action')} label="NAČIN VRAĆANJA:" error={errors.action?.message} />
+          </FormGroup>
+          <FormGroup style={{marginBottom: 15}}>
+            <Input {...register('subject')} label="PRIMALAC:" error={errors.subject?.message} />
+          </FormGroup>
 
-          <div>
+          <div style={{marginTop: 25}}>
             <FileUpload
               icon={null}
               files={uploadedFiles}
@@ -259,7 +309,7 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
               note={<Typography variant="bodySmall" content="Dodaj fajl" />}
               buttonText="Učitaj"
             />
-            <FileList files={data?.file ? [data.file] : null} />
+            <FileList files={data?.file.id ? [data.file] : null} />
           </div>
         </div>
       }

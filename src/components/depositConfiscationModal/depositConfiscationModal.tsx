@@ -5,15 +5,16 @@ import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {requiredError} from '../../constants';
 import useAppContext from '../../context/useAppContext';
+import {CONFISCATED_PROPERTY_TYPES_SETTINGS} from '../../screens/deposit/fixedDeposit/constants';
 import useInsertFixedDepositItem from '../../services/graphQL/fixedDeposits/useInsertDepositItem';
+import useGetSettings from '../../services/graphQL/getSettings/useGetSettings';
+import useGetJudges from '../../services/graphQL/judges/useGetJudges';
+import {FormGroup} from '../../shared/form';
 import {DropdownData} from '../../types/dropdownData';
 import {DepositConfiscation} from '../../types/graphQL/fixedDeposits';
 import {parseDateForBackend} from '../../utils/dateUtils';
 import {optionsNumberSchema, optionsStringSchema} from '../../utils/formSchemas';
 import FileList from '../fileList/fileList';
-import useGetJudges from '../../services/graphQL/judges/useGetJudges';
-import useGetSettings from '../../services/graphQL/getSettings/useGetSettings';
-import {CONFISCATED_PROPERTY_TYPES_SETTINGS} from '../../screens/deposit/fixedDeposit/constants';
 
 type DepositConfiscationModalProps = {
   open: boolean;
@@ -34,6 +35,10 @@ const depositConfiscationSchema = yup.object({
     then: schema => schema.required(requiredError),
   }),
   category_id: optionsNumberSchema.when('type', {
+    is: 'material',
+    then: schema => schema.required(requiredError),
+  }),
+  type_id: optionsNumberSchema.when('type', {
     is: 'material',
     then: schema => schema.required(requiredError),
   }),
@@ -76,11 +81,19 @@ const DepositConfiscationModal = ({open, onClose, data, refetch}: DepositConfisc
     formState: {errors},
     reset,
     control,
+    watch,
+    setValue,
   } = useForm<DepositConfiscationSchemaType>({resolver: yupResolver(depositConfiscationSchema)});
+
+  const category = watch('category_id');
 
   const {insertFixedDepositItem} = useInsertFixedDepositItem();
   const {judges} = useGetJudges({});
   const {data: confiscationCategories} = useGetSettings({entity: CONFISCATED_PROPERTY_TYPES_SETTINGS});
+  const {data: confiscationTypes} = useGetSettings({
+    entity: CONFISCATED_PROPERTY_TYPES_SETTINGS,
+    parent_id: category?.id,
+  });
 
   const handleUpload = (files: FileList) => {
     setUploadedFiles(files);
@@ -88,13 +101,15 @@ const DepositConfiscationModal = ({open, onClose, data, refetch}: DepositConfisc
 
   const onSubmit = async (data: DepositConfiscationSchemaType) => {
     const payload = {
-      ...data,
+      unit: data.unit,
+      serial_number: data.serial_number,
       amount: parseFloat(data.amount),
       date_of_confiscation: parseDateForBackend(data.date_of_confiscation) as string,
       file_id: data.file_id ? data.file_id : null,
       currency: data.currency?.id,
       deposit_id: parseInt(deposit_id as string),
       judge_id: data.judge_id.id,
+      type_id: data.type_id?.id,
       category_id: data.category_id?.id,
       id: isNew ? null : data.id,
     };
@@ -140,7 +155,8 @@ const DepositConfiscationModal = ({open, onClose, data, refetch}: DepositConfisc
         judge_id: data.judge,
         unit: data.unit,
         serial_number: data.serial_number,
-        category_id: data.category,
+        category_id: data.category.id ? data.category : null,
+        type_id: data.type.id ? data.type : null,
         date_of_confiscation: new Date(data.date_of_confiscation),
         currency: currencies.find((currency: DropdownData<string>) => currency.id === data.currency),
         amount: data.amount.toString(),
@@ -159,24 +175,8 @@ const DepositConfiscationModal = ({open, onClose, data, refetch}: DepositConfisc
       leftButtonText="Otkaži"
       content={
         <div>
-          <div style={{marginBottom: 15}}>
-            {type === 'material' && (
-              <div style={{marginBottom: 15}}>
-                <Input {...register('serial_number')} label="SERIJSKI BROJ:" error={errors.serial_number?.message} />
-              </div>
-            )}
-            <div style={{marginBottom: 15}}>
-              <Input
-                {...register('amount')}
-                label={type === 'financial' ? 'IZNOS' : 'KOLIČINA'}
-                error={errors.amount?.message}
-              />
-            </div>
-
-            {type === 'material' && <Input {...register('unit')} label="JEDINICA:" error={errors.amount?.message} />}
-          </div>
           {type === 'financial' ? (
-            <div style={{marginBottom: 15}}>
+            <FormGroup style={{marginBottom: 15}}>
               <Controller
                 control={control}
                 name="currency"
@@ -191,24 +191,61 @@ const DepositConfiscationModal = ({open, onClose, data, refetch}: DepositConfisc
                   />
                 )}
               />
-            </div>
+            </FormGroup>
           ) : (
-            <div style={{marginBottom: 15}}>
-              <Controller
-                control={control}
-                name="category_id"
-                render={({field: {name, value, onChange}}) => (
-                  <Dropdown
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    label="KATEGORIJA:"
-                    options={confiscationCategories.items}
-                    error={errors.category_id?.message}
-                  />
-                )}
-              />
-            </div>
+            <>
+              <FormGroup style={{marginBottom: 15}}>
+                <Controller
+                  control={control}
+                  name="category_id"
+                  render={({field: {name, value, onChange}}) => (
+                    <Dropdown
+                      name={name}
+                      value={value}
+                      onChange={value => {
+                        onChange(value);
+                        setValue('type_id', null);
+                      }}
+                      label="KATEGORIJA:"
+                      options={confiscationCategories.items}
+                      error={errors.category_id?.message}
+                    />
+                  )}
+                />
+              </FormGroup>
+              <FormGroup style={{marginBottom: 15}}>
+                <Controller
+                  control={control}
+                  name="type_id"
+                  render={({field: {name, value, onChange}}) => (
+                    <Dropdown
+                      name={name}
+                      value={value}
+                      onChange={onChange}
+                      label="VRSTA:"
+                      options={confiscationTypes.items}
+                      error={errors.category_id?.message}
+                      isDisabled={!category}
+                    />
+                  )}
+                />
+              </FormGroup>
+            </>
+          )}
+          <FormGroup style={{marginBottom: 15}}>
+            {type === 'material' && <Input {...register('unit')} label="JEDINICA:" error={errors.amount?.message} />}
+          </FormGroup>
+          <FormGroup style={{marginBottom: 15}}>
+            <Input
+              {...register('amount')}
+              label={type === 'financial' ? 'IZNOS' : 'KOLIČINA'}
+              error={errors.amount?.message}
+            />
+          </FormGroup>
+          {type === 'material' && (
+            <FormGroup style={{marginBottom: 15}}>
+              <Input {...register('serial_number')} label="SERIJSKI BROJ:" error={errors.serial_number?.message} />
+            </FormGroup>
           )}
           <Controller
             name="date_of_confiscation"

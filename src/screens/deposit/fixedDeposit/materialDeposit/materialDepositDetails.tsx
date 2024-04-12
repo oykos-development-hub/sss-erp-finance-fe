@@ -13,8 +13,7 @@ import PlusButton from '../../../../shared/plusButton.tsx';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import {TableTitle} from '../../../../shared/tableTitle.tsx';
 import {DepositConfiscation, DepositDispatch} from '../../../../types/graphQL/fixedDeposits.ts';
-import {fixedDepositDispatchTableHeads} from '../financeDeposit/constants.tsx';
-import {fixedMaterialDepositItemTableHeads} from './constants.tsx';
+import {materialDepositItemTableHeads, materialDispatchTableHeads} from './constants.tsx';
 import {MainTitle, PlusButtonWrapper, SectionBox} from './styles.tsx';
 
 const MaterialDepositDetails = () => {
@@ -98,7 +97,7 @@ const MaterialDepositDetails = () => {
           </PlusButtonWrapper>
         </TableTitle>
         <Table
-          tableHeads={fixedMaterialDepositItemTableHeads}
+          tableHeads={materialDepositItemTableHeads}
           data={currentDeposit?.items[0]?.items || []}
           isLoading={loading}
           tableActions={
@@ -149,7 +148,7 @@ const MaterialDepositDetails = () => {
           </PlusButtonWrapper>
         </TableTitle>
         <Table
-          tableHeads={fixedDepositDispatchTableHeads}
+          tableHeads={materialDispatchTableHeads}
           data={currentDeposit?.items[0]?.dispatches || []}
           isLoading={loading}
           tableActions={
@@ -160,13 +159,13 @@ const MaterialDepositDetails = () => {
                     name: 'edit',
                     onClick: row => {
                       setDispatchEditData(row);
-                      setConfiscationModal(true);
+                      setDispatchModal(true);
                     },
                     icon: <EditIcon stroke={Theme?.palette?.gray800} />,
                   },
                   {
                     name: 'delete',
-                    onClick: row => setDeleteItemId(row.id),
+                    onClick: row => setDeleteDispatchId(row.id),
                     icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
                   },
                 ]

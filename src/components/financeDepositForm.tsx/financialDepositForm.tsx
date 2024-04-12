@@ -54,7 +54,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
 
   const {counts} = useGetCountOverview({});
 
-  const {insertFixedDeposit} = useInsertFixedDeposit();
+  const {insertFixedDeposit, loading: isSaving} = useInsertFixedDeposit();
 
   const handleUpload = (files: FileList) => {
     setUploadedFiles(files);
@@ -226,6 +226,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
             content="Odustani"
             variant="secondary"
             onClick={() => navigate('/finance/deposit/fixed/financial/overview')}
+            isLoading={isSaving}
           />
           <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
         </Footer>
