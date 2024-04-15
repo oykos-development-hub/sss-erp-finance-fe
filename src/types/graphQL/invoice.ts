@@ -75,7 +75,6 @@ export interface ContractItem {
   source_of_funding: string;
   municipality: DropdownData<number>;
   type_of_decision: DropdownData<number>;
-  date_of_end: string;
 }
 
 export interface InvoiceItem {
