@@ -50,13 +50,38 @@ export interface DecisionItem {
   type_of_decision: DropdownData<number>;
   source_of_funding: string;
   municipality: DropdownData<number>;
+  type_of_contract: DropdownData<number>;
+}
+
+export interface ContractItem {
+  id: number;
+  type: string;
+  invoice_number: string;
+  supplier_title: string;
+  supplier: {
+    id: number;
+    title: string;
+  };
+  date_of_invoice: string;
+  sss_invoice_receipt_date: Date;
+  date_of_payment: string;
+  receipt_date: string;
+  issuer: string;
+  date_of_start: string;
+  description: string;
+  additional_expenses: AdditionalExpenses[];
+  tax_authority_codebook: DropdownData<number>;
+  type_of_contract: DropdownData<number>;
+  source_of_funding: string;
+  municipality: DropdownData<number>;
+  type_of_decision: DropdownData<number>;
+  date_of_end: string;
 }
 
 export interface InvoiceItem {
   id: number;
   status: string;
   type: string;
-  type_of_contract: DropdownData<string>;
   type_of_subject: DropdownData<string>;
   source_of_funding: string;
   pro_forma_invoice_number: string;
@@ -99,6 +124,7 @@ export interface InvoiceItem {
   municipality: DropdownData<number>;
   tax_authority_codebook: DropdownData<number>;
   type_of_decision: DropdownData<number>;
+  type_of_contract: DropdownData<number>;
 }
 
 export interface GetInvoiceParams {

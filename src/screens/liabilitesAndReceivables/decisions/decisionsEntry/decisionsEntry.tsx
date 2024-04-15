@@ -67,7 +67,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     previous_income_gross: previous_income_gross ? Number(previous_income_gross) : null,
   });
 
-  const {fields, append} = useFieldArray({
+  const {fields, remove, insert} = useFieldArray({
     control,
     name: 'additionalExpenses',
     keyName: 'key',
@@ -181,8 +181,12 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   useEffect(() => {
     if (additionalExpenses) {
       if (additionalExpenses && additionalExpenses.length) {
-        for (const article of additionalExpenses) {
-          append({
+        for (let i = fields.length - 1; i >= 0; i--) {
+          remove(i);
+        }
+
+        additionalExpenses.forEach((article, index) => {
+          insert(index, {
             id: Math.random(),
             title: article.title,
             price: article.price,
@@ -194,7 +198,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             bank_account: '',
             organization_unit_id: article.organization_unit,
           });
-        }
+        });
       }
     }
   }, [additionalExpenses]);
@@ -425,7 +429,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               type={'number'}
               inputMode={'decimal'}
               leftContent={<div>€</div>}
-              disabled={(net_price as any) || decision !== undefined}
+              disabled={net_price as any}
               error={errors.gross_price?.message}
             />
             <Input
@@ -435,7 +439,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               type={'number'}
               inputMode={'decimal'}
               leftContent={<div>€</div>}
-              disabled={(previous_income_net as any) || decision !== undefined}
+              disabled={previous_income_net as any}
               error={errors.previous_income_gross?.message}
             />
           </Row>
@@ -447,7 +451,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               type={'number'}
               inputMode={'decimal'}
               leftContent={<div>€</div>}
-              disabled={(gross_price as any) || decision !== undefined}
+              disabled={gross_price as any}
               error={errors.net_price?.message}
             />
             <Input
@@ -457,19 +461,14 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               type={'number'}
               inputMode={'decimal'}
               leftContent={<div>€</div>}
-              disabled={(previous_income_gross as any) || decision !== undefined}
+              disabled={previous_income_gross as any}
               error={errors.previous_income_net?.message}
             />
           </Row>
-          <Button
-            content="Obračunaj"
-            variant={'primary'}
-            onClick={handleSubmit(onCount)}
-            disabled={decision !== undefined}
-          />
+          <Button content="Obračunaj" variant={'primary'} onClick={() => onCount()} />
         </HalfWidthContainer>
 
-        {fields.length > 0 && <Table tableHeads={additionalExpensesTableHeads} data={fields} />}
+        {!!fields.length && <Table tableHeads={additionalExpensesTableHeads} data={fields} />}
 
         <Footer>
           <Button
@@ -478,7 +477,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             style={{width: 130}}
             onClick={() => navigate('/finance/liabilities-receivables/liabilities/decisions')}
           />
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} disabled={fields.length === 0} />
+          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} disabled={!fields.length} />
         </Footer>
       </>
     </DecisionsFormContainer>

@@ -7,7 +7,7 @@ import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 import {DeleteModal} from '../../../../shared/deleteModal/deleteModal.tsx';
 import {DropdownData} from '../../../../types/dropdownData.ts';
-import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
+import {ContractItem, InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {useDebounce} from '../../../../utils/useDebounce.ts';
@@ -30,7 +30,11 @@ const initialContractsFilterValues = {
 };
 
 const ContractsOverview = () => {
-  const {alert, contextMain} = useAppContext();
+  const {
+    alert,
+    contextMain,
+    navigation: {navigate},
+  } = useAppContext();
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState<ContractsOverviewFilters>(initialContractsFilterValues);
   const [showDeleteModalId, setShowDeleteModalId] = useState<number | undefined>(undefined);
@@ -64,6 +68,7 @@ const ContractsOverview = () => {
     supplier_id: filterValues.supplier_id ? filterValues.supplier_id.id : null,
     organization_unit_id: contextMain?.organization_unit?.id,
   });
+
   const {suppliers} = useGetSuppliers({});
 
   const {deleteInvoice} = useDeleteInvoice();
@@ -82,11 +87,11 @@ const ContractsOverview = () => {
     await deleteInvoice(
       showDeleteModalId,
       () => {
-        alert.success('Uspješno ste obrisali račun.');
+        alert.success('Uspješno ste obrisali ugovor.');
         fetch();
       },
       () => {
-        alert.error('Došlo je do greške prilikom brisanja računa.');
+        alert.error('Došlo je do greške prilikom brisanja ugovora.');
       },
     );
     setShowDeleteModalId(undefined);
@@ -140,6 +145,7 @@ const ContractsOverview = () => {
         tableHeads={contractsOverviewTableHeads}
         data={invoice}
         emptyMessage={'Još nema ugovora'}
+        onRowClick={(row: ContractItem) => navigate(`/finance/liabilities-receivables/liabilities/contracts/${row.id}`)}
         tableActions={[
           {
             name: 'Izbriši',

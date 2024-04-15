@@ -41,6 +41,7 @@ import FeeDetails from './screens/finesAndTaxes/taxes/feeDetails/feeDetails.tsx'
 import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
 import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
+import ContractsDetails from './screens/liabilitesAndReceivables/contracts/contractsDetails/contractsDetails.tsx';
 import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
 import DecisionsDetails from './screens/liabilitesAndReceivables/decisions/decisionsDetails/decisionsDetails.tsx';
 import InvoiceDetails from './screens/liabilitesAndReceivables/invoices/invoiceDetails/invoiceDetails.tsx';
@@ -76,6 +77,7 @@ export const Router = () => {
     const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
     const decisionsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions/\\d+$');
     const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
+    const contractsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts/\\d+$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
     const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-new)?$');
     const fineDetailsRegex = new RegExp('^/finance/fines-taxes/fines/\\d+$');
@@ -159,6 +161,8 @@ export const Router = () => {
     if (decisionsEditRegex.test(pathname)) return <DecisionsDetails />;
 
     if (contractsRegex.test(pathname)) return <Contracts />;
+    if (contractsEditRegex.test(pathname)) return <ContractsDetails />;
+
     if (salariesRegex.test(pathname)) return <Salaries />;
     if (budgetFO.test(pathname)) return <BudgetFO />;
 
