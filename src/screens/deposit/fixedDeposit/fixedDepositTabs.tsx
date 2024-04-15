@@ -3,13 +3,16 @@ import {useEffect, useMemo, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {FixedDepositType} from '../../../types/deposits';
-import {Tabs, getCurrentTab, getRouteName, stockTabs} from './financeDeposit/constants';
+import {Tabs, getCurrentTab, getRouteName, stockTabs} from '../constants';
 import FinancialDepositNewEntry from './financeDeposit/financialDepositNewEntry';
-import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from './styles';
+import {StyledTabs, TitleTabsWrapper} from '../styles';
 import FixedDepositOverview from './fixedDepositOverview';
 import MaterialDepositNewEntry from './materialDeposit/materialDepositNewEntry';
 import WillNewEntry from './wills/willNewEntry';
 import WillOverview from './wills/willOverview';
+import {Divider, Theme} from 'client-library';
+import {MainTitle} from '../../../shared/pageElements';
+import SectionBox from '../../../shared/sectionBox';
 
 export const FixedDepositTabs = () => {
   const {
@@ -71,7 +74,7 @@ export const FixedDepositTabs = () => {
           <MainTitle variant="bodyMedium" content={getTitle} style={{marginBottom: 0}} />
           <StyledTabs tabs={stockTabs} activeTab={activeTab} onChange={onTabChange} />
         </TitleTabsWrapper>
-        <CustomDivider style={{marginTop: 0, marginBottom: 20}} />
+        <Divider style={{marginTop: 0, marginBottom: 20}} height="1px" color={Theme.palette.gray200} />
         {currentFinanceDepositRoute}
       </SectionBox>
     </ScreenWrapper>

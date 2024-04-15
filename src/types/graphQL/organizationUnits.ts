@@ -20,6 +20,7 @@ export interface OrganizationUnit {
 }
 
 export type GetOrganizationUnitsParams = {
+  id?: number;
   page?: number;
   size?: number;
   search?: string;

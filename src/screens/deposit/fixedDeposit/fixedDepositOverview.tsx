@@ -14,7 +14,7 @@ import {useDebounce} from '../../../utils/useDebounce.ts';
 import {FilterInput} from '../../accounting/styles.tsx';
 import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
 import {tableHeads} from './constants.tsx';
-import {Header} from './styles.ts';
+import {Header} from '../styles.ts';
 
 const financeDepositFilterSchema = yup.object({
   status: optionsStringSchema.default(null),
@@ -97,7 +97,7 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
           {
             name: 'edit',
             onClick: row => {
-              navigate(`/finance/deposit/fixed/financial/${row.id}`);
+              navigate(`/finance/deposit/fixed/${type}/${row.id}`);
             },
             icon: <EditIcon stroke={Theme?.palette?.gray800} />,
           },

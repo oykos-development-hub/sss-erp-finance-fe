@@ -19,15 +19,15 @@ import SSSBudgetDetails from './screens/budget/planning/SSSBudgetDetails/SSSBudg
 import BudgetList from './screens/budget/planning/budgetList/budgetList.tsx';
 import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
 import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDynamicsTabs.tsx';
-import {InitialStateTabs} from './screens/deposit/demandDeposit/initialState/initialStateTabs.tsx';
-import TaxContributionCalculationOverview from './screens/deposit/demandDeposit/taxContributionCalculation/taxContributionCalculationOverview.tsx';
 import FinanceDepositDetails from './screens/deposit/fixedDeposit/financeDeposit/financeDepositDetails.tsx';
 import {FixedDepositTabs} from './screens/deposit/fixedDeposit/fixedDepositTabs.tsx';
 import MaterialDepositDetails from './screens/deposit/fixedDeposit/materialDeposit/materialDepositDetails.tsx';
 import WillDetails from './screens/deposit/fixedDeposit/wills/willDetails.tsx';
-import {DemandDepositLandingPage} from './screens/deposit/landingPages/demandDepositLandingPage.tsx';
 import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
-import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLandingPage.tsx';
+import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLanding.tsx';
+import TransitDepositLandingPage from './screens/deposit/landingPages/transitDepositLanding.tsx';
+import DepositPaymentDetails from './screens/deposit/transitDeposit/depositPayments/depositPaymentDetails.tsx';
+import DepositPaymentsTabs from './screens/deposit/transitDeposit/depositPayments/depositPaymentsTabs.tsx';
 import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
 import PropertyBenefitsConfiscationDetails from './screens/finesAndTaxes/confiscation/propertyBenefitsConfiscationDetails/propertyBenefitsConfiscationDetails.tsx';
 import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
@@ -40,7 +40,6 @@ import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralC
 import FeeDetails from './screens/finesAndTaxes/taxes/feeDetails/feeDetails.tsx';
 import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
-import AdditionalExpensesOverview from './screens/liabilitesAndReceivables/additionalExpenses/additionalExpensesOverview.tsx';
 import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
 import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
 import DecisionsDetails from './screens/liabilitesAndReceivables/decisions/decisionsDetails/decisionsDetails.tsx';
@@ -69,6 +68,7 @@ export const Router = () => {
     const FinancialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/financial\/\d+$/;
     const MaterialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/material\/\d+$/;
     const WillDetailsRegex = /^\/finance\/deposit\/fixed\/wills\/\d+$/;
+    const DepositPaymentsDetailsRegex = /^\/finance\/deposit\/transit\/payments\/\d+$/;
 
     // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
@@ -131,10 +131,12 @@ export const Router = () => {
     if (pathname === '/finance/deposit/fixed/wills/add-new') return <FixedDepositTabs />;
     if (WillDetailsRegex.test(pathname)) return <WillDetails />;
 
-    if (pathname === '/finance/deposit/demand') return <DemandDepositLandingPage />;
+    if (pathname === '/finance/deposit/transit') return <TransitDepositLandingPage />;
 
-    if (pathname === '/finance/deposit/demand/initial-state') return <InitialStateTabs />;
-    if (pathname === '/finance/deposit/demand/initial-state-new-entry') return <InitialStateTabs />;
+    if (pathname === '/finance/deposit/transit/payments') navigate('/finance/deposit/transit/payments/overview');
+    if (pathname === '/finance/deposit/transit/payments/overview') return <DepositPaymentsTabs />;
+    if (pathname === '/finance/deposit/transit/payments/add-new') return <DepositPaymentsTabs />;
+    if (DepositPaymentsDetailsRegex.test(pathname)) return <DepositPaymentDetails />;
 
     if (pathname === '/finance/budget/current/non-financial') return <NonFinancialOverview />;
 
@@ -146,12 +148,6 @@ export const Router = () => {
     if (pathname === '/finance/budget/current/internal-reallocation/create') return <InternalReallocationBudget />;
 
     if (pathname === '/finance/budget/current/external-reallocation') return <ExternalReallocationOverview />;
-
-    if (pathname === '/finance/liabilities-receivables/liabilities/related-expenses')
-      return <AdditionalExpensesOverview />;
-
-    if (pathname === '/finance/deposit/demand/tax-contribution-calculation')
-      return <TaxContributionCalculationOverview />;
 
     // if (budgetDetails.test(pathname)) return <BudgetDetails />;
 
@@ -166,7 +162,6 @@ export const Router = () => {
     if (salariesRegex.test(pathname)) return <Salaries />;
     if (budgetFO.test(pathname)) return <BudgetFO />;
 
-    if (pathname === '/finance/deposit/demand/initial-state-new-entry') return <InitialStateTabs />;
     // fines and taxes screen
     if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
     if (finesRegex.test(pathname)) return <Fines />;

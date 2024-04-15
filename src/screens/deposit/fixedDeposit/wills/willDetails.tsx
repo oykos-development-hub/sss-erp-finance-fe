@@ -7,11 +7,13 @@ import useAppContext from '../../../../context/useAppContext.ts';
 import useDeleteWillDispatch from '../../../../services/graphQL/wills/useDeleteWillDispatch.ts';
 import useGetWills from '../../../../services/graphQL/wills/useGetWills.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
+import {MainTitle} from '../../../../shared/pageElements.ts';
 import PlusButton from '../../../../shared/plusButton.tsx';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
+import SectionBox from '../../../../shared/sectionBox.ts';
 import {TableTitle} from '../../../../shared/tableTitle.tsx';
 import {WillDispatch} from '../../../../types/graphQL/wills.ts';
-import {MainTitle, PlusButtonWrapper, SectionBox} from '../styles.ts';
+import {PlusButtonWrapper} from '../../styles.ts';
 import {willDispatchTableHeads} from './constants.tsx';
 
 const WillDetails = () => {

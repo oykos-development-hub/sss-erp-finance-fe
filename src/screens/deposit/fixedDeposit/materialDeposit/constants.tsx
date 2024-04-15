@@ -2,27 +2,6 @@ import {TableHead, Typography} from 'client-library';
 import {DropdownData} from '../../../../types/dropdownData';
 import {parseDate} from '../../../../utils/dateUtils';
 
-export enum Tabs {
-  Overview = 1,
-  NewEntry = 2,
-}
-
-export const stockTabs = [
-  {id: Tabs.Overview, title: 'Pregled', routeName: 'material'},
-  {id: Tabs.NewEntry, title: 'Unos', routeName: 'new-material-entry'},
-];
-
-export const getCurrentTab = (pathname: string) => {
-  const path = pathname.split('/');
-  const name = path[path.length - 1];
-  return stockTabs.find(tab => tab.routeName === name)?.id;
-};
-
-export const getRouteName = (tabName: string) => {
-  const tabIndex = stockTabs.findIndex(tab => tab.title === tabName);
-  return stockTabs[tabIndex].routeName;
-};
-
 export const materialDepositItemTableHeads: TableHead[] = [
   {
     title: 'Kategorija',

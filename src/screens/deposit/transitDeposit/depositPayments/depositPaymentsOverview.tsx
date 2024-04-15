@@ -4,8 +4,8 @@ import {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import useAppContext from '../../../../context/useAppContext';
-import useDeleteWill from '../../../../services/graphQL/wills/useDeleteWill';
-import useGetWills from '../../../../services/graphQL/wills/useGetWills';
+import useDeleteDepositPayment from '../../../../services/graphQL/transitDeposits/useDeleteDepositPayment';
+import useGetDepositPayments from '../../../../services/graphQL/transitDeposits/useGetDepositPayments';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal';
 import {FixedDepositStatus} from '../../../../types/deposits';
 import {FixedDeposit} from '../../../../types/graphQL/fixedDeposits';
@@ -14,16 +14,16 @@ import {useDebounce} from '../../../../utils/useDebounce';
 import {FilterInput} from '../../../accounting/styles';
 import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles';
 import {Header} from '../../styles';
-import {willStatusOptions, willTableHeads} from './constants';
+import {DepositPaymentStatusOptions, depositPaymentTableHeads} from './constants';
 
-const willDepositSchema = yup.object({
+const depositPaymentFilterSchema = yup.object({
   status: optionsStringSchema.default(null),
   search: yup.string(),
 });
 
-type WillDepositFilterType = yup.InferType<typeof willDepositSchema>;
+type DepositPaymentFilterType = yup.InferType<typeof depositPaymentFilterSchema>;
 
-const WillOverview = () => {
+const DepositPaymentsOverview = () => {
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
 
   const {
@@ -32,36 +32,32 @@ const WillOverview = () => {
     alert,
   } = useAppContext();
 
-  const {register, control, watch} = useForm<WillDepositFilterType>({
-    resolver: yupResolver(willDepositSchema),
+  const {register, control, watch} = useForm<DepositPaymentFilterType>({
+    resolver: yupResolver(depositPaymentFilterSchema),
   });
 
   const {search, status} = watch();
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const {
-    data: wills,
-    loading,
-    refetch,
-  } = useGetWills({
+  const {data, loading, refetch} = useGetDepositPayments({
     search: debouncedSearch,
     status: status?.title as FixedDepositStatus,
     organization_unit_id: organization_unit_id,
   });
 
-  const {deleteWill} = useDeleteWill();
+  const {deleteDepositPayment} = useDeleteDepositPayment();
 
   const handleDelete = async () => {
     if (!deleteItemId) return;
 
-    await deleteWill(
+    await deleteDepositPayment(
       deleteItemId,
       () => {
         refetch();
-        alert.success('Uspješno obrisan testament.');
+        alert.success('Uspješno obrisana uplata na račun.');
       },
-      () => alert.error('Greška. Brisanje testament nije uspjelo.'),
+      () => alert.error('Greška. Brisanje uplate nije uspjelo.'),
     );
 
     setDeleteItemId(null);
@@ -77,7 +73,7 @@ const WillOverview = () => {
             render={({field: {name, value, onChange}}) => (
               <FilterDropdown
                 label="STATUS:"
-                options={willStatusOptions}
+                options={DepositPaymentStatusOptions}
                 onChange={onChange}
                 value={value}
                 name={name}
@@ -89,18 +85,18 @@ const WillOverview = () => {
         </Filters>
       </Header>
       <Table
-        tableHeads={willTableHeads}
-        data={wills}
+        tableHeads={depositPaymentTableHeads}
+        data={data.items}
         style={{marginBottom: 22}}
         isLoading={loading}
         onRowClick={(row: FixedDeposit) => {
-          navigate(`/finance/deposit/fixed/wills/${row.id}`);
+          navigate(`/finance/deposit/transit/payments/${row.id}`);
         }}
         tableActions={[
           {
             name: 'edit',
             onClick: row => {
-              navigate(`/finance/deposit/fixed/wills/${row.id}`);
+              navigate(`/finance/deposit/transit/payments/${row.id}`);
             },
             icon: <EditIcon stroke={Theme?.palette?.gray800} />,
           },
@@ -116,11 +112,11 @@ const WillOverview = () => {
           open={true}
           onClose={() => setDeleteItemId(null)}
           onConfirm={handleDelete}
-          subTitle="Da li ste sigurni da želite da izbrišete ovaj testament?"
+          subTitle="Da li ste sigurni da želite da izbrišete ovu uplatu?"
         />
       )}
     </>
   );
 };
 
-export default WillOverview;
+export default DepositPaymentsOverview;

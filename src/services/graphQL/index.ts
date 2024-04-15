@@ -1,19 +1,20 @@
 import {getEnvironment} from '../get-environment';
+import additionalExpensesOverview from './additionalExpensesOverview/additionalExpensesOverview.ts';
 import calculateAdditionalExpenses from './calculateAdditionalExpenses/calculateAdditionalExpenses.ts';
 import getCountOverview from './counts/getCountOverview.ts';
 import deleteBudget from './deleteBudget/deleteBudget';
-import finesOverview from './fines/finesOverview.ts';
-import insertFine from './fines/insertFine.ts';
+import deleteFee from './fees/deleteFee.ts';
+import deleteFeesPayment from './fees/feesPayments/deleteFeesPayment.ts';
+import getFeesPayments from './fees/feesPayments/getFeesPayments.ts';
+import insertFeesPayment from './fees/feesPayments/insertFeesPayment.ts';
+import getFeesOverview from './fees/getFees.ts';
+import insertFee from './fees/insertFee.ts';
+import deleteFine from './fines/deleteFine.ts';
 import deleteFinePayment from './fines/finePayments/deleteFinePayment.ts';
 import getFinePayments from './fines/finePayments/getFinePayments.ts';
 import insertFinePayment from './fines/finePayments/insertFinePayment.ts';
-import deleteFine from './fines/deleteFine.ts';
-import getFeesOverview from './fees/getFees.ts';
-import insertFee from './fees/insertFee.ts';
-import deleteFee from './fees/deleteFee.ts';
-import deleteFeesPayment from './fees/feesPayments/deleteFeesPayment.ts';
-import insertFeesPayment from './fees/feesPayments/insertFeesPayment.ts';
-import getFeesPayments from './fees/feesPayments/getFeesPayments.ts';
+import finesOverview from './fines/finesOverview.ts';
+import insertFine from './fines/insertFine.ts';
 import deleteDepositDispatch from './fixedDeposits/deleteDepositDispatch.ts';
 import deleteFixedDeposit from './fixedDeposits/deleteFixedDeposit.ts';
 import deleteFixedDepositItem from './fixedDeposits/deleteFixedDepositItem.ts';
@@ -21,6 +22,12 @@ import getFixedDeposits from './fixedDeposits/getFixedDeposits.ts';
 import insertDepositDispatch from './fixedDeposits/insertDepositDispatch.ts';
 import insertFixedDeposit from './fixedDeposits/insertFixedDeposit.ts';
 import insertFixedDepositItem from './fixedDeposits/insertFixedDepositItem.ts';
+import deleteFlatRate from './flatRate/deleteFlatRate.ts';
+import flatRateOverview from './flatRate/flatRateOverview.ts';
+import deleteFlatRatePayment from './flatRate/flatRatePayments/deleteFlatRatePayment.ts';
+import getFlatRatePayment from './flatRate/flatRatePayments/getFlatRatePayment.ts';
+import insertFlatRatePayment from './flatRate/flatRatePayments/insertFlatRatePayment.ts';
+import insertFlatRate from './flatRate/insertFlatRate.ts';
 import getBudgetDetails from './getBudgetDetails/getBudgetDetails.ts';
 import getBudgets from './getBudgets/getBudgets';
 import insertBudget from './insertBudget/insertBudget.ts';
@@ -30,31 +37,32 @@ import deleteInvoice from './invoice/deleteInvoice.ts';
 import getInvoice from './invoice/getInvoice.ts';
 import insertInvoice from './invoice/insertInvoice.ts';
 import getJudges from './judges/getJudges.ts';
-import sendBudget from './sendBudget/sendBudget.ts';
-import proceduralCostsOverview from './proceduralCosts/proceduralCostsOverview.ts';
-import insertProceduralCost from './proceduralCosts/insertProceduralCost.ts';
 import deleteProceduralCost from './proceduralCosts/deleteProceduralCost.ts';
+import insertProceduralCost from './proceduralCosts/insertProceduralCost.ts';
+import proceduralCostsOverview from './proceduralCosts/proceduralCostsOverview.ts';
+import deleteProceduralCostPayment from './proceduralCosts/proceduralCostsPayments/deleteProceduralCostPayment.ts';
 import getProceduralCostPayment from './proceduralCosts/proceduralCostsPayments/getProceduralCostPayment.ts';
 import insertProceduralCostPayment from './proceduralCosts/proceduralCostsPayments/insertProceduralCostPayment.ts';
-import deleteProceduralCostPayment from './proceduralCosts/proceduralCostsPayments/deleteProceduralCostPayment.ts';
-import insertPropertyBenefitsConfiscation from './propertyBenefitsConfiscation/insertPropertyBenefitsConfiscation.ts';
-import deletePropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/deletePropertyBenefitsConfiscationPayment.ts';
-import propertyBenefitsConfiscationOverview from './propertyBenefitsConfiscation/propertyBenefitsConfiscationOverview.ts';
 import deletePropertyBenefitsConfiscation from './propertyBenefitsConfiscation/deletePropertyBenefitsConfiscation.ts';
-import insertPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/insertPropertyBenefitsConfiscationPayment.ts';
+import insertPropertyBenefitsConfiscation from './propertyBenefitsConfiscation/insertPropertyBenefitsConfiscation.ts';
+import propertyBenefitsConfiscationOverview from './propertyBenefitsConfiscation/propertyBenefitsConfiscationOverview.ts';
+import deletePropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/deletePropertyBenefitsConfiscationPayment.ts';
 import getPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/getPropertyBenefitsConfiscationPayment.ts';
-import insertFlatRate from './flatRate/insertFlatRate.ts';
-import deleteFlatRate from './flatRate/deleteFlatRate.ts';
-import getFlatRatePayment from './flatRate/flatRatePayments/getFlatRatePayment.ts';
-import insertFlatRatePayment from './flatRate/flatRatePayments/insertFlatRatePayment.ts';
-import deleteFlatRatePayment from './flatRate/flatRatePayments/deleteFlatRatePayment.ts';
-import flatRateOverview from './flatRate/flatRateOverview.ts';
+import insertPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/insertPropertyBenefitsConfiscationPayment.ts';
+import sendBudget from './sendBudget/sendBudget.ts';
+import deleteDepositPayment from './transitDeposits/deleteDepositPayment.ts';
+import deleteDepositPaymentOrder from './transitDeposits/deleteDepositPaymentOrder.ts';
+import getAdditionalExpenses from './transitDeposits/getAdditionalExpenses.ts';
+import getDepositPaymentOrders from './transitDeposits/getDepositPaymentOrders.ts';
+import getDepositPayments from './transitDeposits/getDepositPayments.ts';
+import getRemainAmountByCaseNumber from './transitDeposits/getRemainAmountByCaseNumber.ts';
+import insertDepositPayment from './transitDeposits/insertDepositPayment.ts';
+import insertDepositPaymentOrder from './transitDeposits/insertDepositPaymentOrder.ts';
+import deleteWill from './wills/deleteWill.ts';
+import deleteWillDispatch from './wills/deleteWillDispatch.ts';
 import getWill from './wills/getWill.ts';
 import insertWill from './wills/insertWill.ts';
-import deleteWill from './wills/deleteWill.ts';
 import insertWillDispatch from './wills/insertWillDispatch.ts';
-import deleteWillDispatch from './wills/deleteWillDispatch.ts';
-import additionalExpensesOverview from './additionalExpensesOverview/additionalExpensesOverview.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -129,4 +137,12 @@ export const GraphQL = {
   deleteWillDispatch: deleteWillDispatch,
   calculateAdditionalExpenses: calculateAdditionalExpenses,
   additionalExpensesOverview: additionalExpensesOverview,
+  insertDepositPayment: insertDepositPayment,
+  getDepositPayments: getDepositPayments,
+  deleteDepositPayment: deleteDepositPayment,
+  getDepositPaymentOrders: getDepositPaymentOrders,
+  deleteDepositPaymentOrder: deleteDepositPaymentOrder,
+  insertDepositPaymentOrder: insertDepositPaymentOrder,
+  getAdditionalExpenses: getAdditionalExpenses,
+  getRemainAmountByCaseNumber: getRemainAmountByCaseNumber,
 };
