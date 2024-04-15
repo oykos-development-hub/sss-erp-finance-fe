@@ -15,10 +15,7 @@ const insertInvoice = `mutation($data: InvoiceMutation!) {
                 id
                 title
             }
-            source_of_funding{
-                id
-                title
-            }
+            source_of_funding
             invoice_number
             supplier_title
             supplier{

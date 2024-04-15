@@ -7,7 +7,7 @@ import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 import {DeleteModal} from '../../../../shared/deleteModal/deleteModal.tsx';
 import {DropdownData} from '../../../../types/dropdownData.ts';
-import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
+import {DecisionItem, InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {useDebounce} from '../../../../utils/useDebounce.ts';
@@ -30,7 +30,11 @@ const initialDecisionsFilterValues = {
 };
 
 const DecisionsOverview = () => {
-  const {alert, contextMain} = useAppContext();
+  const {
+    alert,
+    contextMain,
+    navigation: {navigate},
+  } = useAppContext();
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState<DecisionsOverviewFilters>(initialDecisionsFilterValues);
   const [showDeleteModalId, setShowDeleteModalId] = useState<number | undefined>(undefined);
@@ -140,12 +144,12 @@ const DecisionsOverview = () => {
         tableHeads={decisionsOverviewTableHeads}
         data={invoice}
         emptyMessage={'Još nema rešenja'}
+        onRowClick={(row: DecisionItem) => navigate(`/finance/liabilities-receivables/liabilities/decisions/${row.id}`)}
         tableActions={[
           {
             name: 'Izbriši',
             onClick: onDelete,
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => row.status !== 'Obradi',
           },
         ]}
       />
@@ -163,6 +167,7 @@ const DecisionsOverview = () => {
           handleCloseDeleteModal();
         }}
         handleDelete={handleDelete}
+        customContent="Ovo rješenje će biti trajno izbrisano iz sistema."
       />
     </>
   );

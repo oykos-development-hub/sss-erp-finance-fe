@@ -13,16 +13,56 @@ export interface ArticlesType {
     title?: string;
   };
 }
+
+export interface AdditionalExpenses {
+  id?: any;
+  title?: string;
+  price?: number;
+  bank_account?: string;
+  subject?: {
+    id?: number;
+    title?: string;
+  };
+  account: {
+    id?: number;
+    title?: string;
+  };
+}
+
+export interface DecisionItem {
+  id: number;
+  type: string;
+  invoice_number: string;
+  supplier_title: string;
+  supplier: {
+    id: number;
+    title: string;
+  };
+  date_of_invoice: string;
+  sss_invoice_receipt_date: Date;
+  date_of_payment: string;
+  receipt_date: string;
+  issuer: string;
+  date_of_start: string;
+  description: string;
+  additional_expenses: AdditionalExpenses[];
+  tax_authority_codebook: DropdownData<number>;
+  type_of_decision: DropdownData<number>;
+  source_of_funding: string;
+  municipality: DropdownData<number>;
+}
+
 export interface InvoiceItem {
   id: number;
   status: string;
   type: string;
   type_of_contract: DropdownData<string>;
   type_of_subject: DropdownData<string>;
-  source_of_funding: DropdownData<string>;
+  source_of_funding: string;
   pro_forma_invoice_number: string;
   invoice_number: string;
   supplier_title: string;
+  issuer: string;
   supplier: {
     id: number;
     title: string;
@@ -55,6 +95,10 @@ export interface InvoiceItem {
   is_invoice: boolean;
   passed_to_accounting: boolean;
   passed_to_inventory: boolean;
+  additional_expenses: AdditionalExpenses[];
+  municipality: DropdownData<number>;
+  tax_authority_codebook: DropdownData<number>;
+  type_of_decision: DropdownData<number>;
 }
 
 export interface GetInvoiceParams {

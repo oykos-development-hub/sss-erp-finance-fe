@@ -1,4 +1,5 @@
 import {getEnvironment} from '../get-environment';
+import calculateAdditionalExpenses from './calculateAdditionalExpenses/calculateAdditionalExpenses.ts';
 import getCountOverview from './counts/getCountOverview.ts';
 import deleteBudget from './deleteBudget/deleteBudget';
 import finesOverview from './fines/finesOverview.ts';
@@ -125,4 +126,5 @@ export const GraphQL = {
   deleteWill: deleteWill,
   insertWillDispatch: insertWillDispatch,
   deleteWillDispatch: deleteWillDispatch,
+  calculateAdditionalExpenses: calculateAdditionalExpenses,
 };

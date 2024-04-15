@@ -16,10 +16,7 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
                 id
                 title
             }
-            source_of_funding{
-                id
-                title
-            }
+            source_of_funding
             tax_authority_codebook{
                 id
                 title
@@ -31,17 +28,11 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
                 title
             }
             order_id
-            order{
-                id
-                title
-            }
             organization_unit{
                 id
                 title
             }
             date_of_invoice
-            pro_forma_invoice_date
-            pro_forma_invoice_number
             receipt_date
             sss_invoice_receipt_date
             date_of_payment
@@ -58,7 +49,15 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
             }
             bank_account
             description
-            is_invoice
+            issuer
+            type_of_decision {
+                id
+                title
+            }
+            municipality{
+                id
+                title
+            }
             articles{
                 id
                 title
@@ -66,7 +65,6 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
                 vat_price
                 vat_percentage
                 description
-                amount
                 account{
                     id
                     title
