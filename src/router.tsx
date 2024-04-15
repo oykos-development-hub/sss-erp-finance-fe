@@ -40,6 +40,7 @@ import ProceduralCosts from './screens/finesAndTaxes/proceduralCosts/proceduralC
 import FeeDetails from './screens/finesAndTaxes/taxes/feeDetails/feeDetails.tsx';
 import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
+import AdditionalExpensesOverview from './screens/liabilitesAndReceivables/additionalExpenses/additionalExpensesOverview.tsx';
 import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
 import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
 import DecisionsDetails from './screens/liabilitesAndReceivables/decisions/decisionsDetails/decisionsDetails.tsx';
@@ -145,6 +146,9 @@ export const Router = () => {
     if (pathname === '/finance/budget/current/internal-reallocation/create') return <InternalReallocationBudget />;
 
     if (pathname === '/finance/budget/current/external-reallocation') return <ExternalReallocationOverview />;
+
+    if (pathname === '/finance/liabilities-receivables/liabilities/related-expenses')
+      return <AdditionalExpensesOverview />;
 
     if (pathname === '/finance/deposit/demand/tax-contribution-calculation')
       return <TaxContributionCalculationOverview />;

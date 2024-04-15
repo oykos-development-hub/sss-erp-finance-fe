@@ -54,6 +54,7 @@ import insertWill from './wills/insertWill.ts';
 import deleteWill from './wills/deleteWill.ts';
 import insertWillDispatch from './wills/insertWillDispatch.ts';
 import deleteWillDispatch from './wills/deleteWillDispatch.ts';
+import additionalExpensesOverview from './additionalExpensesOverview/additionalExpensesOverview.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -127,4 +128,5 @@ export const GraphQL = {
   insertWillDispatch: insertWillDispatch,
   deleteWillDispatch: deleteWillDispatch,
   calculateAdditionalExpenses: calculateAdditionalExpenses,
+  additionalExpensesOverview: additionalExpensesOverview,
 };
