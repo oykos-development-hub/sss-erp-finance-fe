@@ -30,6 +30,7 @@ const DepositPaymentsOverview = () => {
     contextMain: {organization_unit_id},
     navigation: {navigate},
     alert,
+    breadcrumbs,
   } = useAppContext();
 
   const {register, control, watch} = useForm<DepositPaymentFilterType>({
@@ -90,6 +91,7 @@ const DepositPaymentsOverview = () => {
         style={{marginBottom: 22}}
         isLoading={loading}
         onRowClick={(row: FixedDeposit) => {
+          breadcrumbs.add({name: row.case_number, to: `/finance/deposit/transit/payments/${row.id}`});
           navigate(`/finance/deposit/transit/payments/${row.id}`);
         }}
         tableActions={[

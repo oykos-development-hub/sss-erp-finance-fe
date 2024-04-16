@@ -30,6 +30,7 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
     contextMain: {organization_unit_id},
     navigation: {navigate},
     alert,
+    breadcrumbs,
   } = useAppContext();
 
   const {register, control, watch} = useForm<FinancialDepositFilterType>({
@@ -91,6 +92,7 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
         style={{marginBottom: 22}}
         isLoading={loading}
         onRowClick={(row: FixedDeposit) => {
+          breadcrumbs.add({name: row.case_number, to: `/finance/deposit/fixed/${type}/${row.id}`});
           navigate(`/finance/deposit/fixed/${type}/${row.id}`);
         }}
         tableActions={[

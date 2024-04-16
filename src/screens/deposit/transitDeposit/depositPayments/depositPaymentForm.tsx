@@ -23,14 +23,13 @@ const depositPaymentSchema = yup.object({
   amount: yup.number().required(requiredError),
   main_bank_account: yup.boolean().required(requiredError),
   account_id: optionsNumberSchema.required(requiredError),
-  current_bank_account: optionsStringSchema.when('main_bank_account', {
+  current_bank_account: yup.string().when('main_bank_account', {
     is: false,
     then: schema => schema.required(requiredError),
   }),
   date_of_transfer_main_account: yup.date().when('main_bank_account', {
     is: false,
     then: schema => schema.required(requiredError),
-    // otherwise: schema => schema.nullable().default(null),
   }),
   file_id: yup.number().nullable().default(null),
   id: yup.number().nullable().default(null),
@@ -84,7 +83,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
       date_of_transfer_main_account: data.date_of_transfer_main_account
         ? parseDateForBackend(data.date_of_transfer_main_account)
         : null,
-      current_bank_account: data.current_bank_account?.title || null,
+      current_bank_account: data.current_bank_account ? data.current_bank_account : null,
       //* Unfortunate naming of this field requires us to send the opposite value.
       //* Should have been named transit_bank_account or something similar.
       main_bank_account: !data.main_bank_account,
@@ -138,15 +137,13 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
           ? new Date(data.date_of_transfer_main_account)
           : undefined,
         account_id: data.account,
-        current_bank_account: data.current_bank_account
-          ? {id: data.current_bank_account, title: data.current_bank_account}
-          : null,
+        current_bank_account: data.current_bank_account,
       });
     }
   }, [data]);
 
   const isMainBankAccount = watch('main_bank_account');
-  const mainAccountPayed = Boolean(watch('current_bank_account'));
+  const mainAccountPayed = Boolean(data?.current_bank_account);
 
   if (isLoading) {
     return null;
@@ -220,7 +217,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
         )}
 
         <FlexRow gap={8}>
-          <Controller
+          {/* <Controller
             control={control}
             name="current_bank_account"
             render={({field: {name, value, onChange}}) => (
@@ -234,6 +231,12 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
                 isDisabled={(isMainBankAccount && isNew) || mainAccountPayed}
               />
             )}
+          /> */}
+          <Input
+            label="GLAVNI RAČUN:"
+            {...register('current_bank_account')}
+            error={errors.current_bank_account?.message}
+            disabled={isMainBankAccount || mainAccountPayed}
           />
           <div style={{width: '100%'}}>
             <Controller
@@ -246,7 +249,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
                   selected={value ? new Date(value) : null}
                   name={name}
                   error={errors.date_of_transfer_main_account?.message}
-                  disabled={(isMainBankAccount && isNew) || mainAccountPayed}
+                  disabled={isMainBankAccount || mainAccountPayed}
                 />
               )}
             />

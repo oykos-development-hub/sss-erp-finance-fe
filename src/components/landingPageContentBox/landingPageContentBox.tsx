@@ -12,7 +12,7 @@ const LandingPageContentBox = ({title, path, icon}: ContentBoxProps) => {
     <ContentBox
       onClick={() => {
         navigate(path);
-        breadcrumbs.add({name: title, path});
+        breadcrumbs.add({name: title, to: path});
       }}>
       <TitleWrapper>
         <Title variant="bodyLarge" content={title} />

@@ -1,7 +1,6 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {useEffect, useMemo, useState} from 'react';
 import useAppContext from '../../../../context/useAppContext';
-import {ScreenWrapper} from '../../../budget/budgetTemplate/styles';
 import {Tabs, getCurrentTab, getRouteName, stockTabs} from '../../constants';
 import {StyledTabs, TitleTabsWrapper} from '../../styles';
 import {Divider, Theme} from 'client-library';
@@ -9,6 +8,7 @@ import DepositPaymentNewEntry from './depositPaymentNewEntry';
 import DepositPaymentsOverview from './depositPaymentsOverview';
 import {MainTitle} from '../../../../shared/pageElements';
 import SectionBox from '../../../../shared/sectionBox';
+import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper';
 
 const DepositPaymentsTabs = () => {
   const {

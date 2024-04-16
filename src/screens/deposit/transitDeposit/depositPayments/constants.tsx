@@ -28,7 +28,7 @@ export const depositPaymentTableHeads: TableHead[] = [
   },
   {
     title: 'Konto',
-    accessor: 'account_id',
+    accessor: 'account',
     type: 'custom',
     renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },

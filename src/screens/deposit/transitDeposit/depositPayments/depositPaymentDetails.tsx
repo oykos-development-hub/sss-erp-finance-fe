@@ -3,8 +3,8 @@ import useAppContext from '../../../../context/useAppContext';
 import useGetDepositPayments from '../../../../services/graphQL/transitDeposits/useGetDepositPayments';
 import {MainTitle} from '../../../../shared/pageElements';
 import SectionBox from '../../../../shared/sectionBox';
-import {ScreenWrapper} from '../../../budget/budgetTemplate/styles';
 import DepositPaymentForm from './depositPaymentForm';
+import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper';
 
 const DepositPaymentDetails = () => {
   const {

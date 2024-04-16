@@ -15,6 +15,7 @@ import {FilterInput} from '../../../accounting/styles';
 import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles';
 import {Header} from '../../styles';
 import {willStatusOptions, willTableHeads} from './constants';
+import {Will} from '../../../../types/graphQL/wills';
 
 const willDepositSchema = yup.object({
   status: optionsStringSchema.default(null),
@@ -30,6 +31,7 @@ const WillOverview = () => {
     contextMain: {organization_unit_id},
     navigation: {navigate},
     alert,
+    breadcrumbs,
   } = useAppContext();
 
   const {register, control, watch} = useForm<WillDepositFilterType>({
@@ -93,7 +95,8 @@ const WillOverview = () => {
         data={wills}
         style={{marginBottom: 22}}
         isLoading={loading}
-        onRowClick={(row: FixedDeposit) => {
+        onRowClick={(row: Will) => {
+          breadcrumbs.add({name: row.case_number_si, to: `/finance/deposit/fixed/wills/${row.id}`});
           navigate(`/finance/deposit/fixed/wills/${row.id}`);
         }}
         tableActions={[

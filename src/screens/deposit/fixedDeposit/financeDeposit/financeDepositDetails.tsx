@@ -83,7 +83,7 @@ const FinanceDepositDetails = () => {
   const disabled = currentDeposit?.items[0]?.status === 'Zakljucen';
 
   return (
-    <ScreenWrapper showBreadcrumbs={true}>
+    <ScreenWrapper>
       <SectionBox>
         <MainTitle content={`STALNI FINANSKIJSKI DEPOZIT - ${currentDeposit?.items[0]?.case_number}`} />
         <Divider color={Theme?.palette?.gray200} height="1px" style={{marginBottom: 20}} />
