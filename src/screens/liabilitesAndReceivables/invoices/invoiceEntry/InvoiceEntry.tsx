@@ -409,10 +409,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   }, [orders]);
 
   const resetFormValues = () => {
-    setValue('order_id', {id: 0, title: ''});
+    setValue('order_id', null);
     setValue('invoice_number', '');
     setValue('articles', []);
     setValue('invoice_type', {id: '', title: ''});
+    setValue('date_of_invoice', undefined);
+    setValue('receipt_date', undefined);
   };
 
   useEffect(() => {
@@ -436,19 +438,18 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             ? {id: 'accounting', title: 'Materijalno knjigovodstvo'}
             : {id: 'manual', title: 'Ručni unos'},
         supplier_id: {id: invoice.supplier.id, title: invoice.supplier.title},
-        order_id: {id: invoice.order?.id, title: invoice.order?.title},
+        order_id: invoice.order,
         file_id: invoice.file.id,
         is_invoice: invoice.is_invoice === false ? {id: false, title: 'Predračun'} : {id: true, title: 'Račun'},
         invoice_number: invoice.invoice_number,
-        date_of_invoice: invoice.date_of_invoice !== null ? new Date(invoice.date_of_invoice) : undefined,
-        receipt_date: invoice.receipt_date !== null ? new Date(invoice.receipt_date) : undefined,
-        date_of_payment: invoice.date_of_payment !== null ? new Date(invoice.date_of_payment) : undefined,
+        date_of_invoice: invoice.date_of_invoice,
+        receipt_date: invoice.receipt_date,
+        date_of_payment: invoice.date_of_payment,
         bank_account: {id: invoice.bank_account, title: invoice.bank_account},
         description: invoice?.description,
         passed_to_inventory: invoice?.passed_to_inventory,
         passed_to_accounting: invoice?.passed_to_accounting,
-        pro_forma_invoice_date:
-          invoice?.pro_forma_invoice_date !== null ? new Date(invoice?.pro_forma_invoice_date) : undefined,
+        pro_forma_invoice_date: invoice?.pro_forma_invoice_date,
         pro_forma_invoice_number: invoice?.pro_forma_invoice_number,
         articles: invoice.articles.map((_, index) => ({
           title: invoice.articles[index]?.title,
@@ -645,28 +646,28 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             />
           </FileUploadWrapper>
         )}
-        {invoice?.file && (
+        {!!invoice?.file.id && (
           <FileListWrapper>
             <Typography variant="bodySmall" style={{fontWeight: 600}} content={'RAČUN:'} />
             <FileListComponent files={(invoice?.file && [invoice.file]) ?? []} />
           </FileListWrapper>
         )}
 
-        {invoice?.pro_forma_invoice_file && (
+        {!!invoice?.pro_forma_invoice_file.id && (
           <FileListWrapper>
             <Typography variant="bodySmall" style={{fontWeight: 600}} content={'PREDRAČUN:'} />
             <FileListComponent files={invoice?.pro_forma_invoice_file ? [invoice?.pro_forma_invoice_file] : []} />
           </FileListWrapper>
         )}
 
-        {accountingInvoiceFile?.id !== 0 && !isManual && !invoice?.file && (
+        {!!accountingInvoiceFile?.id && !isManual && !invoice?.file && (
           <FileListWrapper>
             <Typography variant="bodySmall" style={{fontWeight: 600}} content={'RAČUN:'} />
             <FileListComponent files={(accountingInvoiceFile && [accountingInvoiceFile]) ?? []} />
           </FileListWrapper>
         )}
 
-        {accountingProFormaInvoiceFile?.id !== 0 && !isManual && !invoice?.pro_forma_invoice_file && (
+        {!!accountingProFormaInvoiceFile?.id && !isManual && !invoice?.pro_forma_invoice_file && (
           <FileListWrapper>
             <Typography variant="bodySmall" style={{fontWeight: 600}} content={'PREDRAČUN:'} />
             <FileListComponent files={(accountingProFormaInvoiceFile && [accountingProFormaInvoiceFile]) ?? []} />

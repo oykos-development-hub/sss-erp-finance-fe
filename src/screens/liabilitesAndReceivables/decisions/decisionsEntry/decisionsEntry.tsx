@@ -393,7 +393,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   placeholder={'Odaberite opštinu'}
                   options={municipalities}
                   isSearchable
-                  isDisabled={decision !== undefined}
                   error={errors.municipality_id?.message}
                 />
               )}
@@ -412,7 +411,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   onChange={onChange}
                   label="ŠIFARNIK PORESKE UPRAVE:"
                   placeholder={'Odaberite šifarnik'}
-                  isDisabled={decision !== undefined}
                   options={optionsForTaxAuthorityCodebook}
                   error={errors.tax_authority_codebook_id?.message}
                 />

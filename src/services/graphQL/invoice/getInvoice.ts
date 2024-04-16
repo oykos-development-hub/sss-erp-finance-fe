@@ -50,6 +50,9 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
             bank_account
             description
             issuer
+            is_invoice
+            pro_forma_invoice_number
+            pro_forma_invoice_date
             type_of_decision {
                 id
                 title
@@ -65,6 +68,7 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
                 vat_price
                 vat_percentage
                 description
+                amount
                 account{
                     id
                     title

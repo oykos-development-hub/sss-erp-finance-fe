@@ -45,6 +45,7 @@ const insertInvoice = `mutation($data: InvoiceMutation!) {
                 net_price
                 vat_price
                 description
+                amount
                 account{
                     id
                     title

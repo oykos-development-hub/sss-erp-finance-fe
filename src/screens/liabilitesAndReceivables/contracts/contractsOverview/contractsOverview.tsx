@@ -1,11 +1,11 @@
-import {Dropdown, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {Dropdown, EditIconTwo, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {ChangeEvent, useMemo, useState} from 'react';
 import {PAGE_SIZE} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useDeleteInvoice from '../../../../services/graphQL/invoice/useDeleteInvoice.ts';
 import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts';
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
-import {DeleteModal} from '../../../../shared/deleteModal/deleteModal.tsx';
+import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import {DropdownData} from '../../../../types/dropdownData.ts';
 import {ContractItem, InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
@@ -145,8 +145,13 @@ const ContractsOverview = () => {
         tableHeads={contractsOverviewTableHeads}
         data={invoice}
         emptyMessage={'Još nema ugovora'}
-        onRowClick={(row: ContractItem) => navigate(`/finance/liabilities-receivables/liabilities/contracts/${row.id}`)}
         tableActions={[
+          {
+            name: 'Izmijeni',
+            onClick: (row: ContractItem) =>
+              navigate(`/finance/liabilities-receivables/liabilities/contracts/${row.id}`),
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+          },
           {
             name: 'Izbriši',
             onClick: onDelete,
@@ -163,12 +168,11 @@ const ContractsOverview = () => {
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
       />
-      <DeleteModal
+      <ConfirmationModal
         open={!!showDeleteModalId}
-        onClose={() => {
-          handleCloseDeleteModal();
-        }}
-        handleDelete={handleDelete}
+        subTitle="Ovaj ugovor će biti trajno izbrisan iz sistema."
+        onClose={() => handleCloseDeleteModal()}
+        onConfirm={() => handleDelete()}
       />
     </>
   );

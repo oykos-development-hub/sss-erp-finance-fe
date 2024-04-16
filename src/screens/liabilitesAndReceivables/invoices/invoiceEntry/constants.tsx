@@ -8,7 +8,7 @@ export const invoiceSchema = yup.object().shape({
   pro_forma_invoice_number: yup.string(),
   description: yup.string().nullable(),
   supplier_id: optionsNumberSchema.required(requiredError).default(null),
-  order_id: optionsNumberSchema.default(undefined),
+  order_id: optionsNumberSchema,
   date_of_invoice: yup.date(),
   pro_forma_invoice_date: yup.date(),
   receipt_date: yup.date(),

@@ -97,12 +97,12 @@ export interface InvoiceItem {
     title: string;
   };
   organization_unit: DropdownData<string>;
-  date_of_invoice: string;
-  pro_forma_invoice_date: string;
-  receipt_date: string;
+  date_of_invoice: Date;
+  pro_forma_invoice_date: Date;
+  receipt_date: Date;
   sss_invoice_receipt_date: Date;
-  date_of_payment: string;
-  date_of_start: string;
+  date_of_payment: Date;
+  date_of_start: Date;
   file: {
     id: number;
     name: string;

@@ -1,14 +1,12 @@
-import {Dropdown, FileIcon, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {Dropdown, EditIconTwo, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {ChangeEvent, useMemo, useState} from 'react';
-import FileModalView from '../../../../components/fileModalView/fileModalView.tsx';
 import {PAGE_SIZE} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useDeleteInvoice from '../../../../services/graphQL/invoice/useDeleteInvoice.ts';
 import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts';
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
-import {DeleteModal} from '../../../../shared/deleteModal/deleteModal.tsx';
+import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import {DropdownData} from '../../../../types/dropdownData.ts';
-import {FileItem} from '../../../../types/fileUploadType.ts';
 import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 import {getYearOptions} from '../../../../utils/getYearOptions.ts';
@@ -36,7 +34,6 @@ const InvoicesOverview = () => {
     navigation: {navigate},
     contextMain,
   } = useAppContext();
-  const [fileToView, setFileToView] = useState<FileItem>();
   const [showDeleteModalInvoiceId, setShowDeleteModalInvoiceId] = useState<number | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState<InvoiceOverviewFilters>(initialInvoiceFilterValues);
@@ -147,15 +144,11 @@ const InvoicesOverview = () => {
         data={invoice}
         style={{marginBottom: 22}}
         emptyMessage="Još nema računa"
-        onRowClick={(row: InvoiceItem) => navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`)}
         tableActions={[
           {
-            name: 'showFile',
-            icon: <FileIcon stroke={Theme.palette.gray600} />,
-            onClick: (row: any) => {
-              setFileToView(row?.file);
-            },
-            shouldRender: (row: any) => row?.file?.id,
+            name: 'Izmijeni',
+            onClick: (row: InvoiceItem) => navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`),
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
           },
           {
             name: 'Izbriši',
@@ -165,14 +158,12 @@ const InvoicesOverview = () => {
           },
         ]}
       />
-      {fileToView && <FileModalView file={fileToView} onClose={() => setFileToView(undefined)} />}
 
-      <DeleteModal
+      <ConfirmationModal
         open={!!showDeleteModalInvoiceId}
-        onClose={() => {
-          handleCloseDeleteModal();
-        }}
-        handleDelete={handleDelete}
+        subTitle="Ovaj račun će biti trajno izbrisan iz sistema."
+        onClose={() => handleCloseDeleteModal()}
+        onConfirm={() => handleDelete()}
       />
 
       <Pagination

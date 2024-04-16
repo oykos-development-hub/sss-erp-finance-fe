@@ -1,11 +1,11 @@
-import {Dropdown, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {Dropdown, EditIconTwo, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {ChangeEvent, useMemo, useState} from 'react';
 import {PAGE_SIZE} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useDeleteInvoice from '../../../../services/graphQL/invoice/useDeleteInvoice.ts';
 import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts';
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
-import {DeleteModal} from '../../../../shared/deleteModal/deleteModal.tsx';
+import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import {DropdownData} from '../../../../types/dropdownData.ts';
 import {DecisionItem, InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
@@ -144,8 +144,13 @@ const DecisionsOverview = () => {
         tableHeads={decisionsOverviewTableHeads}
         data={invoice}
         emptyMessage={'Još nema rešenja'}
-        onRowClick={(row: DecisionItem) => navigate(`/finance/liabilities-receivables/liabilities/decisions/${row.id}`)}
         tableActions={[
+          {
+            name: 'Izmijeni',
+            onClick: (row: DecisionItem) =>
+              navigate(`/finance/liabilities-receivables/liabilities/decisions/${row.id}`),
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+          },
           {
             name: 'Izbriši',
             onClick: onDelete,
@@ -161,13 +166,11 @@ const DecisionsOverview = () => {
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
       />
-      <DeleteModal
+      <ConfirmationModal
         open={!!showDeleteModalId}
-        onClose={() => {
-          handleCloseDeleteModal();
-        }}
-        handleDelete={handleDelete}
-        customContent="Ovo rješenje će biti trajno izbrisano iz sistema."
+        subTitle="Ovo rješenje će biti trajno izbrisano iz sistema."
+        onClose={() => handleCloseDeleteModal()}
+        onConfirm={() => handleDelete()}
       />
     </>
   );
