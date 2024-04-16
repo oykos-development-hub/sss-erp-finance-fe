@@ -8,14 +8,13 @@ import useDeleteWill from '../../../../services/graphQL/wills/useDeleteWill';
 import useGetWills from '../../../../services/graphQL/wills/useGetWills';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal';
 import {FixedDepositStatus} from '../../../../types/deposits';
-import {FixedDeposit} from '../../../../types/graphQL/fixedDeposits';
+import {Will} from '../../../../types/graphQL/wills';
 import {optionsStringSchema} from '../../../../utils/formSchemas';
 import {useDebounce} from '../../../../utils/useDebounce';
 import {FilterInput} from '../../../accounting/styles';
 import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles';
 import {Header} from '../../styles';
 import {willStatusOptions, willTableHeads} from './constants';
-import {Will} from '../../../../types/graphQL/wills';
 
 const willDepositSchema = yup.object({
   status: optionsStringSchema.default(null),

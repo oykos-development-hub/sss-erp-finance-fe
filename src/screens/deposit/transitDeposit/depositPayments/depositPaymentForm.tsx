@@ -12,7 +12,7 @@ import {FlexColumn, FlexRow} from '../../../../shared/flex';
 import Footer from '../../../../shared/footer';
 import {DepositPayment, DepositPaymentInsertData} from '../../../../types/graphQL/depositPayments';
 import {parseDateForBackend} from '../../../../utils/dateUtils';
-import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
+import {optionsNumberSchema} from '../../../../utils/formSchemas';
 
 const depositPaymentSchema = yup.object({
   payer: yup.string().required(requiredError),
