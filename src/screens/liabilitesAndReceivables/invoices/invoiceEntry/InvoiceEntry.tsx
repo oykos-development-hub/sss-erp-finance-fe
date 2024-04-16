@@ -312,7 +312,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
       });
 
       return;
-    } else if (isManual && !uploadedFile) {
+    } else if (isManual && !uploadedFile && !invoice?.file && !invoice?.pro_forma_invoice_file) {
       setShowFileUploadError(true);
     } else {
       const payload = {
