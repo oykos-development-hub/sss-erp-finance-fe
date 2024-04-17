@@ -2,6 +2,7 @@ import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import {parseDate} from '../../../utils/dateUtils.ts';
+import {StatusOptions} from '../../../constants.ts';
 
 export const invoicesOverviewTableHeads: TableHead[] = [
   {title: 'Broj', accessor: 'id', type: 'text'},
@@ -53,7 +54,6 @@ export const invoicesOverviewTableHeads: TableHead[] = [
       return <Typography content={(row.net_price + row.vat_price)?.toFixed(2)} />;
     },
   },
-
   {
     title: 'Status',
     accessor: 'status',
@@ -77,13 +77,6 @@ export const invoiceAmountTableHeads: TableHead[] = [
     },
   },
   {title: 'Ukupan iznos', accessor: 'total'},
-];
-
-export const StatusOptions = [
-  {id: '', title: 'Svi statusi'},
-  {id: 'waiting', title: 'Čeka na nalog za plaćanje'},
-  {id: 'created', title: 'Kreiran nalog za plaćanje'},
-  {id: 'payed', title: 'Plaćen'},
 ];
 
 export const pdvOptions: DropdownData<number>[] = [

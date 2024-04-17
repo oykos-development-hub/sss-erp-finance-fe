@@ -1,6 +1,6 @@
 import {Dropdown, Input, Pagination, SearchIcon, Table, Theme, Divider} from 'client-library';
 import {ChangeEvent, useMemo, useState} from 'react';
-import {PAGE_SIZE} from '../../../constants';
+import {PAGE_SIZE, StatusOptions} from '../../../constants';
 import useAppContext from '../../../context/useAppContext';
 import useAdditionalExpensesOverview from '../../../services/graphQL/additionalExpensesOverview/useAdditionalExpensesOverview';
 import useGetSuppliers from '../../../services/graphQL/suppliers/useGetSuppliers';
@@ -9,7 +9,7 @@ import {Supplier} from '../../../types/graphQL/suppliers';
 import {getYearOptions} from '../../../utils/getYearOptions';
 import {useDebounce} from '../../../utils/useDebounce';
 import {Row} from '../decisions/decisionsOverview/styles';
-import {StatusOptions, tableHeads} from './constants';
+import {tableHeads} from './constants';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import SectionBox from '../../../shared/sectionBox';
 import {MainTitle} from '../../accounting/styles';

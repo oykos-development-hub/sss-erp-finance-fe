@@ -39,10 +39,3 @@ export const tableHeads: TableHead[] = [
     renderContents: (status: string) => <StatusTableCell status={status} />,
   },
 ];
-
-export const StatusOptions = [
-  {id: '', title: 'Svi statusi'},
-  {id: 'Kreiran', title: 'Kreiran'},
-  {id: 'Na čekanju', title: 'Na čekanju'},
-  {id: 'Plaćen', title: 'Plaćen'},
-];

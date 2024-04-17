@@ -1,6 +1,7 @@
 import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {parseDate} from '../../../utils/dateUtils.ts';
+import {StatusOptions} from '../../../constants.ts';
 
 export const decisionsOverviewTableHeads: TableHead[] = [
   {
@@ -32,7 +33,10 @@ export const decisionsOverviewTableHeads: TableHead[] = [
     title: 'Status',
     accessor: 'status',
     type: 'custom',
-    renderContents: (status: string) => <StatusTableCell status={status} />,
+    renderContents: (_, row) => {
+      const statusValue = StatusOptions.find(option => option.id === row.status);
+      return <StatusTableCell status={statusValue ? statusValue?.title : ''} />;
+    },
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

@@ -1,6 +1,6 @@
 import {Dropdown, EditIconTwo, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {ChangeEvent, useMemo, useState} from 'react';
-import {PAGE_SIZE} from '../../../../constants.ts';
+import {PAGE_SIZE, StatusOptions} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useDeleteInvoice from '../../../../services/graphQL/invoice/useDeleteInvoice.ts';
 import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts';
@@ -11,7 +11,6 @@ import {ContractItem, InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {useDebounce} from '../../../../utils/useDebounce.ts';
-import {StatusOptions} from '../../invoices/constants.tsx';
 import {contractsOverviewTableHeads} from '../constants.tsx';
 import {Row} from './styles.ts';
 
