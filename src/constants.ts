@@ -100,7 +100,6 @@ export const feeSubcategoryOptions = [{id: 1, title: 'Kopiranje'}];
 export const StatusOptions = [
   {id: '', title: 'Svi statusi'},
   {id: 'Kreiran', title: 'Kreiran'},
-  {id: 'Na čekanju', title: 'Na čekanju'},
-  {id: 'Djelimično na čekanju', title: 'Djelimično na čekanju'},
-  {id: 'Plaćen', title: 'Plaćen'},
+  {id: 'Djelimično na nalogu', title: 'Djelimično na nalogu'},
+  {id: 'Na nalogu', title: 'Na nalogu'},
 ];
