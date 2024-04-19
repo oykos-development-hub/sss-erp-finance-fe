@@ -53,6 +53,7 @@ import sendBudget from './sendBudget/sendBudget.ts';
 import deleteDepositPayment from './transitDeposits/deleteDepositPayment.ts';
 import deleteDepositPaymentOrder from './transitDeposits/deleteDepositPaymentOrder.ts';
 import getAdditionalExpenses from './transitDeposits/getAdditionalExpenses.ts';
+import getCases from './transitDeposits/getCases.ts';
 import getDepositPaymentOrders from './transitDeposits/getDepositPaymentOrders.ts';
 import getDepositPayments from './transitDeposits/getDepositPayments.ts';
 import getRemainAmountByCaseNumber from './transitDeposits/getRemainAmountByCaseNumber.ts';
@@ -145,4 +146,5 @@ export const GraphQL = {
   insertDepositPaymentOrder: insertDepositPaymentOrder,
   getAdditionalExpenses: getAdditionalExpenses,
   getRemainAmountByCaseNumber: getRemainAmountByCaseNumber,
+  getCases: getCases,
 };

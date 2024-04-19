@@ -58,15 +58,14 @@ const FileList = ({files, onDelete, isInModal}: FileListProps) => {
             viewable={allowedTypes.includes(file.type)}>
             <Typography content={file.name} style={{borderBottom: '1px solid black'}} />
             <Controls>
-              {!isInModal && (
-                <FileIconButton
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleDownload(file);
-                  }}>
-                  <DownloadFileIcon stroke={Theme.palette.gray700} />
-                </FileIconButton>
-              )}
+              <FileIconButton
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  handleDownload(file);
+                }}>
+                <DownloadFileIcon stroke={Theme.palette.gray700} />
+              </FileIconButton>
+
               {onDelete && (
                 <FileIconButton
                   onClick={(e: React.MouseEvent) => {

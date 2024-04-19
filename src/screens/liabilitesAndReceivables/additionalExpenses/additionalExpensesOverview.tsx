@@ -71,7 +71,7 @@ const AdditionalExpensesOverview = () => {
       id: supplier.id,
       title: supplier.title,
     }));
-    options.unshift({id: null, title: 'Svi dobavljači'});
+    options.unshift({id: 0, title: 'Svi dobavljači'});
     return options;
   }, [suppliers]);
 

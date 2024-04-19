@@ -96,7 +96,7 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
       payload,
       (data: FixedDeposit) => {
         alert.success(
-          isNew ? 'Uspešno ste dodali novi materijalni depozit' : 'Uspešno ste izmjenili materijalni depozit',
+          isNew ? 'Uspješno ste dodali novi materijalni depozit' : 'Uspješno ste izmjenili materijalni depozit',
         );
         if (isNew) {
           navigate(`/finance/deposit/fixed/material/${data.id}`);

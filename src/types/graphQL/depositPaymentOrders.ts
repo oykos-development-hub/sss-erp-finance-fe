@@ -1,4 +1,5 @@
 import {DropdownData} from '../dropdownData';
+import {FileItem} from '../fileUploadType';
 import {GetResponse, InsertResponse, SimpleResponse} from './response';
 
 export type PaymentOrderAdditionalExpense = {
@@ -33,8 +34,20 @@ export type DepositPaymentOrder = {
   status: string;
   additional_expenses: PaymentOrderAdditionalExpense[];
   additional_expenses_for_paying: AdditionalExpenseToPay[];
+  municipality: DropdownData<number> | null;
+  tax_authority_codebook: DropdownData<number> | null;
+  source_bank_account: string;
+  subject_type: DropdownData<number>;
+  file: FileItem;
   created_at: string;
   updated_at: string;
+};
+
+export type AdditionalExpenseInsertData = {
+  organization_unit_id: number;
+  price: number;
+  subject_id: number;
+  title: string;
 };
 
 export type DepositPaymentOrderInsertData = {
@@ -42,20 +55,17 @@ export type DepositPaymentOrderInsertData = {
   supplier_id: number;
   bank_account: string;
   date_of_payment: string;
-  additional_expenses_for_paying: {
-    id: number;
-    organization_unit_id: number;
-    price: number;
-    status: string | null;
-    subject_id: number;
-    title: string;
-    payment_order_id: number;
-  }[];
+  additional_expenses: AdditionalExpenseInsertData[] | null;
+  additional_expenses_for_paying: AdditionalExpenseInsertData[] | null;
+  municipality_id: number | null;
+  tax_authority_codebook_id: number | null;
+  source_bank_account: string;
+  subject_type_id: number;
 };
 
 export type AdditionalExpensesResponse = {
   get: {
-    depositPaymentOrder_Overview: GetResponse<PaymentOrderAdditionalExpense>;
+    depositPaymentAdditionalExpenses_Overview: GetResponse<PaymentOrderAdditionalExpense>;
   };
 };
 
@@ -76,3 +86,10 @@ export type DepositPaymentOrderResponse = {
     depositPaymentOrder_Delete: SimpleResponse;
   };
 };
+
+export type DepositPaymentOrderCase = {
+  case_number: string;
+  amount: number;
+};
+
+export type CaseListResponse = {depositCaseNumbers_Overview: GetResponse<DepositPaymentOrderCase>};

@@ -288,7 +288,7 @@ const DepositConfiscationModal = ({open, onClose, data, refetch}: DepositConfisc
               buttonText="Učitaj"
               style={{marginBottom: 10}}
             />
-            <FileList files={data?.file.id ? [data.file] : null} />
+            <FileList files={data?.file.id ? [data.file] : null} isInModal />
           </div>
         </div>
       }

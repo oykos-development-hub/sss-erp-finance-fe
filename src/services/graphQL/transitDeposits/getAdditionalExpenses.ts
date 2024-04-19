@@ -2,6 +2,7 @@ const getAdditionalExpenses = `query depositPaymentAdditionalExpensesOverview($i
     depositPaymentAdditionalExpenses_Overview(id: $id, status: $status, year: $year, subject_id: $subject_id, search: $search, organization_unit_id: $organization_unit_id, page:$page, size:$size) {
         message
         total
+        status
         items {
                 id
                 title

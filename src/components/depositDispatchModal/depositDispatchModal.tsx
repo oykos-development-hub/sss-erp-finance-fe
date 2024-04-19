@@ -309,7 +309,7 @@ const DepositDispatchModal = ({open, onClose, data, refetch}: DepositDispatchMod
               note={<Typography variant="bodySmall" content="Dodaj fajl" />}
               buttonText="Učitaj"
             />
-            <FileList files={data?.file.id ? [data.file] : null} />
+            <FileList files={data?.file.id ? [data.file] : null} isInModal />
           </div>
         </div>
       }

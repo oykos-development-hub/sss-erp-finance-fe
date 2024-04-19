@@ -12,7 +12,7 @@ type GetDepositPaymentOrdersParams = {
   id?: number | null;
   status?: FixedDepositStatus;
   search?: string;
-  organization_unit_id: number;
+  organization_unit_id?: number | null;
 } & PageParams;
 
 const useGetDepositPaymentOrders = (
@@ -27,7 +27,7 @@ const useGetDepositPaymentOrders = (
   const fetchDepositPayments = async () => {
     setLoading(true);
 
-    const response: DepositPaymentOrderResponse['get'] = await fetch(GraphQL.getDepositPayments, {
+    const response: DepositPaymentOrderResponse['get'] = await fetch(GraphQL.getDepositPaymentOrders, {
       id,
       status,
       search,

@@ -20,6 +20,24 @@ const getDepositPaymentOrders = `query depositPaymentOrder_Overview($id: Int,$st
            date_of_statement
            id_of_statement
            status
+           subject_type {
+            id
+            title
+           }
+           source_bank_account
+           file {
+              id
+              name
+              type
+           }
+           municipality {
+              id
+              title
+           }
+           tax_authority_codebook {
+              id
+              title
+           }
 					 additional_expenses{
 						    id
                 title

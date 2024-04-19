@@ -26,6 +26,8 @@ import WillDetails from './screens/deposit/fixedDeposit/wills/willDetails.tsx';
 import {DepositLandingPage} from './screens/deposit/landingPages/depositLandingPage.tsx';
 import {FixedDepositLandingPage} from './screens/deposit/landingPages/fixedDepositLanding.tsx';
 import TransitDepositLandingPage from './screens/deposit/landingPages/transitDepositLanding.tsx';
+import DepositPaymentOrderDetails from './screens/deposit/transitDeposit/depositPaymentOrders/depositPaymentOrderDetails.tsx';
+import DepositPaymentOrderTabs from './screens/deposit/transitDeposit/depositPaymentOrders/depositPaymentOrderTabs.tsx';
 import DepositPaymentDetails from './screens/deposit/transitDeposit/depositPayments/depositPaymentDetails.tsx';
 import DepositPaymentsTabs from './screens/deposit/transitDeposit/depositPayments/depositPaymentsTabs.tsx';
 import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
@@ -71,6 +73,7 @@ export const Router = () => {
     const MaterialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/material\/\d+$/;
     const WillDetailsRegex = /^\/finance\/deposit\/fixed\/wills\/\d+$/;
     const DepositPaymentsDetailsRegex = /^\/finance\/deposit\/transit\/payments\/\d+$/;
+    const DepositPaymentsOrderDetailsRegex = /^\/finance\/deposit\/transit\/payment-orders\/\d+$/;
 
     // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
@@ -140,6 +143,12 @@ export const Router = () => {
     if (pathname === '/finance/deposit/transit/payments/overview') return <DepositPaymentsTabs />;
     if (pathname === '/finance/deposit/transit/payments/add-new') return <DepositPaymentsTabs />;
     if (DepositPaymentsDetailsRegex.test(pathname)) return <DepositPaymentDetails />;
+
+    if (pathname === '/finance/deposit/transit/payment-orders')
+      navigate('/finance/deposit/transit/payment-orders/overview');
+    if (pathname === '/finance/deposit/transit/payment-orders/overview') return <DepositPaymentOrderTabs />;
+    if (pathname === '/finance/deposit/transit/payment-orders/add-new') return <DepositPaymentOrderTabs />;
+    if (DepositPaymentsOrderDetailsRegex.test(pathname)) return <DepositPaymentOrderDetails />;
 
     if (pathname === '/finance/budget/current/non-financial') return <NonFinancialOverview />;
 
