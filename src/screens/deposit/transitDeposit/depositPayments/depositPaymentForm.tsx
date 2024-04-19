@@ -1,6 +1,6 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {Button, Checkbox, Datepicker, Dropdown, FileUpload, Input, Typography} from 'client-library';
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import FileList from '../../../../components/fileList/fileList';
@@ -12,7 +12,7 @@ import {FlexColumn, FlexRow} from '../../../../shared/flex';
 import Footer from '../../../../shared/footer';
 import {DepositPayment, DepositPaymentInsertData} from '../../../../types/graphQL/depositPayments';
 import {parseDateForBackend} from '../../../../utils/dateUtils';
-import {optionsNumberSchema} from '../../../../utils/formSchemas';
+import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
 
 const depositPaymentSchema = yup.object({
   payer: yup.string().required(requiredError),
@@ -23,7 +23,7 @@ const depositPaymentSchema = yup.object({
   amount: yup.number().required(requiredError),
   main_bank_account: yup.boolean().required(requiredError),
   account_id: optionsNumberSchema.required(requiredError),
-  current_bank_account: yup.string().when('main_bank_account', {
+  current_bank_account: optionsStringSchema.when('main_bank_account', {
     is: false,
     then: schema => schema.required(requiredError),
   }),
@@ -52,6 +52,9 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
     },
     alert,
     fileService: {uploadFile},
+    contextMain: {
+      organization_unit: {bank_accounts: org_unit_bank_accounts},
+    },
   } = useAppContext();
 
   const id = pathname.split('/').pop();
@@ -83,7 +86,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
       date_of_transfer_main_account: data.date_of_transfer_main_account
         ? parseDateForBackend(data.date_of_transfer_main_account)
         : null,
-      current_bank_account: data.current_bank_account ? data.current_bank_account : null,
+      current_bank_account: data.current_bank_account ? data.current_bank_account.id : null,
       //* Unfortunate naming of this field requires us to send the opposite value.
       //* Should have been named transit_bank_account or something similar.
       main_bank_account: !data.main_bank_account,
@@ -137,13 +140,18 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
           ? new Date(data.date_of_transfer_main_account)
           : undefined,
         account_id: data.account,
-        current_bank_account: data.current_bank_account,
+        current_bank_account: {id: data.current_bank_account, title: data.current_bank_account},
       });
     }
   }, [data]);
 
   const isMainBankAccount = watch('main_bank_account');
   const mainAccountPayed = Boolean(data?.current_bank_account);
+
+  const orgUnitBankAccountOptions = useMemo(() => {
+    if (!org_unit_bank_accounts) return [];
+    return org_unit_bank_accounts.map((item: string) => ({id: item, title: item}));
+  }, [org_unit_bank_accounts]);
 
   if (isLoading) {
     return null;
@@ -217,7 +225,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
         )}
 
         <FlexRow gap={8}>
-          {/* <Controller
+          <Controller
             control={control}
             name="current_bank_account"
             render={({field: {name, value, onChange}}) => (
@@ -226,18 +234,13 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
                 name={name}
                 value={value}
                 onChange={onChange}
-                options={[]}
+                options={orgUnitBankAccountOptions}
                 error={errors.current_bank_account?.message}
                 isDisabled={(isMainBankAccount && isNew) || mainAccountPayed}
               />
             )}
-          /> */}
-          <Input
-            label="GLAVNI RAČUN:"
-            {...register('current_bank_account')}
-            error={errors.current_bank_account?.message}
-            disabled={isMainBankAccount || mainAccountPayed}
           />
+
           <div style={{width: '100%'}}>
             <Controller
               control={control}
