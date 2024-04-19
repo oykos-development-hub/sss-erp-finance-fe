@@ -93,3 +93,9 @@ export type DepositPaymentOrderCase = {
 };
 
 export type CaseListResponse = {depositCaseNumbers_Overview: GetResponse<DepositPaymentOrderCase>};
+
+export type PayOrderData = {
+  id: number;
+  id_of_statement: string;
+  date_of_statement: string;
+};

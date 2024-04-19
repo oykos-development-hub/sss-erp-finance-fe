@@ -8,6 +8,7 @@ import {DropdownData} from '../../../../types/dropdownData';
 import {SectionBox} from '../../../accounting/styles';
 import {DepositPaymentOrderType, DepositPaymentOrderTypeOptions} from './constants';
 import OrderByCaseNumberForm from './orderByCaseNumberForm';
+import TaxOrderForm from './taxOrderForm';
 
 const DepositPaymentOrderDetails = () => {
   const [type, setType] = useState<DropdownData<DepositPaymentOrderType> | null>(null);
@@ -63,7 +64,8 @@ const DepositPaymentOrderDetails = () => {
           />
         </div>
 
-        {type && type.id === 'case' ? <OrderByCaseNumberForm data={currentPaymentOrder?.items[0]} /> : <></>}
+        {type && type.id === 'case' && <OrderByCaseNumberForm data={currentPaymentOrder?.items[0]} />}
+        {type && type.id === 'tax' && <TaxOrderForm data={currentPaymentOrder?.items[0]} />}
       </SectionBox>
     </ScreenWrapper>
   );

@@ -301,7 +301,7 @@ const TaxOrderForm = ({data}: TaxOrderFormProps) => {
                 onChange={onChange}
                 label="DATUM NALOGA"
                 error={errors.date_of_payment?.message}
-                isDisabled={isDisabled}
+                disabled={isDisabled}
               />
             )}
           />
@@ -319,12 +319,14 @@ const TaxOrderForm = ({data}: TaxOrderFormProps) => {
         />
         <FileList files={data?.file.id ? [data.file] : null} />
       </div>
-      <Button
-        content="Pretraži dodatne troškove"
-        onClick={onGetAdditionalExpenses}
-        variant="primary"
-        style={{width: 'fit-content'}}
-      />
+      {!isDisabled && (
+        <Button
+          content="Pretraži dodatne troškove"
+          onClick={onGetAdditionalExpenses}
+          variant="primary"
+          style={{width: 'fit-content'}}
+        />
+      )}
 
       {Boolean(additional_expenses_for_paying?.length) && (
         <>
@@ -334,8 +336,8 @@ const TaxOrderForm = ({data}: TaxOrderFormProps) => {
           <Table
             tableHeads={additionalExpensesTableHeads}
             data={additional_expenses_for_paying}
-            isLoading={isLoadingExpenses}
-            checkboxes={true}
+            isLoading={isLoadingExpenses && isNew}
+            checkboxes={isDisabled ? false : true}
             onCheck={onCheckTableRow}
             checkedRows={checkedRows}
           />

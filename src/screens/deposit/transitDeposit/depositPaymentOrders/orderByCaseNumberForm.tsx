@@ -23,6 +23,7 @@ import {
 import {parseDateForBackend} from '../../../../utils/dateUtils';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
 import {additionalExpensesTableHeads} from './constants';
+import PayOrderModal from './payOrderModal';
 
 const SUBJECT_ENTITY = 'subjects';
 const MUNICIPALITY_ENTITY = 'municipalities';
@@ -79,6 +80,7 @@ type OrderByCaseNumberFormType = yup.InferType<typeof orderByCaseNumberSchema>;
 
 const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
+  const [payModal, setPayModal] = useState(false);
 
   const {
     navigation: {
@@ -120,6 +122,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
     date_of_statement,
     id_of_statement,
     additional_expenses,
+    left_case_amount,
   } = watch();
 
   const {insertDepositPaymentOrder, loading: isSaving} = useInsertDepositPaymentOrder();
@@ -258,11 +261,11 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
 
       reset({
         id: data.id,
-        // organization_unit_id: data.organization_unit.id,
         file_id: data.file.id,
         supplier_id: data.supplier,
         //todo: change later
         bank_account: {id: data.bank_account, title: data.bank_account},
+        id_of_statement: data.id_of_statement,
         date_of_statement: data.date_of_payment ? new Date(data.date_of_payment) : null,
         date_of_payment: new Date(data.date_of_payment),
         case_number: {id: data.case_number, title: data.case_number},
@@ -281,7 +284,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
         })),
       });
     }
-  }, [data, municipalities, taxAuthorityCodebook]);
+  }, [data]);
 
   useEffect(() => {
     if (data && municipalities.length && taxAuthorityCodebook.length) {
@@ -294,7 +297,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
   }, [data, municipalities, taxAuthorityCodebook]);
 
   useEffect(() => {
-    if (data && cases && cases.length > 0) {
+    if (data && cases && !left_case_amount) {
       const value = cases.find(item => item.id === data.case_number)?.amount || 0;
       setValue('left_case_amount', value.toFixed(2));
     }
@@ -318,7 +321,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
   }, [org_unit_bank_accounts]);
 
   //* If there is a date and id of statement, it means this has been payed, so everthing should be disabled.
-  const isDisabled = Boolean(date_of_statement && id_of_statement);
+  const isDisabled = !!date_of_statement && !!id_of_statement;
 
   return (
     <FlexColumn gap={20} align="stretch">
@@ -420,7 +423,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
                 onChange={onChange}
                 label="DATUM NALOGA"
                 error={errors.date_of_payment?.message}
-                isDisabled={isDisabled}
+                disabled={isDisabled}
               />
             )}
           />
@@ -508,8 +511,13 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
             variant="secondary"
             onClick={() => navigate('/finance/deposit/transit/payment-orders/overview')}
           />
+          <Button content="Označi kao plaćeno" variant="primary" onClick={() => setPayModal(true)} />
           <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={isSaving} />
         </Footer>
+      )}
+
+      {!isNew && data && payModal && (
+        <PayOrderModal onClose={() => setPayModal(false)} isOpen={payModal} id={data?.id} />
       )}
     </FlexColumn>
   );
