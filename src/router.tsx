@@ -30,6 +30,7 @@ import DepositPaymentOrderDetails from './screens/deposit/transitDeposit/deposit
 import DepositPaymentOrderTabs from './screens/deposit/transitDeposit/depositPaymentOrders/depositPaymentOrderTabs.tsx';
 import DepositPaymentDetails from './screens/deposit/transitDeposit/depositPayments/depositPaymentDetails.tsx';
 import DepositPaymentsTabs from './screens/deposit/transitDeposit/depositPayments/depositPaymentsTabs.tsx';
+import DepositTaxesOverview from './screens/deposit/transitDeposit/depositTaxes/depositTaxesOverview.tsx';
 import Confiscation from './screens/finesAndTaxes/confiscation/confiscation.tsx';
 import PropertyBenefitsConfiscationDetails from './screens/finesAndTaxes/confiscation/propertyBenefitsConfiscationDetails/propertyBenefitsConfiscationDetails.tsx';
 import FineDetails from './screens/finesAndTaxes/fines/fineDetails/fineDetails.tsx';
@@ -149,6 +150,8 @@ export const Router = () => {
     if (pathname === '/finance/deposit/transit/payment-orders/overview') return <DepositPaymentOrderTabs />;
     if (pathname === '/finance/deposit/transit/payment-orders/add-new') return <DepositPaymentOrderTabs />;
     if (DepositPaymentsOrderDetailsRegex.test(pathname)) return <DepositPaymentOrderDetails />;
+
+    if (pathname === '/finance/deposit/transit/tax-contribution-calculation') return <DepositTaxesOverview />;
 
     if (pathname === '/finance/budget/current/non-financial') return <NonFinancialOverview />;
 

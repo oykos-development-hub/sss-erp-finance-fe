@@ -24,7 +24,7 @@ const TransitDepositLandingPage: React.FC = () => {
             icon={<DepositIcon />}
           />
           <LandingPageContentBox
-            title={'Obračuni poreza i doprinosa'}
+            title={'Vezani troškovi'}
             path={'/finance/deposit/transit/tax-calculation'}
             icon={<DepositIcon />}
           />
