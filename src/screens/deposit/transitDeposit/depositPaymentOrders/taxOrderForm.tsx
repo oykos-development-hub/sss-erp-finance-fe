@@ -16,11 +16,13 @@ import {DepositPaymentOrder, PaymentOrderAdditionalExpense} from '../../../../ty
 import {parseDateForBackend} from '../../../../utils/dateUtils';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
 import {additionalExpensesTableHeads} from './constants';
+import PayOrderModal from './payOrderModal';
 
 const SUBJECT_ENTITY = 'subjects';
 
 type TaxOrderFormProps = {
   data?: DepositPaymentOrder;
+  refetchPaymentOrder?: () => void;
 };
 
 const taxOrderSchema = yup.object().shape({
@@ -50,9 +52,10 @@ const taxOrderSchema = yup.object().shape({
 
 type TaxOrderFormType = yup.InferType<typeof taxOrderSchema>;
 
-const TaxOrderForm = ({data}: TaxOrderFormProps) => {
+const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
   const [checkedRows, setCheckedRows] = useState<number[]>([]);
+  const [payModal, setPayModal] = useState(false);
 
   const {
     navigation: {
@@ -96,7 +99,7 @@ const TaxOrderForm = ({data}: TaxOrderFormProps) => {
   });
 
   const {fetchAdditionalExpenses, loading: isLoadingExpenses} = useGetAdditionalExpenses(
-    {organization_unit_id, subject_id: subject?.id, source_bank_account: source_bank_account?.id},
+    {organization_unit_id, subject_id: subject?.id, source_bank_account: source_bank_account?.id, status: 'Kreiran'},
     {
       onSuccess: data => {
         //* We need to adapt the data to the form field format.
@@ -179,6 +182,8 @@ const TaxOrderForm = ({data}: TaxOrderFormProps) => {
         alert.success(isNew ? 'Uspješno ste dodali novi nalog za plaćanje' : 'Uspešno ste izmjenili nalog za plaćanje');
         if (isNew) {
           navigate(`/finance/deposit/transit/payment-orders/${data.id}`);
+        } else {
+          refetchPaymentOrder && refetchPaymentOrder();
         }
       },
       () => {
@@ -337,7 +342,7 @@ const TaxOrderForm = ({data}: TaxOrderFormProps) => {
             tableHeads={additionalExpensesTableHeads}
             data={additional_expenses_for_paying}
             isLoading={isLoadingExpenses && isNew}
-            checkboxes={isDisabled ? false : true}
+            checkboxes={isDisabled && !isNew}
             onCheck={onCheckTableRow}
             checkedRows={checkedRows}
           />
@@ -351,8 +356,13 @@ const TaxOrderForm = ({data}: TaxOrderFormProps) => {
             variant="secondary"
             onClick={() => navigate('/finance/deposit/transit/payment-orders/overview')}
           />
+          {!isNew && <Button content="Označi kao plaćeno" variant="primary" onClick={() => setPayModal(true)} />}
           <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={isSaving} />
         </Footer>
+      )}
+
+      {!isNew && data && payModal && (
+        <PayOrderModal onClose={() => setPayModal(false)} isOpen={payModal} id={data?.id} />
       )}
     </FlexColumn>
   );

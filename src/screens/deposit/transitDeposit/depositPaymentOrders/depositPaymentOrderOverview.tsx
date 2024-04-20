@@ -106,6 +106,7 @@ const DepositPaymentOrderOverview = () => {
             name: 'delete',
             onClick: row => setDeleteItemId(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => row.status !== 'Plaćen',
           },
         ]}
       />

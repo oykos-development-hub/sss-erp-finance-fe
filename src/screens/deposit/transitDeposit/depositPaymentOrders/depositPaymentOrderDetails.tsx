@@ -20,7 +20,7 @@ const DepositPaymentOrderDetails = () => {
 
   const id = pathname.split('/').pop();
 
-  const {data: currentPaymentOrder} = useGetDepositPaymentOrders({id: id ? parseInt(id) : null});
+  const {data: currentPaymentOrder, refetch} = useGetDepositPaymentOrders({id: id ? parseInt(id) : null});
 
   const onTypeChange = (value: DropdownData<DepositPaymentOrderType>) => {
     setType(value as DropdownData<DepositPaymentOrderType>);
@@ -64,8 +64,12 @@ const DepositPaymentOrderDetails = () => {
           />
         </div>
 
-        {type && type.id === 'case' && <OrderByCaseNumberForm data={currentPaymentOrder?.items[0]} />}
-        {type && type.id === 'tax' && <TaxOrderForm data={currentPaymentOrder?.items[0]} />}
+        {type && type.id === 'case' && (
+          <OrderByCaseNumberForm data={currentPaymentOrder?.items[0]} refetchPaymentOrder={refetch} />
+        )}
+        {type && type.id === 'tax' && (
+          <TaxOrderForm data={currentPaymentOrder?.items[0]} refetchPaymentOrder={refetch} />
+        )}
       </SectionBox>
     </ScreenWrapper>
   );

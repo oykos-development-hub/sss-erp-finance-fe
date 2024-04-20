@@ -30,6 +30,7 @@ const MUNICIPALITY_ENTITY = 'municipalities';
 
 type OrderByCaseNumberFormProps = {
   data?: DepositPaymentOrder;
+  refetchPaymentOrder?: () => void;
 };
 
 const orderByCaseNumberSchema = yup.object().shape(
@@ -56,7 +57,7 @@ const orderByCaseNumberSchema = yup.object().shape(
     bank_account: optionsStringSchema.required(requiredError),
     date_of_payment: yup.date().required(requiredError),
     date_of_statement: yup.date().nullable().default(null),
-    id_of_statement: yup.string(),
+    id_of_statement: yup.string().nullable().default(null),
     municipality_id: optionsNumberSchema.required(requiredError),
     tax_authority_codebook_id: optionsNumberSchema.required(requiredError),
     file_id: yup.number().nullable().default(null),
@@ -78,7 +79,7 @@ const orderByCaseNumberSchema = yup.object().shape(
 
 type OrderByCaseNumberFormType = yup.InferType<typeof orderByCaseNumberSchema>;
 
-const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
+const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFormProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
   const [payModal, setPayModal] = useState(false);
 
@@ -181,6 +182,15 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
   );
 
   const onSubmit = async (data: OrderByCaseNumberFormType) => {
+    if (
+      data.left_case_amount &&
+      data.gross_amount_to_pay &&
+      data.left_case_amount < parseInt(data.gross_amount_to_pay)
+    ) {
+      alert.error('Iznos za plaćanje ne može biti veći od preostalog iznosa za plaćanje');
+      return;
+    }
+
     const payload = {
       case_number: data.case_number?.id,
       file_id: data.file_id ? data.file_id : null,
@@ -226,6 +236,8 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
         alert.success(isNew ? 'Uspješno ste dodali novi nalog za plaćanje' : 'Uspešno ste izmjenili nalog za plaćanje');
         if (isNew) {
           navigate(`/finance/deposit/transit/payment-orders/${data.id}`);
+        } else {
+          refetchPaymentOrder && refetchPaymentOrder();
         }
       },
       () => {
@@ -320,8 +332,11 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
     return org_unit_bank_accounts.map((item: string) => ({id: item, title: item}));
   }, [org_unit_bank_accounts]);
 
-  //* If there is a date and id of statement, it means this has been payed, so everthing should be disabled.
+  //* If there is a date and id of statement, it means this has been payed, so everything should be disabled.
+  //* When editing, everything is to be disabled except the file upload and the date of payment.
   const isDisabled = !!date_of_statement && !!id_of_statement;
+
+  console.log(errors);
 
   return (
     <FlexColumn gap={20} align="stretch">
@@ -340,7 +355,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
               }}
               options={orgUnitBankAccountOptions}
               error={errors.source_bank_account?.message}
-              isDisabled={isDisabled}
+              isDisabled={isDisabled || !isNew}
             />
           )}
         />
@@ -358,7 +373,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
               }}
               options={cases}
               error={errors.case_number?.message}
-              isDisabled={isDisabled}
+              isDisabled={isDisabled || !isNew}
             />
           )}
         />
@@ -376,7 +391,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
               onChange={onChange}
               options={subjectTypes}
               error={errors.subject_type?.message}
-              isDisabled={isDisabled}
+              isDisabled={isDisabled || !isNew}
             />
           )}
         />
@@ -391,7 +406,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
               onChange={onChange}
               options={subjects}
               error={errors.supplier_id?.message}
-              isDisabled={!subjectType || isDisabled}
+              isDisabled={!subjectType || isDisabled || !isNew}
             />
           )}
         />
@@ -408,7 +423,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
               onChange={onChange}
               options={bankAccountOptions}
               error={errors.bank_account?.message}
-              isDisabled={!subject || isDisabled}
+              isDisabled={!subject || isDisabled || !isNew}
             />
           )}
         />
@@ -441,7 +456,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
               onChange={onChange}
               options={municipalities}
               error={errors.municipality_id?.message}
-              isDisabled={isDisabled}
+              isDisabled={isDisabled || !isNew}
             />
           )}
         />
@@ -456,7 +471,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
               onChange={onChange}
               options={taxAuthorityCodebook}
               error={errors.tax_authority_codebook_id?.message}
-              isDisabled={isDisabled}
+              isDisabled={isDisabled || !isNew}
             />
           )}
         />
@@ -466,13 +481,13 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
           label="NETO IZNOS:"
           {...register('net_amount_to_pay')}
           error={errors.net_amount_to_pay?.message}
-          disabled={Boolean(gross_amount_to_pay && !net_amount_to_pay) || isDisabled}
+          disabled={Boolean(gross_amount_to_pay && !net_amount_to_pay) || isDisabled || !isNew}
         />
         <Input
           label="BRUTO IZNOS:"
           {...register('gross_amount_to_pay')}
           error={errors.gross_amount_to_pay?.message}
-          disabled={Boolean(net_amount_to_pay && !gross_amount_to_pay) || isDisabled}
+          disabled={Boolean(net_amount_to_pay && !gross_amount_to_pay) || isDisabled || !isNew}
         />
       </FlexRow>
       <div style={{marginBottom: 10}}>
@@ -487,7 +502,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
         />
         <FileList files={data?.file?.id ? [data.file] : null} />
       </div>
-      {!isDisabled && (
+      {isNew && (
         <Button content="Obračunaj" variant="primary" onClick={calculateExpenses} style={{width: 'fit-content'}} />
       )}
 
@@ -511,7 +526,7 @@ const OrderByCaseNumberForm = ({data}: OrderByCaseNumberFormProps) => {
             variant="secondary"
             onClick={() => navigate('/finance/deposit/transit/payment-orders/overview')}
           />
-          <Button content="Označi kao plaćeno" variant="primary" onClick={() => setPayModal(true)} />
+          {!isNew && <Button content="Označi kao plaćeno" variant="primary" onClick={() => setPayModal(true)} />}
           <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={isSaving} />
         </Footer>
       )}
