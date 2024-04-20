@@ -8,12 +8,6 @@ export const depositTaxesTableHeads: TableHead[] = [
     type: 'text',
   },
   {
-    title: 'Organizaciona jedinica',
-    accessor: 'organization_unit',
-    type: 'custom',
-    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
-  },
-  {
     title: 'Status',
     accessor: 'status',
     type: 'text',
@@ -34,5 +28,6 @@ export const depositTaxesTableHeads: TableHead[] = [
 
 export const DepositTaxStatusOptions = [
   {id: 'Plaćen', title: 'Plaćen'},
+  {id: 'Na čekanju', title: 'Na čekanju'},
   {id: 'Nije plaćen', title: 'Nije plaćen'},
 ];

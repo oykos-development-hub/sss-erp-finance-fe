@@ -8,6 +8,7 @@ const getAdditionalExpenses = `query depositPaymentAdditionalExpensesOverview($i
                 title
                 price
                 bank_account
+                status
                 subject{
                     id
                     title
