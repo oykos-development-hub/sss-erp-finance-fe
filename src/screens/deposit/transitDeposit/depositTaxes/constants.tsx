@@ -29,5 +29,5 @@ export const depositTaxesTableHeads: TableHead[] = [
 export const DepositTaxStatusOptions = [
   {id: 'Plaćen', title: 'Plaćen'},
   {id: 'Na čekanju', title: 'Na čekanju'},
-  {id: 'Nije plaćen', title: 'Nije plaćen'},
+  {id: 'Kreiran', title: 'Kreiran'},
 ];

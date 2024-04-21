@@ -56,6 +56,7 @@ import getAdditionalExpenses from './transitDeposits/getAdditionalExpenses.ts';
 import getCases from './transitDeposits/getCases.ts';
 import getDepositPaymentOrders from './transitDeposits/getDepositPaymentOrders.ts';
 import getDepositPayments from './transitDeposits/getDepositPayments.ts';
+import getInitialState from './transitDeposits/getInitialState.ts';
 import getRemainAmountByCaseNumber from './transitDeposits/getRemainAmountByCaseNumber.ts';
 import insertDepositPayment from './transitDeposits/insertDepositPayment.ts';
 import insertDepositPaymentOrder from './transitDeposits/insertDepositPaymentOrder.ts';
@@ -149,4 +150,5 @@ export const GraphQL = {
   getRemainAmountByCaseNumber: getRemainAmountByCaseNumber,
   getCases: getCases,
   payOrder: payOrder,
+  getInitialState: getInitialState,
 };

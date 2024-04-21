@@ -18,3 +18,12 @@ export const Container = styled.div`
   margin-top: 20px;
   width: 100%;
 `;
+
+export const InitialStateItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 6px;
+  border: 1px solid ${Theme?.palette?.gray300};
+  padding: 0.875rem 0.375rem;
+`;

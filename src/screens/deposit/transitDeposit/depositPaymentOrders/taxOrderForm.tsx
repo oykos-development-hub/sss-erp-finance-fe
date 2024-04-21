@@ -230,6 +230,8 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
   //* If there is a date and id of statement, it means this has been payed, so everthing should be disabled.
   const isDisabled = Boolean(date_of_statement && id_of_statement);
 
+  console.log(isDisabled);
+
   return (
     <FlexColumn gap={20} align="stretch">
       <Controller
@@ -243,7 +245,7 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
             onChange={onChange}
             options={orgUnitBankAccountOptions}
             error={errors.source_bank_account?.message}
-            isDisabled={isDisabled}
+            isDisabled={isDisabled || !isNew}
           />
         )}
       />
@@ -259,7 +261,7 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
               onChange={onChange}
               options={subjectTypes}
               error={errors.subject_type_id?.message}
-              isDisabled={isDisabled}
+              isDisabled={isDisabled || !isNew}
             />
           )}
         />
@@ -274,7 +276,7 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
               onChange={onChange}
               options={subjects}
               error={errors.supplier_id?.message}
-              isDisabled={!subjectType || isDisabled}
+              isDisabled={!subjectType || isDisabled || !isNew}
             />
           )}
         />
@@ -291,7 +293,7 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
               onChange={onChange}
               options={bankAccountOptions}
               error={errors.bank_account?.message}
-              isDisabled={!subject || isDisabled}
+              isDisabled={!subject || isDisabled || !isNew}
             />
           )}
         />
@@ -324,7 +326,7 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
         />
         <FileList files={data?.file.id ? [data.file] : null} />
       </div>
-      {!isDisabled && (
+      {!isDisabled && isNew && (
         <Button
           content="Pretraži dodatne troškove"
           onClick={onGetAdditionalExpenses}
@@ -342,7 +344,7 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
             tableHeads={additionalExpensesTableHeads}
             data={additional_expenses_for_paying}
             isLoading={isLoadingExpenses && isNew}
-            checkboxes={isDisabled && !isNew}
+            checkboxes={!isDisabled && isNew}
             onCheck={onCheckTableRow}
             checkedRows={checkedRows}
           />

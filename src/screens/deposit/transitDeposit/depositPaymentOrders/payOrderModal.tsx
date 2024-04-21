@@ -62,6 +62,8 @@ const PayOrderModal = ({id, isOpen, onClose}: PayOrderModalProps) => {
       open={isOpen}
       onClose={onClose}
       rightButtonOnClick={handleSubmit(onPayOrder)}
+      leftButtonText="Odustani"
+      rightButtonText="Sačuvaj"
       content={
         <FlexColumn gap={20}>
           <Input label="ID IZVODA:" {...register('id_of_statement')} error={errors.id_of_statement?.message} />

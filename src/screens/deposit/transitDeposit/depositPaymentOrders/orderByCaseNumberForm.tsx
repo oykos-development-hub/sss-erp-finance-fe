@@ -336,8 +336,6 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
   //* When editing, everything is to be disabled except the file upload and the date of payment.
   const isDisabled = !!date_of_statement && !!id_of_statement;
 
-  console.log(errors);
-
   return (
     <FlexColumn gap={20} align="stretch">
       <FlexRow gap={8}>
