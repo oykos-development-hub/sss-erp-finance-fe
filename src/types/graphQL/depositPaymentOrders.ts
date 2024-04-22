@@ -60,7 +60,6 @@ export type DepositPaymentOrderInsertData = {
   municipality_id: number | null;
   tax_authority_codebook_id: number | null;
   source_bank_account: string;
-  subject_type_id: number;
 };
 
 export type AdditionalExpensesResponse = {

@@ -18,7 +18,7 @@ import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSc
 import {additionalExpensesTableHeads} from './constants';
 import PayOrderModal from './payOrderModal';
 
-const SUBJECT_ENTITY = 'subjects';
+const SUBJECT_ENTITY = 'institution';
 
 type TaxOrderFormProps = {
   data?: DepositPaymentOrder;
@@ -29,7 +29,6 @@ const taxOrderSchema = yup.object().shape({
   id: yup.number().nullable().default(null),
   file_id: yup.number().nullable().default(null),
   source_bank_account: optionsStringSchema.required(requiredError),
-  subject_type_id: optionsNumberSchema.required(requiredError),
   //* Unfortunate naming, should be subject_id - to whom we are paying the taxes.
   supplier_id: optionsNumberSchema.required(requiredError),
   bank_account: optionsStringSchema.required(requiredError),
@@ -84,18 +83,14 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
     resolver: yupResolver(taxOrderSchema),
   });
 
-  const subjectType = watch('subject_type_id');
   const subject = watch('supplier_id');
 
   const {date_of_statement, id_of_statement, additional_expenses_for_paying, source_bank_account} = watch();
 
   const {insertDepositPaymentOrder, loading: isSaving} = useInsertDepositPaymentOrder();
 
-  const {suppliers: subjectTypes} = useGetSuppliers({entity: SUBJECT_ENTITY, parent_id: null});
-
   const {suppliers: subjects} = useGetSuppliers({
     entity: SUBJECT_ENTITY,
-    parent_id: subjectType ? subjectType.id : null,
   });
 
   const {fetchAdditionalExpenses, loading: isLoadingExpenses} = useGetAdditionalExpenses(
@@ -118,8 +113,8 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
   );
 
   const onGetAdditionalExpenses = async () => {
-    trigger(['source_bank_account', 'subject_type_id', 'supplier_id']);
-    if (!source_bank_account || !subjectType || !subject) return;
+    trigger(['source_bank_account', 'supplier_id']);
+    if (!source_bank_account || !subject) return;
 
     await fetchAdditionalExpenses();
   };
@@ -148,7 +143,6 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
       organization_unit_id,
       bank_account: data.bank_account.id,
       file_id: data.file_id ? data.file_id : null,
-      subject_type_id: data.subject_type_id.id,
       supplier_id: data.supplier_id.id,
       additional_expenses_for_paying: additionalExpensesForPaying,
       additional_expenses: null,
@@ -203,7 +197,6 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
       reset({
         id: data.id,
         file_id: data.file.id,
-        subject_type_id: data.subject_type,
         supplier_id: data.supplier,
         bank_account: {id: data.bank_account, title: data.bank_account},
         date_of_payment: new Date(data.date_of_payment),
@@ -230,37 +223,20 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
   //* If there is a date and id of statement, it means this has been payed, so everthing should be disabled.
   const isDisabled = Boolean(date_of_statement && id_of_statement);
 
-  console.log(isDisabled);
-
   return (
     <FlexColumn gap={20} align="stretch">
-      <Controller
-        name="source_bank_account"
-        control={control}
-        render={({field: {name, value, onChange}}) => (
-          <Dropdown
-            label="ŽIRO RAČUN:"
-            name={name}
-            value={value}
-            onChange={onChange}
-            options={orgUnitBankAccountOptions}
-            error={errors.source_bank_account?.message}
-            isDisabled={isDisabled || !isNew}
-          />
-        )}
-      />
       <FlexRow gap={8}>
         <Controller
-          name="subject_type_id"
+          name="source_bank_account"
           control={control}
           render={({field: {name, value, onChange}}) => (
             <Dropdown
-              label="TIP SUBJEKTA:"
+              label="ŽIRO RAČUN:"
               name={name}
               value={value}
               onChange={onChange}
-              options={subjectTypes}
-              error={errors.subject_type_id?.message}
+              options={orgUnitBankAccountOptions}
+              error={errors.source_bank_account?.message}
               isDisabled={isDisabled || !isNew}
             />
           )}
@@ -276,11 +252,12 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
               onChange={onChange}
               options={subjects}
               error={errors.supplier_id?.message}
-              isDisabled={!subjectType || isDisabled || !isNew}
+              isDisabled={isDisabled || !isNew}
             />
           )}
         />
       </FlexRow>
+
       <FlexRow gap={8}>
         <Controller
           name="bank_account"
