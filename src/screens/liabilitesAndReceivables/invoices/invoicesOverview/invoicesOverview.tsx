@@ -154,7 +154,7 @@ const InvoicesOverview = () => {
             name: 'Izbriši',
             onClick: onDelete,
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => row.status !== 'Obradi',
+            shouldRender: row => row.status === 'Kreiran',
           },
         ]}
       />

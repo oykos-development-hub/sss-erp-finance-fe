@@ -9,6 +9,7 @@ import {PaymentDetails as FeePaymentDetails} from '../../screens/finesAndTaxes/t
 import {ProceduralCostOverviewItem} from './proceduralCosts.ts';
 import {PropertyBenefitsConfiscationOverviewItem} from './propertyBenefitsConfiscation.ts';
 import {FlatRateOverviewItem} from './flatRate.ts';
+import {ObligationsItem, PaymentOrderItem} from './receivablesTypes.ts';
 
 export type PageParams = {
   page?: number;
@@ -192,5 +193,23 @@ export type FlatRatePaymentsResponse = {
   };
   delete: {
     flatRatePayment_Delete: SimpleResponse;
+  };
+};
+
+export type ReceivablesResponse = {
+  get: {
+    paymentOrder_Overview: GetResponse<PaymentOrderItem>;
+  };
+  getObligations: {
+    obligations_Overview: GetResponse<ObligationsItem>;
+  };
+  delete: {
+    paymentOrder_Delete: SimpleResponse;
+  };
+  pay: {
+    payPaymentOrder: SimpleResponse;
+  };
+  insert: {
+    paymentOrder_Insert: InsertResponse<PaymentOrderItem>;
   };
 };

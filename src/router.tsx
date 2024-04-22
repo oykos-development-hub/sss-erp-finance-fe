@@ -50,6 +50,9 @@ import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.ts
 import DecisionsDetails from './screens/liabilitesAndReceivables/decisions/decisionsDetails/decisionsDetails.tsx';
 import InvoiceDetails from './screens/liabilitesAndReceivables/invoices/invoiceDetails/invoiceDetails.tsx';
 import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
+import ReceivableDetails from './screens/liabilitesAndReceivables/receivables/receivableDetails/receivableDetails.tsx';
+import ReceivableEntry from './screens/liabilitesAndReceivables/receivables/receivableEntry/receivableEntry.tsx';
+import ReceivablesOverview from './screens/liabilitesAndReceivables/receivables/receivablesOverview/receivablesOverview.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 
 //* OU - organization unit
@@ -83,6 +86,8 @@ export const Router = () => {
     const decisionsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions/\\d+$');
     const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
     const contractsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts/\\d+$');
+    const receiveRegex = new RegExp('^/finance/liabilities-receivables/receivables(?:/add-receivable)?$');
+    const receiveEditRegex = new RegExp('^/finance/liabilities-receivables/receivables/\\d+$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
     const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-new)?$');
     const fineDetailsRegex = new RegExp('^/finance/fines-taxes/fines/\\d+$');
@@ -169,6 +174,9 @@ export const Router = () => {
 
     // if (budgetDetails.test(pathname)) return <BudgetDetails />;
 
+    if (pathname === '/finance/liabilities-receivables/receivables') return <ReceivablesOverview />;
+    if (receiveRegex.test(pathname)) return <ReceivableEntry />;
+    if (receiveEditRegex.test(pathname)) return <ReceivableDetails />;
     if (invoicesRegex.test(pathname)) return <Invoices />;
     if (invoiceEditRegex.test(pathname)) return <InvoiceDetails />;
 

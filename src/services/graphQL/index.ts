@@ -49,6 +49,11 @@ import propertyBenefitsConfiscationOverview from './propertyBenefitsConfiscation
 import deletePropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/deletePropertyBenefitsConfiscationPayment.ts';
 import getPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/getPropertyBenefitsConfiscationPayment.ts';
 import insertPropertyBenefitsConfiscationPayment from './propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/insertPropertyBenefitsConfiscationPayment.ts';
+import deletePaymentOrder from './receivables/deletePaymentOrder.ts';
+import insertPaymentOrder from './receivables/insertPaymentOrder.ts';
+import obligationsOverview from './receivables/obligationsOverview.ts';
+import payPaymentOrder from './receivables/payPaymentOrder.ts';
+import paymentOrderOverview from './receivables/paymentOrderOverview.ts';
 import sendBudget from './sendBudget/sendBudget.ts';
 import deleteDepositPayment from './transitDeposits/deleteDepositPayment.ts';
 import deleteDepositPaymentOrder from './transitDeposits/deleteDepositPaymentOrder.ts';
@@ -151,4 +156,9 @@ export const GraphQL = {
   getCases: getCases,
   payOrder: payOrder,
   getInitialState: getInitialState,
+  paymentOrderOverview: paymentOrderOverview,
+  deletePaymentOrder: deletePaymentOrder,
+  obligationsOverview: obligationsOverview,
+  payPaymentOrder: payPaymentOrder,
+  insertPaymentOrder: insertPaymentOrder,
 };
