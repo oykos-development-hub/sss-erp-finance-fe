@@ -21,7 +21,7 @@ type GetAdditionalExpensesParams = {
 } & PageParams;
 
 const useGetAdditionalExpenses = (
-  {id, status, search, organization_unit_id, source_bank_account, page, size}: GetAdditionalExpensesParams,
+  {id, status, search, organization_unit_id, source_bank_account, page, size, subject_id}: GetAdditionalExpensesParams,
   opts?: QueryOptions<PaymentOrderAdditionalExpense[]>,
 ) => {
   const [additionalExpenses, setAdditionalExpenses] =
@@ -38,6 +38,7 @@ const useGetAdditionalExpenses = (
       search,
       organization_unit_id,
       source_bank_account,
+      subject_id,
       page,
       size,
     });

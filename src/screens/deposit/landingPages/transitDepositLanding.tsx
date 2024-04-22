@@ -1,15 +1,16 @@
-import {DepositIcon, Typography, Datepicker, Dropdown, Theme} from 'client-library';
+import {Datepicker, DepositIcon, Dropdown, Theme, Typography} from 'client-library';
 import React, {useMemo, useState} from 'react';
 import LandingPageContentBox from '../../../components/landingPageContentBox/landingPageContentBox.tsx';
-import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
-import {Container, InitialStateItem, LandingPageTitle} from './styles.ts';
-import {SectionBox} from '../../accounting/styles.tsx';
-import {FlexColumn, FlexRow} from '../../../shared/flex.ts';
-import useGetInitialState from '../../../services/graphQL/transitDeposits/useGetInitialState.ts';
 import useAppContext from '../../../context/useAppContext.ts';
-import {InitialState} from '../../../types/graphQL/initialState.ts';
+import useGetInitialState from '../../../services/graphQL/transitDeposits/useGetInitialState.ts';
+import {FlexColumn, FlexRow} from '../../../shared/flex.ts';
+import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
 import {DropdownData} from '../../../types/dropdownData.ts';
+import {InitialState} from '../../../types/graphQL/initialState.ts';
 import {parseDateForBackend} from '../../../utils/dateUtils.ts';
+import {SectionBox} from '../../accounting/styles.tsx';
+import {Container, InitialStateItem, LandingPageTitle} from './styles.ts';
+import {formatCurrency} from '../../../utils/roundCurrency.ts';
 
 type InitialStateFilterType = {
   date: Date | null;
@@ -107,7 +108,11 @@ const TransitDepositLandingPage: React.FC = () => {
                     content={item.current_bank_account}
                     style={{color: Theme.palette.gray300}}
                   />
-                  <Typography variant="bodySmall" content={item.amount} style={{color: Theme.palette.gray300}} />
+                  <Typography
+                    variant="bodySmall"
+                    content={formatCurrency(item.amount)}
+                    style={{color: Theme.palette.gray300}}
+                  />
                 </InitialStateItem>
               ))}
             </FlexColumn>
@@ -115,12 +120,6 @@ const TransitDepositLandingPage: React.FC = () => {
           <div>
             <Typography variant="bodyLarge" style={{fontWeight: 600, marginBottom: 30}} content="Prelazni račun" />
             <FlexRow gap={8}>
-              <Dropdown
-                onChange={value => onFilterChange(value, 'bank_account', 'transitional')}
-                value={transitionalFilters.bank_account}
-                options={orgUnitBankAccountOptions}
-                label="ŽIRO RAČUN:"
-              />
               <Datepicker
                 onChange={value => onFilterChange(value, 'date', 'transitional')}
                 selected={transitionalFilters.date ? new Date(transitionalFilters.date) : null}
@@ -135,7 +134,11 @@ const TransitDepositLandingPage: React.FC = () => {
                     content={item.current_bank_account}
                     style={{color: Theme.palette.gray300}}
                   />
-                  <Typography variant="bodySmall" content={item.amount} style={{color: Theme.palette.gray300}} />
+                  <Typography
+                    variant="bodySmall"
+                    content={formatCurrency(item.amount)}
+                    style={{color: Theme.palette.gray300}}
+                  />
                 </InitialStateItem>
               ))}
             </FlexColumn>

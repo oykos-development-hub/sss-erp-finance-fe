@@ -18,7 +18,7 @@ import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSc
 import {additionalExpensesTableHeads} from './constants';
 import PayOrderModal from './payOrderModal';
 
-const SUBJECT_ENTITY = 'institution';
+const SUBJECT_ENTITY = 'other';
 
 type TaxOrderFormProps = {
   data?: DepositPaymentOrder;

@@ -1,6 +1,6 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {Divider, Dropdown, Input, Pagination, Table} from 'client-library';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {PAGE_SIZE} from '../../../../constants';
@@ -15,14 +15,12 @@ import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSc
 import {DepositTaxStatusOptions, depositTaxesTableHeads} from './constants';
 import {FilterContainer} from './styles';
 
-const SUBJECT_ENTITY = 'subjects';
+const SUBJECT_ENTITY = 'other';
 
 const depositTaxesFilterSchema = yup.object().shape({
   status: optionsStringSchema.nullable().default(null),
   search: yup.string(),
-  subject_type: optionsNumberSchema.nullable().default(null),
   subject_id: optionsNumberSchema.nullable().default(null),
-  source_bank_account: optionsStringSchema.nullable().default(null),
 });
 
 type DepositTaxesFilterForm = yup.InferType<typeof depositTaxesFilterSchema>;
@@ -32,7 +30,7 @@ const DepositTaxesOverview = () => {
 
   const {
     contextMain: {
-      organization_unit: {id: organization_unit_id, bank_accounts},
+      organization_unit: {id: organization_unit_id},
     },
   } = useAppContext();
 
@@ -40,7 +38,7 @@ const DepositTaxesOverview = () => {
     resolver: yupResolver(depositTaxesFilterSchema),
   });
 
-  const {search, subject_type, subject_id, status} = watch();
+  const {search, subject_id, status} = watch();
 
   const {data, fetchAdditionalExpenses} = useGetAdditionalExpenses({
     organization_unit_id,
@@ -51,11 +49,8 @@ const DepositTaxesOverview = () => {
     size: PAGE_SIZE,
   });
 
-  const {suppliers: subjectTypes} = useGetSuppliers({entity: SUBJECT_ENTITY, parent_id: null});
-
   const {suppliers: subjects} = useGetSuppliers({
     entity: SUBJECT_ENTITY,
-    parent_id: subject_type ? subject_type.id : null,
   });
 
   const onPageChange = (page: number) => {
@@ -65,11 +60,6 @@ const DepositTaxesOverview = () => {
   useEffect(() => {
     fetchAdditionalExpenses();
   }, [search, subject_id, status, page]);
-
-  const orgUnitBankAccountOptions = useMemo(() => {
-    if (!bank_accounts) return [];
-    return bank_accounts.map((item: string) => ({id: item, title: item}));
-  }, [bank_accounts]);
 
   return (
     <ScreenWrapper>
@@ -81,27 +71,11 @@ const DepositTaxesOverview = () => {
           <FilterContainer>
             <Controller
               control={control}
-              name="subject_type"
-              render={({field: {name, onChange, value}}) => (
-                <Dropdown
-                  label="TIP SUBJEKTA:"
-                  options={subjectTypes}
-                  value={value}
-                  name={name}
-                  onChange={onChange}
-                  placeholder="Odaberite tip subjekta"
-                />
-              )}
-            />
-          </FilterContainer>
-          <FilterContainer>
-            <Controller
-              control={control}
               name="subject_id"
               render={({field: {name, onChange, value}}) => (
                 <Dropdown
                   label="SUBJEKT:"
-                  options={subjects}
+                  options={[{id: null, title: 'Sve'}, ...subjects]}
                   value={value}
                   name={name}
                   onChange={onChange}
@@ -122,22 +96,6 @@ const DepositTaxesOverview = () => {
                   name={name}
                   onChange={onChange}
                   placeholder="Odaberite status"
-                />
-              )}
-            />
-          </FilterContainer>
-          <FilterContainer>
-            <Controller
-              control={control}
-              name="source_bank_account"
-              render={({field: {name, onChange, value}}) => (
-                <Dropdown
-                  label="STATUS:"
-                  options={orgUnitBankAccountOptions}
-                  value={value}
-                  name={name}
-                  onChange={onChange}
-                  placeholder="Odaberite žiro račun"
                 />
               )}
             />
