@@ -53,6 +53,8 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
             is_invoice
             pro_forma_invoice_number
             pro_forma_invoice_date
+            passed_to_accounting
+            passed_to_inventory
             type_of_decision {
                 id
                 title

@@ -7,7 +7,6 @@ import {generateDropdownOptions} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useCalculateAdditionalExpenses from '../../../../services/graphQL/calculateAdditionalExpenses/useCalculateAdditionalExpenses.ts';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
-import useGetSettings from '../../../../services/graphQL/getSettings/useGetSettings.ts';
 import useInsertInvoice from '../../../../services/graphQL/invoice/useInsertInvoice.ts';
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 import useGetTaxAuthorityCodebook from '../../../../services/graphQL/taxAuthorityCodebook/useGetTaxAuthorityCodebookOverview.tsx';
@@ -46,13 +45,18 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     previous_income_gross,
     tax_authority_codebook_id,
     municipality_id,
+    type_of_contract,
   } = watch();
 
-  const {suppliers} = useGetSuppliers({});
+  const {suppliers: subjectTypes} = useGetSuppliers({entity: 'subjects', parent_id: null});
+
+  const {suppliers: subjects} = useGetSuppliers({
+    entity: 'subjects',
+    parent_id: type_of_contract ? type_of_contract.id : null,
+  });
   const {data: taxAuthorityCodebook} = useGetTaxAuthorityCodebook();
   const {suppliers: municipalities} = useGetSuppliers({entity: 'municipalities'});
   const {counts} = useGetCountOverview({level: 3});
-  const {options: typeOfDecision} = useGetSettings({entity: 'type_of_decision'});
   const {insertInvoice, loading} = useInsertInvoice();
 
   const {data: additionalExpenses, calculateAdditionalExpenses} = useCalculateAdditionalExpenses({
@@ -245,29 +249,6 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
       <>
         <Row>
           <Controller
-            name="supplier_id"
-            control={control}
-            render={({field: {name, value, onChange}}) => (
-              <Dropdown
-                name={name}
-                value={value}
-                onChange={onChange}
-                label="SUBJEKT:"
-                placeholder={'Odaberite ime subjekta'}
-                options={suppliers}
-                error={errors.supplier_id?.message}
-              />
-            )}
-          />
-          <Input
-            {...register('invoice_number')}
-            label="DJELOVODNI BROJ:"
-            placeholder={'Unesite djelovodni broj'}
-            error={errors.invoice_number?.message}
-          />
-        </Row>
-        <Row>
-          <Controller
             name={'type_of_contract'}
             control={control}
             render={({field: {name, value, onChange}}) => (
@@ -277,10 +258,34 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 onChange={onChange}
                 label="VRSTA UGOVORA:"
                 placeholder="Odaberite vrstu ugovora"
-                options={typeOfDecision}
+                options={subjectTypes}
                 error={errors.type_of_contract?.message}
               />
             )}
+          />
+          <Controller
+            name="supplier_id"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={value}
+                onChange={onChange}
+                label="SUBJEKT:"
+                placeholder={'Odaberite ime subjekta'}
+                options={subjects}
+                isDisabled={!type_of_contract}
+                error={errors.supplier_id?.message}
+              />
+            )}
+          />
+        </Row>
+        <Row>
+          <Input
+            {...register('invoice_number')}
+            label="DJELOVODNI BROJ:"
+            placeholder={'Unesite djelovodni broj'}
+            error={errors.invoice_number?.message}
           />
 
           <Input

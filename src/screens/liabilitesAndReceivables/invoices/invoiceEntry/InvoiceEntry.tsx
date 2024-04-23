@@ -33,6 +33,7 @@ import {InvoiceEntryForm, PlusButtonWrapper, Row, StyledSwitch} from './styles';
 import {TypeOptions, invoiceTypeOptions} from './types.ts';
 import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
+import {DropdownData} from '../../../../types/dropdownData.ts';
 
 type InvoiceEntryForm = yup.InferType<typeof invoiceSchema>;
 
@@ -434,11 +435,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         invoice_type:
           type?.id === false
             ? {id: 'manual', title: 'Ručni unos'}
-            : type?.id === true && invoice.order_id !== null
+            : !!invoice.order_id && !type?.id
             ? {id: 'accounting', title: 'Materijalno knjigovodstvo'}
             : {id: 'manual', title: 'Ručni unos'},
         supplier_id: {id: invoice.supplier.id, title: invoice.supplier.title},
-        order_id: invoice.order,
+        order_id: dropdownOrderOptions.find((ord: DropdownData<number>) => ord?.id === invoice.order_id),
         file_id: invoice.file.id,
         is_invoice: invoice.is_invoice === false ? {id: false, title: 'Predračun'} : {id: true, title: 'Račun'},
         invoice_number: invoice.invoice_number,
@@ -620,7 +621,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               <Datepicker
                 name={name}
                 selected={value ? new Date(value) : ''}
-                label="DATUM PRIJEMA RAČUNA SSS:"
+                label={type?.id === false ? 'DATUM PRIJEMA PREDRAČUNA SSS' : 'DATUM PRIJEMA RAČUNA SSS:'}
                 onChange={onChange}
                 error={errors?.sss_invoice_receipt_date?.message}
                 isRequired

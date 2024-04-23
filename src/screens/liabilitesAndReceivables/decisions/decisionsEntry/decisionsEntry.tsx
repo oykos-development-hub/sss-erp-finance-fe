@@ -7,7 +7,6 @@ import {generateDropdownOptions} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useCalculateAdditionalExpenses from '../../../../services/graphQL/calculateAdditionalExpenses/useCalculateAdditionalExpenses.ts';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
-import useGetSettings from '../../../../services/graphQL/getSettings/useGetSettings.ts';
 import useInsertInvoice from '../../../../services/graphQL/invoice/useInsertInvoice.ts';
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 import useGetTaxAuthorityCodebook from '../../../../services/graphQL/taxAuthorityCodebook/useGetTaxAuthorityCodebookOverview.tsx';
@@ -47,10 +46,15 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     previous_income_gross,
     tax_authority_codebook_id,
     municipality_id,
+    type_of_decision,
   } = watch();
 
-  const {suppliers} = useGetSuppliers({});
-  const {options: typeOfDecision} = useGetSettings({entity: 'type_of_decision'});
+  const {suppliers: subjectTypes} = useGetSuppliers({entity: 'subjects', parent_id: null});
+
+  const {suppliers: subjects} = useGetSuppliers({
+    entity: 'subjects',
+    parent_id: type_of_decision ? type_of_decision.id : null,
+  });
   const {suppliers: municipalities} = useGetSuppliers({entity: 'municipalities'});
   const {data: taxAuthorityCodebook} = useGetTaxAuthorityCodebook();
   const {counts} = useGetCountOverview({level: 3});
@@ -246,6 +250,21 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       <>
         <Row>
           <Controller
+            name={'type_of_decision'}
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={value}
+                onChange={onChange}
+                label="VRSTA RJEŠENJA:"
+                placeholder="Odaberite vrstu rešenja"
+                options={subjectTypes}
+                error={errors.type_of_decision?.message}
+              />
+            )}
+          />
+          <Controller
             name="supplier_id"
             control={control}
             render={({field: {name, value, onChange}}) => (
@@ -255,33 +274,19 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 onChange={onChange}
                 label="SUBJEKT:"
                 placeholder={'Odaberite ime subjekta'}
-                options={suppliers}
+                options={subjects}
+                isDisabled={!type_of_decision}
                 error={errors.supplier_id?.message}
               />
             )}
           />
+        </Row>
+        <Row>
           <Input
             {...register('invoice_number')}
             label="BROJ PREDMETA:"
-            placeholder={'Unesite broj predmeta'}
+            placeholder="Unesite broj predmeta"
             error={errors.invoice_number?.message}
-          />
-        </Row>
-        <Row>
-          <Controller
-            name={'type_of_decision'}
-            control={control}
-            render={({field: {name, value, onChange}}) => (
-              <Dropdown
-                name={name}
-                value={value}
-                onChange={onChange}
-                label="VRSTA RJEŠENJA:"
-                placeholder={'Odaberite vrstu rešenja'}
-                options={typeOfDecision}
-                error={errors.type_of_decision?.message}
-              />
-            )}
           />
           <Input
             {...register('issuer')}
@@ -307,7 +312,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             )}
           />
           <Controller
-            name={'source_of_funding'}
+            name="source_of_funding"
             control={control}
             render={({field: {name, value, onChange}}) => (
               <Dropdown
@@ -315,7 +320,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 value={value}
                 onChange={onChange}
                 label="IZVOR FINANSIRANJA:"
-                placeholder={'Odaberite izvor finansiranja'}
+                placeholder="Odaberite izvor finansiranja"
                 options={SourceOfFunding}
                 error={errors.source_of_funding?.message}
               />
@@ -324,7 +329,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         </Row>
         <Row>
           <Controller
-            name={'date_of_invoice'}
+            name="date_of_invoice"
             control={control}
             render={({field: {name, value, onChange}}) => (
               <Datepicker
@@ -337,7 +342,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             )}
           />
           <Controller
-            name={'date_of_payment'}
+            name="date_of_payment"
             control={control}
             render={({field: {name, value, onChange}}) => (
               <Datepicker
@@ -352,7 +357,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         </Row>
         <Row>
           <Controller
-            name={'receipt_date'}
+            name="receipt_date"
             control={control}
             render={({field: {name, value, onChange}}) => (
               <Datepicker
@@ -364,7 +369,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             )}
           />
           <Controller
-            name={'sss_invoice_receipt_date'}
+            name="sss_invoice_receipt_date"
             control={control}
             render={({field: {name, value, onChange}}) => (
               <Datepicker
@@ -390,7 +395,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   value={value}
                   onChange={onChange}
                   label="OPŠTINA:"
-                  placeholder={'Odaberite opštinu'}
+                  placeholder="Odaberite opštinu"
                   options={municipalities}
                   isSearchable
                   error={errors.municipality_id?.message}
@@ -402,7 +407,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         <HalfWidthContainer>
           <Row>
             <Controller
-              name={'tax_authority_codebook_id'}
+              name="tax_authority_codebook_id"
               control={control}
               render={({field: {name, value, onChange}}) => (
                 <Dropdown
@@ -410,7 +415,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   value={value}
                   onChange={onChange}
                   label="ŠIFARNIK PORESKE UPRAVE:"
-                  placeholder={'Odaberite šifarnik'}
+                  placeholder="Odaberite šifarnik"
                   options={optionsForTaxAuthorityCodebook}
                   error={errors.tax_authority_codebook_id?.message}
                 />
@@ -424,8 +429,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               {...register('gross_price')}
               label="IZNOS ZA UPLATU BRUTO:"
               placeholder="Unesite iznos"
-              type={'number'}
-              inputMode={'decimal'}
+              type="number"
+              inputMode="decimal"
               leftContent={<div>€</div>}
               disabled={net_price as any}
               error={errors.gross_price?.message}
