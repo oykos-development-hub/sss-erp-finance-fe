@@ -8,7 +8,7 @@ import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import StyledTabsWithTitle from '../../../shared/styledTabsWithTitle/styledTabsWithTitle.tsx';
 import {getRouteName} from '../../../utils/getRouteName.ts';
 import {NotFound404} from '../../404.tsx';
-import SalariesEntry from './salariesEntry/salariesEntry.tsx';
+import SalaryForm from './salaryForm/salaryForm.tsx';
 import SalariesOverview from './salariesOverview/salariesOverview.tsx';
 
 const Salaries = () => {
@@ -34,7 +34,7 @@ const Salaries = () => {
 
   const renderScreen = () => {
     if (pathname === '/finance/liabilities-receivables/liabilities/salaries') return <SalariesOverview />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/salaries/add-salary') return <SalariesEntry />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/salaries/add-salary') return <SalaryForm />;
     return <NotFound404 />;
   };
 

@@ -33,7 +33,7 @@ const FlatRateOverview = () => {
     page: page,
     size: PAGE_SIZE,
     ...filters,
-    search: debouncedSearch,
+    search: debouncedSearch || undefined,
   });
   const {deleteFlatRate} = useDeleteFlatRate();
 

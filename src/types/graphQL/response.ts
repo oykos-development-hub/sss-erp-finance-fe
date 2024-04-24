@@ -10,6 +10,7 @@ import {ProceduralCostOverviewItem} from './proceduralCosts.ts';
 import {PropertyBenefitsConfiscationOverviewItem} from './propertyBenefitsConfiscation.ts';
 import {FlatRateOverviewItem} from './flatRate.ts';
 import {ObligationsItem, PaymentOrderItem} from './receivablesTypes.ts';
+import {Salary} from './salaries.ts';
 
 export type PageParams = {
   page?: number;
@@ -211,5 +212,17 @@ export type ReceivablesResponse = {
   };
   insert: {
     paymentOrder_Insert: InsertResponse<PaymentOrderItem>;
+  };
+};
+
+export type SalariesResponse = {
+  get: {
+    salary_Overview: GetResponse<Salary>;
+  };
+  insert: {
+    salary_Insert: InsertResponse<Salary>;
+  };
+  delete: {
+    salary_Delete: SimpleResponse;
   };
 };

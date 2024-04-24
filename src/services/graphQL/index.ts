@@ -1,5 +1,4 @@
 import {getEnvironment} from '../get-environment';
-import additionalExpensesOverview from './additionalExpensesOverview/additionalExpensesOverview.ts';
 import calculateAdditionalExpenses from './calculateAdditionalExpenses/calculateAdditionalExpenses.ts';
 import getCountOverview from './counts/getCountOverview.ts';
 import deleteBudget from './deleteBudget/deleteBudget';
@@ -67,10 +66,15 @@ import insertDepositPayment from './transitDeposits/insertDepositPayment.ts';
 import insertDepositPaymentOrder from './transitDeposits/insertDepositPaymentOrder.ts';
 import payOrder from './transitDeposits/payOrder.ts';
 import deleteWill from './wills/deleteWill.ts';
-import deleteWillDispatch from './wills/deleteWillDispatch.ts';
 import getWill from './wills/getWill.ts';
 import insertWill from './wills/insertWill.ts';
 import insertWillDispatch from './wills/insertWillDispatch.ts';
+import deleteWillDispatch from './wills/deleteWillDispatch.ts';
+import additionalExpensesOverview from './additionalExpensesOverview/additionalExpensesOverview.ts';
+import salariesOverview from './salaries/salariesOverview.ts';
+import insertSalary from './salaries/insertSalary.ts';
+import deleteSalary from './salaries/deleteSalary.ts';
+import getUserProfiles from './userProfiles/getUserProfiles.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -161,4 +165,8 @@ export const GraphQL = {
   obligationsOverview: obligationsOverview,
   payPaymentOrder: payPaymentOrder,
   insertPaymentOrder: insertPaymentOrder,
+  salariesOverview: salariesOverview,
+  insertSalary: insertSalary,
+  deleteSalary: deleteSalary,
+  getUserProfiles: getUserProfiles,
 };

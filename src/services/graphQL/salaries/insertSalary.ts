@@ -1,0 +1,63 @@
+const insertSalary = `mutation($data: SalaryMutation!) {
+    salary_Insert(data: $data) {
+        status 
+        message 
+        data
+        item {
+            id
+            organization_unit{
+                id
+                title
+            }
+            activity{
+                id
+                title
+            }
+            month
+            date_of_calculation
+            description
+            gross_price
+            obligations_price
+            vat_price
+            net_price
+            account{
+                id
+                title
+            }
+            salary_additional_expenses{
+                id
+                organization_unit{
+                    id
+                    title
+                }
+                activity{
+                    id
+                    title
+                }
+                account{
+                    id
+                    title
+                }
+                debtor{
+                    id
+                    title
+                }
+                amount
+                subject{
+                    id
+                    title
+                }
+                status
+                bank_account
+                type
+                title
+                created_at
+                updated_at
+            }
+            created_at
+            updated_at 
+        }
+    }
+}`;
+
+export default insertSalary;

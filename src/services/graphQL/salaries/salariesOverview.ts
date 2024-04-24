@@ -1,0 +1,64 @@
+const salariesOverview = `query salary_Overview($id: Int, $month: String, $organization_unit_id: Int, $page:Int, $size:Int, $year: Int, $activity_id: Int) {
+    salary_Overview(id: $id, activity_id: $activity_id month: $month, organization_unit_id: $organization_unit_id, page:$page, size:$size, year: $year) {
+        status 
+        message 
+        data
+        items {
+            id
+            organization_unit{
+                id
+                title
+            }
+            activity{
+                id
+                title
+            }
+            month
+            date_of_calculation
+            description
+            gross_price
+            obligations_price
+            number_of_employees
+            vat_price
+            net_price
+            account{
+                id
+                title
+            }
+            salary_additional_expenses{
+                id
+                title
+                organization_unit{
+                id
+                title
+                }
+                activity{
+                id
+                title
+                }
+                account{
+                id
+                title
+                }
+                debtor{
+                id
+                title
+                }
+                amount 
+                subject{
+                id
+                title
+                }
+                status
+                bank_account
+                type
+                created_at
+                updated_at
+            }
+            created_at
+            updated_at 
+        }
+        }
+    }`;
+
+export default salariesOverview;

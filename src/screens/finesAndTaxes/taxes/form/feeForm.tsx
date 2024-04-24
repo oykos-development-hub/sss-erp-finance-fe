@@ -266,16 +266,6 @@ const FeeForm = ({fee}: FeeFormProps) => {
             />
           )}
         />
-        {/*<Input*/}
-        {/*  value={fine?.fine_fee_details.fee_amount_grace_period.toFixed(2)}*/}
-        {/*  label={`2/3 KAZNE - UKOLIKO UPLATITE DO ${parseDate(*/}
-        {/*    fine?.fine_fee_details.fee_amount_grace_period_due_date ?? null,*/}
-        {/*  )}`}*/}
-        {/*  type={'number'}*/}
-        {/*  inputMode={'decimal'}*/}
-        {/*  leftContent={<div style={{color: Theme.palette.gray300}}>€</div>}*/}
-        {/*  disabled*/}
-        {/*/>*/}
       </Row>
       <Row>
         <Controller

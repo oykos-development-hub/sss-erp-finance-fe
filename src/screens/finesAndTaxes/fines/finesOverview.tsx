@@ -31,7 +31,7 @@ const FinesOverview = () => {
     page: page,
     size: PAGE_SIZE,
     ...filters,
-    search: debouncedSearch,
+    search: debouncedSearch || undefined,
   });
   const {deleteFine} = useDeleteFine();
 

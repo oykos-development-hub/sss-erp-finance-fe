@@ -27,7 +27,7 @@ const TaxesOverview = () => {
     page: page,
     size: PAGE_SIZE,
     ...filters,
-    search: debouncedSearch,
+    search: debouncedSearch || undefined,
   });
   const [showDeleteFeeModal, setShowDeleteFeeModal] = useState<number | null>(null);
 

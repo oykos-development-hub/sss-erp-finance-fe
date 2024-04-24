@@ -54,6 +54,9 @@ import ReceivableDetails from './screens/liabilitesAndReceivables/receivables/re
 import ReceivableEntry from './screens/liabilitesAndReceivables/receivables/receivableEntry/receivableEntry.tsx';
 import ReceivablesOverview from './screens/liabilitesAndReceivables/receivables/receivablesOverview/receivablesOverview.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
+import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
+import {LiabilitiesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesLanding/liabilitiesLandingPage.tsx';
+import {LiabilitiesReceivablesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesReceivablesLandingPage.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -80,6 +83,8 @@ export const Router = () => {
     const DepositPaymentsOrderDetailsRegex = /^\/finance\/deposit\/transit\/payment-orders\/\d+$/;
 
     // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
+    if (pathname === '/finance/liabilities-receivables') return <LiabilitiesReceivablesLandingPage />;
+    if (pathname === '/finance/liabilities-receivables/liabilities') return <LiabilitiesLandingPage />;
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
     const invoiceEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices/\\d+$');
     const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
@@ -89,6 +94,8 @@ export const Router = () => {
     const receiveRegex = new RegExp('^/finance/liabilities-receivables/receivables(?:/add-receivable)?$');
     const receiveEditRegex = new RegExp('^/finance/liabilities-receivables/receivables/\\d+$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
+    const salaryDetailsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries/\\d+$');
+
     const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-new)?$');
     const fineDetailsRegex = new RegExp('^/finance/fines-taxes/fines/\\d+$');
     const feeDetailsRegex = new RegExp('^/finance/fines-taxes/taxes/\\d+$');
@@ -188,6 +195,8 @@ export const Router = () => {
     if (contractsEditRegex.test(pathname)) return <ContractsDetails />;
 
     if (salariesRegex.test(pathname)) return <Salaries />;
+    if (salaryDetailsRegex.test(pathname)) return <SalaryDetails />;
+
     if (budgetFO.test(pathname)) return <BudgetFO />;
 
     // fines and taxes screen
