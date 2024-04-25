@@ -16,7 +16,7 @@ import SectionBox from '../../../../shared/sectionBox.ts';
 import StatusTableCell from '../../../../shared/statusTableCell/statusTableCell.tsx';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
-import {TypesForReceivables, receivableSchema} from '../constants.tsx';
+import {TypesForReceivables, receivableSchema, sourceOfFunding} from '../constants.tsx';
 import {ReceivableFormContainer, Row} from '../styles.ts';
 
 type ReceivableEntryForm = yup.InferType<typeof receivableSchema>;
@@ -44,7 +44,11 @@ const ReceivableEntry = () => {
   const {counts} = useGetCountOverview({level: 3});
   const {suppliers} = useGetSuppliers({});
   const {organizationUnits} = useGetOrganizationUnits();
-  const {obligations, fetchObligations} = useGetObligations({
+  const {
+    obligations,
+
+    fetchObligations,
+  } = useGetObligations({
     supplier_id: supplier_id?.id ? supplier_id?.id : null,
     organization_unit_id: organization_unit_id?.id ? organization_unit_id.id : null,
     type: type?.id ? type?.id : null,
@@ -53,7 +57,7 @@ const ReceivableEntry = () => {
   const {insertPaymentOrder, loading} = useInsertPaymentOrder();
 
   const getObligations = () => {
-    fetchObligations();
+    fetchObligations(() => alert.error('Za izabranu opciju nema rezultata.'));
   };
 
   const {fields, remove, insert} = useFieldArray({
@@ -139,6 +143,7 @@ const ReceivableEntry = () => {
       id_of_statement: data?.id_of_statement,
       date_of_payment: parseDateForBackend(data?.date_of_payment),
       description: data?.description,
+      source_of_funding: data?.source_of_funding?.id,
       items: fields
         .filter(field => selectedRows.includes(field.id))
         .map((_, index) => ({
@@ -298,7 +303,7 @@ const ReceivableEntry = () => {
               />
               <div style={{display: 'flex', alignItems: 'flex-end'}}>
                 <Button
-                  content="Proslijedi"
+                  content="Prikaži"
                   variant="primary"
                   onClick={() => getObligations()}
                   disabled={!supplier_id || !organization_unit_id}
@@ -308,6 +313,21 @@ const ReceivableEntry = () => {
             {!!fields.length && (
               <>
                 <Row>
+                  <Controller
+                    name="source_of_funding"
+                    control={control}
+                    render={({field: {name, value, onChange}}) => (
+                      <Dropdown
+                        name={name}
+                        value={value}
+                        onChange={onChange}
+                        label="IZVOR SREDSTAVA:"
+                        options={sourceOfFunding}
+                        error={errors.source_of_funding?.message}
+                        isSearchable
+                      />
+                    )}
+                  />
                   <Input
                     {...register('id_of_statement')}
                     label="ID NALOGA:"
@@ -321,7 +341,8 @@ const ReceivableEntry = () => {
                     error={errors.sap_id?.message}
                     style={{width: '350px'}}
                   />
-
+                </Row>
+                <Row>
                   <Controller
                     name={'date_of_sap'}
                     control={control}
@@ -362,7 +383,7 @@ const ReceivableEntry = () => {
                   {selectedRows.length === 1 && (
                     <Input
                       {...register('amount')}
-                      label="Iznos za placanje:"
+                      label="Iznos za plaćanje:"
                       error={errors.amount?.message}
                       style={{width: '250px'}}
                     />
@@ -372,7 +393,7 @@ const ReceivableEntry = () => {
                       {...register('amount')}
                       label="Iznos za placanje:"
                       disabled
-                      value={amountValue?.toFixed(2)}
+                      value={roundCurrency(amountValue)}
                       error={errors.amount?.message}
                       style={{width: '250px'}}
                     />

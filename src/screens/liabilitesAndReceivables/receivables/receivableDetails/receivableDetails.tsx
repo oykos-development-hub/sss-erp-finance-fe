@@ -13,7 +13,7 @@ import Footer from '../../../../shared/footer.ts';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import SectionBox from '../../../../shared/sectionBox.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import {TypesForReceivables, receivableSchema} from '../constants.tsx';
+import {TypesForReceivables, receivableSchema, sourceOfFunding} from '../constants.tsx';
 import {ButtonWrapper, ReceivableFormContainer, Row} from '../styles.ts';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
 
@@ -130,6 +130,7 @@ const ReceivableDetails = () => {
       description: paymentData?.description,
       date_of_sap: paymentData?.date_of_sap as Date,
       date_of_payment: paymentData?.date_of_payment as Date,
+      source_of_funding: {id: paymentData?.source_of_funding, title: paymentData?.source_of_funding},
     });
   }, [paymentData]);
 
@@ -150,7 +151,6 @@ const ReceivableDetails = () => {
                   options={organizationUnits}
                   error={errors.supplier_id?.message}
                   isSearchable
-                  isRequired
                   isDisabled={paymentData?.status === 'Plaćen'}
                 />
               )}
@@ -167,8 +167,22 @@ const ReceivableDetails = () => {
                   options={suppliers}
                   error={errors.supplier_id?.message}
                   isSearchable
-                  isRequired
                   isDisabled={paymentData?.status === 'Plaćen'}
+                />
+              )}
+            />
+            <Controller
+              name="source_of_funding"
+              control={control}
+              render={({field: {name, value, onChange}}) => (
+                <Dropdown
+                  name={name}
+                  value={value}
+                  onChange={onChange}
+                  label="IZVOR SREDSTAVA:"
+                  options={sourceOfFunding}
+                  error={errors.supplier_id?.message}
+                  isSearchable
                 />
               )}
             />
@@ -236,8 +250,8 @@ const ReceivableDetails = () => {
           </Row>
           <Row>
             <Input
-              {...register('amount')}
               label="Iznos za placanje:"
+              value={roundCurrency(paymentData?.amount)}
               error={errors.amount?.message}
               style={{width: '250px'}}
               disabled

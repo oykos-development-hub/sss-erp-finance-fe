@@ -23,6 +23,7 @@ const paymentOrderOverview = `query paymentOrder_Overview($id: Int,$status: Stri
             id_of_statement
             sap_id
             status
+            source_of_funding
             file{
                 id
                 name

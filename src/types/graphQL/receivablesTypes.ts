@@ -39,6 +39,7 @@ export interface PaymentOrderItem {
   date_of_order: string | Date;
   id_of_statement: number;
   sap_id: string;
+  source_of_funding: string;
   status: string;
   file: {
     id: number;

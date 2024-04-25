@@ -109,8 +109,8 @@ const ContractsOverview = () => {
     <>
       <Row>
         <Dropdown
-          label={'SUBJEKT:'}
-          placeholder={'Odaberi subjekt'}
+          label="SUBJEKT:"
+          placeholder="Odaberi subjekt"
           options={suppliersOptions}
           value={filterValues.supplier_id}
           onChange={value => onFilter(value as DropdownData<string>, 'supplier_id')}
@@ -143,7 +143,7 @@ const ContractsOverview = () => {
       <Table
         tableHeads={contractsOverviewTableHeads}
         data={invoice}
-        emptyMessage={'Još nema ugovora'}
+        emptyMessage="Još nema ugovora"
         tableActions={[
           {
             name: 'Izmijeni',

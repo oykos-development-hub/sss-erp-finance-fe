@@ -1,9 +1,9 @@
 import {TableHead, Typography} from 'client-library';
 import * as yup from 'yup';
+import {requiredError} from '../../../constants.ts';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {optionsNumberSchema, optionsStringSchema} from '../../../utils/formSchemas.ts';
-import {requiredError} from '../../../constants.ts';
 
 export const receivablesStatusOptions = [
   {id: '', title: 'Svi statusi'},
@@ -76,10 +76,23 @@ export const receivableSchema = yup.object().shape({
   date_of_sap: yup.date().nullable(),
   description: yup.string().nullable(),
   type: optionsStringSchema.default(null),
+  source_of_funding: optionsStringSchema.required(requiredError),
   amount: yup
     .number()
     .transform(value => (Number.isNaN(value) ? null : value))
-    .required(requiredError),
+    .test({
+      name: 'more than remain price',
+      message: 'Iznos ne može biti veći od preostalog iznosa za plaćanje',
+      test: function (value) {
+        const remainPrice =
+          this.parent.items &&
+          this.parent.items.find((item: {remain_price: undefined}) => item.remain_price !== undefined)?.remain_price;
+        if (!value || remainPrice === undefined) return true;
+        return value <= remainPrice;
+      },
+    })
+    .required(requiredError)
+    .nullable(),
   items: yup
     .array()
     .of(
@@ -104,4 +117,9 @@ export const TypesForReceivables = [
   {id: 'contracts', title: 'Ugovor'},
   {id: 'invoices', title: 'Račun'},
   {id: 'salaries', title: 'Zarade'},
+];
+
+export const sourceOfFunding = [
+  {id: 'Budžet', title: 'Budžet'},
+  {id: 'Donacija', title: 'Donacija'},
 ];

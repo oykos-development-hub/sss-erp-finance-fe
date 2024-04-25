@@ -67,9 +67,7 @@ const DecisionsOverview = () => {
     supplier_id: filterValues.supplier_id ? filterValues.supplier_id.id : null,
     organization_unit_id: contextMain?.organization_unit?.id,
   });
-  const {suppliers: subjects} = useGetSuppliers({
-    entity: 'subjects',
-  });
+  const {suppliers} = useGetSuppliers({});
   const {deleteInvoice} = useDeleteInvoice();
 
   const onDelete = (invoice: InvoiceItem) => {
@@ -97,20 +95,20 @@ const DecisionsOverview = () => {
   };
 
   const suppliersOptions = useMemo(() => {
-    const options = subjects.map((supplier: Supplier) => ({
+    const options = suppliers.map((supplier: Supplier) => ({
       id: supplier.id,
       title: supplier.title,
     }));
     options.unshift({id: 0, title: 'Svi dobavljači'});
     return options;
-  }, [subjects]);
+  }, [suppliers]);
 
   return (
     <>
       <Row>
         <Dropdown
-          label={'SUBJEKT:'}
-          placeholder={'Odaberi subjekt'}
+          label="SUBJEKT:"
+          placeholder="Odaberi subjekt"
           options={suppliersOptions}
           value={filterValues.supplier_id}
           onChange={value => onFilter(value as DropdownData<string>, 'supplier_id')}

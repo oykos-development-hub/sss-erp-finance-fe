@@ -46,15 +46,10 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     previous_income_gross,
     tax_authority_codebook_id,
     municipality_id,
-    type_of_decision,
+    supplier_id,
   } = watch();
 
-  const {suppliers: subjectTypes} = useGetSuppliers({entity: 'subjects', parent_id: null});
-
-  const {suppliers: subjects} = useGetSuppliers({
-    entity: 'subjects',
-    parent_id: type_of_decision ? type_of_decision.id : null,
-  });
+  const {suppliers} = useGetSuppliers({});
   const {suppliers: municipalities} = useGetSuppliers({entity: 'municipalities'});
   const {data: taxAuthorityCodebook} = useGetTaxAuthorityCodebook();
   const {counts} = useGetCountOverview({level: 3});
@@ -125,21 +120,33 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       title: 'Račun banke',
       accessor: 'bank_account',
       type: 'custom',
-      renderContents: (_item, _row, index) => {
+      renderContents: (_item, row, index) => {
+        const supplierOptions = suppliers?.find(supplier => supplier.id === row.subject.id);
+        const bankAccounts = supplierOptions?.bank_accounts.map(account => ({id: account, title: account}));
+
         return (
-          <Input
-            {...register(`additionalExpenses.${index}.bank_account`)}
-            style={{minWidth: '200px'}}
-            error={errors?.additionalExpenses?.[index]?.bank_account?.message}
-          />
+          <>
+            <Controller
+              name={`additionalExpenses.${index}.bank_account`}
+              control={control}
+              render={({field: {onChange, name, value}}) => (
+                <div style={{minWidth: '200px'}}>
+                  <Dropdown
+                    options={bankAccounts || []}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    error={errors?.additionalExpenses?.[index]?.bank_account?.message}
+                  />
+                </div>
+              )}
+            />
+          </>
         );
       },
     },
-
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
-
-  const {supplier_id} = watch();
 
   const onSubmit = async (data: any) => {
     if (loading) return;
@@ -165,7 +172,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         title: data.additionalExpenses[index]?.title,
         price: data.additionalExpenses[index]?.price,
         account_id: data.additionalExpenses[index]?.account?.id,
-        bank_account: data.additionalExpenses[index]?.bank_account,
+        bank_account: data.additionalExpenses[index]?.bank_account?.id,
         subject_id: index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
       })),
     };
@@ -199,7 +206,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               article.subject.title !== ''
                 ? {id: article.subject.id, title: article.subject.title}
                 : {id: supplier_id?.id, title: supplier_id?.title},
-            bank_account: '',
+            bank_account: {id: '', title: ''},
             organization_unit_id: article.organization_unit,
           });
         });
@@ -221,7 +228,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         description: decision?.description,
         issuer: decision?.issuer,
         source_of_funding: {id: decision.source_of_funding, title: decision.source_of_funding},
-        type_of_decision: {id: decision.type_of_decision.id, title: decision.type_of_decision.title},
         municipality_id: {id: decision.municipality.id, title: decision.municipality.title},
         tax_authority_codebook_id: {
           id: decision.tax_authority_codebook.id,
@@ -231,7 +237,10 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
           id: decision.additional_expenses[index]?.id,
           title: decision.additional_expenses[index]?.title,
           price: decision.additional_expenses[index]?.price,
-          bank_account: decision.additional_expenses[index]?.bank_account,
+          bank_account: {
+            id: decision.additional_expenses[index]?.bank_account,
+            title: decision.additional_expenses[index]?.bank_account,
+          },
           account: {
             id: decision.additional_expenses[index]?.account?.id,
             title: decision.additional_expenses[index]?.account?.title,
@@ -250,21 +259,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       <>
         <Row>
           <Controller
-            name={'type_of_decision'}
-            control={control}
-            render={({field: {name, value, onChange}}) => (
-              <Dropdown
-                name={name}
-                value={value}
-                onChange={onChange}
-                label="VRSTA RJEŠENJA:"
-                placeholder="Odaberite vrstu rešenja"
-                options={subjectTypes}
-                error={errors.type_of_decision?.message}
-              />
-            )}
-          />
-          <Controller
             name="supplier_id"
             control={control}
             render={({field: {name, value, onChange}}) => (
@@ -273,15 +267,12 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 value={value}
                 onChange={onChange}
                 label="SUBJEKT:"
-                placeholder={'Odaberite ime subjekta'}
-                options={subjects}
-                isDisabled={!type_of_decision}
-                error={errors.supplier_id?.message}
+                placeholder="Odaberite ime subjekta"
+                options={suppliers}
+                error={errors?.supplier_id?.message}
               />
             )}
           />
-        </Row>
-        <Row>
           <Input
             {...register('invoice_number')}
             label="BROJ PREDMETA:"
@@ -326,8 +317,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               />
             )}
           />
-        </Row>
-        <Row>
           <Controller
             name="date_of_invoice"
             control={control}
@@ -341,6 +330,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               />
             )}
           />
+        </Row>
+        <Row>
           <Controller
             name="date_of_payment"
             control={control}
@@ -354,8 +345,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               />
             )}
           />
-        </Row>
-        <Row>
           <Controller
             name="receipt_date"
             control={control}
@@ -384,92 +373,92 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         <Row>
           <Input {...register('description')} label="OPIS:" textarea placeholder="Unesite opis" />
         </Row>
-        <HalfWidthContainer>
-          <Row>
-            <Controller
-              name="municipality_id"
-              control={control}
-              render={({field: {name, value, onChange}}) => (
-                <Dropdown
-                  name={name}
-                  value={value}
-                  onChange={onChange}
-                  label="OPŠTINA:"
-                  placeholder="Odaberite opštinu"
-                  options={municipalities}
-                  isSearchable
-                  error={errors.municipality_id?.message}
+        {!!supplier_id && (
+          <>
+            <HalfWidthContainer>
+              <Row>
+                <Controller
+                  name="municipality_id"
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Dropdown
+                      name={name}
+                      value={value}
+                      onChange={onChange}
+                      label="OPŠTINA:"
+                      placeholder="Odaberite opštinu"
+                      options={municipalities}
+                      isSearchable
+                      error={errors.municipality_id?.message}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Row>
-        </HalfWidthContainer>
-        <HalfWidthContainer>
-          <Row>
-            <Controller
-              name="tax_authority_codebook_id"
-              control={control}
-              render={({field: {name, value, onChange}}) => (
-                <Dropdown
-                  name={name}
-                  value={value}
-                  onChange={onChange}
-                  label="ŠIFARNIK PORESKE UPRAVE:"
-                  placeholder="Odaberite šifarnik"
-                  options={optionsForTaxAuthorityCodebook}
-                  error={errors.tax_authority_codebook_id?.message}
+                <Controller
+                  name="tax_authority_codebook_id"
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Dropdown
+                      name={name}
+                      value={value}
+                      onChange={onChange}
+                      label="ŠIFARNIK PORESKE UPRAVE:"
+                      placeholder="Odaberite šifarnik"
+                      options={optionsForTaxAuthorityCodebook}
+                      error={errors.tax_authority_codebook_id?.message}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Row>
-        </HalfWidthContainer>
-        <HalfWidthContainer>
-          <Row>
-            <Input
-              {...register('gross_price')}
-              label="IZNOS ZA UPLATU BRUTO:"
-              placeholder="Unesite iznos"
-              type="number"
-              inputMode="decimal"
-              leftContent={<div>€</div>}
-              disabled={net_price as any}
-              error={errors.gross_price?.message}
-            />
-            <Input
-              {...register('previous_income_gross')}
-              label="PRETHODNA PRIMANJA U MJESECU BRUTO:"
-              placeholder="Unesite prethodna primanja"
-              type={'number'}
-              inputMode={'decimal'}
-              leftContent={<div>€</div>}
-              disabled={previous_income_net as any}
-              error={errors.previous_income_gross?.message}
-            />
-          </Row>
-          <Row>
-            <Input
-              {...register('net_price')}
-              label={'NETO IZNOS:'}
-              placeholder={'Unesite neto iznos'}
-              type={'number'}
-              inputMode={'decimal'}
-              leftContent={<div>€</div>}
-              disabled={gross_price as any}
-              error={errors.net_price?.message}
-            />
-            <Input
-              {...register('previous_income_net')}
-              label="PRETHODNA PRIMANJA U MJESECU NETO:"
-              placeholder="Unesite prethodna primanja"
-              type={'number'}
-              inputMode={'decimal'}
-              leftContent={<div>€</div>}
-              disabled={previous_income_gross as any}
-              error={errors.previous_income_net?.message}
-            />
-          </Row>
-          <Button content="Obračunaj" variant={'primary'} onClick={() => onCount()} />
-        </HalfWidthContainer>
+              </Row>
+            </HalfWidthContainer>
+            <HalfWidthContainer>
+              <Row>
+                <Input
+                  {...register('gross_price')}
+                  label="IZNOS ZA UPLATU BRUTO:"
+                  placeholder="Unesite iznos"
+                  type="number"
+                  inputMode="decimal"
+                  leftContent={<div>€</div>}
+                  disabled={net_price as any}
+                  error={errors.gross_price?.message}
+                />
+                <Input
+                  {...register('previous_income_gross')}
+                  label="PRETHODNA PRIMANJA U MJESECU BRUTO:"
+                  placeholder="Unesite prethodna primanja"
+                  type={'number'}
+                  inputMode={'decimal'}
+                  leftContent={<div>€</div>}
+                  disabled={previous_income_net as any}
+                  error={errors.previous_income_gross?.message}
+                />
+              </Row>
+              <Row>
+                <Input
+                  {...register('net_price')}
+                  label={'NETO IZNOS:'}
+                  placeholder={'Unesite neto iznos'}
+                  type={'number'}
+                  inputMode={'decimal'}
+                  leftContent={<div>€</div>}
+                  disabled={gross_price as any}
+                  error={errors.net_price?.message}
+                />
+                <Input
+                  {...register('previous_income_net')}
+                  label="PRETHODNA PRIMANJA U MJESECU NETO:"
+                  placeholder="Unesite prethodna primanja"
+                  type={'number'}
+                  inputMode={'decimal'}
+                  leftContent={<div>€</div>}
+                  disabled={previous_income_gross as any}
+                  error={errors.previous_income_net?.message}
+                />
+              </Row>
+              <Button content="Obračunaj" variant={'primary'} onClick={() => onCount()} />
+            </HalfWidthContainer>
+          </>
+        )}
 
         {!!fields.length && <Table tableHeads={additionalExpensesTableHeads} data={fields} />}
 

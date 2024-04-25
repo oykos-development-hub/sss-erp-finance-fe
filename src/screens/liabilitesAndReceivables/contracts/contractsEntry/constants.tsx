@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import {requiredError} from '../../../../constants';
-import {optionsNumberSchema} from '../../../../utils/formSchemas';
+import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
 
 export const contractsSchema = yup.object().shape({
   id: yup.number(),
@@ -25,7 +25,6 @@ export const contractsSchema = yup.object().shape({
   tax_authority_codebook_id: optionsNumberSchema.required(requiredError).default(null),
   supplier_id: optionsNumberSchema.default(null).required(requiredError),
   municipality_id: optionsNumberSchema.required(requiredError).default(null),
-  type_of_contract: optionsNumberSchema.default(null).required(requiredError),
   supplier_title: yup.string().default(null).nullable(),
   activity_id: optionsNumberSchema.default(null),
   date_of_payment: yup.date().required(requiredError),
@@ -42,7 +41,7 @@ export const contractsSchema = yup.object().shape({
         title: yup.string(),
         price: yup.number(),
         subject: optionsNumberSchema.default(null),
-        bank_account: yup.string().required(requiredError),
+        bank_account: optionsStringSchema.required(requiredError),
         organization_unit_id: optionsNumberSchema.default(null),
         account: optionsNumberSchema.required(requiredError).default(null),
       }),
