@@ -36,6 +36,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     watch,
     reset,
     formState: {errors},
+    setValue,
   } = useForm<DecisionEntryForm>({
     resolver: yupResolver(decisionsSchema),
   });
@@ -122,8 +123,13 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       type: 'custom',
       renderContents: (_item, row, index) => {
         const supplierOptions = suppliers?.find(supplier => supplier.id === row.subject.id);
-        const bankAccounts = supplierOptions?.bank_accounts.map(account => ({id: account, title: account}));
+        const bankAccounts = supplierOptions?.bank_accounts.map(account => ({id: account, title: account})) ?? [];
 
+        useEffect(() => {
+          if (!bankAccounts.length) return;
+          // automatically select first bank account for the subject
+          setValue(`additionalExpenses.${index}.bank_account`, bankAccounts[0]);
+        }, []);
         return (
           <>
             <Controller
@@ -132,7 +138,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               render={({field: {onChange, name, value}}) => (
                 <div style={{minWidth: '200px'}}>
                   <Dropdown
-                    options={bankAccounts || []}
+                    options={bankAccounts}
                     name={name}
                     value={value}
                     onChange={onChange}
