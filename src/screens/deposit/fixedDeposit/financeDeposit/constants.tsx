@@ -1,6 +1,7 @@
 import {TableHead, Typography} from 'client-library';
 import {DropdownData} from '../../../../types/dropdownData';
 import {parseDate} from '../../../../utils/dateUtils';
+import {formatCurrency} from '../../../../utils/roundCurrency';
 
 export const fixedFinancialDepositItemTableHeads: TableHead[] = [
   {
@@ -11,7 +12,8 @@ export const fixedFinancialDepositItemTableHeads: TableHead[] = [
   {
     title: 'Iznos',
     accessor: 'amount',
-    type: 'text',
+    type: 'custom',
+    renderContents: (value: number) => <Typography variant="bodyMedium" content={formatCurrency(value)} />,
   },
   {
     title: 'Datum oduzimanja',
@@ -42,7 +44,8 @@ export const fixedDepositDispatchTableHeads: TableHead[] = [
   {
     title: 'Iznos',
     accessor: 'amount',
-    type: 'text',
+    type: 'custom',
+    renderContents: (value: number) => <Typography variant="bodyMedium" content={formatCurrency(value)} />,
   },
   {
     title: 'Datum akta',
