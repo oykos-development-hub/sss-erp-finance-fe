@@ -148,12 +148,13 @@ const DecisionsOverview = () => {
             onClick: (row: DecisionItem) =>
               navigate(`/finance/liabilities-receivables/liabilities/decisions/${row.id}`),
             icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => row.status === 'Kreiran' && !row.registred,
           },
           {
             name: 'Izbriši',
             onClick: onDelete,
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => row?.status === 'Kreiran',
+            shouldRender: row => row.status === 'Kreiran' && !row.registred,
           },
         ]}
       />
