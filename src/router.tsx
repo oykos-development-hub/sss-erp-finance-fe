@@ -57,6 +57,9 @@ import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
 import {LiabilitiesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesLanding/liabilitiesLandingPage.tsx';
 import {LiabilitiesReceivablesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesReceivablesLandingPage.tsx';
+import EnforcedPaymentsOverview from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsOverview/enforcedPaymentsOverview.tsx';
+import EnforcedPaymentEntry from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsEntry/enforcedPaymentEntry.tsx';
+import EnforcedPaymentsDetails from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsDetails/enforcedPaymentsDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -95,6 +98,12 @@ export const Router = () => {
     const receiveEditRegex = new RegExp('^/finance/liabilities-receivables/receivables/\\d+$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
     const salaryDetailsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries/\\d+$');
+    const enforcedPaymentRegex = new RegExp(
+      '^/finance/liabilities-receivables/receivables/enforced-payments(?:/add-enforced-payment)?$',
+    );
+    const enforcedPaymentEditRegex = new RegExp(
+      '^/finance/liabilities-receivables/receivables/enforced-payments/\\d+$',
+    );
 
     const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-new)?$');
     const fineDetailsRegex = new RegExp('^/finance/fines-taxes/fines/\\d+$');
@@ -186,6 +195,11 @@ export const Router = () => {
     if (receiveEditRegex.test(pathname)) return <ReceivableDetails />;
     if (invoicesRegex.test(pathname)) return <Invoices />;
     if (invoiceEditRegex.test(pathname)) return <InvoiceDetails />;
+
+    if (pathname === '/finance/liabilities-receivables/receivables/enforced-payments')
+      return <EnforcedPaymentsOverview />;
+    if (enforcedPaymentRegex.test(pathname)) return <EnforcedPaymentEntry />;
+    if (enforcedPaymentEditRegex.test(pathname)) return <EnforcedPaymentsDetails />;
 
     if (budgetPreviewDetails.test(pathname)) return <NonFinancePreview />;
     if (decisionsRegex.test(pathname)) return <Decisions />;

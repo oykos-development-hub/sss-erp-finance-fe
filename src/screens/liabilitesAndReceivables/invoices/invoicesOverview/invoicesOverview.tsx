@@ -43,7 +43,7 @@ const InvoicesOverview = () => {
   const {invoice, total, fetch} = useGetInvoice({
     page: page,
     size: PAGE_SIZE,
-    type: 'invoice',
+    type: 'invoices',
     status: filterValues.status ? filterValues.status.id : '',
     supplier_id: filterValues.supplier_id ? filterValues.supplier_id.id : null,
     year: filterValues.year ? filterValues.year.id : null,

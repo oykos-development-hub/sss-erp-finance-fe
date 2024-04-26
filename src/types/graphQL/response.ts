@@ -11,6 +11,7 @@ import {PropertyBenefitsConfiscationOverviewItem} from './propertyBenefitsConfis
 import {FlatRateOverviewItem} from './flatRate.ts';
 import {ObligationsItem, PaymentOrderItem} from './receivablesTypes.ts';
 import {Salary} from './salaries.ts';
+import {EnforcedPaymentItem} from './enforcedPaymentTypes.ts';
 
 export type PageParams = {
   page?: number;
@@ -224,5 +225,17 @@ export type SalariesResponse = {
   };
   delete: {
     salary_Delete: SimpleResponse;
+  };
+};
+
+export type EnforcedPaymentResponse = {
+  get: {
+    enforcedPayment_Overview: GetResponse<EnforcedPaymentItem>;
+  };
+  insert: {
+    enforcedPayment_Insert: InsertResponse<EnforcedPaymentItem>;
+  };
+  return: {
+    returnEnforcedPayment: SimpleResponse;
   };
 };

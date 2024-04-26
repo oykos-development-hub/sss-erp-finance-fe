@@ -44,11 +44,7 @@ const ReceivableEntry = () => {
   const {counts} = useGetCountOverview({level: 3});
   const {suppliers} = useGetSuppliers({});
   const {organizationUnits} = useGetOrganizationUnits();
-  const {
-    obligations,
-
-    fetchObligations,
-  } = useGetObligations({
+  const {obligations, fetchObligations} = useGetObligations({
     supplier_id: supplier_id?.id ? supplier_id?.id : null,
     organization_unit_id: organization_unit_id?.id ? organization_unit_id.id : null,
     type: type?.id ? type?.id : null,

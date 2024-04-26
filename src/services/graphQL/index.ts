@@ -75,6 +75,9 @@ import salariesOverview from './salaries/salariesOverview.ts';
 import insertSalary from './salaries/insertSalary.ts';
 import deleteSalary from './salaries/deleteSalary.ts';
 import getUserProfiles from './userProfiles/getUserProfiles.ts';
+import enforcedPaymentOverview from './enforcedPayments/enforcedPaymentOverview.ts';
+import enforcedPaymentInsert from './enforcedPayments/enforcedPaymentInsert.ts';
+import returnEnforcedPayment from './enforcedPayments/returnEnforcedPayment.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -169,4 +172,7 @@ export const GraphQL = {
   insertSalary: insertSalary,
   deleteSalary: deleteSalary,
   getUserProfiles: getUserProfiles,
+  enforcedPaymentOverview: enforcedPaymentOverview,
+  enforcedPaymentInsert: enforcedPaymentInsert,
+  returnEnforcedPayment: returnEnforcedPayment,
 };

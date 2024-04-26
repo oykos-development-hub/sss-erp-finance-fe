@@ -15,7 +15,7 @@ const InvoiceDetails = () => {
   const {invoice} = useGetInvoice({
     page: 1,
     size: 1000,
-    type: 'invoice',
+    type: 'invoices',
     organization_unit_id: contextMain?.organization_unit?.id,
     id: id,
   });

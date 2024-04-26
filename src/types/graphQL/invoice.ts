@@ -86,6 +86,7 @@ export interface InvoiceItem {
   pro_forma_invoice_number: string;
   invoice_number: string;
   supplier_title: string;
+  net_price: number;
   issuer: string;
   supplier: {
     id: number;
@@ -127,9 +128,9 @@ export interface InvoiceItem {
 }
 
 export interface GetInvoiceParams {
-  page: number;
-  size: number;
-  type: string;
+  page?: number;
+  size?: number;
+  type?: string;
   id?: number;
   status?: string | null;
   year?: string | null;

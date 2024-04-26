@@ -56,6 +56,7 @@ const PayOrderModal = ({onClose, open}: FundReleaseModalProps) => {
 
     return;
   };
+
   return (
     <Modal
       open={open}
