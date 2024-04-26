@@ -20,6 +20,7 @@ export interface Items {
   amount: number;
   title: string;
   type: string;
+  remain_price: number;
 }
 
 export interface PaymentOrderItem {

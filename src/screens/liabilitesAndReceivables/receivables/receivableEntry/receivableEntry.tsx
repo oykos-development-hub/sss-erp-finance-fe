@@ -18,6 +18,7 @@ import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
 import {TypesForReceivables, receivableSchema, sourceOfFunding} from '../constants.tsx';
 import {ReceivableFormContainer, Row} from '../styles.ts';
+import {Items} from '../../../../types/graphQL/receivablesTypes.ts';
 
 type ReceivableEntryForm = yup.InferType<typeof receivableSchema>;
 
@@ -33,6 +34,8 @@ const ReceivableEntry = () => {
     handleSubmit,
     watch,
     formState: {errors},
+    setError,
+    clearErrors,
   } = useForm<ReceivableEntryForm>({
     resolver: yupResolver(receivableSchema),
   });
@@ -129,8 +132,36 @@ const ReceivableEntry = () => {
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
 
+  const validateAmount = (fields: any, amount?: number | null) => {
+    const selectedRow = fields.filter((field: Items) => selectedRows.includes(field.id));
+
+    if (selectedRows.length === 1 && !amount) {
+      setError('amount', {
+        type: 'manual',
+        message: 'Ovo polje je obavezno.',
+      });
+      return false;
+    }
+
+    if (amount && amount > selectedRow[0].remain_price) {
+      setError('amount', {
+        type: 'manual',
+        message: 'Iznos ne može biti veći od cijene za plaćanje.',
+      });
+      return false;
+    } else {
+      clearErrors('amount');
+    }
+
+    return true;
+  };
   const onSubmit = async (data: any) => {
     if (loading) return;
+
+    const isValidAmount = validateAmount(fields, amount);
+    if (!isValidAmount) {
+      return;
+    }
 
     const payload = {
       organization_unit_id: organization_unit_id?.id,
@@ -386,8 +417,7 @@ const ReceivableEntry = () => {
                   )}
                   {selectedRows.length > 1 && (
                     <Input
-                      {...register('amount')}
-                      label="Iznos za placanje:"
+                      label="Iznos za plaćanje:"
                       disabled
                       value={roundCurrency(amountValue)}
                       error={errors.amount?.message}

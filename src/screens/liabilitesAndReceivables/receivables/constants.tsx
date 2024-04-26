@@ -80,18 +80,6 @@ export const receivableSchema = yup.object().shape({
   amount: yup
     .number()
     .transform(value => (Number.isNaN(value) ? null : value))
-    .test({
-      name: 'more than remain price',
-      message: 'Iznos ne može biti veći od preostalog iznosa za plaćanje',
-      test: function (value) {
-        const remainPrice =
-          this.parent.items &&
-          this.parent.items.find((item: {remain_price: undefined}) => item.remain_price !== undefined)?.remain_price;
-        if (!value || remainPrice === undefined) return true;
-        return value <= remainPrice;
-      },
-    })
-    .required(requiredError)
     .nullable(),
   items: yup
     .array()

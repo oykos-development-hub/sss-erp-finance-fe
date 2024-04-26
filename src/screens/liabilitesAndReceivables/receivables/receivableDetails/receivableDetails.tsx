@@ -93,13 +93,13 @@ const ReceivableDetails = () => {
     if (loading) return;
 
     const payload = {
+      id: receivableID,
       organization_unit_id: organization_unit_id?.id,
       supplier_id: supplier_id?.id,
       amount: data?.amount,
       id_of_statement: data?.id_of_statement,
       date_of_payment: parseDateForBackend(data?.date_of_payment),
       description: data?.description,
-      items: paymentData?.items,
     };
 
     insertPaymentOrder(

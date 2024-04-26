@@ -435,7 +435,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         invoice_type:
           type?.id === false
             ? {id: 'manual', title: 'Ručni unos'}
-            : !!invoice.order_id && !type?.id
+            : invoice.order_id !== 0
             ? {id: 'accounting', title: 'Materijalno knjigovodstvo'}
             : {id: 'manual', title: 'Ručni unos'},
         supplier_id: {id: invoice.supplier.id, title: invoice.supplier.title},
@@ -554,11 +554,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             {...register('invoice_number')}
             label="BROJ RAČUNA:"
             placeholder="Unesite broj računa"
-            disabled={
-              (type?.id === true && !isManual) ||
-              type?.id === false ||
-              (Boolean(selectedOrderOption) && Boolean(invoice_number))
-            }
+            disabled={(type?.id === true && !isManual) || (type?.id === false && invoice?.order_id !== 0)}
             error={errors?.invoice_number?.message}
             isRequired
           />
@@ -591,11 +587,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM RAČUNA:"
                 onChange={onChange}
-                disabled={
-                  (type?.id === true && !isManual) ||
-                  type?.id === false ||
-                  (Boolean(selectedOrderOption) && Boolean(invoice_number))
-                }
+                disabled={(type?.id === true && !isManual) || (type?.id === false && invoice?.order_id !== 0)}
                 error={errors?.date_of_invoice?.message}
                 isRequired
               />
