@@ -1,5 +1,5 @@
 const salariesOverview = `query salary_Overview($id: Int, $month: String, $organization_unit_id: Int, $page:Int, $size:Int, $year: Int, $activity_id: Int) {
-    salary_Overview(id: $id, activity_id: $activity_id month: $month, organization_unit_id: $organization_unit_id, page:$page, size:$size, year: $year) {
+    salary_Overview(id: $id, activity_id: $activity_id, month: $month, organization_unit_id: $organization_unit_id, page:$page, size:$size, year: $year) {
         status 
         message 
         data
@@ -14,13 +14,16 @@ const salariesOverview = `query salary_Overview($id: Int, $month: String, $organ
                 title
             }
             month
+            registred
+            is_deletable
+            number_of_employees
             date_of_calculation
             description
+            status
             gross_price
-            obligations_price
-            number_of_employees
             vat_price
             net_price
+            obligations_price
             account{
                 id
                 title
@@ -29,25 +32,25 @@ const salariesOverview = `query salary_Overview($id: Int, $month: String, $organ
                 id
                 title
                 organization_unit{
-                id
-                title
+                    id
+                    title
                 }
                 activity{
-                id
-                title
+                    id
+                    title
                 }
                 account{
-                id
-                title
+                    id
+                    title
+                }
+                amount
+                subject{
+                    id
+                    title
                 }
                 debtor{
-                id
-                title
-                }
-                amount 
-                subject{
-                id
-                title
+                    id
+                    title
                 }
                 status
                 bank_account

@@ -2,6 +2,7 @@ import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import {UserProfile} from '../../../types/graphQL/userProfiles.ts';
+import {roundCurrency} from '../../../utils/roundCurrency.ts';
 
 export const salariesOverviewTableHeads: TableHead[] = [
   // TODO change accessors to correct ones
@@ -19,8 +20,18 @@ export const salariesOverviewTableHeads: TableHead[] = [
     type: 'custom',
     renderContents: (date: string) => <Typography content={parseDate(date)} variant="bodySmall" />,
   },
-  {title: 'Neto iznos', accessor: 'net_price'},
-  {title: 'Ukupni bruto', accessor: 'gross_price'},
+  {
+    title: 'Neto iznos',
+    accessor: 'net_price',
+    type: 'custom',
+    renderContents: (net_price: number) => <Typography content={roundCurrency(net_price)} variant="bodySmall" />,
+  },
+  {
+    title: 'Ukupni bruto',
+    accessor: 'gross_price',
+    type: 'custom',
+    renderContents: (gross_price: number) => <Typography content={roundCurrency(gross_price)} variant="bodySmall" />,
+  },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
@@ -31,6 +42,16 @@ export enum AdditionalSalaryExpenseType {
   subtaxes = 'Prirezi',
   banks = 'Banke',
 }
+
+export const contributionsTitleOptions: DropdownData<string>[] = [
+  {id: 'Doprinos za PIO (zaposleni)', title: 'Doprinos za PIO (zaposleni)'},
+  {id: 'Doprinos za nezaposlenost (zaposleni)', title: 'Doprinos za nezaposlenost (zaposleni)'},
+  {id: 'Doprinos za PIO (poslodavac)', title: 'Doprinos za PIO (poslodavac)'},
+  {id: 'Doprinos za nezaposlenost (poslodavac)', title: 'Doprinos za nezaposlenost (poslodavac)'},
+  {id: 'Doprinos za Fond rada', title: 'Doprinos za Fond rada'},
+  {id: 'Doprinos za zdravstvo (zaposleni)', title: 'Doprinos za zdravstvo (zaposleni)'},
+  {id: 'Doprinos za zdravstvo (poslodavac)', title: 'Doprinos za zdravstvo (poslodavac)'},
+];
 
 export function generateUsersDropdownOptions(users: UserProfile[]) {
   return users?.map(item => {

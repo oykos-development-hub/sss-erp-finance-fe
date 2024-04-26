@@ -96,6 +96,7 @@ const SalariesOverview = () => {
       </Row>
       <Table
         tableHeads={salariesOverviewTableHeads}
+        // data={salaries}
         data={salaries}
         emptyMessage={'Još nema zarada'}
         isLoading={loading}
@@ -106,6 +107,7 @@ const SalariesOverview = () => {
             name: 'delete',
             onClick: row => setShowDeleteSalaryModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => !row.registred && row.is_deletable,
           },
         ]}
       />

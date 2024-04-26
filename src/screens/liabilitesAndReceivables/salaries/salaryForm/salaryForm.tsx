@@ -34,6 +34,7 @@ import useGetCountOverview from '../../../../services/graphQL/counts/useGetCount
 import {useEffect, useMemo, useState} from 'react';
 import {
   AdditionalSalaryExpenseType,
+  contributionsTitleOptions,
   generateUsersDropdownOptions,
   mockedActivitiesDropdownOption,
 } from '../constants.tsx';
@@ -155,6 +156,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
       name: 'Izbriši',
       onClick: onDelete,
       icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+      shouldRender: () => !salary?.registred,
     },
   ];
 
@@ -332,6 +334,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
               options={debtorDropdownOptions}
               isRequired
               error={errors.salary_additional_expenses?.[index]?.debtor?.message}
+              isDisabled={salary?.registred}
             />
           )}
         />
@@ -347,10 +350,30 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
       width: '20%',
       renderContents: (_item, row) => {
         const index = findIndexInFieldsArray(row.id);
-        return (
+        return row.type === 'contributions' ? (
+          <Controller
+            name={`salary_additional_expenses.${index}.title`}
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={contributionsTitleOptions.find(option => option.id === value)}
+                onChange={e => {
+                  onChange(e?.id ?? '');
+                }}
+                placeholder={'Odaberite naziv'}
+                options={contributionsTitleOptions}
+                isRequired
+                error={errors.salary_additional_expenses?.[index]?.title?.message}
+                isDisabled={salary?.registred}
+              />
+            )}
+          />
+        ) : (
           <Input
             {...register(`salary_additional_expenses.${index}.title`)}
             error={errors.salary_additional_expenses?.[index]?.title?.message}
+            disabled={salary?.registred}
           />
         );
       },
@@ -376,6 +399,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 options={countsDropdownOptions}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.account?.message}
+                isDisabled={salary?.registred}
               />
             )}
           />
@@ -396,6 +420,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
             type="number"
             leftContent={<div>€</div>}
             error={errors.salary_additional_expenses?.[index]?.amount?.message}
+            disabled={salary?.registred}
           />
         );
       },
@@ -444,6 +469,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 options={suppliersDropdownOptions}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.subject?.message}
+                isDisabled={salary?.registred}
               />
             )}
           />
@@ -478,6 +504,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 options={bankAccounts}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.bank_account?.message}
+                isDisabled={salary?.registred}
               />
             )}
           />
@@ -502,9 +529,11 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
     return (
       <TitleDivider>
         <Title content={AdditionalSalaryExpenseType[type]} />
-        <AddIcon onClick={() => appendNewRow(type)}>
-          <PlusIcon width={'18px'} stroke={Theme?.palette?.primary500} />
-        </AddIcon>
+        {!salary?.registred && (
+          <AddIcon onClick={() => appendNewRow(type)}>
+            <PlusIcon width={'18px'} stroke={Theme?.palette?.primary500} />
+          </AddIcon>
+        )}
       </TitleDivider>
     );
   };
@@ -526,6 +555,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 // TODO activities not yet done, send 0 until it's fixed
                 options={mockedActivitiesDropdownOption}
                 error={errors.activity?.message}
+                isDisabled={salary?.registred}
               />
             )}
           />
@@ -543,6 +573,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 placeholder={'Odaberite mjesec'}
                 options={monthOptions}
                 error={errors.month?.message}
+                isDisabled={salary?.registred}
               />
             )}
           />
@@ -556,6 +587,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 label="DATUM OBRAČUNA:"
                 onChange={onChange}
                 error={errors.date_of_calculation?.message}
+                disabled={salary?.registred}
               />
             )}
           />
@@ -567,6 +599,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
             textarea
             placeholder="Unesite opis"
             error={errors.description?.message}
+            disabled={salary?.registred}
           />
         </Row>
 
@@ -592,6 +625,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
               </>
             }
             buttonText="UČITAJ FAJL"
+            disabled={salary?.registred}
           />
           <FileUploadErrorsWrapper>
             {importSalariesErrors.map((error, index) => (
@@ -615,6 +649,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
               </>
             }
             buttonText="UČITAJ FAJL"
+            disabled={salary?.registred}
           />
           <FileUploadErrorsWrapper>
             {importSuspensionsErrors.map((error, index) => (
@@ -641,8 +676,8 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           tableActions={tableActions}
         />
         <Footer>
-          <Button content="Obriši" variant="secondary" onClick={() => reset()} />
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+          <Button content="Obriši" variant="secondary" onClick={() => reset()} disabled={salary?.registred} />
+          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} disabled={salary?.registred} />
         </Footer>
       </>
     </SalariesFormContainer>

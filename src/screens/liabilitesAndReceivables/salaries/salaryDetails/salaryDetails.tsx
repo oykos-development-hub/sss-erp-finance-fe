@@ -1,4 +1,3 @@
-import {useEffect} from 'react';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useGetSalaries from '../../../../services/graphQL/salaries/useGetSalaries.ts';
 import SalaryForm from '../salaryForm/salaryForm.tsx';
@@ -16,17 +15,18 @@ const SalaryDetails = () => {
   const {salaries, refetch} = useGetSalaries({
     id,
   });
-
-  useEffect(() => {
-    console.log(salaries[0]);
-  }, [salaries]);
+  const salary = salaries[0];
 
   return (
     <ScreenWrapper>
       <SectionBox>
-        <MainTitle variant="bodyMedium" content={`Zarada: ${id}`} style={{marginBottom: 0}} />
+        <MainTitle
+          variant="bodyMedium"
+          content={`Zarada: ${id}${salary?.registred ? '- PROKNJIŽENA' : ''}`}
+          style={{marginBottom: 0}}
+        />
         <CustomDivider style={{marginTop: 0}} />
-        <SalaryForm salary={salaries[0]} refetchSalary={refetch} />
+        <SalaryForm salary={salary} refetchSalary={refetch} />
       </SectionBox>
     </ScreenWrapper>
   );

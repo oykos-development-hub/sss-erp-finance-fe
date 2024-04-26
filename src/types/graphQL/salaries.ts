@@ -30,6 +30,8 @@ export type Salary = {
   net_price: number;
   account: DropdownData<number>;
   salary_additional_expenses: SalaryAdditionalExpense[];
+  registred: boolean;
+  is_deletable: boolean;
   created_at: string;
   updated_at: string;
 };
