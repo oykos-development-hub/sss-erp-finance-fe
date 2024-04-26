@@ -17,6 +17,7 @@ import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {SourceOfFunding} from '../constants.tsx';
 import {decisionsSchema} from './constants.tsx';
 import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
+import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
 
 type DecisionEntryForm = yup.InferType<typeof decisionsSchema>;
 interface DecisionFormProps {
@@ -66,6 +67,13 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     previous_income_net: previous_income_net ? Number(previous_income_net) : null,
     previous_income_gross: previous_income_gross ? Number(previous_income_gross) : null,
   });
+
+  const suppliersDropdownOptions = useMemo(() => {
+    return getSuppliersDropdown(suppliers);
+  }, [suppliers]);
+
+  const selectedSupplier = suppliersDropdownOptions.find(s => s.id === supplier_id?.id);
+  const selectedSupplierEntity = selectedSupplier?.entity;
 
   const {fields, remove, insert} = useFieldArray({
     control,
@@ -274,7 +282,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 onChange={onChange}
                 label="SUBJEKT:"
                 placeholder="Odaberite ime subjekta"
-                options={suppliers}
+                options={suppliersDropdownOptions}
                 error={errors?.supplier_id?.message}
               />
             )}
@@ -435,7 +443,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={previous_income_net as any}
+                  disabled={!!previous_income_net || selectedSupplierEntity !== 'employee'}
                   error={errors.previous_income_gross?.message}
                 />
               </Row>
@@ -457,7 +465,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={previous_income_gross as any}
+                  disabled={!!previous_income_gross || selectedSupplierEntity !== 'employee'}
                   error={errors.previous_income_net?.message}
                 />
               </Row>

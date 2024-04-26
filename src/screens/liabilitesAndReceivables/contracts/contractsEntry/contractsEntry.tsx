@@ -16,6 +16,7 @@ import {createDropdownOptions} from '../../../../utils/createOptions.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {contractsSchema} from './constants.tsx';
 import {ContractsFormContainer, HalfWidthContainer, Row} from './styles.ts';
+import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
 
 type ContractEntryForm = yup.InferType<typeof contractsSchema>;
 interface ContractFormProps {
@@ -153,6 +154,13 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     },
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
+
+  const suppliersDropdownOptions = useMemo(() => {
+    return getSuppliersDropdown(suppliers);
+  }, [suppliers]);
+
+  const selectedSupplier = suppliersDropdownOptions.find(s => s.id === supplier_id?.id);
+  const selectedSupplierEntity = selectedSupplier?.entity;
 
   const onSubmit = async (data: any) => {
     if (loading) return;
@@ -427,7 +435,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={net_price as any}
+                  disabled={!!net_price}
                   error={errors.gross_price?.message}
                 />
                 <Input
@@ -437,7 +445,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={previous_income_net as any}
+                  disabled={!!previous_income_net || selectedSupplierEntity !== 'employee'}
                   error={errors.previous_income_gross?.message}
                 />
               </Row>
@@ -449,7 +457,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={gross_price as any}
+                  disabled={!!gross_price}
                   error={errors.net_price?.message}
                 />
                 <Input
@@ -459,7 +467,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={previous_income_gross as any}
+                  disabled={!!previous_income_gross || selectedSupplierEntity !== 'employee'}
                   error={errors.previous_income_net?.message}
                 />
               </Row>

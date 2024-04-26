@@ -6,6 +6,7 @@ export const getSuppliersDropdown = (suppliers: Supplier[]) => {
       id: supplier.id,
       title: supplier.title,
       bank_accounts: supplier.bank_accounts,
+      entity: supplier.entity,
     };
   });
 };
