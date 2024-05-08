@@ -96,17 +96,17 @@ const SSSBudgetDetails = () => {
 
     const years = getYearOptions(6, false, 5);
 
-    const existingBudgetYears = budgets.items?.map(budget => budget.year) || [];
+    const existingBudgetYears = budgets?.map(budget => budget.year) || [];
     const filteredYears = years.filter(year => !existingBudgetYears.includes(Number(year.id)));
 
     return filteredYears;
   }, [budgets]);
 
   useEffect(() => {
-    if (budgets && budgets.items && budgets.items.length > 0 && !isNew) {
-      setValue('year', {id: budgets.items[0].year.toString(), title: budgets.items[0].year.toString()});
-      setValue('budget_type', budgetTypeOptions.find(option => option.id === parseInt(budgets.items[0].budget_type))!);
-      setValue('limits', budgets.items[0].limits);
+    if (budgets && budgets && budgets.length > 0 && !isNew) {
+      setValue('year', {id: budgets[0].year.toString(), title: budgets[0].year.toString()});
+      setValue('budget_type', budgetTypeOptions.find(option => option.id === parseInt(budgets[0].budget_type))!);
+      setValue('limits', budgets[0].limits);
     }
   }, [budgets, isNew]);
 

@@ -81,8 +81,8 @@ const BudgetLimitModal = ({onClose, open, onSubmit}: BudgetLimitModalProps) => {
           title: item.title,
         };
 
-        if (!isNew && budgets && budgets.items.length > 0) {
-          const budget = budgets.items[0].limits.find(b => Number(b.organization_unit_id) === item.id);
+        if (!isNew && budgets && budgets.length > 0) {
+          const budget = budgets[0].limits.find(b => Number(b.organization_unit_id) === item.id);
 
           if (budget) {
             limitObj.limit = budget.limit.toString();
