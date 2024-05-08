@@ -57,6 +57,7 @@ import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
 import {LiabilitiesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesLanding/liabilitiesLandingPage.tsx';
 import {LiabilitiesReceivablesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesReceivablesLandingPage.tsx';
+import {useRoleCheck} from './utils/useRoleCheck.ts';
 import EnforcedPaymentsOverview from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsOverview/enforcedPaymentsOverview.tsx';
 import EnforcedPaymentEntry from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsEntry/enforcedPaymentEntry.tsx';
 import EnforcedPaymentsDetails from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsDetails/enforcedPaymentsDetails.tsx';
@@ -78,7 +79,7 @@ export const Router = () => {
     const name = path[path.length - 1];
 
     const SSSBudgetDetailsRegex = /^\/finance\/budget\/planning\/(add-new|\d+)$/;
-    const OUBudgetDetailsSummary = /^\/finance\/budget\/planning\/\d+\/summary$/;
+    const OUBudgetDetailsSummary = /^\/finance\/budget\/planning\/\d+\/(summary|financial|non-financial)$/;
     const FinancialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/financial\/\d+$/;
     const MaterialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/material\/\d+$/;
     const WillDetailsRegex = /^\/finance\/deposit\/fixed\/wills\/\d+$/;
@@ -121,11 +122,11 @@ export const Router = () => {
     const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
 
     //todo: check if this is actually the role SSS will use here
-    if (role_id === UserRole.ADMIN) {
+    if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])) {
       if (SSSBudgetDetailsRegex.test(pathname)) return <SSSBudgetDetails />;
     }
 
-    if (role_id === UserRole.MANAGER_OJ) {
+    if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
       if (OUBudgetDetailsSummary.test(pathname)) return <OUBudgetSubmission />;
     }
 
@@ -230,14 +231,14 @@ export const Router = () => {
     if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;
     if (proceduralCostDetailsRegex.test(pathname)) return <ProceduralCostDetails />;
 
-    if (role_id === UserRole.MANAGER_OJ) {
+    if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
       if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;
       if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
     }
-    if (role_id === UserRole.ADMIN || role_id === UserRole.MANAGER_OJ) {
+    if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.MANAGER_OJ])) {
       // add role specific routes here
       if (pathname === '/blablabla') return <div />;
-    } else if (role_id === UserRole.OFFICIAL_FOR_FINANCE) {
+    } else if (useRoleCheck(role_id, [UserRole.FINANCE_OFFICIAL])) {
       if (pathname === '/blablabla') return <div />;
     }
 

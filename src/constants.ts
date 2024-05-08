@@ -6,17 +6,16 @@ export const PAGE_SIZE = 10;
 export enum UserRole {
   ADMIN = 1,
   MANAGER_OJ = 2,
-  // TODO change when new role is added to BE
-  OFFICIAL_FOR_FINANCE = 88,
+  FINANCE_OFFICIAL = 6,
 }
 
 export interface ExtendedTab extends Tab {
   routeName: string;
 }
 export const budgetTabs: ExtendedTab[] = [
-  {id: 1, title: 'Summary', routeName: 'summary', disabled: false},
-  {id: 2, title: 'Financial', routeName: 'financial', disabled: false},
-  {id: 3, title: 'Non-Financial', routeName: 'non-financial', disabled: false},
+  {id: 1, title: 'Pregled', routeName: 'summary', disabled: false},
+  {id: 2, title: 'Finansijski', routeName: 'financial', disabled: false},
+  {id: 3, title: 'Nefinansijski', routeName: 'non-financial', disabled: false},
 ];
 
 export const invoicesTabs: ExtendedTab[] = [
@@ -26,8 +25,8 @@ export const invoicesTabs: ExtendedTab[] = [
 
 export enum ScreenTitlesEnum {
   summary = 'Budžet',
-  financial = 'Financial',
-  'non-financial' = 'Non-Financial',
+  financial = 'Finansijski',
+  'non-financial' = 'Nefinansijski',
   invoices = 'Pregled računa',
   'add-invoice' = 'Unos računa',
   'add-decision' = 'Unos rešenja',

@@ -48,6 +48,7 @@ const getFinancialQuery = `query FinancialBudgetDetails($budget_id: Int!) {
                 }
             }
         }
-    }`;
+    }
+}`;
 
 export default getFinancialQuery;

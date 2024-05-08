@@ -78,6 +78,7 @@ import getUserProfiles from './userProfiles/getUserProfiles.ts';
 import enforcedPaymentOverview from './enforcedPayments/enforcedPaymentOverview.ts';
 import enforcedPaymentInsert from './enforcedPayments/enforcedPaymentInsert.ts';
 import returnEnforcedPayment from './enforcedPayments/returnEnforcedPayment.ts';
+import getBudgetRequestDetails from './budgetRequestDetails/getBudgetRequestDetails.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -175,4 +176,5 @@ export const GraphQL = {
   enforcedPaymentOverview: enforcedPaymentOverview,
   enforcedPaymentInsert: enforcedPaymentInsert,
   returnEnforcedPayment: returnEnforcedPayment,
+  getBudgetRequestDetails: getBudgetRequestDetails,
 };

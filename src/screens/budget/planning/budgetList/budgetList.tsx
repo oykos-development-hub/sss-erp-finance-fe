@@ -16,6 +16,7 @@ import {optionsNumberSchema} from '../../../../utils/formSchemas';
 import {getYearOptions} from '../../../../utils/getYearOptions';
 import {budgetListTableHeads, budgetTypeFilterOptions} from './constants';
 import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
+import {useRoleCheck} from '../../../../utils/useRoleCheck.ts';
 
 /*
  * This is a component used to show a list of budgets for both SSS official and managers of OUs.
@@ -42,7 +43,7 @@ const BudgetList = () => {
 
   const {year, budget_type, status} = watch();
 
-  const {budgets, refetch} = useGetBudgets({
+  const {budgets, total, refetch} = useGetBudgets({
     page,
     size: PAGE_SIZE,
     status: status ? status.id : null,
@@ -117,7 +118,7 @@ const BudgetList = () => {
   };
 
   const onRowClick = (row: BudgetOverviewItem) => {
-    if (role_id === UserRole.ADMIN) {
+    if (useRoleCheck(role_id, [UserRole.ADMIN])) {
       navigate(`/finance/budget/planning/${row.id}`);
       breadcrumbs.add({
         name: 'Detalji',
@@ -183,7 +184,7 @@ const BudgetList = () => {
             />
           </Filters>
           <Controls>
-            {role_id === UserRole.ADMIN && (
+            {useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL]) && (
               <Button
                 content="Novi budžet"
                 variant="secondary"
@@ -195,7 +196,7 @@ const BudgetList = () => {
         </Header>
         <Table
           tableHeads={budgetListTableHeads}
-          data={budgets.items}
+          data={budgets}
           style={{marginBottom: 22}}
           tableActions={[
             {
@@ -207,7 +208,7 @@ const BudgetList = () => {
             {
               name: 'Izmijeni',
               onClick: row => {
-                if (role_id === UserRole.ADMIN) {
+                if (useRoleCheck(role_id, [UserRole.ADMIN])) {
                   navigate(`/finance/budget/planning/budget-create-${row.year}/${row.id}`);
                 } else {
                   navigate(`/finance/budget/planning/${row.id}/summary`);
@@ -215,9 +216,9 @@ const BudgetList = () => {
               },
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
               shouldRender: row => {
-                if (role_id === UserRole.ADMIN) {
+                if (useRoleCheck(role_id, [UserRole.ADMIN])) {
                   return row.status.id === BudgetStatusTypeEnum.Created;
-                } else if (role_id === UserRole.MANAGER_OJ) {
+                } else if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
                   return row.status.id !== BudgetSubmissionStatusEnum.Completed;
                 } else {
                   //* Do we need a separate condition for the finance official or will he have the same rights as the admin?
@@ -248,7 +249,7 @@ const BudgetList = () => {
           subTitle={'Ovaj budžet će biti poslat organizacionim jedinicama na pregled i popunjavanje.'}
         />
         <Pagination
-          pageCount={budgets.total ? Math.ceil(budgets.total / PAGE_SIZE) : 0}
+          pageCount={total ? Math.ceil(total / PAGE_SIZE) : 0}
           onChange={onPageChange}
           variant="filled"
           itemsPerPage={PAGE_SIZE}

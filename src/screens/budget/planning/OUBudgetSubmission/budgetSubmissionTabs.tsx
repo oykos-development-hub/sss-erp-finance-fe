@@ -38,17 +38,17 @@ const BudgetSubmissionTabs = () => {
     breadcrumbs.remove();
     if (routeName === 'summary') {
       breadcrumbs.add({
-        name: 'Summary',
-        to: '/finance/budget/planning/summary',
+        name: 'Pregled',
+        to: `/finance/budget/planning/${id}/summary`,
       });
     } else if (routeName === 'financial') {
       breadcrumbs.add({
-        name: 'Financial',
+        name: 'Finansijski',
         to: `/finance/budget/planning/${id}/financial`,
       });
     } else {
       breadcrumbs.add({
-        name: 'Non-Financial',
+        name: 'Nefinansijski',
         to: `/finance/budget/planning/${id}/non-financial`,
       });
     }
@@ -64,10 +64,9 @@ const BudgetSubmissionTabs = () => {
     const path = pathname.split('/');
     const id = path[path.length - 2];
 
-    if (pathname === `/finance/budget/planning/${id}/summary`)
-      return <BudgetSummary id={id} budgetDetails={undefined} />;
-    if (pathname === `/finance/budget/${id}/financial`) return <BudgetFinancial />;
-    if (pathname === `/finance/budget/${id}/non-financial`) return <BudgetNonFinancial />;
+    if (pathname === `/finance/budget/planning/${id}/summary`) return <BudgetSummary id={parseInt(id)} />;
+    if (pathname === `/finance/budget/planning/${id}/financial`) return <BudgetFinancial />;
+    if (pathname === `/finance/budget/planning/${id}/non-financial`) return <BudgetNonFinancial />;
 
     return <NotFound404 />;
   }, [pathname]);

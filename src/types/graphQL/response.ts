@@ -12,6 +12,7 @@ import {FlatRateOverviewItem} from './flatRate.ts';
 import {ObligationsItem, PaymentOrderItem} from './receivablesTypes.ts';
 import {Salary} from './salaries.ts';
 import {EnforcedPaymentItem} from './enforcedPaymentTypes.ts';
+import {BudgetRequestItem} from './budgetRequestDetails.ts';
 
 export type PageParams = {
   page?: number;
@@ -237,5 +238,11 @@ export type EnforcedPaymentResponse = {
   };
   return: {
     returnEnforcedPayment: SimpleResponse;
+  };
+};
+
+export type BudgetRequestDetails = {
+  get: {
+    budgetRequests_Details: DetailsResponse<BudgetRequestItem>;
   };
 };
