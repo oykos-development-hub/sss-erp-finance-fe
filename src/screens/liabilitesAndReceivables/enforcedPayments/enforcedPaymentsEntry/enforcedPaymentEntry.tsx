@@ -42,7 +42,7 @@ const EnforcedPaymentEntry = () => {
   const [totalForPayment, setTotalForPayment] = useState<number>();
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const {organization_unit_id, supplier_id, amount, amount_for_agent, amount_for_lawyer} = watch();
+  const {organization_unit_id, supplier_id, amount_for_agent, amount_for_lawyer} = watch();
 
   const {counts} = useGetCountOverview({level: 3});
   const {suppliers} = useGetSuppliers({});
@@ -134,7 +134,7 @@ const EnforcedPaymentEntry = () => {
     const payload = {
       organization_unit_id: organization_unit_id?.id,
       supplier_id: supplier_id?.id,
-      amount: selectedRows.length > 1 ? Number(amountValue) : amount,
+      amount: Number(amountValue),
       id_of_statement: data?.id_of_statement,
       date_of_payment: parseDateForBackend(data?.date_of_payment),
       description: data?.description,
@@ -210,7 +210,7 @@ const EnforcedPaymentEntry = () => {
             id: Math.random(),
             invoice_id: article.id,
             title: article.invoice_number,
-            total_price: article.net_price,
+            total_price: article.net_price + article.vat_price,
             account: null,
             status: article.status,
             type: article.type,
@@ -336,8 +336,8 @@ const EnforcedPaymentEntry = () => {
                         <Input
                           {...register('amount')}
                           label="Iznos za plaćanje:"
-                          value={amountValue ? roundCurrency(amountValue) : ''}
                           error={errors.amount?.message}
+                          value={amountValue ? roundCurrency(amountValue) : ''}
                           style={{width: '250px'}}
                           disabled
                         />

@@ -1,5 +1,4 @@
 export const roundCurrency = (value?: number) => {
-  console.log(typeof value, value, '- value');
   if (value === undefined) return '';
   // safeguard because of the way the function is used in the code, it sometimes might receive a string
   if (typeof value !== 'number') return '';

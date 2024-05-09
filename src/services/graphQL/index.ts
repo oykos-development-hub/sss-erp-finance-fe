@@ -79,6 +79,11 @@ import enforcedPaymentOverview from './enforcedPayments/enforcedPaymentOverview.
 import enforcedPaymentInsert from './enforcedPayments/enforcedPaymentInsert.ts';
 import returnEnforcedPayment from './enforcedPayments/returnEnforcedPayment.ts';
 import getBudgetRequestDetails from './budgetRequestDetails/getBudgetRequestDetails.ts';
+import getObligationsForAccounting from './accounting/getObligationsForAccounting.ts';
+import buildAccountingOrderForObligations from './accounting/buildAccountingOrderForObligations.ts';
+import accountingEntryInsert from './accounting/accountingEntryInsert.ts';
+import accountingEntryOverview from './accounting/accountingEntryOverview.ts';
+import deleteAccountingEntry from './accounting/deleteAccountingEntry.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -177,4 +182,9 @@ export const GraphQL = {
   enforcedPaymentInsert: enforcedPaymentInsert,
   returnEnforcedPayment: returnEnforcedPayment,
   getBudgetRequestDetails: getBudgetRequestDetails,
+  getObligationsForAccounting: getObligationsForAccounting,
+  buildAccountingOrderForObligations: buildAccountingOrderForObligations,
+  accountingEntryInsert: accountingEntryInsert,
+  accountingEntryOverview: accountingEntryOverview,
+  deleteAccountingEntry: deleteAccountingEntry,
 };

@@ -108,6 +108,6 @@ export const enforcedPaymentSchema = yup.object().shape({
 export const TypesTitles = [
   {id: 'decisions', title: 'Rješenje'},
   {id: 'contracts', title: 'Ugovor'},
-  {id: 'invoice', title: 'Račun'},
+  {id: 'invoices', title: 'Račun'},
   {id: 'salaries', title: 'Zarade'},
 ];

@@ -1,4 +1,7 @@
-import {TableHead} from 'client-library';
+import {TableHead, Typography} from 'client-library';
+import {parseDate} from '../../utils/dateUtils';
+import {TypesForReceivables} from '../liabilitesAndReceivables/receivables/constants';
+import {roundCurrency} from '../../utils/roundCurrency';
 
 export enum Tabs {
   CurrentAccounting = 1,
@@ -7,7 +10,7 @@ export enum Tabs {
 
 export const stockTabs = [
   {id: Tabs.CurrentAccounting, title: 'Knjiženje', routeName: 'accounting'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Pregled knjiženja', routeName: 'accounting-overview'},
+  {id: Tabs.CurrentAccountingOverview, title: 'Glavna knjiga', routeName: 'accounting-overview'},
 ];
 
 export const getCurrentTab = (pathname: string) => {
@@ -23,78 +26,66 @@ export const getRouteName = (tabName: string) => {
 
 export const tableHeads: TableHead[] = [
   {
-    title: 'Konto',
-    accessor: '',
-    type: 'text',
-  },
-  {
     title: 'Subjekt',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'ID',
-    accessor: '',
-    type: 'text',
+    accessor: 'supplier',
+    type: 'custom',
+    renderContents: supplier => <Typography content={supplier.title} variant="bodySmall" />,
   },
   {
     title: 'Datum',
-    accessor: '',
-    type: 'text',
+    accessor: 'date',
+    type: 'custom',
+    renderContents: (date: string) => <Typography content={parseDate(date)} variant="bodySmall" />,
   },
   {
     title: 'Vrsta obaveze',
-    accessor: '',
-    type: 'text',
+    accessor: 'type',
+    type: 'custom',
+    renderContents: (_, row) => {
+      const typeValue = TypesForReceivables.find(option => option.id === row.type);
+      return <Typography content={typeValue ? typeValue?.title : ''} />;
+    },
   },
   {
     title: 'Broj predmeta',
-    accessor: '',
+    accessor: 'title',
     type: 'text',
   },
   {
     title: 'Za plaćanje',
-    accessor: '',
-    type: 'text',
+    accessor: 'price',
+    type: 'custom',
+    renderContents: price => <Typography content={roundCurrency(price)} variant="bodySmall" />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
 export const tableHeadsAccountingOverview: TableHead[] = [
   {
-    title: 'ID',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Org. jedinica',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Datum kreiranja',
-    accessor: '',
-    type: 'text',
-  },
-  {
     title: 'Datum knjiženja',
-    accessor: '',
-    type: 'text',
+    accessor: 'date_of_booking',
+    type: 'custom',
+    renderContents: (date_of_booking: string) => (
+      <Typography content={parseDate(date_of_booking)} variant="bodySmall" />
+    ),
   },
   {
     title: 'Duguje',
-    accessor: '',
-    type: 'text',
+    accessor: 'debit_amount',
+    type: 'custom',
+    renderContents: debit_amount => <Typography content={roundCurrency(debit_amount)} variant="bodySmall" />,
   },
   {
     title: 'Potražuje',
-    accessor: '',
-    type: 'text',
+    accessor: 'credit_amount',
+    type: 'custom',
+    renderContents: credit_amount => <Typography content={roundCurrency(credit_amount)} variant="bodySmall" />,
   },
   {
     title: 'Saldo',
     accessor: '',
-    type: 'text',
+    type: 'custom',
+    renderContents: (_, row) => <Typography content={row.debit_amount - row.credit_amount} variant="bodySmall" />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

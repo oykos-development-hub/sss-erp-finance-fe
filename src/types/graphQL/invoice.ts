@@ -88,6 +88,7 @@ export interface InvoiceItem {
   supplier_title: string;
   net_price: number;
   issuer: string;
+  vat_price: number;
   supplier: {
     id: number;
     title: string;
