@@ -259,7 +259,7 @@ export type AccountingResponse = {
     accountingEntry_Insert: GetResponse<AccountingOrderItem>;
   };
   getAccountingEntry: {
-    accountingEntry_Overview: GetResponse<ObligationsItemForAccounting>;
+    accountingEntry_Overview: GetResponse<AccountingOrderItem>;
   };
   delete: {
     accountingEntry_Delete: SimpleResponse;

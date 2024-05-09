@@ -1,17 +1,17 @@
 import {useEffect, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
-import {ObligationsItemForAccounting} from '../../../types/graphQL/accountingTypes';
 import {AccountingResponse} from '../../../types/graphQL/response';
 import {GraphQL} from '../index.ts';
+import {AccountingOrderItem} from '../../../types/graphQL/accountingTypes.ts';
 
 const useAccountingEntryOverview = (
   organization_unit_id: number,
-  type: string | null,
+  type: string,
   search: string,
   page: number,
   size: number,
 ) => {
-  const [data, setData] = useState<ObligationsItemForAccounting[]>([]);
+  const [data, setData] = useState<AccountingOrderItem[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
