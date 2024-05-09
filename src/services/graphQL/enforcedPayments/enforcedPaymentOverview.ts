@@ -34,6 +34,7 @@ const enforcedPaymentOverview = `query enforcedPayment_Overview($id: Int,$status
                 type
             }
 			return_date
+            return_amount
             items {
                  id
                  invoice_id

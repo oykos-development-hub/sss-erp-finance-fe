@@ -32,6 +32,18 @@ interface ItemType {
 
 const tableHeads: TableHead[] = [
   {
+    title: 'Naziv',
+    accessor: 'title',
+    type: 'custom',
+    renderContents: (title, row) => (
+      <Typography
+        content={title}
+        variant="bodySmall"
+        style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
+      />
+    ),
+  },
+  {
     title: 'Konto',
     accessor: 'account',
     type: 'custom',
@@ -83,11 +95,11 @@ const tableHeads: TableHead[] = [
   },
   {
     title: 'Broj predmeta',
-    accessor: 'title',
+    accessor: '',
     type: 'custom',
-    renderContents: (title, row) => (
+    renderContents: (_, row) => (
       <Typography
-        content={title}
+        content={row.invoice ? row.invoice.title : row.salary ? row.salary.title : ''}
         variant="bodySmall"
         style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
       />

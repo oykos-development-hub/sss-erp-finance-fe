@@ -46,7 +46,7 @@ const EnforcedPaymentsDetails = () => {
   const [totalForPayment, setTotalForPayment] = useState<number>();
   const enforcedPaymentID = location.pathname.split('/').at(-1);
 
-  const {organization_unit_id, supplier_id, return_date} = watch();
+  const {organization_unit_id, supplier_id, return_date, return_amount} = watch();
 
   const {suppliers} = useGetSuppliers({});
   const {organizationUnits} = useGetOrganizationUnits();
@@ -133,6 +133,7 @@ const EnforcedPaymentsDetails = () => {
           id: enforcedPaymentID,
           return_file_id: files[0].id,
           return_date: return_date && parseDateForBackend(return_date),
+          return_amount: return_amount,
         };
 
         returnEnforcedPayment(
@@ -180,6 +181,7 @@ const EnforcedPaymentsDetails = () => {
       date_of_sap: enforcedPaymentData?.date_of_sap as Date,
       date_of_payment: enforcedPaymentData?.date_of_payment as Date,
       return_date: enforcedPaymentData?.return_date as Date,
+      return_amount: enforcedPaymentData?.return_amount,
     });
   }, [enforcedPaymentData]);
 
@@ -295,6 +297,12 @@ const EnforcedPaymentsDetails = () => {
                     disabled={enforcedPaymentData?.status === 'Povraćaj'}
                   />
                 )}
+              />
+              <Input
+                {...register('return_amount')}
+                label="IZNOS:"
+                disabled={enforcedPaymentData?.status === 'Povraćaj'}
+                style={{width: '250px'}}
               />
             </Row>
 

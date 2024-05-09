@@ -77,6 +77,7 @@ export const enforcedPaymentSchema = yup.object().shape({
   return_date: yup.date().nullable(),
   date_of_sap: yup.date().nullable().required(requiredError),
   description: yup.string().nullable(),
+  return_amount: yup.number().nullable(),
   amount: yup
     .number()
     .transform(value => (Number.isNaN(value) ? null : value))

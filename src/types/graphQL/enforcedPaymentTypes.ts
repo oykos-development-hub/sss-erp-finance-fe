@@ -50,6 +50,7 @@ export interface EnforcedPaymentItem {
     type: string;
   };
   return_date: string | Date;
+  return_amount: number;
   items: Items[];
   created_at: string;
   updated_at: string;
