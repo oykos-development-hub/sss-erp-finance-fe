@@ -51,6 +51,7 @@ export interface DecisionItem {
   source_of_funding: string;
   municipality: DropdownData<number>;
   type_of_contract: DropdownData<number>;
+  status: string;
 }
 
 export interface ContractItem {
@@ -75,6 +76,7 @@ export interface ContractItem {
   source_of_funding: string;
   municipality: DropdownData<number>;
   type_of_decision: DropdownData<number>;
+  status: string;
 }
 
 export interface InvoiceItem {

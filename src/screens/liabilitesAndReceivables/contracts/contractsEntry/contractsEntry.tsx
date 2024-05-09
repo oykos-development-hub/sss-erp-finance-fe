@@ -105,6 +105,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 value={value}
                 onChange={onChange}
                 error={errors?.additionalExpenses?.[index]?.account?.message}
+                isDisabled={contract?.status === 'Na nalogu'}
               />
             </div>
           )}
@@ -144,6 +145,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                     value={value}
                     onChange={onChange}
                     error={errors?.additionalExpenses?.[index]?.bank_account?.message}
+                    isDisabled={contract?.status === 'Na nalogu'}
                   />
                 </div>
               )}
@@ -283,6 +285,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 placeholder="Odaberite ime subjekta"
                 options={suppliers}
                 error={errors.supplier_id?.message}
+                isDisabled={contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -290,6 +293,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             {...register('invoice_number')}
             label="DJELOVODNI BROJ:"
             placeholder={'Unesite djelovodni broj'}
+            disabled={contract?.status === 'Na nalogu'}
             error={errors.invoice_number?.message}
           />
 
@@ -298,6 +302,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             label="SUBJEKT KOJI JE IZDAO RJEŠENJE:"
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
+            disabled={contract?.status === 'Na nalogu'}
           />
         </Row>
 
@@ -314,6 +319,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="AKTIVNOST:"
                 placeholder={'Odaberite aktivnost'}
                 options={[]}
+                isDisabled={contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -328,6 +334,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 placeholder={'Odaberite trajanje ugovora'}
                 onChange={onChange}
                 error={errors.date_of_start?.message}
+                disabled={contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -341,6 +348,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="DATUM UGOVORA:"
                 onChange={onChange}
                 error={errors.date_of_invoice?.message}
+                disabled={contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -356,6 +364,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="DATUM VALUTE:"
                 onChange={onChange}
                 error={errors.date_of_payment?.message}
+                disabled={contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -368,6 +377,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA RAČUNOVODSTVA:"
                 onChange={onChange}
+                disabled={contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -381,12 +391,19 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA RJEŠENJA SSS:"
                 onChange={onChange}
+                disabled={contract?.status === 'Na nalogu'}
               />
             )}
           />
         </Row>
         <Row>
-          <Input {...register('description')} label="OPIS:" textarea placeholder="Unesite opis" />
+          <Input
+            {...register('description')}
+            label="OPIS:"
+            textarea
+            placeholder="Unesite opis"
+            disabled={contract?.status === 'Na nalogu'}
+          />
         </Row>
         {!!supplier_id && (
           <>
@@ -405,6 +422,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                       options={municipalities}
                       isSearchable
                       error={errors.municipality_id?.message}
+                      isDisabled={contract?.status === 'Na nalogu'}
                     />
                   )}
                 />
@@ -421,6 +439,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                       placeholder={'Odaberite šifarnik'}
                       options={optionsForTaxAuthorityCodebook}
                       error={errors.tax_authority_codebook_id?.message}
+                      isDisabled={contract?.status === 'Na nalogu'}
                     />
                   )}
                 />
@@ -435,7 +454,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={!!net_price}
+                  disabled={!!net_price || contract?.status === 'Na nalogu'}
                   error={errors.gross_price?.message}
                 />
                 <Input
@@ -445,7 +464,9 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={!!previous_income_net || selectedSupplierEntity !== 'employee'}
+                  disabled={
+                    !!previous_income_net || selectedSupplierEntity !== 'employee' || contract?.status === 'Na nalogu'
+                  }
                   error={errors.previous_income_gross?.message}
                 />
               </Row>
@@ -457,7 +478,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={!!gross_price}
+                  disabled={!!gross_price || contract?.status === 'Na nalogu'}
                   error={errors.net_price?.message}
                 />
                 <Input
@@ -467,11 +488,18 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={!!previous_income_gross || selectedSupplierEntity !== 'employee'}
+                  disabled={
+                    !!previous_income_gross || selectedSupplierEntity !== 'employee' || contract?.status === 'Na nalogu'
+                  }
                   error={errors.previous_income_net?.message}
                 />
               </Row>
-              <Button content="Obračunaj" variant={'primary'} onClick={() => onCount()} />
+              <Button
+                content="Obračunaj"
+                variant={'primary'}
+                onClick={() => onCount()}
+                disabled={contract?.status === 'Na nalogu'}
+              />
             </HalfWidthContainer>
           </>
         )}
@@ -484,7 +512,12 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             style={{width: 130}}
             onClick={() => navigate('/finance/liabilities-receivables/liabilities/contracts')}
           />
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} disabled={!fields.length} />
+          <Button
+            content="Sačuvaj"
+            variant="primary"
+            onClick={handleSubmit(onSubmit)}
+            disabled={!fields.length || contract?.status === 'Na nalogu'}
+          />
         </Footer>
       </>
     </ContractsFormContainer>

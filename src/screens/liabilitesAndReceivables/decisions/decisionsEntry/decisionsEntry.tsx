@@ -112,6 +112,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 value={value}
                 onChange={onChange}
                 error={errors?.additionalExpenses?.[index]?.account?.message}
+                isDisabled={decision?.status === 'Na nalogu'}
               />
             </div>
           )}
@@ -151,6 +152,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                     value={value}
                     onChange={onChange}
                     error={errors?.additionalExpenses?.[index]?.bank_account?.message}
+                    isDisabled={decision?.status === 'Na nalogu'}
                   />
                 </div>
               )}
@@ -284,6 +286,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 placeholder="Odaberite ime subjekta"
                 options={suppliersDropdownOptions}
                 error={errors?.supplier_id?.message}
+                isDisabled={decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -292,12 +295,14 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             label="BROJ PREDMETA:"
             placeholder="Unesite broj predmeta"
             error={errors.invoice_number?.message}
+            disabled={decision?.status === 'Na nalogu'}
           />
           <Input
             {...register('issuer')}
             label="SUBJEKT KOJI JE IZDAO RJEŠENJE:"
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
+            disabled={decision?.status === 'Na nalogu'}
           />
         </Row>
         <Row>
@@ -313,6 +318,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 label="AKTIVNOST:"
                 placeholder={'Odaberite aktivnost'}
                 options={[]}
+                isDisabled={decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -328,6 +334,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 placeholder="Odaberite izvor finansiranja"
                 options={SourceOfFunding}
                 error={errors.source_of_funding?.message}
+                isDisabled={decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -341,6 +348,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 label="DATUM RJEŠENJA:"
                 onChange={onChange}
                 error={errors.date_of_invoice?.message}
+                disabled={decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -356,6 +364,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 label="DATUM VALUTE:"
                 onChange={onChange}
                 error={errors.date_of_payment?.message}
+                disabled={decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -368,6 +377,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA RJEŠENJA:"
                 onChange={onChange}
+                disabled={decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -380,12 +390,19 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA RJEŠENJA SSS:"
                 onChange={onChange}
+                disabled={decision?.status === 'Na nalogu'}
               />
             )}
           />
         </Row>
         <Row>
-          <Input {...register('description')} label="OPIS:" textarea placeholder="Unesite opis" />
+          <Input
+            {...register('description')}
+            label="OPIS:"
+            textarea
+            placeholder="Unesite opis"
+            disabled={decision?.status === 'Na nalogu'}
+          />
         </Row>
         {!!supplier_id && (
           <>
@@ -404,6 +421,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                       options={municipalities}
                       isSearchable
                       error={errors.municipality_id?.message}
+                      isDisabled={decision?.status === 'Na nalogu'}
                     />
                   )}
                 />
@@ -419,6 +437,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                       placeholder="Odaberite šifarnik"
                       options={optionsForTaxAuthorityCodebook}
                       error={errors.tax_authority_codebook_id?.message}
+                      isDisabled={decision?.status === 'Na nalogu'}
                     />
                   )}
                 />
@@ -433,7 +452,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   type="number"
                   inputMode="decimal"
                   leftContent={<div>€</div>}
-                  disabled={net_price as any}
+                  disabled={!!net_price || decision?.status === 'Na nalogu'}
                   error={errors.gross_price?.message}
                 />
                 <Input
@@ -443,7 +462,9 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={!!previous_income_net || selectedSupplierEntity !== 'employee'}
+                  disabled={
+                    !!previous_income_net || selectedSupplierEntity !== 'employee' || decision?.status === 'Na nalogu'
+                  }
                   error={errors.previous_income_gross?.message}
                 />
               </Row>
@@ -455,7 +476,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={gross_price as any}
+                  disabled={!!gross_price || decision?.status === 'Na nalogu'}
                   error={errors.net_price?.message}
                 />
                 <Input
@@ -465,11 +486,18 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   type={'number'}
                   inputMode={'decimal'}
                   leftContent={<div>€</div>}
-                  disabled={!!previous_income_gross || selectedSupplierEntity !== 'employee'}
+                  disabled={
+                    !!previous_income_gross || selectedSupplierEntity !== 'employee' || decision?.status === 'Na nalogu'
+                  }
                   error={errors.previous_income_net?.message}
                 />
               </Row>
-              <Button content="Obračunaj" variant={'primary'} onClick={() => onCount()} />
+              <Button
+                content="Obračunaj"
+                variant={'primary'}
+                onClick={() => onCount()}
+                disabled={decision?.status === 'Na nalogu'}
+              />
             </HalfWidthContainer>
           </>
         )}
@@ -483,7 +511,12 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             style={{width: 130}}
             onClick={() => navigate('/finance/liabilities-receivables/liabilities/decisions')}
           />
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} disabled={!fields.length} />
+          <Button
+            content="Sačuvaj"
+            variant="primary"
+            onClick={handleSubmit(onSubmit)}
+            disabled={!fields.length || decision?.status === 'Na nalogu'}
+          />
         </Footer>
       </>
     </DecisionsFormContainer>

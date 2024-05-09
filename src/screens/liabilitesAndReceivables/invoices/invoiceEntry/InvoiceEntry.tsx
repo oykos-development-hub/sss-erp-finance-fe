@@ -115,6 +115,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 {...register(`articles.${index}.title`)}
                 style={{minWidth: '100px'}}
                 error={errors.articles?.[index]?.title?.message}
+                disabled={invoice?.status == 'Na nalogu'}
               />
             );
           } else {
@@ -133,7 +134,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               style={{minWidth: '100px'}}
               leftContent={<>Є</>}
               error={errors.articles?.[index]?.net_price?.message}
-              disabled={!isManual}
+              disabled={!isManual || invoice?.status == 'Na nalogu'}
             />
           );
         },
@@ -149,7 +150,13 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               control={control}
               render={({field: {onChange, name, value}}) => (
                 <div style={{minWidth: '100px'}}>
-                  <Dropdown options={pdvOptions} name={name} value={value as any} onChange={onChange} />
+                  <Dropdown
+                    options={pdvOptions}
+                    name={name}
+                    value={value as any}
+                    onChange={onChange}
+                    isDisabled={invoice?.status == 'Na nalogu'}
+                  />
                 </div>
               )}
             />
@@ -177,7 +184,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               {...register(`articles.${index}.amount`)}
               style={{minWidth: '100px'}}
               error={errors.articles?.[index]?.amount?.message}
-              disabled={!isManual}
+              disabled={!isManual || invoice?.status == 'Na nalogu'}
             />
           );
         },
@@ -209,6 +216,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                   value={value as any}
                   onChange={onChange}
                   error={errors.articles?.[index]?.account?.message}
+                  isDisabled={invoice?.status == 'Na nalogu'}
                 />
               </div>
             )}
@@ -221,7 +229,13 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         type: 'custom',
         renderContents: (description: string, _, index) => {
           if (isManual) {
-            return <Input {...register(`articles.${index}.description`)} style={{minWidth: '200px'}} />;
+            return (
+              <Input
+                {...register(`articles.${index}.description`)}
+                style={{minWidth: '200px'}}
+                disabled={invoice?.status == 'Na nalogu'}
+              />
+            );
           } else {
             return <Input value={description} disabled textarea />;
           }
@@ -435,7 +449,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         invoice_type:
           type?.id === false
             ? {id: 'manual', title: 'Ručni unos'}
-            : invoice.order_id !== 0
+            : invoice.order_id !== 0 && type?.id
             ? {id: 'accounting', title: 'Materijalno knjigovodstvo'}
             : {id: 'manual', title: 'Ručni unos'},
         supplier_id: {id: invoice.supplier.id, title: invoice.supplier.title},
@@ -518,7 +532,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="DOBAVLJAČ:"
                 placeholder="Odaberite ime dobavljača"
                 options={suppliers}
-                isDisabled={type === undefined}
+                isDisabled={type === undefined || invoice?.status === 'Na nalogu'}
                 error={errors?.supplier_id?.message}
                 isRequired
               />
@@ -535,7 +549,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="NARUDŽBENICA:"
                 placeholder="Odaberite narudžbenicu"
                 options={dropdownOrderOptions}
-                isDisabled={isManual || isManual === undefined}
+                isDisabled={isManual || isManual === undefined || invoice?.status === 'Na nalogu'}
                 error={errors?.order_id?.message}
               />
             )}
@@ -547,14 +561,19 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             placeholder="Unesite broj računa"
             error={errors?.invoice_number?.message}
             isRequired
-            disabled={type?.id === true || Boolean(selectedOrderOption)}
+            disabled={type?.id === true || Boolean(selectedOrderOption) || invoice?.status === 'Na nalogu'}
           />
 
           <Input
             {...register('invoice_number')}
             label="BROJ RAČUNA:"
             placeholder="Unesite broj računa"
-            disabled={(type?.id === true && !isManual) || (type?.id === false && invoice?.order_id !== 0)}
+            disabled={
+              (!invoice && type?.id === false) ||
+              (!invoice && type?.id === true && !isManual) ||
+              (invoice && !invoice?.pro_forma_invoice_number) ||
+              invoice?.status === 'Na nalogu'
+            }
             error={errors?.invoice_number?.message}
             isRequired
           />
@@ -571,7 +590,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PREDRAČUNA:"
                 onChange={onChange}
-                disabled={type?.id === true || (Boolean(selectedOrderOption) && pro_forma_invoice_date)}
+                disabled={
+                  type?.id === true ||
+                  (Boolean(selectedOrderOption) && pro_forma_invoice_date) ||
+                  invoice?.status === 'Na nalogu'
+                }
                 error={errors?.date_of_invoice?.message}
                 isRequired
               />
@@ -587,7 +610,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM RAČUNA:"
                 onChange={onChange}
-                disabled={(type?.id === true && !isManual) || (type?.id === false && invoice?.order_id !== 0)}
+                disabled={
+                  (!invoice && type?.id === false) ||
+                  (!invoice && type?.id === true && !isManual) ||
+                  (invoice && !invoice?.pro_forma_invoice_date) ||
+                  invoice?.status === 'Na nalogu'
+                }
                 error={errors?.date_of_invoice?.message}
                 isRequired
               />
@@ -602,7 +630,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA ROBE:"
                 onChange={onChange}
-                disabled={Boolean(selectedOrderOption) && receipt_date}
+                disabled={(Boolean(selectedOrderOption) && receipt_date) || invoice?.status === 'Na nalogu'}
               />
             )}
           />
@@ -617,6 +645,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 onChange={onChange}
                 error={errors?.sss_invoice_receipt_date?.message}
                 isRequired
+                disabled={invoice?.status === 'Na nalogu'}
               />
             )}
           />
@@ -626,6 +655,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             <FileUpload
               icon={null}
               files={uploadedFile}
+              disabled={invoice?.status === 'Na nalogu'}
               variant="secondary"
               onUpload={handleUpload}
               note={<Typography variant="bodySmall" content={type.id === false ? 'Predračun' : 'Račun'} />}
@@ -685,6 +715,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 }
                 error={errors?.bank_account?.message}
                 isRequired
+                isDisabled={invoice?.status === 'Na nalogu'}
               />
             )}
           />
@@ -699,12 +730,19 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 onChange={onChange}
                 error={errors?.date_of_payment?.message}
                 isRequired
+                disabled={invoice?.status === 'Na nalogu'}
               />
             )}
           />
         </Row>
         <Row>
-          <Input {...register('description')} label="OPIS:" textarea placeholder="Unesite opis" />
+          <Input
+            {...register('description')}
+            label="OPIS:"
+            textarea
+            placeholder="Unesite opis"
+            disabled={invoice?.status === 'Na nalogu'}
+          />
         </Row>
 
         {isManual && (
@@ -724,7 +762,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                       style={{marginLeft: 10}}
                     />
                   }
-                  disabled={passedToInventory === true}
+                  disabled={passedToInventory === true || invoice?.status === 'Na nalogu'}
                   theme={Theme}
                 />
               )}
@@ -749,7 +787,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                         style={{marginLeft: 10}}
                       />
                     }
-                    disabled={passedToAccounting === true}
+                    disabled={passedToAccounting === true || invoice?.status === 'Na nalogu'}
                     theme={Theme}
                   />
                 );
@@ -809,7 +847,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           style={{width: 130}}
           onClick={() => navigate('/finance/liabilities-receivables/liabilities/invoices')}
         />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} />
+        <Button
+          content="Sačuvaj"
+          variant="primary"
+          onClick={handleSubmit(onSubmit)}
+          disabled={invoice?.status === 'Na nalogu'}
+        />
       </Footer>
     </InvoiceEntryForm>
   );
