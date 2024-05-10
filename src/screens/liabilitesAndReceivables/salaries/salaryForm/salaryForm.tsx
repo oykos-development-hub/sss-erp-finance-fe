@@ -70,7 +70,18 @@ const salarySchema = yup.object().shape({
   month: optionsStringSchema.required(requiredError).default(null),
   date_of_calculation: yup.string().required(requiredError),
   description: yup.string().required(requiredError),
-  salary_additional_expenses: yup.array().of(salaryAdditionalExpensesSchema),
+  salary_additional_expenses: yup
+    .array()
+    .of(salaryAdditionalExpensesSchema)
+    .test('unique-title-for-contributions', 'Naziv doprinosa mora biti jedinstven', function (expenses) {
+      // Collect all titles where type is 'contributions'
+      const contributions = expenses?.filter(expense => expense.type === 'contributions').map(expense => expense.title);
+      console.log(contributions, 'contributions');
+      // Use a Set to find unique titles
+      const uniqueContributions = new Set(contributions);
+      return contributions?.length === uniqueContributions.size;
+    }),
+  // salary_additional_expenses: yup.array().of(salaryAdditionalExpensesSchema),
 });
 
 const initialValues = {
@@ -127,6 +138,11 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
   const [importSuspensionsErrors, setImportSuspensionsErrors] = useState<string[]>([]);
   const [importSalariesErrors, setImportSalariesErrors] = useState<string[]>([]);
   const [totalEmployees, setTotalEmployees] = useState(0);
+
+  const additionalSalaryExpenses = watch('salary_additional_expenses');
+  const contributionsExpenses = additionalSalaryExpenses
+    ?.filter(expense => expense.type === 'contributions')
+    .map(expense => expense.title);
 
   const suppliersDropdownOptions = useMemo(() => {
     return getSuppliersDropdown(suppliers);
@@ -362,7 +378,8 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                   onChange(e?.id ?? '');
                 }}
                 placeholder={'Odaberite naziv'}
-                options={contributionsTitleOptions}
+                //Filter options that were already selected
+                options={contributionsTitleOptions.filter(option => !contributionsExpenses?.includes(option.id))}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.title?.message}
                 isDisabled={salary?.registred}
@@ -663,6 +680,13 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           data={contributionsFields}
           tableActions={tableActions}
         />
+        {errors?.salary_additional_expenses?.root?.message && (
+          <Typography
+            variant="bodySmall"
+            content={errors.salary_additional_expenses.root.message}
+            style={{color: Theme.palette?.error500, padding: 5}}
+          />
+        )}
         {renderTitleDivider('taxes')}
         <Table tableHeads={salariesAdditionalExpensesTableHeads} data={taxesFields} tableActions={tableActions} />
         {renderTitleDivider('subtaxes')}
