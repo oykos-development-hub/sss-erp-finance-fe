@@ -143,24 +143,29 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         title: 'Stopa PDV-a',
         accessor: 'vat_percentage',
         type: 'custom',
-        renderContents: (_item, _row, index) => {
-          return (
-            <Controller
-              name={`articles.${index}.vat_percentage`}
-              control={control}
-              render={({field: {onChange, name, value}}) => (
-                <div style={{minWidth: '100px'}}>
-                  <Dropdown
-                    options={pdvOptions}
-                    name={name}
-                    value={value as any}
-                    onChange={onChange}
-                    isDisabled={invoice?.status == 'Na nalogu'}
-                  />
-                </div>
-              )}
-            />
-          );
+        renderContents: (vat_percentage, _row, index) => {
+          console.log(vat_percentage);
+          if (isManual) {
+            return (
+              <Controller
+                name={`articles.${index}.vat_percentage`}
+                control={control}
+                render={({field: {onChange, name, value}}) => (
+                  <div style={{minWidth: '100px'}}>
+                    <Dropdown
+                      options={pdvOptions}
+                      name={name}
+                      value={value as any}
+                      onChange={onChange}
+                      isDisabled={invoice?.status == 'Na nalogu'}
+                    />
+                  </div>
+                )}
+              />
+            );
+          } else {
+            return <Input value={vat_percentage?.title} disabled leftContent={<>%</>} />;
+          }
         },
       },
       {
@@ -406,7 +411,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             vat_price: 0,
             description: article.description,
             account: null,
-            vat_percentage: null,
+            vat_percentage: {id: Number(article.vat_percentage), title: article.vat_percentage},
             amount: article.amount,
           });
         }

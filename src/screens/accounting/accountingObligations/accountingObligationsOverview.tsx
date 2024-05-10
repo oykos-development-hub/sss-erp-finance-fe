@@ -111,7 +111,7 @@ const AccountingObligationsOverview = () => {
 
       <ConfirmationModal
         open={!!showDeleteModalAccountingId}
-        subTitle="Ovaj račun će biti trajno izbrisan iz sistema."
+        subTitle="Ovaj nalog će biti trajno izbrisan iz sistema."
         onClose={() => handleCloseDeleteModal()}
         onConfirm={() => handleDelete()}
       />

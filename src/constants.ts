@@ -38,15 +38,6 @@ export enum ScreenTitlesEnum {
   'requests' = 'Zahtjevi',
 }
 
-export const decisionTabs: ExtendedTab[] = [
-  {id: 1, title: 'Pregled rešenja', routeName: '', disabled: false},
-  {id: 2, title: 'Unos rešenja', routeName: 'entry', disabled: false},
-];
-
-export const contractTabs: ExtendedTab[] = [
-  {id: 1, title: 'Pregled ugovora', routeName: '', disabled: false},
-  {id: 2, title: 'Unos ugovora', routeName: 'entry', disabled: false},
-];
 export const salariesTabs: ExtendedTab[] = [
   {id: 1, title: 'Pregled zarada', routeName: '', disabled: false},
   {id: 2, title: 'Unos zarada', routeName: 'entry', disabled: false},

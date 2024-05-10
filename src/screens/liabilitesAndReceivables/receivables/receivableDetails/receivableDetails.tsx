@@ -183,6 +183,7 @@ const ReceivableDetails = () => {
                   options={sourceOfFunding}
                   error={errors.supplier_id?.message}
                   isSearchable
+                  isDisabled={paymentData?.status === 'Plaćen'}
                 />
               )}
             />

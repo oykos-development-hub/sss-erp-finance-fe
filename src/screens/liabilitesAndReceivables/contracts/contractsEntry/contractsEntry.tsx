@@ -375,7 +375,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
               <Datepicker
                 name={name}
                 selected={value ? new Date(value) : ''}
-                label="DATUM PRIJEMA RAČUNOVODSTVA:"
+                label="DATUM PRIJEMA U RAČUNOVODSTVO:"
                 onChange={onChange}
                 disabled={contract?.status === 'Na nalogu'}
               />
@@ -389,7 +389,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
               <Datepicker
                 name={name}
                 selected={value ? new Date(value) : ''}
-                label="DATUM PRIJEMA RJEŠENJA SSS:"
+                label="DATUM PRIJEMA UGOVORA SSS:"
                 onChange={onChange}
                 disabled={contract?.status === 'Na nalogu'}
               />

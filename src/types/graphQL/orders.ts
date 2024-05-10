@@ -12,6 +12,7 @@ export interface OrderListArticleType {
   total_price: number;
   available?: number;
   net_price: number;
+  vat_percentage: string;
 }
 
 export interface OrderListItem {

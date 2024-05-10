@@ -1,15 +1,15 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {useEffect, useMemo, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
+import {Tabs, decisionTabs, getCurrentTab, getRouteName} from './constants';
+import DecisionsEntry from './decisionsEntry/decisionsEntry';
+import DecisionsOverview from './decisionsOverview/decisionsOverview';
 import {CustomDivider, StyledTabs, TitleTabsWrapper} from '../../accounting/styles';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import SectionBox from '../../../shared/sectionBox';
 import {MainTitle} from '../../../shared/pageElements';
-import {Tabs, contractTabs, getCurrentTab, getRouteName} from './constants';
-import ContractsEntry from './contractsEntry/contractsEntry';
-import ContractsOverview from './contractsOverview/contractsOverview';
 
-export const Contracts = () => {
+export const DecisionTabs = () => {
   const {
     navigation: {
       navigate,
@@ -31,20 +31,20 @@ export const Contracts = () => {
 
   const currentAccountingRoute = useMemo(() => {
     switch (currentAccountingPath) {
-      case 'add-contract':
-        return <ContractsEntry />;
+      case 'add-decision':
+        return <DecisionsEntry />;
       default:
-        return <ContractsOverview />;
+        return <DecisionsOverview />;
     }
   }, [currentAccountingPath]);
 
   const getTitle = () => {
     switch (activeTab) {
-      case Tabs.AddContract:
-        return 'UNOS UGOVORA';
+      case Tabs.AddDecision:
+        return 'UNOS RJEŠENJA';
 
       default:
-        return 'PREGLED UGOVORA';
+        return 'PREGLED RJEŠENJA';
     }
   };
   useEffect(() => {
@@ -56,7 +56,7 @@ export const Contracts = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle()} style={{marginBottom: 0}} />
-          <StyledTabs tabs={contractTabs} activeTab={activeTab} onChange={onTabChange} />
+          <StyledTabs tabs={decisionTabs} activeTab={activeTab} onChange={onTabChange} />
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
         {currentAccountingRoute}

@@ -4,6 +4,7 @@ import {requiredError} from '../../../constants.ts';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {optionsNumberSchema, optionsStringSchema} from '../../../utils/formSchemas.ts';
+import {roundCurrency} from '../../../utils/roundCurrency.ts';
 
 export const receivablesStatusOptions = [
   {id: '', title: 'Svi statusi'},
@@ -40,7 +41,7 @@ export const tableHeads: TableHead[] = [
     title: 'Iznos',
     accessor: 'amount',
     type: 'custom',
-    renderContents: amount => <Typography content={amount} />,
+    renderContents: amount => <Typography content={roundCurrency(amount)} />,
   },
   {
     title: 'SAP ID',

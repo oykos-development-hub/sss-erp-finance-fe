@@ -2,6 +2,7 @@ import {UserRole} from './constants.ts';
 import useAppContext from './context/useAppContext.ts';
 import {NotFound404} from './screens/404';
 import {CurrentAccountingTabs} from './screens/accounting/accountingObligations/currentAccountingTabs.tsx';
+import {CurrentAccountingPaymentOrderTabs} from './screens/accounting/accountingPaymentOrders/currentAccountingPaymentOrderTabs.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
 import BudgetTemplate from './screens/budget/budgetTemplate/budgetTemplate.tsx';
@@ -44,24 +45,23 @@ import FeeDetails from './screens/finesAndTaxes/taxes/feeDetails/feeDetails.tsx'
 import Taxes from './screens/finesAndTaxes/taxes/taxes.tsx';
 import {LandingPage} from './screens/landingPage/landingPage.tsx';
 import AdditionalExpensesOverview from './screens/liabilitesAndReceivables/additionalExpenses/additionalExpensesOverview.tsx';
-import Contracts from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
+import {Contracts} from './screens/liabilitesAndReceivables/contracts/contracts.tsx';
 import ContractsDetails from './screens/liabilitesAndReceivables/contracts/contractsDetails/contractsDetails.tsx';
-import Decisions from './screens/liabilitesAndReceivables/decisions/decisions.tsx';
+import {DecisionTabs} from './screens/liabilitesAndReceivables/decisions/decisionTabs.tsx';
 import DecisionsDetails from './screens/liabilitesAndReceivables/decisions/decisionsDetails/decisionsDetails.tsx';
+import EnforcedPaymentsDetails from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsDetails/enforcedPaymentsDetails.tsx';
+import EnforcedPaymentEntry from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsEntry/enforcedPaymentEntry.tsx';
+import EnforcedPaymentsOverview from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsOverview/enforcedPaymentsOverview.tsx';
 import InvoiceDetails from './screens/liabilitesAndReceivables/invoices/invoiceDetails/invoiceDetails.tsx';
 import Invoices from './screens/liabilitesAndReceivables/invoices/invoices.tsx';
+import {LiabilitiesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesLanding/liabilitiesLandingPage.tsx';
+import {LiabilitiesReceivablesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesReceivablesLandingPage.tsx';
 import ReceivableDetails from './screens/liabilitesAndReceivables/receivables/receivableDetails/receivableDetails.tsx';
 import ReceivableEntry from './screens/liabilitesAndReceivables/receivables/receivableEntry/receivableEntry.tsx';
 import ReceivablesOverview from './screens/liabilitesAndReceivables/receivables/receivablesOverview/receivablesOverview.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
-import {LiabilitiesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesLanding/liabilitiesLandingPage.tsx';
-import {LiabilitiesReceivablesLandingPage} from './screens/liabilitesAndReceivables/liabilitiesReceivablesLandingPage.tsx';
 import {useRoleCheck} from './utils/useRoleCheck.ts';
-import EnforcedPaymentsOverview from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsOverview/enforcedPaymentsOverview.tsx';
-import EnforcedPaymentEntry from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsEntry/enforcedPaymentEntry.tsx';
-import EnforcedPaymentsDetails from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsDetails/enforcedPaymentsDetails.tsx';
-import {CurrentAccountingPaymentOrderTabs} from './screens/accounting/accountingPaymentOrders/currentAccountingPaymentOrderTabs.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -92,9 +92,7 @@ export const Router = () => {
     if (pathname === '/finance/liabilities-receivables/liabilities') return <LiabilitiesLandingPage />;
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
     const invoiceEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices/\\d+$');
-    const decisionsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions(?:/add-decision)?$');
     const decisionsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions/\\d+$');
-    const contractsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts(?:/add-contract)?$');
     const contractsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts/\\d+$');
     const receiveRegex = new RegExp('^/finance/liabilities-receivables/receivables(?:/add-receivable)?$');
     const receiveEditRegex = new RegExp('^/finance/liabilities-receivables/receivables/\\d+$');
@@ -207,10 +205,12 @@ export const Router = () => {
     if (enforcedPaymentEditRegex.test(pathname)) return <EnforcedPaymentsDetails />;
 
     if (budgetPreviewDetails.test(pathname)) return <NonFinancePreview />;
-    if (decisionsRegex.test(pathname)) return <Decisions />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/decisions') return <DecisionTabs />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/add-decision') return <DecisionTabs />;
     if (decisionsEditRegex.test(pathname)) return <DecisionsDetails />;
 
-    if (contractsRegex.test(pathname)) return <Contracts />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/contracts') return <Contracts />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/add-contract') return <Contracts />;
     if (contractsEditRegex.test(pathname)) return <ContractsDetails />;
 
     if (salariesRegex.test(pathname)) return <Salaries />;

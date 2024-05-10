@@ -3,6 +3,27 @@ import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {StatusOptions} from '../../../constants.ts';
 
+export enum Tabs {
+  DecisionOverview = 1,
+  AddDecision = 2,
+}
+
+export const decisionTabs = [
+  {id: Tabs.DecisionOverview, title: 'Pregled rješenja', routeName: 'decisions'},
+  {id: Tabs.AddDecision, title: 'Unos rješenja', routeName: 'add-decision'},
+];
+
+export const getCurrentTab = (pathname: string) => {
+  const path = pathname.split('/');
+  const name = path[path.length - 1];
+  return decisionTabs.find(tab => tab.routeName === name)?.id;
+};
+
+export const getRouteName = (tabName: string) => {
+  const tabIndex = decisionTabs.findIndex(tab => tab.title === tabName);
+  return decisionTabs[tabIndex].routeName;
+};
+
 export const decisionsOverviewTableHeads: TableHead[] = [
   {
     title: 'Subjekt',

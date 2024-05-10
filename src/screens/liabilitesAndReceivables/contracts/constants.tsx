@@ -1,7 +1,28 @@
 import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {parseDate} from '../../../utils/dateUtils.ts';
-import {StatusOptions} from '../../../constants.ts';
+import {ExtendedTab, StatusOptions} from '../../../constants.ts';
+
+export enum Tabs {
+  ContractOverview = 1,
+  AddContract = 2,
+}
+
+export const contractTabs: ExtendedTab[] = [
+  {id: Tabs.ContractOverview, title: 'Pregled ugovora', routeName: 'contracts', disabled: false},
+  {id: Tabs.AddContract, title: 'Unos ugovora', routeName: 'add-contract', disabled: false},
+];
+
+export const getCurrentTab = (pathname: string) => {
+  const path = pathname.split('/');
+  const name = path[path.length - 1];
+  return contractTabs.find(tab => tab.routeName === name)?.id;
+};
+
+export const getRouteName = (tabName: string) => {
+  const tabIndex = contractTabs.findIndex(tab => tab.title === tabName);
+  return contractTabs[tabIndex].routeName;
+};
 
 export const contractsOverviewTableHeads: TableHead[] = [
   {
