@@ -17,6 +17,7 @@ const buildAccountingOrderForObligations = `mutation($data: AccountingOrderForOb
                 id
                 title
             }
+            supplier_id
             title
             credit_amount
             debit_amount

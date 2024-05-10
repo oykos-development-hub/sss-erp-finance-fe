@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {GraphQL} from '..';
 import useAppContext from '../../../context/useAppContext.ts';
-import {AccountinOrderParams, AccountingOrderItem} from '../../../types/graphQL/accountingTypes.ts';
+import {AccountingOrderParams, AccountingOrderItem} from '../../../types/graphQL/accountingTypes.ts';
 import {AccountingResponse} from '../../../types/graphQL/response.ts';
 
 const useBuildAccountingOrderForObligations = () => {
@@ -10,7 +10,7 @@ const useBuildAccountingOrderForObligations = () => {
   const {fetch} = useAppContext();
 
   const buildAccountingOrderForObligations = async (
-    data: AccountinOrderParams,
+    data: AccountingOrderParams,
     onSuccess?: () => void,
     onError?: () => void,
   ) => {

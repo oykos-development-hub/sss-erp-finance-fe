@@ -8,22 +8,6 @@ export enum Tabs {
   CurrentAccountingOverview = 2,
 }
 
-export const stockTabs = [
-  {id: Tabs.CurrentAccounting, title: 'Knjiženje', routeName: 'accounting'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Glavna knjiga', routeName: 'accounting-overview'},
-];
-
-export const getCurrentTab = (pathname: string) => {
-  const path = pathname.split('/');
-  const name = path[path.length - 1];
-  return stockTabs.find(tab => tab.routeName === name)?.id;
-};
-
-export const getRouteName = (tabName: string) => {
-  const tabIndex = stockTabs.findIndex(tab => tab.title === tabName);
-  return stockTabs[tabIndex].routeName;
-};
-
 export const tableHeads: TableHead[] = [
   {
     title: 'Subjekt',
@@ -81,11 +65,32 @@ export const tableHeadsAccountingOverview: TableHead[] = [
     type: 'custom',
     renderContents: credit_amount => <Typography content={roundCurrency(credit_amount)} variant="bodySmall" />,
   },
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
+];
+
+export const tableHeadsForAccountingPaymentOrders: TableHead[] = [
   {
-    title: 'Saldo',
-    accessor: '',
+    title: 'Subjekt',
+    accessor: 'supplier',
     type: 'custom',
-    renderContents: (_, row) => <Typography content={row.debit_amount - row.credit_amount} variant="bodySmall" />,
+    renderContents: supplier => <Typography content={supplier.title} variant="bodySmall" />,
+  },
+  {
+    title: 'Datum',
+    accessor: 'date',
+    type: 'custom',
+    renderContents: (date: string) => <Typography content={parseDate(date)} variant="bodySmall" />,
+  },
+  {
+    title: 'Broj predmeta',
+    accessor: 'title',
+    type: 'text',
+  },
+  {
+    title: 'Za plaćanje',
+    accessor: 'price',
+    type: 'custom',
+    renderContents: price => <Typography content={roundCurrency(price)} variant="bodySmall" />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

@@ -1,11 +1,10 @@
-import {Modal, Table, TableHead, Typography, Theme} from 'client-library';
-import {AccountingModalProps} from './types';
-import {roundCurrency} from '../../utils/roundCurrency';
-import {TypesForReceivables} from '../../screens/liabilitesAndReceivables/receivables/constants';
-import useAccountingEntryInsert from '../../services/graphQL/accounting/useAccountingEntryInsert';
-import useAppContext from '../../context/useAppContext';
+import {Modal, Table, TableHead, Theme, Typography} from 'client-library';
 import {useForm} from 'react-hook-form';
+import useAppContext from '../../context/useAppContext';
+import useAccountingEntryInsert from '../../services/graphQL/accounting/useAccountingEntryInsert';
 import {parseDateForBackend} from '../../utils/dateUtils';
+import {roundCurrency} from '../../utils/roundCurrency';
+import {AccountingModalProps} from '../accountingModal/types';
 
 interface ItemType {
   account: {
@@ -29,6 +28,10 @@ interface ItemType {
   title: string;
   type: string;
   supplier_id: number;
+  payment_order: {
+    id: number;
+    title: string;
+  };
 }
 
 const tableHeads: TableHead[] = [
@@ -81,26 +84,12 @@ const tableHeads: TableHead[] = [
     ),
   },
   {
-    title: 'Vrsta obaveze',
-    accessor: 'type',
-    type: 'custom',
-    renderContents: (_, row) => {
-      const typeValue = TypesForReceivables.find(option => option.id === row.type);
-      return (
-        <Typography
-          content={typeValue ? typeValue?.title : ''}
-          style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
-        />
-      );
-    },
-  },
-  {
     title: 'Broj predmeta',
-    accessor: '',
+    accessor: 'payment_order',
     type: 'custom',
-    renderContents: (_, row) => (
+    renderContents: (payment_order, row) => (
       <Typography
-        content={row.invoice ? row.invoice.title : row.salary ? row.salary.title : ''}
+        content={payment_order.title}
         variant="bodySmall"
         style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
       />
@@ -108,7 +97,7 @@ const tableHeads: TableHead[] = [
   },
 ];
 
-export const AccountingModal = ({open, onClose, data}: AccountingModalProps) => {
+export const AccountingPaymentOrdersModal = ({open, onClose, data}: AccountingModalProps) => {
   const {
     alert,
     navigation: {navigate},
@@ -134,6 +123,7 @@ export const AccountingModal = ({open, onClose, data}: AccountingModalProps) => 
         title: item?.title,
         type: item?.type,
         supplier_id: item?.supplier_id,
+        payment_order_id: item?.payment_order?.id || null,
       })),
     };
 
@@ -141,7 +131,7 @@ export const AccountingModal = ({open, onClose, data}: AccountingModalProps) => 
       payload,
       () => {
         alert.success('Uspješno ste izvršili knjiženje.');
-        navigate('/finance/accounting/obligations-overview');
+        navigate('/finance/accounting/payment-orders-overview');
       },
       () => alert.error('Došlo je do greške. Pokušajte kasnije.'),
     );

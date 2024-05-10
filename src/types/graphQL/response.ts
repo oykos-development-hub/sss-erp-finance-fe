@@ -13,7 +13,7 @@ import {ObligationsItem, PaymentOrderItem} from './receivablesTypes.ts';
 import {Salary} from './salaries.ts';
 import {EnforcedPaymentItem} from './enforcedPaymentTypes.ts';
 import {BudgetRequestItem} from './budgetRequestDetails.ts';
-import {AccountingOrderItem, ObligationsItemForAccounting} from './accountingTypes.ts';
+import {AccountingOrderItem, ObligationsItemForAccounting, PaymentOrderItemForAccounting} from './accountingTypes.ts';
 
 export type PageParams = {
   page?: number;
@@ -263,5 +263,11 @@ export type AccountingResponse = {
   };
   delete: {
     accountingEntry_Delete: SimpleResponse;
+  };
+  getPaymentOrders: {
+    getPaymentOrdersForAccounting: GetResponse<PaymentOrderItemForAccounting>;
+  };
+  getEnforcedPaymentOrders: {
+    getEnforcedPaymentsForAccounting: GetResponse<PaymentOrderItemForAccounting>;
   };
 };

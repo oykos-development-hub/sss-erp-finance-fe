@@ -25,6 +25,7 @@ export interface AccountingOrderItem {
   items: [
     {
       id: number;
+      supplier_id: number;
       account: {
         id: number;
         title: string;
@@ -53,11 +54,12 @@ export interface AccountingOrderItem {
   ];
 }
 
-export interface AccountinOrderParams {
+export interface AccountingOrderParams {
   date_of_booking: Date;
   invoice_id: number[] | null;
   salary_id: number[] | null;
   organization_unit_id: number;
+  payment_order_id: number[] | null;
 }
 
 export interface AccountingInsertParams {
@@ -67,7 +69,20 @@ export interface AccountingInsertParams {
     credit_amount: number;
     debit_amount: number;
     enforced_payment_id: number;
+    supplier_id: number;
     title: string;
     type: string;
   }[];
+}
+
+export interface PaymentOrderItemForAccounting {
+  id: number;
+  payment_order_id: number;
+  date: string;
+  price: string;
+  title: string;
+  supplier: {
+    id: number;
+    title: string;
+  };
 }

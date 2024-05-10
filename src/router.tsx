@@ -1,7 +1,7 @@
 import {UserRole} from './constants.ts';
 import useAppContext from './context/useAppContext.ts';
 import {NotFound404} from './screens/404';
-import {CurrentAccountingTabs} from './screens/accounting/currentAccountingTabs.tsx';
+import {CurrentAccountingTabs} from './screens/accounting/accountingObligations/currentAccountingTabs.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
 import BudgetTemplate from './screens/budget/budgetTemplate/budgetTemplate.tsx';
@@ -61,6 +61,7 @@ import {useRoleCheck} from './utils/useRoleCheck.ts';
 import EnforcedPaymentsOverview from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsOverview/enforcedPaymentsOverview.tsx';
 import EnforcedPaymentEntry from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsEntry/enforcedPaymentEntry.tsx';
 import EnforcedPaymentsDetails from './screens/liabilitesAndReceivables/enforcedPayments/enforcedPaymentsDetails/enforcedPaymentsDetails.tsx';
+import {CurrentAccountingPaymentOrderTabs} from './screens/accounting/accountingPaymentOrders/currentAccountingPaymentOrderTabs.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -139,8 +140,11 @@ export const Router = () => {
     if (sentBudgetDetails.test(pathname)) return <BudgetSendTabs />;
     if (sentBudgetRequests.test(pathname)) return <BudgetSendTabs />;
 
-    if (pathname === '/finance/accounting') return <CurrentAccountingTabs />;
-    if (pathname === '/finance/accounting-overview') return <CurrentAccountingTabs />;
+    if (pathname === '/finance/accounting/payment-orders') return <CurrentAccountingPaymentOrderTabs />;
+    if (pathname === '/finance/accounting/payment-orders-overview') return <CurrentAccountingPaymentOrderTabs />;
+
+    if (pathname === '/finance/accounting/obligations') return <CurrentAccountingTabs />;
+    if (pathname === '/finance/accounting/obligations-overview') return <CurrentAccountingTabs />;
 
     if (pathname === '/finance/deposit') return <DepositLandingPage />;
     if (pathname === '/finance/deposit/fixed') return <FixedDepositLandingPage />;
