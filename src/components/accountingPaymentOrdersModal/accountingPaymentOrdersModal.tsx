@@ -135,7 +135,7 @@ export const AccountingPaymentOrdersModal = ({open, onClose, data}: AccountingMo
       payload,
       () => {
         alert.success('Uspješno ste izvršili knjiženje.');
-        !!data?.items[0]?.enforced_payment?.id
+        data?.items[0]?.enforced_payment?.id
           ? navigate('/finance/accounting/enforced-payments-overview')
           : navigate('/finance/accounting/payment-orders-overview');
       },
