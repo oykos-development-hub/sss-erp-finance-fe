@@ -1,10 +1,11 @@
-import {Modal, Table, TableHead, Theme, Typography} from 'client-library';
+import {Modal, Table, TableHead, Theme, Typography, Button} from 'client-library';
 import {useForm} from 'react-hook-form';
 import useAppContext from '../../context/useAppContext';
 import useAccountingEntryInsert from '../../services/graphQL/accounting/useAccountingEntryInsert';
 import {parseDateForBackend} from '../../utils/dateUtils';
 import {roundCurrency} from '../../utils/roundCurrency';
 import {AccountingModalProps} from '../accountingModal/types';
+import {ModalButtons} from '../accountingModal/styles';
 
 interface ItemType {
   account: {
@@ -28,6 +29,7 @@ interface ItemType {
   title: string;
   type: string;
   supplier_id: number;
+  date: Date;
   payment_order: {
     id: number;
     title: string;
@@ -85,15 +87,17 @@ const tableHeads: TableHead[] = [
   },
   {
     title: 'Broj predmeta',
-    accessor: 'payment_order',
+    accessor: '',
     type: 'custom',
-    renderContents: (payment_order, row) => (
-      <Typography
-        content={payment_order.title}
-        variant="bodySmall"
-        style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
-      />
-    ),
+    renderContents: (_, row) => {
+      return (
+        <Typography
+          content={row?.enforced_payment?.id ? row.enforced_payment.title : row.payment_order.title}
+          variant="bodySmall"
+          style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
+        />
+      );
+    },
   },
 ];
 
@@ -106,7 +110,6 @@ export const AccountingPaymentOrdersModal = ({open, onClose, data}: AccountingMo
   const {handleSubmit} = useForm();
 
   const {accountingEntryInsert, loading} = useAccountingEntryInsert();
-
   const onSubmit = async () => {
     if (loading) return;
 
@@ -124,6 +127,7 @@ export const AccountingPaymentOrdersModal = ({open, onClose, data}: AccountingMo
         type: item?.type,
         supplier_id: item?.supplier_id,
         payment_order_id: item?.payment_order?.id || null,
+        date: parseDateForBackend(item?.date),
       })),
     };
 
@@ -131,7 +135,9 @@ export const AccountingPaymentOrdersModal = ({open, onClose, data}: AccountingMo
       payload,
       () => {
         alert.success('Uspješno ste izvršili knjiženje.');
-        navigate('/finance/accounting/payment-orders-overview');
+        !!data?.items[0]?.enforced_payment?.id
+          ? navigate('/finance/accounting/enforced-payments-overview')
+          : navigate('/finance/accounting/payment-orders-overview');
       },
       () => alert.error('Došlo je do greške. Pokušajte kasnije.'),
     );
@@ -139,13 +145,19 @@ export const AccountingPaymentOrdersModal = ({open, onClose, data}: AccountingMo
     return;
   };
 
+  const buttonControls = (
+    <ModalButtons>
+      <Button content={'Otkaži'} onClick={onClose} variant="secondary" />
+      <Button content={'Sačuvaj'} onClick={handleSubmit(onSubmit)} variant="primary" disabled={data?.id} />
+    </ModalButtons>
+  );
+
   return (
     <>
       <Modal
         open={open}
         onClose={() => onClose()}
-        leftButtonText="Otkaži"
-        rightButtonText="Sačuvaj"
+        customButtonsControls={buttonControls}
         rightButtonOnClick={handleSubmit(onSubmit)}
         content={<Table tableHeads={tableHeads} data={data?.items || []} style={{marginBottom: 22}} />}
         title="Pregled knjiženja"

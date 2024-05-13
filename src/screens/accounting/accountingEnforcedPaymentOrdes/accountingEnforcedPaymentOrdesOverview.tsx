@@ -12,7 +12,7 @@ import {tableHeadsAccountingOverview} from '../constants.tsx';
 import {FilterInput, Header} from '../styles.tsx';
 import {AccountingPaymentOrdersModal} from '../../../components/accountingPaymentOrdersModal/accountingPaymentOrdersModal.tsx';
 
-const AccountingPaymentOrdersOverview = () => {
+const AccountingEnforcedPaymentOrdersOverview = () => {
   const {
     contextMain,
     alert,
@@ -26,7 +26,7 @@ const AccountingPaymentOrdersOverview = () => {
 
   const {data, total, fetch} = useAccountingEntryOverview(
     contextMain?.organization_unit?.id,
-    'payment_orders',
+    'enforced_payments',
     debouncedSearch,
     page,
     PAGE_SIZE,
@@ -139,4 +139,4 @@ const AccountingPaymentOrdersOverview = () => {
   );
 };
 
-export default AccountingPaymentOrdersOverview;
+export default AccountingEnforcedPaymentOrdersOverview;

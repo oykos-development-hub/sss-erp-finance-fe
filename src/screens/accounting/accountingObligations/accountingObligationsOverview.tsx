@@ -10,6 +10,7 @@ import {useDebounce} from '../../../utils/useDebounce.ts';
 import {Filters} from '../../budget/planning/budgetList/styles.ts';
 import {tableHeadsAccountingOverview} from '../constants.tsx';
 import {FilterInput, Header} from '../styles.tsx';
+import {AccountingModal} from '../../../components/accountingModal/accountingModal.tsx';
 
 const AccountingObligationsOverview = () => {
   const {
@@ -18,6 +19,8 @@ const AccountingObligationsOverview = () => {
     reportService: {generatePdf},
   } = useAppContext();
   const [showDeleteModalAccountingId, setShowDeleteModalAccountingId] = useState<number | undefined>(undefined);
+  const [dataForModal, setDataForModal] = useState();
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(search, 500);
@@ -71,6 +74,11 @@ const AccountingObligationsOverview = () => {
     setShowDeleteModalAccountingId(undefined);
   };
 
+  const handleShowModal = (row?: any) => {
+    setShowModal(prev => !prev);
+    setDataForModal(row);
+  };
+
   useEffect(() => {
     if (page === 1) return;
     setPage(1);
@@ -92,6 +100,7 @@ const AccountingObligationsOverview = () => {
       <Table
         tableHeads={tableHeadsAccountingOverview}
         data={data}
+        onRowClick={row => handleShowModal(row)}
         style={{marginBottom: 22}}
         tableActions={[
           {
@@ -124,6 +133,8 @@ const AccountingObligationsOverview = () => {
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
       />
+
+      <AccountingModal open={showModal} onClose={handleShowModal} data={dataForModal} />
     </>
   );
 };

@@ -1,6 +1,7 @@
 import {UserRole} from './constants.ts';
 import useAppContext from './context/useAppContext.ts';
 import {NotFound404} from './screens/404';
+import {CurrentAccountingEnforcedPaymentOrderTabs} from './screens/accounting/accountingEnforcedPaymentOrdes/currentAccountingEnforcedPaymentOrderTabs.tsx';
 import {CurrentAccountingTabs} from './screens/accounting/accountingObligations/currentAccountingTabs.tsx';
 import {CurrentAccountingPaymentOrderTabs} from './screens/accounting/accountingPaymentOrders/currentAccountingPaymentOrderTabs.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
@@ -143,6 +144,10 @@ export const Router = () => {
 
     if (pathname === '/finance/accounting/obligations') return <CurrentAccountingTabs />;
     if (pathname === '/finance/accounting/obligations-overview') return <CurrentAccountingTabs />;
+
+    if (pathname === '/finance/accounting/enforced-payments') return <CurrentAccountingEnforcedPaymentOrderTabs />;
+    if (pathname === '/finance/accounting/enforced-payments-overview')
+      return <CurrentAccountingEnforcedPaymentOrderTabs />;
 
     if (pathname === '/finance/deposit') return <DepositLandingPage />;
     if (pathname === '/finance/deposit/fixed') return <FixedDepositLandingPage />;

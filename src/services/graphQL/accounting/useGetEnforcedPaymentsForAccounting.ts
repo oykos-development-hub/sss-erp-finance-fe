@@ -5,7 +5,9 @@ import {AccountingResponse} from '../../../types/graphQL/response';
 import {GraphQL} from '../index.ts';
 
 const useGetEnforcedPaymentsForAccounting = (organization_unit_id: number, search: string) => {
-  const [paymentOrdersForAccounting, setPaymentOrdersForAccounting] = useState<PaymentOrderItemForAccounting[]>([]);
+  const [enforcedPaymentOrdersForAccounting, setEnforcedPaymentOrdersForAccounting] = useState<
+    PaymentOrderItemForAccounting[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
 
@@ -20,7 +22,7 @@ const useGetEnforcedPaymentsForAccounting = (organization_unit_id: number, searc
 
     const items = response?.getEnforcedPaymentsForAccounting?.items;
 
-    setPaymentOrdersForAccounting(items);
+    setEnforcedPaymentOrdersForAccounting(items);
     setLoading(false);
   };
 
@@ -28,7 +30,7 @@ const useGetEnforcedPaymentsForAccounting = (organization_unit_id: number, searc
     fetchEnforcedPaymentsForAccounting();
   }, [organization_unit_id, search]);
 
-  return {paymentOrdersForAccounting, loading, fetch: fetchEnforcedPaymentsForAccounting};
+  return {enforcedPaymentOrdersForAccounting, loading, fetch: fetchEnforcedPaymentsForAccounting};
 };
 
 export default useGetEnforcedPaymentsForAccounting;

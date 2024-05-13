@@ -1,4 +1,4 @@
-import {Modal, Table, TableHead, Typography, Theme} from 'client-library';
+import {Modal, Table, TableHead, Typography, Theme, Button} from 'client-library';
 import {AccountingModalProps} from './types';
 import {roundCurrency} from '../../utils/roundCurrency';
 import {TypesForReceivables} from '../../screens/liabilitesAndReceivables/receivables/constants';
@@ -6,6 +6,7 @@ import useAccountingEntryInsert from '../../services/graphQL/accounting/useAccou
 import useAppContext from '../../context/useAppContext';
 import {useForm} from 'react-hook-form';
 import {parseDateForBackend} from '../../utils/dateUtils';
+import {ModalButtons} from './styles';
 
 interface ItemType {
   account: {
@@ -26,6 +27,7 @@ interface ItemType {
     id: number;
     title: string;
   };
+  date: Date;
   title: string;
   type: string;
   supplier_id: number;
@@ -100,7 +102,7 @@ const tableHeads: TableHead[] = [
     type: 'custom',
     renderContents: (_, row) => (
       <Typography
-        content={row.invoice ? row.invoice.title : row.salary ? row.salary.title : ''}
+        content={row.invoice?.id ? row.invoice.title : row.salary?.id ? row.salary.title : ''}
         variant="bodySmall"
         style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
       />
@@ -134,6 +136,7 @@ export const AccountingModal = ({open, onClose, data}: AccountingModalProps) => 
         title: item?.title,
         type: item?.type,
         supplier_id: item?.supplier_id,
+        date: parseDateForBackend(item?.date),
       })),
     };
 
@@ -148,15 +151,18 @@ export const AccountingModal = ({open, onClose, data}: AccountingModalProps) => 
 
     return;
   };
-
+  const buttonControls = (
+    <ModalButtons>
+      <Button content={'Otkaži'} onClick={onClose} variant="secondary" />
+      <Button content={'Sačuvaj'} onClick={handleSubmit(onSubmit)} variant="primary" disabled={data?.id} />
+    </ModalButtons>
+  );
   return (
     <>
       <Modal
         open={open}
         onClose={() => onClose()}
-        leftButtonText="Otkaži"
-        rightButtonText="Sačuvaj"
-        rightButtonOnClick={handleSubmit(onSubmit)}
+        customButtonsControls={buttonControls}
         content={<Table tableHeads={tableHeads} data={data?.items || []} style={{marginBottom: 22}} />}
         title="Pregled knjiženja"
       />

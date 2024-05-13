@@ -22,6 +22,7 @@ const buildAccountingOrderForObligations = `mutation($data: AccountingOrderForOb
             credit_amount
             debit_amount
             type
+            date
             invoice{
                 id
                 title
