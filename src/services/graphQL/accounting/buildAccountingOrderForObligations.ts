@@ -31,6 +31,10 @@ const buildAccountingOrderForObligations = `mutation($data: AccountingOrderForOb
                 id
                 title
             }
+            return_enforced_payment{
+                id
+                title
+            }
             payment_order{
                 id
                 title

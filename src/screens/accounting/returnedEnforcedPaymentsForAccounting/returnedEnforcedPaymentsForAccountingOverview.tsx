@@ -12,7 +12,7 @@ import {tableHeadsAccountingOverview} from '../constants.tsx';
 import {FilterInput, Header} from '../styles.tsx';
 import {AccountingPaymentOrdersModal} from '../../../components/accountingPaymentOrdersModal/accountingPaymentOrdersModal.tsx';
 
-const AccountingEnforcedPaymentOrdersOverview = () => {
+const ReturnedEnforcedPaymentsForAccountingOverview = () => {
   const {
     contextMain,
     alert,
@@ -20,13 +20,15 @@ const AccountingEnforcedPaymentOrdersOverview = () => {
   } = useAppContext();
   const [showDeleteModalAccountingId, setShowDeleteModalAccountingId] = useState<number | undefined>(undefined);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [dataForModal, setDataForModal] = useState();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+
   const debouncedSearch = useDebounce(search, 500);
 
   const {data, total, fetch} = useAccountingEntryOverview(
     contextMain?.organization_unit?.id,
-    'enforced_payments',
+    'return_enforced_payment',
     debouncedSearch,
     page,
     PAGE_SIZE,
@@ -73,7 +75,6 @@ const AccountingEnforcedPaymentOrdersOverview = () => {
     setShowDeleteModalAccountingId(undefined);
   };
 
-  const [dataForModal, setDataForModal] = useState();
   const handleShowModal = (row?: any) => {
     setShowModal(prev => !prev);
     setDataForModal(row);
@@ -140,4 +141,4 @@ const AccountingEnforcedPaymentOrdersOverview = () => {
   );
 };
 
-export default AccountingEnforcedPaymentOrdersOverview;
+export default ReturnedEnforcedPaymentsForAccountingOverview;

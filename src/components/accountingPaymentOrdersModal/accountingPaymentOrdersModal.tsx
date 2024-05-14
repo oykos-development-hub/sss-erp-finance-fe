@@ -34,6 +34,10 @@ interface ItemType {
     id: number;
     title: string;
   };
+  return_enforced_payment: {
+    id: number;
+    title: string;
+  };
 }
 
 const tableHeads: TableHead[] = [
@@ -92,7 +96,13 @@ const tableHeads: TableHead[] = [
     renderContents: (_, row) => {
       return (
         <Typography
-          content={row?.enforced_payment?.id ? row.enforced_payment.title : row.payment_order.title}
+          content={
+            row?.enforced_payment?.id
+              ? row.enforced_payment?.title
+              : row.payment_order?.id
+              ? row.payment_order?.title
+              : row.return_enforced_payment?.title
+          }
           variant="bodySmall"
           style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
         />
@@ -127,6 +137,7 @@ export const AccountingPaymentOrdersModal = ({open, onClose, data}: AccountingMo
         type: item?.type,
         supplier_id: item?.supplier_id,
         payment_order_id: item?.payment_order?.id || null,
+        return_enforced_payment_id: item?.return_enforced_payment?.id || null,
         date: parseDateForBackend(item?.date),
       })),
     };
@@ -137,7 +148,9 @@ export const AccountingPaymentOrdersModal = ({open, onClose, data}: AccountingMo
         alert.success('Uspješno ste izvršili knjiženje.');
         data?.items[0]?.enforced_payment?.id
           ? navigate('/finance/accounting/enforced-payments-overview')
-          : navigate('/finance/accounting/payment-orders-overview');
+          : data?.items[0]?.payment_order?.id
+          ? navigate('/finance/accounting/payment-orders-overview')
+          : navigate('/finance/accounting/returned-enforced-payments-overview');
       },
       () => alert.error('Došlo je do greške. Pokušajte kasnije.'),
     );

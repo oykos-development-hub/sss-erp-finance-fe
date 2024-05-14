@@ -86,6 +86,7 @@ import accountingEntryOverview from './accounting/accountingEntryOverview.ts';
 import deleteAccountingEntry from './accounting/deleteAccountingEntry.ts';
 import getPaymentOrdersForAccounting from './accounting/getPaymentOrdersForAccounting.ts';
 import getEnforcedPaymentsForAccounting from './accounting/getEnforcedPaymentsForAccounting.ts';
+import getReturnedEnforcedPaymentsForAccounting from './accounting/getReturnedEnforcedPaymentsForAccounting.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -191,4 +192,5 @@ export const GraphQL = {
   deleteAccountingEntry: deleteAccountingEntry,
   getPaymentOrdersForAccounting: getPaymentOrdersForAccounting,
   getEnforcedPaymentsForAccounting: getEnforcedPaymentsForAccounting,
+  getReturnedEnforcedPaymentsForAccounting: getReturnedEnforcedPaymentsForAccounting,
 };

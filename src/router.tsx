@@ -4,6 +4,7 @@ import {NotFound404} from './screens/404';
 import {CurrentAccountingEnforcedPaymentOrderTabs} from './screens/accounting/accountingEnforcedPaymentOrdes/currentAccountingEnforcedPaymentOrderTabs.tsx';
 import {CurrentAccountingTabs} from './screens/accounting/accountingObligations/currentAccountingTabs.tsx';
 import {CurrentAccountingPaymentOrderTabs} from './screens/accounting/accountingPaymentOrders/currentAccountingPaymentOrderTabs.tsx';
+import {CurrentReturnedEnforcedPaymentsForAccountingTabs} from './screens/accounting/returnedEnforcedPaymentsForAccounting/currentReturnedEnforcedPaymentsForAccountingTabs.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
 import BudgetTemplate from './screens/budget/budgetTemplate/budgetTemplate.tsx';
@@ -148,6 +149,11 @@ export const Router = () => {
     if (pathname === '/finance/accounting/enforced-payments') return <CurrentAccountingEnforcedPaymentOrderTabs />;
     if (pathname === '/finance/accounting/enforced-payments-overview')
       return <CurrentAccountingEnforcedPaymentOrderTabs />;
+
+    if (pathname === '/finance/accounting/returned-enforced-payments')
+      return <CurrentReturnedEnforcedPaymentsForAccountingTabs />;
+    if (pathname === '/finance/accounting/returned-enforced-payments-overview')
+      return <CurrentReturnedEnforcedPaymentsForAccountingTabs />;
 
     if (pathname === '/finance/deposit') return <DepositLandingPage />;
     if (pathname === '/finance/deposit/fixed') return <FixedDepositLandingPage />;

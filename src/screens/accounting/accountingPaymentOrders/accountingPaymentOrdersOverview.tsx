@@ -112,8 +112,9 @@ const AccountingPaymentOrdersOverview = () => {
           },
           {
             name: 'Izbriši',
-            onClick: onDelete,
+            onClick: row => onDelete(row),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => row?.items[0]?.id === data[0].items[0]?.id,
           },
         ]}
       />

@@ -270,4 +270,7 @@ export type AccountingResponse = {
   getEnforcedPaymentOrders: {
     getEnforcedPaymentsForAccounting: GetResponse<PaymentOrderItemForAccounting>;
   };
+  getReturnedEnforcedPaymentsForAccounting: {
+    getReturnedEnforcedPaymentsForAccounting: GetResponse<PaymentOrderItemForAccounting>;
+  };
 };

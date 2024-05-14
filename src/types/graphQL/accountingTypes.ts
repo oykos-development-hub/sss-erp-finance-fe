@@ -78,7 +78,8 @@ export interface AccountingInsertParams {
 export interface PaymentOrderItemForAccounting {
   id: number;
   payment_order_id: number;
-  enforced_payment_id: number;
+  enforced_payment_id?: number;
+  return_enforced_payment_id?: number;
   date: string;
   price: string;
   title: string;
