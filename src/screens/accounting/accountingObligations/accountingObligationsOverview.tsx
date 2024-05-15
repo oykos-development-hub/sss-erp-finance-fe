@@ -54,10 +54,9 @@ const AccountingObligationsOverview = () => {
   const printAccount = (id: number) => {
     if (data.length) {
       const selectedData = data.find(item => id === item?.id);
-      selectedData && generatePdf('ACCOUNTING', selectedData.items);
+      selectedData && generatePdf('ACCOUNTING', selectedData);
     }
   };
-
   const handleDelete = async () => {
     if (!showDeleteModalAccountingId) return;
 

@@ -36,11 +36,15 @@ const accountingEntryOverview = `query accountingEntry_Overview($id: Int, $organ
                 return_enforced_payment{
                   id
                   title
-              }
+                }
                 payment_order{
                    id
                    title
                 }
+                supplier{
+                  id
+                  title
+               }
                 enforced_payment{
                    id
                    title

@@ -85,9 +85,9 @@ export interface InsertPaymentOrderParams {
   date_of_payment: string | Date | null;
   id_of_statement: string;
   items: {
-    invoice_id: number;
-    additional_expense_id: number;
-    salary_additional_expense_id: number;
-    account_id: number;
+    invoice_id: number | null;
+    additional_expense_id: number | null;
+    salary_additional_expense_id: number | null;
+    account_id: number | null;
   }[];
 }

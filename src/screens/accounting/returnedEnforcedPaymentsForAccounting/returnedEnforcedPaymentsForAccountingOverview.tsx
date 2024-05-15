@@ -55,7 +55,7 @@ const ReturnedEnforcedPaymentsForAccountingOverview = () => {
   const printAccount = (id: number) => {
     if (data.length) {
       const selectedData = data.find(item => id === item?.id);
-      selectedData && generatePdf('ACCOUNTING_PAYMENT_ORDERS', selectedData.items);
+      selectedData && generatePdf('ACCOUNTING', selectedData);
     }
   };
 

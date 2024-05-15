@@ -144,9 +144,9 @@ const EnforcedPaymentEntry = () => {
       sap_id: data?.sap_id,
       items: fields
         .filter(field => selectedRows.includes(field.id))
-        .map((_, index) => ({
-          invoice_id: data.items[index]?.invoice_id,
-          account_id: data.items[index]?.account?.id,
+        .map(item => ({
+          invoice_id: item?.invoice_id || null,
+          account_id: item?.account?.id || null,
         })),
     };
 

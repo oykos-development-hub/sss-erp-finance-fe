@@ -173,11 +173,11 @@ const ReceivableEntry = () => {
       source_of_funding: data?.source_of_funding?.id,
       items: fields
         .filter(field => selectedRows.includes(field.id))
-        .map((_, index) => ({
-          invoice_id: data.items[index]?.invoice_id,
-          additional_expense_id: data.items[index]?.additional_expense_id,
-          salary_additional_expense_id: data.items[index]?.salary_additional_expense_id,
-          account_id: data.items[index]?.account?.id,
+        .map(item => ({
+          invoice_id: item?.invoice_id || null,
+          additional_expense_id: item?.additional_expense_id || null,
+          salary_additional_expense_id: item?.salary_additional_expense_id || null,
+          account_id: item?.account?.id || null,
         })),
     };
 

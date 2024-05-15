@@ -66,8 +66,8 @@ export interface EnforcedPaymentInsertParams {
   date_of_payment: string | Date | null;
   id_of_statement: string;
   items: {
-    invoice_id: number;
-    account_id: number;
+    invoice_id: number | null;
+    account_id: number | null;
   }[];
 }
 
