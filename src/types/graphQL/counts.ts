@@ -5,7 +5,9 @@ export interface Count {
   parent_id: number;
   title: string;
   serial_number: string;
-  children?: Count[];
+  children?: any[];
+  // TODO check if filled_data is always a string
+  filled_data?: string | null;
 }
 
 export type CountResponse = {

@@ -27,7 +27,9 @@ const DepositPaymentOrderOverview = () => {
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
 
   const {
-    contextMain: {organization_unit_id},
+    contextMain: {
+      organization_unit: {id: organization_unit_id},
+    },
     navigation: {navigate},
     alert,
     breadcrumbs,

@@ -34,6 +34,14 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
     setIsCollapsed(!isCollapsed);
   };
 
+  const generateChevronIcon = () => {
+    return isCollapsed ? (
+      <ChevronDownIcon stroke={Theme.palette.gray900} style={{marginRight: 10}} />
+    ) : (
+      <ChevronRightIcon stroke={Theme.palette.gray900} style={{marginRight: 10}} />
+    );
+  };
+
   const content = useMemo(() => {
     switch (step) {
       case BudgetTableStep.CREATING:
@@ -56,6 +64,7 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
         );
       case BudgetTableStep.BUDGETING:
       case BudgetTableStep.BUDGETING_ACTUAL:
+      case BudgetTableStep.BUDGET_FINANCIAL:
         return (
           <BudgetingForm
             updateParentValues={updateParentValues}
@@ -178,10 +187,22 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             </CountTableCell>
           </>
         );
+      // case BudgetTableStep.BUDGET_FINANCIAL:
+      //   return (
+      //     <BudgetingFormManagerFinancial
+      //       updateParentValues={updateParentValues}
+      //       level={level}
+      //       lastLevel={!count.children?.length}
+      //       fieldPath={fieldPath}
+      //       // generateChevronIcon={generateChevronIcon}
+      //       // onCollapse={onCollapse}
+      //       // count={count}
+      //     />
+      //   );
       default:
         <></>;
     }
-  }, [step, count, level]);
+  }, [step, count, level, isCollapsed]);
 
   const sourceCellContent = useMemo(() => {
     const lastLevel = !count.children?.length;
@@ -209,17 +230,10 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
     return null;
   }, [count, step, level]);
 
-  const generateChevronIcon = () => {
-    return isCollapsed ? (
-      <ChevronDownIcon stroke={Theme.palette.gray900} style={{marginRight: 10}} />
-    ) : (
-      <ChevronRightIcon stroke={Theme.palette.gray900} style={{marginRight: 10}} />
-    );
-  };
-
   return (
     <>
       <tr>
+        {/*{step !== BudgetTableStep.BUDGET_FINANCIAL && (*/}
         <CountTableCell level={level} onClick={level === 1 ? onCollapse : undefined} first>
           <FlexContainer>
             {level === 1 && generateChevronIcon()}
@@ -234,11 +248,13 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             />
           </FlexContainer>
         </CountTableCell>
+        {/*)}*/}
 
         {/* TO DO  When all the templates are finished, check which ones require this and write the condition more nicely */}
         {step !== BudgetTableStep.VIEW_MONTHLY &&
           step !== BudgetTableStep.VIEW_MONTHLY_WITH_EDIT &&
           step !== BudgetTableStep.INTERNAL_REALLOCATION &&
+          step !== BudgetTableStep.BUDGET_FINANCIAL &&
           step !== BudgetTableStep.REQUEST_FUND_RELEASE && (
             <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
           )}

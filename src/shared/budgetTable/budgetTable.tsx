@@ -14,13 +14,15 @@ type BudgetTableProps = {
   step: BudgetTableStep | `${BudgetTableStep}`;
   organizationUnitId: number;
   year: number;
+  countsProps?: Count[];
 };
 
-const BudgetTable = ({step, year}: BudgetTableProps) => {
+const BudgetTable = ({step, year, countsProps}: BudgetTableProps) => {
   const methods = useForm();
 
-  const {counts} = useGetCountOverview({id: 0, tree: true});
-
+  // If counts are passed through props, don't fetch them from the BE
+  const {counts: countsFromBE} = useGetCountOverview({id: 0, tree: true});
+  const counts = countsProps ?? countsFromBE;
   const updateParentValues = (field: string) => {
     // Number of iterations - remove one because the last level contains the last level id and the fieldName
     const numberOfLevels = field.split('.').length - 1;
@@ -94,7 +96,6 @@ const BudgetTable = ({step, year}: BudgetTableProps) => {
 
     return items.map((item: Count) => {
       const fieldPath = [...path, item.id.toString()];
-
       return (
         <BudgetTableRow
           key={item.id}
@@ -121,6 +122,7 @@ const BudgetTable = ({step, year}: BudgetTableProps) => {
     return getBudgetTableHeads(year, step);
   }, [year, step]);
 
+  // TODO add condition when created budget is filled and sent back to SSS
   const tableDisabled = step === BudgetTableStep.CREATING || step === BudgetTableStep.AWAITING_APPROVAL;
 
   return (

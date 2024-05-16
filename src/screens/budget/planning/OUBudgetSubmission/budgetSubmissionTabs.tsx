@@ -2,15 +2,15 @@ import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {useEffect, useMemo, useState} from 'react';
 import {budgetTabs} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
-import useGetBudgetFinancial from '../../../../services/graphQL/getFinancial/useGetFinancial.ts';
 import SectionBox from '../../../../shared/sectionBox.ts';
 import StyledTabsWithTitle from '../../../../shared/styledTabsWithTitle/styledTabsWithTitle.tsx';
 import {getCurrentTab} from '../../../../utils/getCurrentTab.ts';
 import {getRouteName} from '../../../../utils/getRouteName.ts';
 import {NotFound404} from '../../../404.tsx';
 import BudgetFinancial from './budgetFinancial/budgetFinancial.tsx';
-import BudgetNonFinancial from './budgetNonFinancial/budgetNonFinancial.tsx';
 import BudgetSummary from './budgetSummary.tsx';
+import useGetBudgetRequestDetails from '../../../../services/graphQL/budgetRequestDetails/useGetBudgetRequestDetails.ts';
+import {NonFinanceOfficial} from './budgetNonFinancial/nonFinanceOfficial.tsx';
 
 const BudgetSubmissionTabs = () => {
   const {
@@ -19,6 +19,7 @@ const BudgetSubmissionTabs = () => {
       location: {pathname},
       navigate,
     },
+    contextMain: {organization_unit},
   } = useAppContext();
 
   const id = useMemo(() => {
@@ -27,13 +28,21 @@ const BudgetSubmissionTabs = () => {
   }, [pathname]);
 
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname, budgetTabs) || 1);
-  const {budgetFinancial} = useGetBudgetFinancial({budget_id: id});
+  const {budgetRequestDetails} = useGetBudgetRequestDetails({
+    budgetId: id,
+    organizationUnitId: organization_unit.id,
+  });
 
-  console.log(budgetFinancial);
+  // TOOD check if this is needed
+  // const {budgetFinancial} = useGetBudgetFinancial({budget_id: id});
+  // console.log(budgetFinancial);
 
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
     const routeName = getRouteName(tab.title as string, budgetTabs);
+
+    const path = pathname.split('/');
+    const id = path[path.length - 2];
 
     breadcrumbs.remove();
     if (routeName === 'summary') {
@@ -54,22 +63,23 @@ const BudgetSubmissionTabs = () => {
     }
 
     if (activeTab !== tab.id) {
-      const path = pathname.split('/');
-      const id = path[path.length - 2];
       navigate(routeName ? `/finance/budget/planning/${id}/${routeName}` : `/finance/budget/planning/${id}/summary`);
     }
   };
 
   const content = useMemo(() => {
-    const path = pathname.split('/');
-    const id = path[path.length - 2];
-
-    if (pathname === `/finance/budget/planning/${id}/summary`) return <BudgetSummary id={parseInt(id)} />;
-    if (pathname === `/finance/budget/planning/${id}/financial`) return <BudgetFinancial />;
-    if (pathname === `/finance/budget/planning/${id}/non-financial`) return <BudgetNonFinancial />;
+    if (pathname === `/finance/budget/planning/${id}/summary`)
+      return <BudgetSummary budgetRequestDetails={budgetRequestDetails} />;
+    if (pathname === `/finance/budget/planning/${id}/financial`)
+      return <BudgetFinancial budgetRequestDetails={budgetRequestDetails} />;
+    if (pathname === `/finance/budget/planning/${id}/non-financial`)
+      // return <BudgetNonFinancial budgetRequestDetails={budgetRequestDetails} />;
+      return <NonFinanceOfficial />;
+    // return <NonFinance budgetRequestDetails={budgetRequestDetails} />;
+    // return <BudgetNonFinancialOverview />;
 
     return <NotFound404 />;
-  }, [pathname]);
+  }, [pathname, budgetRequestDetails]);
 
   useEffect(() => {
     setActiveTab(getCurrentTab(pathname, budgetTabs) || 1);

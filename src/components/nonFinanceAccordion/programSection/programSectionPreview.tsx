@@ -12,10 +12,15 @@ import {
 interface SectionPreviewProps {
   section: 1 | 2 | 3;
   goals: string[];
+  code?: string;
+  description?: string;
+  id?: number;
+  title?: string;
+  sectionCustomTitle?: string;
 }
 
 export const ProgramSectionPreview = (props: SectionPreviewProps) => {
-  const {section, goals} = props;
+  const {section, goals, code, description, title, sectionCustomTitle} = props;
   const sectionName = section === 1 ? 'PROGRAMA' : section === 2 ? 'POTPROGRAMA' : 'AKTIVNOSTI';
 
   return (
@@ -23,7 +28,9 @@ export const ProgramSectionPreview = (props: SectionPreviewProps) => {
       <ProgramTitleContainer>
         <ProgramTitle
           variant="bodyMedium"
-          content={`SEKCIJA ${section} OD 3 - DETALJI ${sectionName}`}
+          content={
+            sectionCustomTitle === undefined ? `SEKCIJA ${section} OD 3 - DETALJI ${sectionName}` : sectionCustomTitle
+          }
           style={{fontWeight: 600}}
         />
       </ProgramTitleContainer>
@@ -32,16 +39,16 @@ export const ProgramSectionPreview = (props: SectionPreviewProps) => {
           <PreviewWrapper>
             <ItemWrapper>
               <Typography content={`NAZIV ${sectionName}:`} variant="bodyMedium" style={{fontWeight: 600}} />
-              <Typography content={'xxxxxxxxx'} variant="bodyMedium" />
+              <Typography content={title} variant="bodyMedium" />
             </ItemWrapper>
             <>
               <Typography content="OPIS:" variant="bodyMedium" style={{fontWeight: 600}} />
-              <Typography content={'xxxxxxxxx'} variant="bodyMedium" />
+              <Typography content={description} variant="bodyMedium" />
             </>
           </PreviewWrapper>
           <PreviewWrapper>
             <Typography content="KOD:" variant="bodyMedium" style={{fontWeight: 600}} />
-            <Typography content={'xxxxxxx'} variant="bodyMedium" />
+            <Typography content={code} variant="bodyMedium" />
           </PreviewWrapper>
         </TextWrapper>
         {!!goals.length && (

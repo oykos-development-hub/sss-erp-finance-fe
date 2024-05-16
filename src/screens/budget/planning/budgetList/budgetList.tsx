@@ -203,7 +203,8 @@ const BudgetList = () => {
               name: 'Pošalji',
               onClick: onSend,
               icon: <SendIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status.id === BudgetStatusTypeEnum.Created,
+              shouldRender: row =>
+                row.status.id === BudgetStatusTypeEnum.Created && !useRoleCheck(role_id, [UserRole.MANAGER_OJ]),
             },
             {
               name: 'Izmijeni',

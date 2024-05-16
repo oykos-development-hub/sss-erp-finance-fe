@@ -1,33 +1,26 @@
 import {DropdownData} from '../dropdownData.ts';
+import {Count} from './counts.ts';
 
 export type BudgetRequestItem = {
   financial: FinancialDetails;
   non_financial: NonFinancialDetails;
   request_id: number;
   status: DropdownData<number>;
+  budget: DropdownData<string>;
 };
 
 type FinancialDetails = {
-  current_accounts: Account[];
+  current_accounts: Count[];
   current_budget_comment: string;
   current_request_id: number;
   current_status: DropdownData<number>;
-  donation_accounts: Account[];
+  donation_accounts: Count[];
   donation_budget_comment: string;
   donation_request_id: number;
   donation_status: DropdownData<number>;
   official_comment: string;
   request_id: number;
   status: DropdownData<number>;
-};
-
-type Account = {
-  children: any[]; // Depending on your use case, you might want to define this type more specifically
-  filled_data: null; // You can replace 'null' with a more specific type if filled_data can hold other values
-  id: number;
-  parent_id: number | null;
-  serial_number: string;
-  title: string;
 };
 
 type NonFinancialDetails = {

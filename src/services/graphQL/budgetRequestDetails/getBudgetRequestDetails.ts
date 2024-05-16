@@ -8,6 +8,10 @@ const budgetRequestDetails = `query BudgetRequestsDetails($budget_id: Int!, $uni
                 id
                 title
             }
+            budget {
+                id
+                title
+            }
             non_financial {
                 id
                 request_id

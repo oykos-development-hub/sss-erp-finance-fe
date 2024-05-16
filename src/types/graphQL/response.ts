@@ -274,3 +274,12 @@ export type AccountingResponse = {
     getReturnedEnforcedPaymentsForAccounting: GetResponse<PaymentOrderItemForAccounting>;
   };
 };
+
+export type BudgetRequestOfficialResponse = {
+  accept: {
+    budgetRequest_Accept: SimpleResponse;
+  };
+  reject: {
+    budgetRequest_Reject: SimpleResponse;
+  };
+};

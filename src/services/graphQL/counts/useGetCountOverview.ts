@@ -25,8 +25,8 @@ const useGetCountOverview = ({level, page, search, size, tree, version}: ICountP
       search,
       size,
       tree,
+      version,
       id: undefined,
-      version: version || 1,
     });
     const countList = response?.account_Overview.items;
     const totalCounts = response?.account_Overview.total;

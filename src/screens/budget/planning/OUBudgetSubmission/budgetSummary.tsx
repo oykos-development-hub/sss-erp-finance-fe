@@ -2,19 +2,16 @@ import {Button, Table} from 'client-library';
 import useAppContext from '../../../../context/useAppContext';
 import {FooterWrapper} from '../budgetList/styles';
 import {budgetSummaryTableHeads} from './constants';
-import useGetBudgetRequestDetails from '../../../../services/graphQL/budgetRequestDetails/useGetBudgetRequestDetails.ts';
+import {BudgetRequestItem} from '../../../../types/graphQL/budgetRequestDetails.ts';
 
-const BudgetSummary = ({id}: {id: number}) => {
+const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetRequestItem}) => {
   const {
-    navigation: {navigate},
+    navigation: {
+      navigate,
+      location: {pathname},
+    },
     breadcrumbs,
-    contextMain: {organization_unit},
   } = useAppContext();
-
-  const {budgetRequestDetails} = useGetBudgetRequestDetails({
-    budgetId: id,
-    organizationUnitId: organization_unit.id,
-  });
 
   const tableData = [
     {
@@ -30,6 +27,9 @@ const BudgetSummary = ({id}: {id: number}) => {
       id: 1234,
     },
   ];
+
+  const path = pathname.split('/');
+  const id = path[path.length - 2];
 
   const handleRowClick = (rowType: string) => {
     if (rowType === 'Finansijski') {

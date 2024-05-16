@@ -31,7 +31,9 @@ const FinanceDepositDetails = () => {
     navigation: {
       location: {pathname},
     },
-    contextMain: {organization_unit_id},
+    contextMain: {
+      organization_unit: {id: organization_unit_id},
+    },
     alert,
   } = useAppContext();
 

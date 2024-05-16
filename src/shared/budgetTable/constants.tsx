@@ -15,12 +15,14 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
   switch (state) {
     case BudgetTableStep.CREATING:
     case BudgetTableStep.BUDGETING:
+    case BudgetTableStep.BUDGET_FINANCIAL:
       return [
-        {name: 'Tekuća godina', width: 13},
-        {name: `Budžet za ${year}. godinu`, width: 13},
-        {name: 'Opis', width: 30},
-        {name: `Budžet za ${year + 1}. godinu`, width: 13},
-        {name: `Budžet za ${year + 2}. godinu`, width: 13},
+        // This was in figma, but probably not needed
+        // {name: 'Tekuća godina', width: 13},
+        {name: `Budžet za ${year}. godinu`, width: 16},
+        {name: 'Opis', width: 34},
+        {name: `Budžet za ${year + 1}. godinu`, width: 16},
+        {name: `Budžet za ${year + 2}. godinu`, width: 16},
       ];
     case BudgetTableStep.BUDGETING_ACTUAL:
       return [
@@ -70,6 +72,15 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
         {name: '-', width: 6},
         {name: '+', width: 6},
       ];
+    // case BudgetTableStep.BUDGET_FINANCIAL:
+    //   return [
+    //     {name: 'Opis konta', width: 12},
+    //     {name: 'Izvor', width: 23},
+    //     {name: `Budžet za ${year}. godinu`, width: 12},
+    //     {name: 'Opis', width: 23},
+    //     {name: `Budžet za ${year + 1}. godinu`, width: 12},
+    //     {name: `Budžet za ${year + 2}. godinu`, width: 12},
+    //   ];
     default:
       return [];
   }

@@ -55,6 +55,14 @@ export enum BudgetTableStep {
   INTERNAL_REALLOCATION = 'internalReallocation',
 
   REQUEST_FUND_RELEASE = 'requestFundRelease',
+
+  BUDGET_FINANCIAL = 'budgetFinancial',
+
+  /*
+  /
+  / This state refers to when the organization unit Manager need to fill out the budget financial part
+  /
+  */
 }
 
 export type BudgetTableHead = {

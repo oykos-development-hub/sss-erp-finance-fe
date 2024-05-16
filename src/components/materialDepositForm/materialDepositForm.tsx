@@ -35,7 +35,9 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
       navigate,
       location: {pathname},
     },
-    contextMain: {organization_unit_id},
+    contextMain: {
+      organization_unit: {id: organization_unit_id},
+    },
     fileService: {uploadFile},
     alert,
   } = useAppContext();

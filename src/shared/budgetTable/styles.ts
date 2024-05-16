@@ -48,8 +48,10 @@ const BudgetInputStyles = css`
   width: 100%;
 `;
 
-export const BudgetInput = styled.input`
-  ${BudgetInputStyles}
+export const BudgetInput = styled.input<{isBold?: boolean}>`
+  ${BudgetInputStyles};
+
+  font-weight: ${({isBold}) => (isBold ? '600' : '400')};
 
   &[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
