@@ -8,12 +8,13 @@ const accountingEntryOverview = `query accountingEntry_Overview($id: Int, $organ
            organization_unit{
                    id
                    title
+                  address
            }
            date_of_booking
            type
            debit_amount
            credit_amount  
-           id_of_entry
+           formated_id_of_entry
            items{
                 id
                 title

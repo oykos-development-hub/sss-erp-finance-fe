@@ -5,11 +5,11 @@ import {GraphQL} from '../index.ts';
 import {AccountingOrderItem} from '../../../types/graphQL/accountingTypes.ts';
 
 const useAccountingEntryOverview = (
-  organization_unit_id: number,
-  type: string,
-  search: string,
-  page: number,
-  size: number,
+  organization_unit_id?: number,
+  type?: string,
+  search?: string,
+  page?: number,
+  size?: number,
 ) => {
   const [data, setData] = useState<AccountingOrderItem[]>([]);
   const [total, setTotal] = useState<number>(0);

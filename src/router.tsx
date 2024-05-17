@@ -63,6 +63,7 @@ import ReceivableEntry from './screens/liabilitesAndReceivables/receivables/rece
 import ReceivablesOverview from './screens/liabilitesAndReceivables/receivables/receivablesOverview/receivablesOverview.tsx';
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
+import {AccountingReports} from './screens/reports/reports.tsx';
 import {useRoleCheck} from './utils/useRoleCheck.ts';
 
 //* OU - organization unit
@@ -130,6 +131,8 @@ export const Router = () => {
     if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
       if (OUBudgetDetailsSummary.test(pathname)) return <OUBudgetSubmission />;
     }
+
+    if (pathname === '/finance/reports') return <AccountingReports />;
 
     if (pathname === '/finance') return <LandingPage />;
     if (pathname === '/finance/budget') return <BUDGET />;
