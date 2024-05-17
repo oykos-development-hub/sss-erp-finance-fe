@@ -4,6 +4,7 @@ import {NotFound404} from './screens/404';
 import {CurrentAccountingEnforcedPaymentOrderTabs} from './screens/accounting/accountingEnforcedPaymentOrdes/currentAccountingEnforcedPaymentOrderTabs.tsx';
 import {CurrentAccountingTabs} from './screens/accounting/accountingObligations/currentAccountingTabs.tsx';
 import {CurrentAccountingPaymentOrderTabs} from './screens/accounting/accountingPaymentOrders/currentAccountingPaymentOrderTabs.tsx';
+import ACCOUNTING from './screens/accounting/landingPage.tsx';
 import {CurrentReturnedEnforcedPaymentsForAccountingTabs} from './screens/accounting/returnedEnforcedPaymentsForAccounting/currentReturnedEnforcedPaymentsForAccountingTabs.tsx';
 import BudgetFO from './screens/budget/budgetFO/budgetFO.tsx';
 import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.tsx';
@@ -133,6 +134,8 @@ export const Router = () => {
     }
 
     if (pathname === '/finance/reports') return <AccountingReports />;
+
+    if (pathname === '/finance/accounting') return <ACCOUNTING />;
 
     if (pathname === '/finance') return <LandingPage />;
     if (pathname === '/finance/budget') return <BUDGET />;
