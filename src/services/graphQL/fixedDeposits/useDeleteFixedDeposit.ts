@@ -7,11 +7,11 @@ const useDeleteFixedDeposit = () => {
   const [loading, setLoading] = useState(false);
   const {fetch} = useAppContext();
 
-  const deleteFixedDeposit = async (request_id: number, onSuccess?: () => void, onError?: () => void) => {
+  const deleteFixedDeposit = async (id: number, onSuccess?: () => void, onError?: () => void) => {
     if (loading) return;
     setLoading(true);
-    const response: FixedDepositResponse['delete'] = await fetch(GraphQL.deleteFixedDeposit, {request_id});
-    if (response.fixedDeposit_Delete.status === 'success') {
+    const response: FixedDepositResponse['delete'] = await fetch(GraphQL.deleteFixedDeposit, {id});
+    if (response?.fixedDeposit_Delete?.status === 'success') {
       onSuccess && onSuccess();
     } else {
       onError && onError();
