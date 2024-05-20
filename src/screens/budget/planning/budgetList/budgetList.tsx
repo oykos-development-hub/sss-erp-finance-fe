@@ -132,6 +132,41 @@ const BudgetList = () => {
       });
     }
   };
+  const tableActions = [
+    {
+      name: 'Pošalji',
+      onClick: onSend,
+      icon: <SendIcon stroke={Theme?.palette?.gray800} />,
+    },
+    {
+      name: 'Izmijeni',
+      onClick: (row: any) => {
+        if (useRoleCheck(role_id, [UserRole.ADMIN])) {
+          navigate(`/finance/budget/planning/budget-create-${row.year}/${row.id}`);
+        } else {
+          navigate(`/finance/budget/planning/${row.id}/summary`);
+        }
+      },
+      icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+      shouldRender: (row: any) => {
+        if (useRoleCheck(role_id, [UserRole.ADMIN])) {
+          return row.status.id === BudgetStatusTypeEnum.Created;
+          //   TODO check if this is needed or if the manager should not have actions at all
+          // } else if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
+          //   return row.status.id !== BudgetSubmissionStatusEnum.Completed;
+        } else {
+          //* Do we need a separate condition for the finance official or will he have the same rights as the admin?
+          return false;
+        }
+      },
+    },
+    {
+      name: 'Izbriši',
+      onClick: onDelete,
+      icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+      shouldRender: (row: any) => row.status.id !== BudgetSubmissionStatusEnum.ToBeFilled,
+    },
+  ];
 
   return (
     <ScreenWrapper>
@@ -198,42 +233,7 @@ const BudgetList = () => {
           tableHeads={budgetListTableHeads}
           data={budgets}
           style={{marginBottom: 22}}
-          tableActions={[
-            {
-              name: 'Pošalji',
-              onClick: onSend,
-              icon: <SendIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: row =>
-                row.status.id === BudgetStatusTypeEnum.Created && !useRoleCheck(role_id, [UserRole.MANAGER_OJ]),
-            },
-            {
-              name: 'Izmijeni',
-              onClick: row => {
-                if (useRoleCheck(role_id, [UserRole.ADMIN])) {
-                  navigate(`/finance/budget/planning/budget-create-${row.year}/${row.id}`);
-                } else {
-                  navigate(`/finance/budget/planning/${row.id}/summary`);
-                }
-              },
-              icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => {
-                if (useRoleCheck(role_id, [UserRole.ADMIN])) {
-                  return row.status.id === BudgetStatusTypeEnum.Created;
-                } else if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
-                  return row.status.id !== BudgetSubmissionStatusEnum.Completed;
-                } else {
-                  //* Do we need a separate condition for the finance official or will he have the same rights as the admin?
-                  return false;
-                }
-              },
-            },
-            {
-              name: 'Izbriši',
-              onClick: onDelete,
-              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status.id !== BudgetSubmissionStatusEnum.ToBeFilled,
-            },
-          ]}
+          tableActions={useRoleCheck(role_id, [UserRole.MANAGER_OJ]) ? [] : tableActions}
           onRowClick={row => onRowClick(row)}
         />
         <DeleteModal
