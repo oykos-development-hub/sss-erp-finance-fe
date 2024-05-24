@@ -821,29 +821,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             },
           ]}
         />
-        {/* For now we do not need this */}
-        {/* {fields.length > 0 && (
-          <>
-            <FlexColumn style={{marginTop: '1rem'}}>
-              <Amount>
-                <Typography style={{fontWeight: 600}} variant="bodySmall" content="NETO IZNOS:" />
-                <Typography variant="bodySmall" content={`${totalNet?.toFixed(2)}Є`} />
-              </Amount>
-              <Amount>
-                <Typography style={{fontWeight: 600}} variant="bodySmall" content="PDV:" />
-                <Typography variant="bodySmall" content={`${totalVat?.toFixed(2)}Є`} />
-              </Amount>
-              <Amount>
-                <Typography style={{fontWeight: 600}} variant="bodySmall" content="UKUPAN IZNOS:" />
-                <Typography variant="bodySmall" content={`${(totalNet + totalVat)?.toFixed(2)}Є`} />
-              </Amount>
-              <InvoiceAmount>
-                <Typography variant="bodySmall" content="IZNOS FAKTURA PO RAČUNU" />
-              </InvoiceAmount>
-            </FlexColumn>
-            <Table tableHeads={invoiceAmountTableHeads} data={fields} />
-          </>
-        )} */}
       </>
       <Footer>
         <Button

@@ -46,6 +46,12 @@ export const tableHeads: TableHead[] = [
 
 export const tableHeadsAccountingOverview: TableHead[] = [
   {
+    title: 'Redni broj ',
+    accessor: 'formated_id_of_entry',
+    type: 'custom',
+    renderContents: (formated_id_of_entry: string) => <Typography content={formated_id_of_entry} variant="bodySmall" />,
+  },
+  {
     title: 'Datum knjiženja',
     accessor: 'date_of_booking',
     type: 'custom',

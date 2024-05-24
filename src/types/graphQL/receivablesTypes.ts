@@ -81,7 +81,7 @@ export interface PayPaymentOrderParams {
 export interface InsertPaymentOrderParams {
   organization_unit_id?: number;
   supplier_id?: number;
-  amount?: number | null;
+  amount?: number | string;
   date_of_payment: string | Date | null;
   id_of_statement: string;
   items: {

@@ -144,9 +144,7 @@ const InvoicesOverview = () => {
         data={invoice}
         style={{marginBottom: 22}}
         emptyMessage="Još nema računa"
-        onRowClick={row =>
-          row.status === 'Na nalogu' && navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`)
-        }
+        onRowClick={row => navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`)}
         tableActions={[
           {
             name: 'Izmijeni',

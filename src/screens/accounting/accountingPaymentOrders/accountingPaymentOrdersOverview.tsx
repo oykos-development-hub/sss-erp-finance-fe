@@ -19,6 +19,7 @@ const AccountingPaymentOrdersOverview = () => {
     reportService: {generatePdf},
   } = useAppContext();
   const [showDeleteModalAccountingId, setShowDeleteModalAccountingId] = useState<number | undefined>(undefined);
+  const [dataForModal, setDataForModal] = useState();
   const [showModal, setShowModal] = useState<boolean>(false);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -73,8 +74,7 @@ const AccountingPaymentOrdersOverview = () => {
     setShowDeleteModalAccountingId(undefined);
   };
 
-  const [dataForModal, setDataForModal] = useState();
-  const handleShowModal = (row?: any) => {
+  const handleShowModal = (row: any) => {
     setShowModal(prev => !prev);
     setDataForModal(row);
   };
@@ -135,7 +135,7 @@ const AccountingPaymentOrdersOverview = () => {
         style={{marginTop: '20px'}}
       />
 
-      <AccountingPaymentOrdersModal open={showModal} onClose={handleShowModal} data={dataForModal} />
+      <AccountingPaymentOrdersModal open={showModal} onClose={() => setShowModal(false)} data={dataForModal} />
     </>
   );
 };

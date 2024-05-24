@@ -117,7 +117,11 @@ const AddReturnedEnforcedPaymentsForAccounting = () => {
         ]}
       />
 
-      <AccountingPaymentOrdersModal open={accountingModal} onClose={toggleModal} data={accountingOrder} />
+      <AccountingPaymentOrdersModal
+        open={accountingModal}
+        onClose={() => setAccountingtModal(false)}
+        data={accountingOrder}
+      />
     </>
   );
 };

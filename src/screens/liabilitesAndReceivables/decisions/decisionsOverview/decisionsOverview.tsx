@@ -142,9 +142,7 @@ const DecisionsOverview = () => {
         tableHeads={decisionsOverviewTableHeads}
         data={invoice}
         emptyMessage={'Još nema rešenja'}
-        onRowClick={row =>
-          row.status === 'Na nalogu' && navigate(`/finance/liabilities-receivables/liabilities/decisions/${row.id}`)
-        }
+        onRowClick={row => navigate(`/finance/liabilities-receivables/liabilities/decisions/${row.id}`)}
         tableActions={[
           {
             name: 'Izmijeni',

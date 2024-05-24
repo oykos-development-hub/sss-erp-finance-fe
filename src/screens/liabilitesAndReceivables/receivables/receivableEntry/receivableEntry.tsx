@@ -166,7 +166,7 @@ const ReceivableEntry = () => {
     const payload = {
       organization_unit_id: organization_unit_id?.id,
       supplier_id: supplier_id?.id,
-      amount: selectedRows.length > 1 ? Number(amountValue) : amount,
+      amount: selectedRows.length > 1 ? Number(amountValue) : amount?.toString().replace(',', '.'),
       id_of_statement: data?.id_of_statement,
       date_of_payment: parseDateForBackend(data?.date_of_payment),
       description: data?.description,
@@ -182,7 +182,7 @@ const ReceivableEntry = () => {
     };
 
     insertPaymentOrder(
-      payload,
+      payload as any,
       () => {
         alert.success('Uspješno dodavanje naloga.');
         navigate('/finance/liabilities-receivables/receivables');

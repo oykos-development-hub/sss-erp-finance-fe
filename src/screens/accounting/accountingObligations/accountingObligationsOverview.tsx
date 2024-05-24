@@ -134,7 +134,7 @@ const AccountingObligationsOverview = () => {
         style={{marginTop: '20px'}}
       />
 
-      <AccountingModal open={showModal} onClose={handleShowModal} data={dataForModal} />
+      <AccountingModal open={showModal} onClose={() => setShowModal(false)} data={dataForModal} />
     </>
   );
 };

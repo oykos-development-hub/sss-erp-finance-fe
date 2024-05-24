@@ -144,9 +144,7 @@ const ContractsOverview = () => {
         tableHeads={contractsOverviewTableHeads}
         data={invoice}
         emptyMessage="Još nema ugovora"
-        onRowClick={row =>
-          row.status === 'Na nalogu' && navigate(`/finance/liabilities-receivables/liabilities/contracts/${row.id}`)
-        }
+        onRowClick={row => navigate(`/finance/liabilities-receivables/liabilities/contracts/${row.id}`)}
         tableActions={[
           {
             name: 'Izmijeni',

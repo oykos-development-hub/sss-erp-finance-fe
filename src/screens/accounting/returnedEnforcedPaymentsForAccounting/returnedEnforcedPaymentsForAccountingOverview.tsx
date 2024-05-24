@@ -136,7 +136,7 @@ const ReturnedEnforcedPaymentsForAccountingOverview = () => {
         style={{marginTop: '20px'}}
       />
 
-      <AccountingPaymentOrdersModal open={showModal} onClose={handleShowModal} data={dataForModal} />
+      <AccountingPaymentOrdersModal open={showModal} onClose={() => setShowModal(false)} data={dataForModal} />
     </>
   );
 };

@@ -1,6 +1,7 @@
 import useAppContext from '../../../../context/useAppContext.ts';
 import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
+import {ContractItem} from '../../../../types/graphQL/invoice.ts';
 import {CustomDivider, MainTitle, SectionBox} from '../../../accounting/styles.tsx';
 import ContractsEntry from '../contractsEntry/contractsEntry.tsx';
 
@@ -26,7 +27,7 @@ const ContractsDetails = () => {
       <SectionBox>
         <MainTitle variant="bodyMedium" content={'PREGLED UGOVORA'} style={{marginBottom: 0}} />
         <CustomDivider style={{marginTop: 0}} />
-        <ContractsEntry contract={contractsItem} />
+        <ContractsEntry contract={contractsItem as ContractItem} />
       </SectionBox>
     </ScreenWrapper>
   );
