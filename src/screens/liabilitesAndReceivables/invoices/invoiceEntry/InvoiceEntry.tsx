@@ -144,7 +144,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         accessor: 'vat_percentage',
         type: 'custom',
         renderContents: (vat_percentage, _row, index) => {
-          console.log(vat_percentage);
           if (isManual) {
             return (
               <Controller
@@ -576,8 +575,8 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             disabled={
               (!invoice && type?.id === false) ||
               (!invoice && type?.id === true && !isManual) ||
-              (invoice && !invoice?.pro_forma_invoice_number) ||
-              invoice?.status === 'Na nalogu'
+              (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_number) ||
+              (invoice?.status === 'Na nalogu' && invoice?.is_invoice)
             }
             error={errors?.invoice_number?.message}
             isRequired
@@ -618,8 +617,8 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 disabled={
                   (!invoice && type?.id === false) ||
                   (!invoice && type?.id === true && !isManual) ||
-                  (invoice && !invoice?.pro_forma_invoice_date) ||
-                  invoice?.status === 'Na nalogu'
+                  (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_date) ||
+                  (invoice?.status === 'Na nalogu' && invoice?.is_invoice)
                 }
                 error={errors?.date_of_invoice?.message}
                 isRequired
@@ -833,7 +832,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           content="Sačuvaj"
           variant="primary"
           onClick={handleSubmit(onSubmit)}
-          disabled={invoice?.status === 'Na nalogu'}
+          disabled={invoice?.status === 'Na nalogu' && invoice?.is_invoice}
         />
       </Footer>
     </InvoiceEntryForm>
