@@ -60,10 +60,10 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
   const {data: additionalExpenses, calculateAdditionalExpenses} = useCalculateAdditionalExpenses({
     tax_authority_codebook_id: tax_authority_codebook_id?.id ? tax_authority_codebook_id?.id : null,
     municipality_id: municipality_id?.id ? municipality_id?.id : null,
-    net_price: net_price ? Number(net_price) : null,
-    gross_price: gross_price ? Number(gross_price) : null,
-    previous_income_net: previous_income_net ? Number(previous_income_net) : null,
-    previous_income_gross: previous_income_gross ? Number(previous_income_gross) : null,
+    net_price: net_price ? net_price.toString().replace(',', '.') : null,
+    gross_price: gross_price ? gross_price.toString().replace(',', '.') : null,
+    previous_income_net: previous_income_net ? previous_income_net.toString().replace(',', '.') : null,
+    previous_income_gross: previous_income_gross ? previous_income_gross.toString().replace(',', '.') : null,
   });
 
   const optionsForTaxAuthorityCodebook = createDropdownOptions(taxAuthorityCodebook || []);
@@ -451,8 +451,6 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   {...register('gross_price')}
                   label="IZNOS ZA UPLATU BRUTO:"
                   placeholder="Unesite iznos"
-                  type={'number'}
-                  inputMode={'decimal'}
                   leftContent={<div>€</div>}
                   disabled={!!net_price || contract?.status === 'Na nalogu'}
                   error={errors.gross_price?.message}
@@ -461,8 +459,6 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   {...register('previous_income_gross')}
                   label="PRETHODNA PRIMANJA U MJESECU BRUTO:"
                   placeholder="Unesite prethodna primanja"
-                  type={'number'}
-                  inputMode={'decimal'}
                   leftContent={<div>€</div>}
                   disabled={
                     !!previous_income_net || selectedSupplierEntity !== 'employee' || contract?.status === 'Na nalogu'
@@ -475,8 +471,6 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   {...register('net_price')}
                   label={'NETO IZNOS:'}
                   placeholder={'Unesite neto iznos'}
-                  type={'number'}
-                  inputMode={'decimal'}
                   leftContent={<div>€</div>}
                   disabled={!!gross_price || contract?.status === 'Na nalogu'}
                   error={errors.net_price?.message}
@@ -485,8 +479,6 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   {...register('previous_income_net')}
                   label="PRETHODNA PRIMANJA U MJESECU NETO:"
                   placeholder="Unesite prethodna primanja"
-                  type={'number'}
-                  inputMode={'decimal'}
                   leftContent={<div>€</div>}
                   disabled={
                     !!previous_income_gross || selectedSupplierEntity !== 'employee' || contract?.status === 'Na nalogu'

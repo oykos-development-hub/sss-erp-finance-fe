@@ -10,7 +10,7 @@ import {
   Theme,
   TrashIcon,
 } from 'client-library';
-import {ChangeEvent, useState} from 'react';
+import {ChangeEvent, useMemo, useState} from 'react';
 import {PAGE_SIZE} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
@@ -27,12 +27,15 @@ import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {Row} from '../../decisions/decisionsOverview/styles.ts';
 import {receivablesStatusOptions, tableHeads} from '../constants.tsx';
 import {ButtonOverviewWrapper, FilterWrapper, RowWrapper} from '../styles.ts';
+import {Supplier} from '../../../../types/graphQL/suppliers.ts';
+import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 
 export interface DecisionsOverviewFilters {
   year?: DropdownData<string> | null;
   organization_unit_id?: DropdownData<number> | null;
   status?: DropdownData<string> | null;
   search?: string;
+  supplier_id?: DropdownData<number> | null;
 }
 
 const initialDecisionsFilterValues = {
@@ -40,6 +43,7 @@ const initialDecisionsFilterValues = {
   organization_unit_id: null,
   status: null,
   search: '',
+  supplier_id: null,
 };
 
 const ReceivablesOverview = () => {
@@ -66,6 +70,7 @@ const ReceivablesOverview = () => {
     setSearch(e.target.value);
   };
   const {organizationUnits} = useGetOrganizationUnits(undefined, {allOption: true});
+  const {suppliers} = useGetSuppliers({});
 
   const {paymentOrder, total, fetch} = useGetPaymentOrder({
     page: page,
@@ -74,6 +79,7 @@ const ReceivablesOverview = () => {
     year: filterValues.year ? filterValues.year.id : null,
     search: debouncedSearch,
     organization_unit_id: filterValues.organization_unit_id ? filterValues.organization_unit_id.id : null,
+    supplier_id: filterValues.supplier_id ? filterValues.supplier_id.id : null,
   });
 
   const {deletePaymentOrder} = useDeletePaymentOrder();
@@ -106,6 +112,15 @@ const ReceivablesOverview = () => {
     setShowDeleteModalId(undefined);
   };
 
+  const suppliersOptions = useMemo(() => {
+    const options = suppliers.map((supplier: Supplier) => ({
+      id: supplier.id,
+      title: supplier.title,
+    }));
+    options.unshift({id: 0, title: 'Svi dobavljači'});
+    return options;
+  }, [suppliers]);
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -113,6 +128,15 @@ const ReceivablesOverview = () => {
         <Divider color="#615959" height="1px" />
         <RowWrapper>
           <Row>
+            <FilterWrapper>
+              <Dropdown
+                label="SUBJEKT:"
+                placeholder="Odaberi subjekt"
+                options={suppliersOptions}
+                value={filterValues.supplier_id}
+                onChange={value => onFilter(value as DropdownData<string>, 'supplier_id')}
+              />
+            </FilterWrapper>
             <FilterWrapper>
               <Dropdown
                 label="ORGANIZACIONA JEDINICA:"

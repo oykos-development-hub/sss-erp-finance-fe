@@ -23,7 +23,16 @@ const useGetPaymentOrder = (params: PaymentOrderParams) => {
 
   useEffect(() => {
     fetchPaymentOrder();
-  }, [params.page, params.size, params.id, params.organization_unit_id, params.status, params.search, params.year]);
+  }, [
+    params.page,
+    params.size,
+    params.id,
+    params.organization_unit_id,
+    params.status,
+    params.search,
+    params.year,
+    params.supplier_id,
+  ]);
 
   return {paymentOrder, loading, total: total, fetch: fetchPaymentOrder};
 };

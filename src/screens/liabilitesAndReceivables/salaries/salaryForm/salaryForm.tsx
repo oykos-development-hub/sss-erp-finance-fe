@@ -69,7 +69,7 @@ const salarySchema = yup.object().shape({
   activity: optionsNumberSchema.required(requiredError).default(null),
   month: optionsStringSchema.required(requiredError).default(null),
   date_of_calculation: yup.string().required(requiredError),
-  description: yup.string().required(requiredError),
+  description: yup.string(),
   salary_additional_expenses: yup
     .array()
     .of(salaryAdditionalExpensesSchema)

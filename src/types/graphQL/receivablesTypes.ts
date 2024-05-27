@@ -6,6 +6,7 @@ export interface PaymentOrderParams {
   page: number;
   size: number;
   year: string | null;
+  supplier_id: number | null;
 }
 
 export interface Items {

@@ -1,5 +1,5 @@
-const paymentOrderOverview = `query paymentOrder_Overview($id: Int,$status: String, $search: String, $organization_unit_id: Int, $page:Int, $size:Int, $year: Int) {
-    paymentOrder_Overview(id: $id, status: $status, search: $search, organization_unit_id: $organization_unit_id, page:$page, size:$size, year: $year) {
+const paymentOrderOverview = `query paymentOrder_Overview($id: Int,$status: String, $search: String, $organization_unit_id: Int, $page:Int, $size:Int, $year: Int, $supplier_id: Int) {
+    paymentOrder_Overview(id: $id, status: $status, search: $search, organization_unit_id: $organization_unit_id, page:$page, size:$size, year: $year, supplier_id: $supplier_id) {
         status 
         message 
         data
