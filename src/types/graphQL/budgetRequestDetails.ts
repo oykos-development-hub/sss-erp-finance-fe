@@ -7,6 +7,7 @@ export type BudgetRequestItem = {
   request_id: number;
   status: DropdownData<number>;
   budget: DropdownData<string>;
+  limit: number;
 };
 
 type FinancialDetails = {

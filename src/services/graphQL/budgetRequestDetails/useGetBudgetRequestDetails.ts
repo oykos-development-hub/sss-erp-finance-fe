@@ -15,13 +15,11 @@ const useGetBudgetRequestDetails = ({budgetId, organizationUnitId}: BudgetReques
   const {fetch} = useAppContext();
 
   const getBudgetRequestDetails = async () => {
-    console.log(`budgetId- ${budgetId} // organizationUnitId - ${organizationUnitId}`);
     const response: BudgetRequestDetails['get'] = await fetch(GraphQL.getBudgetRequestDetails, {
       budget_id: budgetId,
       unit_id: organizationUnitId,
     });
     const data = response?.budgetRequests_Details;
-    console.log(data, 'data useGetBudgetRequestDetails');
 
     if (data?.item) setBudgetRequestDetails(data.item);
 

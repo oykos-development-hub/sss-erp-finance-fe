@@ -60,6 +60,9 @@ export type BudgetResponse = {
   details: {
     budget_Details: GetResponse<BudgetDetailsItem>;
   };
+  sendOnReview: {
+    budget_SendOnReview: SimpleResponse;
+  };
 };
 
 export type NonFinancialResponse = {
@@ -281,5 +284,17 @@ export type BudgetRequestOfficialResponse = {
   };
   reject: {
     budgetRequest_Reject: SimpleResponse;
+  };
+};
+
+export type FinancialBudgetFillResponse = {
+  fill: {
+    financialBudget_Fill: GetResponse<any>;
+  };
+};
+
+export type NonFinancialBudgetFillResponse = {
+  fill: {
+    nonFinancialBudget_Fill: GetResponse<any>;
   };
 };

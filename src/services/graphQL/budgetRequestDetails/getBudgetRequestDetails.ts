@@ -4,6 +4,7 @@ const budgetRequestDetails = `query BudgetRequestsDetails($budget_id: Int!, $uni
         message
         item {
             request_id
+            limit
             status {
                 id
                 title

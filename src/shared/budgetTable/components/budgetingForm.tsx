@@ -25,6 +25,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
                 onChange(e);
                 updateParentValues(name);
               }}
+              type={'number'}
               disabled={!lastLevel}
               isBold={!lastLevel}
             />
@@ -54,6 +55,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
                   onChange(e);
                   updateParentValues(name);
                 }}
+                type={'number'}
                 disabled={!lastLevel}
                 isBold={!lastLevel}
               />
@@ -72,6 +74,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
                 onChange(e);
                 updateParentValues(name);
               }}
+              type={'number'}
               disabled={!lastLevel}
               isBold={!lastLevel}
             />
@@ -89,6 +92,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
                 onChange(e);
                 updateParentValues(name);
               }}
+              type={'number'}
               disabled={!lastLevel}
               isBold={!lastLevel}
             />

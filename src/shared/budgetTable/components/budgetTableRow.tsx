@@ -187,18 +187,6 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             </CountTableCell>
           </>
         );
-      // case BudgetTableStep.BUDGET_FINANCIAL:
-      //   return (
-      //     <BudgetingFormManagerFinancial
-      //       updateParentValues={updateParentValues}
-      //       level={level}
-      //       lastLevel={!count.children?.length}
-      //       fieldPath={fieldPath}
-      //       // generateChevronIcon={generateChevronIcon}
-      //       // onCollapse={onCollapse}
-      //       // count={count}
-      //     />
-      //   );
       default:
         <></>;
     }
@@ -233,7 +221,6 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
   return (
     <>
       <tr>
-        {/*{step !== BudgetTableStep.BUDGET_FINANCIAL && (*/}
         <CountTableCell level={level} onClick={level === 1 ? onCollapse : undefined} first>
           <FlexContainer>
             {level === 1 && generateChevronIcon()}
@@ -248,7 +235,6 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             />
           </FlexContainer>
         </CountTableCell>
-        {/*)}*/}
 
         {/* TO DO  When all the templates are finished, check which ones require this and write the condition more nicely */}
         {step !== BudgetTableStep.VIEW_MONTHLY &&

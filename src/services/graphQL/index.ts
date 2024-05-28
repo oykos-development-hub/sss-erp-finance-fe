@@ -90,6 +90,9 @@ import getReturnedEnforcedPaymentsForAccounting from './accounting/getReturnedEn
 import acceptBudgetRequestOfficial from './budgetRequestOfficial/acceptBudgetRequestOfficial.ts';
 import rejectBudgetRequestOfficial from './budgetRequestOfficial/rejectBudgetRequestOfficial.ts';
 import analyticalCardOverview from './accounting/analyticalCardOverview.ts';
+import financialBudgetFill from './financialBudgetFill/financialBudgetFill.ts';
+import nonFinancialBudgetFill from './nonFinancialBudgetFill/nonFinancialBudgetFill.ts';
+import sendBudgetOnReview from './sendBudgetOnReview/sendBudgetOnReview.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -199,4 +202,7 @@ export const GraphQL = {
   acceptBudgetRequestOfficial: acceptBudgetRequestOfficial,
   rejectBudgetRequestOfficial: rejectBudgetRequestOfficial,
   analyticalCardOverview: analyticalCardOverview,
+  financialBudgetFill: financialBudgetFill,
+  nonFinancialBudgetFill: nonFinancialBudgetFill,
+  sendBudgetOnReview: sendBudgetOnReview,
 };

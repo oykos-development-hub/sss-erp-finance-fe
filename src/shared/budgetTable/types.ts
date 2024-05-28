@@ -70,3 +70,8 @@ export type BudgetTableHead = {
   width: number;
   checkbox?: boolean;
 };
+
+export interface BudgetTableMethods {
+  getInternalState: () => any; // Define the return type more specifically if possible
+  resetForm: () => void;
+}

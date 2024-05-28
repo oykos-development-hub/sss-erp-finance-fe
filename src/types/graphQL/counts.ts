@@ -1,13 +1,21 @@
 import {GetResponse} from './response.ts';
 
+export interface FilledData {
+  actual: any; // It is probably null or a number, check it
+  current_year: number;
+  description: string;
+  id: number;
+  next_year: number;
+  year_after_next: number;
+}
+
 export interface Count {
   id: number;
-  parent_id: number;
+  parent_id: number | null;
   title: string;
   serial_number: string;
   children?: any[];
-  // TODO check if filled_data is always a string
-  filled_data?: string | null;
+  filled_data?: FilledData | null;
 }
 
 export type CountResponse = {
