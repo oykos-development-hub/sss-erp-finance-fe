@@ -9,7 +9,8 @@ export const budgetListTableHeads: TableHead[] = [
     title: 'Tip budžeta',
     accessor: 'budget_type',
     type: 'custom',
-    renderContents: item => (item === 2 ? <Typography content="Tekući" /> : <Typography content="Kapitalni" />),
+    renderContents: item =>
+      parseInt(item) === 2 ? <Typography content="Tekući" /> : <Typography content="Kapitalni" />,
   },
   {
     title: 'Status',

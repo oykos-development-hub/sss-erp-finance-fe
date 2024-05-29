@@ -137,6 +137,8 @@ const BudgetList = () => {
       name: 'Pošalji',
       onClick: onSend,
       icon: <SendIcon stroke={Theme?.palette?.gray800} />,
+      // hide send icon if budget is already sent
+      shouldRender: (row: any) => row.status.id === BudgetStatusTypeEnum.Created,
     },
     {
       name: 'Izmijeni',
