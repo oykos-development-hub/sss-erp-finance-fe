@@ -1,55 +1,51 @@
-import {MouseEvent} from 'react';
-import {useForm} from 'react-hook-form';
-import {
-  Container,
-  CustomDivider,
-  InputWrapper,
-  MainTitle,
-  SectionWrapper,
-  InputComponent,
-  ButtonWrapper,
-  AddProgramWrapper,
-  AccordionMainWrapper,
-} from './styles.ts';
-import {Input, Button, PlusIcon, Theme} from 'client-library';
-import {NonFinanceAccordion} from '../../../../../components/nonFinanceAccordion/nonFinanceAccordion.tsx';
-import {useState} from 'react';
-import {NonFinanceForm} from '../../../../../types/nonFinance.ts';
-import useInsertNonFinancial from '../../../../../services/graphQL/insertNonFinancial/useInsertNonFinancial.ts';
+import {FormProvider, useForm} from 'react-hook-form';
+import {Container, InputWrapper, MainTitle, SectionWrapper, InputComponent} from './styles.ts';
+import {Input, Button} from 'client-library';
+import {NonFinancialForm} from '../../../../../types/nonFinance.ts';
 import useAppContext from '../../../../../context/useAppContext.ts';
-import ScreenWrapper from '../../../../../shared/screenWrapper/screenWrapper.tsx';
+import {NonFinancialActivitySection} from './nonFinancialActivitySection.tsx';
+import useNonFinancialBudgetFill from '../../../../../services/graphQL/nonFinancialBudgetFill/useNonFinancialBudgetFill.ts';
+import {BudgetRequestItem} from '../../../../../types/graphQL/budgetRequestDetails.ts';
+import Footer from '../../../../../shared/footer.ts';
+import {useEffect} from 'react';
 
-export const NonFinanceOfficial = () => {
-  const [programs, setPrograms] = useState<number[]>([]);
-  const {alert} = useAppContext();
+export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetRequestItem}) => {
+  // const [programs, setPrograms] = useState<number[]>([]);
+  const {
+    alert,
+    contextMain: {organization_unit},
+  } = useAppContext();
+  const {nonFinancialBudgetFill} = useNonFinancialBudgetFill();
 
+  const methods = useForm<NonFinancialForm>();
   const {
     register,
-    formState: {errors, isValid},
+    formState: {isValid, errors},
+    setValue,
     handleSubmit,
-  } = useForm<NonFinanceForm>();
+  } = methods;
 
-  const handleAddProgram = (e: MouseEvent<HTMLElement> | undefined) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    setPrograms(prevPrograms => {
-      if (prevPrograms.length) {
-        return [...prevPrograms, prevPrograms[prevPrograms.length - 1] + 1];
-      } else {
-        return [1];
-      }
-    });
-  };
+  useEffect(() => {
+    const {non_financial} = budgetRequestDetails ?? {};
+    if (non_financial) {
+      setValue('statement', non_financial.statement);
+      setValue('contact_email', non_financial.contact_email);
+      setValue('contact_phone', non_financial.contact_phone);
+      setValue('contact_fullname', non_financial.contact_fullname);
+      setValue('contact_working_place', non_financial.contact_working_place);
+      setValue('impl_contact_email', non_financial.impl_contact_email);
+      setValue('impl_contact_fullname', non_financial.impl_contact_fullname);
+      setValue('impl_contact_phone', non_financial.impl_contact_phone);
+      setValue('impl_contact_working_place', non_financial.impl_contact_working_place);
+    }
+  }, [budgetRequestDetails]);
 
-  const handleDeleteProgram = (id: number) => {
-    setPrograms(prevPrograms => prevPrograms.filter(program => program !== id));
-  };
-
-  const {insertNonFinancial} = useInsertNonFinancial();
-  const onSubmit = async (data: NonFinanceForm) => {
-    if (isValid) {
-      await insertNonFinancial(
-        data,
+  const handleSubmitNonFinancial = async (data: NonFinancialForm) => {
+    if (isValid && budgetRequestDetails?.non_financial.request_id) {
+      // TODO remove console log
+      console.log(data, 'NonFinancialForm');
+      await nonFinancialBudgetFill(
+        {...data, request_id: budgetRequestDetails?.non_financial.request_id},
         () => {
           alert.success('Nefinansijski dio budžeta uspješno dodat');
         },
@@ -61,61 +57,48 @@ export const NonFinanceOfficial = () => {
   };
 
   return (
-    <ScreenWrapper>
-      <Container>
-        <MainTitle content="BUDŽET 2022 - XXXXXXXX " variant="bodyMedium" />
-        <CustomDivider />
+    <Container>
+      <FormProvider {...methods}>
         <SectionWrapper>
           <MainTitle content="OSNOVNE INFORMACIJE" variant="bodyMedium" />
           <InputWrapper>
-            <Input
-              label="Naziv organizacione jedinice:"
-              //TODO check if this should just display data or be editable
-              //{...register('name_of_organization_unit')}
-              //error={errors.name_of_organization_unit?.message as string}
-            />
+            <Input label="Naziv organizacione jedinice:" value={organization_unit?.title ?? ''} disabled />
           </InputWrapper>
           <InputWrapper>
             <Input
               label="Kod:"
-              //TODO check if this should just display data or be editable
-              //{...register('organization_code')}
-              //error={errors.organization_code?.message as string}
+              disabled
+              //TODO send empty string for now
             />
           </InputWrapper>
           <InputWrapper>
-            <Input
-              label="Izjava:"
-              //TODO check if this should just display data or be editable
-              //{...register('mission_statement')}
-              //error={errors.mission_statement?.message as string}
-            />
+            <Input label="Izjava:" {...register('statement')} error={errors.statement?.message as string} />
           </InputWrapper>
         </SectionWrapper>
         <SectionWrapper>
           <MainTitle content="ODGOVORNO LICE ZA SPROVOĐENJE PROGRAMA" variant="bodyMedium" />
           <InputWrapper>
             <InputComponent
-              {...register('person_responsible_name_surname')}
+              {...register('impl_contact_fullname')}
               label="Ime i prezime:"
-              error={errors.person_responsible_name_surname?.message as string}
+              error={errors.impl_contact_fullname?.message as string}
             />
             <Input
-              {...register('person_responsible_working_place')}
+              {...register('impl_contact_working_place')}
               label="Radno mjesto:"
-              error={errors.person_responsible_working_place?.message as string}
+              error={errors.impl_contact_working_place?.message as string}
             />
           </InputWrapper>
           <InputWrapper>
             <InputComponent
-              {...register('person_responsible_telephone_number')}
+              {...register('impl_contact_phone')}
               label="Broj telefona:"
-              error={errors.person_responsible_telephone_number?.message as string}
+              error={errors.impl_contact_phone?.message as string}
             />
             <Input
-              {...register('person_responsible_email')}
+              {...register('impl_contact_email')}
               label="Email adresa:"
-              error={errors.person_responsible_email?.message as string}
+              error={errors.impl_contact_email?.message as string}
             />
           </InputWrapper>
         </SectionWrapper>
@@ -123,49 +106,36 @@ export const NonFinanceOfficial = () => {
           <MainTitle content="KONTAKT OSOBA" variant="bodyMedium" />
           <InputWrapper>
             <InputComponent
-              {...register('contact_person_name_surname')}
+              {...register('contact_fullname')}
               label="Ime i prezime:"
-              error={errors.contact_person_name_surname?.message as string}
+              error={errors.contact_fullname?.message as string}
             />
             <Input
-              {...register('contact_person_working_place')}
+              {...register('contact_working_place')}
               label="Radno mjesto:"
-              error={errors.contact_person_working_place?.message as string}
+              error={errors.contact_working_place?.message as string}
             />
           </InputWrapper>
           <InputWrapper>
             <InputComponent
-              {...register('contact_person_telephone_number')}
+              {...register('contact_phone')}
               label="Broj telefona:"
-              error={errors.contact_person_telephone_number?.message as string}
+              error={errors.contact_phone?.message as string}
             />
             <Input
-              {...register('contact_person_email')}
+              {...register('contact_email')}
               label="Email adresa:"
-              error={errors.contact_person_email?.message as string}
+              error={errors.contact_email?.message as string}
             />
           </InputWrapper>
         </SectionWrapper>
 
-        <ButtonWrapper>
-          <Button content="Završi" variant="primary" onClick={handleSubmit(onSubmit)} />
-        </ButtonWrapper>
-
-        <AddProgramWrapper>
-          <MainTitle content="DODAJTE PROGRAM" variant="bodyMedium" />
-          <PlusIcon stroke={Theme?.palette?.gray800} onClick={handleAddProgram} />
-        </AddProgramWrapper>
-
-        {programs.map(programNo => (
-          <AccordionMainWrapper key={`acc-wrap-${programNo}`}>
-            <NonFinanceAccordion
-              programNo={programNo}
-              key={`acc-${programNo}`}
-              handleDeleteProgram={handleDeleteProgram}
-            />
-          </AccordionMainWrapper>
-        ))}
-      </Container>
-    </ScreenWrapper>
+        <NonFinancialActivitySection activity={budgetRequestDetails?.non_financial.activity} />
+        <Footer>
+          {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
+          <Button content="Sačuvaj" variant="secondary" onClick={handleSubmit(handleSubmitNonFinancial)} />
+        </Footer>
+      </FormProvider>
+    </Container>
   );
 };

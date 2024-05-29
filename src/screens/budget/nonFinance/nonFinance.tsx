@@ -15,7 +15,6 @@ import {Input, Button, PlusIcon, Theme} from 'client-library';
 import {NonFinanceAccordion} from '../../../components/nonFinanceAccordion/nonFinanceAccordion.tsx';
 import {useState} from 'react';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
-import {NonFinanceForm} from '../../../types/nonFinance.ts';
 import useInsertNonFinancial from '../../../services/graphQL/insertNonFinancial/useInsertNonFinancial.ts';
 import useAppContext from '../../../context/useAppContext.ts';
 
@@ -27,7 +26,7 @@ export const NonFinance = () => {
     register,
     formState: {errors, isValid},
     handleSubmit,
-  } = useForm<NonFinanceForm>();
+  } = useForm<any>();
 
   const handleAddProgram = (e: MouseEvent<HTMLElement> | undefined) => {
     e?.preventDefault();
@@ -46,7 +45,7 @@ export const NonFinance = () => {
   };
 
   const {insertNonFinancial} = useInsertNonFinancial();
-  const onSubmit = async (data: NonFinanceForm) => {
+  const onSubmit = async (data: any) => {
     if (isValid) {
       await insertNonFinancial(
         data,

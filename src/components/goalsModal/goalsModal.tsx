@@ -6,7 +6,6 @@ import {GoalsModalProps} from './types';
 import {IndicatorModal} from '../indicatorModal/indicatorModal';
 import useInsertGoals from '../../services/graphQL/insertNonFinancial/goals/useInsertGoals.ts';
 import useAppContext from '../../context/useAppContext.ts';
-import {ProgramGoal} from '../../types/nonFinance.ts';
 
 export const GoalsModal = ({open, onClose, budgetProgramId}: GoalsModalProps) => {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -17,9 +16,9 @@ export const GoalsModal = ({open, onClose, budgetProgramId}: GoalsModalProps) =>
     register,
     formState: {errors, isValid},
     handleSubmit,
-  } = useForm<ProgramGoal>();
+  } = useForm<any>();
 
-  const onSubmit = async (goalData: Partial<ProgramGoal>) => {
+  const onSubmit = async (goalData: Partial<any>) => {
     if (isValid) {
       const data = {...goalData, budget_program_id: budgetProgramId};
 

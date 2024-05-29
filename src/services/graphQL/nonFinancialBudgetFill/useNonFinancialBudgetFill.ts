@@ -10,9 +10,9 @@ const useNonFinancialBudgetFill = () => {
   const nonFinancialBudgetFill = async (data: any, onSuccess?: (item: any) => void, onError?: () => void) => {
     setLoading(true);
 
-    const response: NonFinancialBudgetFillResponse['fill'] = await fetch(GraphQL.nonFinancialBudgetFill, data);
-    if (response?.nonFinancialBudget_Fill?.status === 'success') {
-      onSuccess && onSuccess(response.nonFinancialBudget_Fill.items);
+    const response: NonFinancialBudgetFillResponse['fill'] = await fetch(GraphQL.nonFinancialBudgetFill, {data});
+    if (response?.nonFinancialBudget_Insert?.status === 'success') {
+      onSuccess && onSuccess(response.nonFinancialBudget_Insert.item);
     } else {
       onError && onError();
     }

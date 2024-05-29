@@ -20,6 +20,7 @@ const budgetRequestDetails = `query BudgetRequestsDetails($budget_id: Int!, $uni
                     id
                     title
                 }
+                statement
                 impl_contact_fullname
                 impl_contact_working_place
                 impl_contact_phone
@@ -33,6 +34,11 @@ const budgetRequestDetails = `query BudgetRequestsDetails($budget_id: Int!, $uni
                     description
                     title
                     code
+                    organization_unit{
+                        id
+                        title
+                        code
+                    }
                     sub_program {
                         id
                         title

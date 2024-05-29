@@ -48,10 +48,11 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
     );
   };
 
-  const handleReset = () => {
-    budgetTableCurrentRef.current?.resetForm();
-    budgetTableDonationsRef.current?.resetForm();
-  };
+  // TODO check if needed
+  // const handleReset = () => {
+  //   budgetTableCurrentRef.current?.resetForm();
+  //   budgetTableDonationsRef.current?.resetForm();
+  // };
 
   return (
     <>
@@ -98,7 +99,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
       </TextAreaWrapper>
 
       <Footer>
-        <Button content="Nazad" variant="secondary" onClick={handleReset} />
+        {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
         <Button content="Sačuvaj" variant="secondary" onClick={handleSubmitFinancial} />
       </Footer>
     </>

@@ -37,13 +37,19 @@ type NonFinancialDetails = {
   impl_contact_working_place: string;
   request_id: number;
   status: DropdownData<number>;
+  statement: string;
 };
 
-type Activity = {
+export type Activity = {
   code: string;
   description: string;
   goals: any[]; // Specify the type if goals have a defined structure
   id: number;
   sub_program: DropdownData<number>;
   title: string;
+  organization_unit: {
+    id: number;
+    title: string;
+    code: number;
+  };
 };

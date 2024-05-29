@@ -1,55 +1,43 @@
-export interface NonFinanceForm {
+// This file contains types for non-financial form that manager sends to SSS
+export interface NonFinancialForm {
   id: number;
-  // name_of_organization_unit: string;
-  // organization_code: string;
-  // mission_statement: string;
-  person_responsible_name_surname: string;
-  person_responsible_working_place: string;
-  person_responsible_telephone_number: string;
-  person_responsible_email: string;
-  contact_person_name_surname: string;
-  contact_person_working_place: string;
-  contact_person_telephone_number: string;
-  contact_person_email: string;
-  request_id?: number;
-  // program: {
-  //   id: number;
-  //   description: string;
-  //   title: string;
-  //   code: string;
-  //   goals: {
-  //     id: number;
-  //     description: string;
-  //     title: string;
-  //   }[];
-  // };
-  // subprogram: {
-  //   id: number;
-  //   description: string;
-  //   title: string;
-  //   code: string;
-  //   goals: {
-  //     id: number;
-  //     description: string;
-  //     title: string;
-  //   }[];
-  // };
-  // activity: {
-  //   id: number;
-  //   description: string;
-  //   title: string;
-  //   code: string;
-  //   goals: {
-  //     id: number;
-  //     description: string;
-  //     title: string;
-  //   }[];
-  // };
+  request_id: number;
+  impl_contact_fullname: string;
+  impl_contact_working_place: string;
+  impl_contact_phone: string;
+  impl_contact_email: string;
+  contact_fullname: string;
+  contact_working_place: string;
+  contact_phone: string;
+  contact_email: string;
+  statement: string;
+  goals: Goal[];
 }
 
-export interface ProgramGoal {
+export interface Goal {
   id: number;
-  budget_program_id: number;
   title: string;
   description: string;
+  indicators: Indicator[];
+}
+
+export interface Indicator {
+  id?: number;
+  performance_indicator_code?: string;
+  indicator_source?: string;
+  base_year?: string;
+  gender_equality?: string;
+  base_value?: string;
+  source_of_information?: string;
+  unit_of_measure?: string;
+  indicator_description?: string;
+  planned_value_1?: string;
+  revised_value_1?: string;
+  achieved_value_1?: string;
+  planned_value_2?: string;
+  revised_value_2?: string;
+  achieved_value_2?: string;
+  planned_value_3?: string;
+  revised_value_3?: string;
+  achieved_value_3?: string;
 }

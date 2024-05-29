@@ -295,6 +295,6 @@ export type FinancialBudgetFillResponse = {
 
 export type NonFinancialBudgetFillResponse = {
   fill: {
-    nonFinancialBudget_Fill: GetResponse<any>;
+    nonFinancialBudget_Insert: InsertResponse<any>;
   };
 };

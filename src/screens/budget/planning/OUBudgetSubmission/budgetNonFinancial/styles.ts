@@ -59,3 +59,26 @@ export const AddProgramWrapper = styled.div`
 export const AccordionMainWrapper = styled.div`
   margin-bottom: 20px;
 `;
+
+export const ProgramTitleContainer = styled.div`
+  width: 30%;
+  background-color: ${Theme?.palette?.white};
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  margin-top: 20px;
+`;
+
+export const ProgramTitle = styled(Typography)`
+  padding: 10px 0;
+`;
+
+export const ProgramWrapper = styled.div`
+  background-color: ${Theme?.palette?.white};
+  margin-bottom: 20px;
+  border-radius: 8px;
+`;
+
+export const TextAreaWrapper = styled.div`
+  margin-top: 10px;
+  padding-bottom: 10px;
+`;

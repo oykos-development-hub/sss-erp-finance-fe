@@ -74,7 +74,7 @@ const BudgetSubmissionTabs = () => {
       return <BudgetFinancial budgetRequestDetails={budgetRequestDetails} />;
     if (pathname === `/finance/budget/planning/${id}/non-financial`)
       // return <BudgetNonFinancial budgetRequestDetails={budgetRequestDetails} />;
-      return <NonFinanceOfficial />;
+      return <NonFinanceOfficial budgetRequestDetails={budgetRequestDetails} />;
     // return <NonFinance budgetRequestDetails={budgetRequestDetails} />;
     // return <BudgetNonFinancialOverview />;
 
