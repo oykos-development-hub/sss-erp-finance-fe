@@ -1,6 +1,6 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {Button, Datepicker, Dropdown, Input, Table, TableHead, Typography} from 'client-library';
-import {useEffect, useMemo} from 'react';
+import {Button, Datepicker, Dropdown, Input, Table, TableHead, Typography, FileUpload} from 'client-library';
+import {useEffect, useMemo, useState} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {generateDropdownOptions} from '../../../../constants.ts';
@@ -17,6 +17,11 @@ import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {contractsSchema} from './constants.tsx';
 import {ContractsFormContainer, HalfWidthContainer, Row} from './styles.ts';
 import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
+import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {FileResponseItem} from '../../../../types/fileUploadType.ts';
+import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
+import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
+import FileListComponent from '../../../../components/fileList/fileList.tsx';
 
 type ContractEntryForm = yup.InferType<typeof contractsSchema>;
 interface ContractFormProps {
@@ -27,6 +32,8 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
   const {
     alert,
     navigation: {navigate},
+    contextMain,
+    fileService: {uploadFile},
   } = useAppContext();
 
   const {
@@ -38,6 +45,9 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     setValue,
     formState: {errors},
   } = useForm<ContractEntryForm>({
+    defaultValues: {
+      issuer: contextMain?.organization_unit?.title,
+    },
     resolver: yupResolver(contractsSchema),
   });
   const {
@@ -49,6 +59,8 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     municipality_id,
     supplier_id,
   } = watch();
+
+  const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
 
   const {suppliers} = useGetSuppliers({});
 
@@ -87,7 +99,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
       title: 'Iznos',
       accessor: 'price',
       type: 'custom',
-      renderContents: price => <Typography content={price || ''} />,
+      renderContents: price => <Typography content={roundCurrency(price)} />,
     },
     {
       title: 'Konto',
@@ -164,45 +176,95 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
   const selectedSupplier = suppliersDropdownOptions.find(s => s.id === supplier_id?.id);
   const selectedSupplierEntity = selectedSupplier?.entity;
 
+  const handleUpload = (files: FileList) => {
+    setUploadedFile(files);
+  };
+
   const onSubmit = async (data: any) => {
     if (loading) return;
+    if (uploadedFile) {
+      const formData = new FormData();
+      formData.append('file', uploadedFile[0]);
 
-    const payload = {
-      id: data?.id,
-      invoice_number: data.invoice_number,
-      tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
-      municipality_id: data?.municipality_id?.id,
-      supplier_id: data?.supplier_id?.id,
-      date_of_invoice: parseDateForBackend(data?.date_of_invoice),
-      date_of_start: parseDateForBackend(data?.date_of_start),
-      receipt_date: parseDateForBackend(data?.receipt_date),
-      sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
-      type: 'contracts',
-      supplier_title: data.supplier_title,
-      issuer: data?.issuer,
-      activity_id: data?.activity_id?.id,
-      source_of_funding: data?.source_of_funding?.id,
-      date_of_payment: parseDateForBackend(data?.date_of_payment),
-      description: data?.description,
-      additional_expenses: fields.map((_, index) => ({
-        title: data.additionalExpenses[index]?.title,
-        price: data.additionalExpenses[index]?.price,
-        account_id: data.additionalExpenses[index]?.account?.id,
-        bank_account: data.additionalExpenses[index]?.bank_account.id,
-        subject_id: index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
-      })),
-    };
+      await uploadFile(formData, (files: FileResponseItem[]) => {
+        setUploadedFile(null);
+        const payload = {
+          id: data?.id,
+          invoice_number: data.invoice_number,
+          tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
+          municipality_id: data?.municipality_id?.id,
+          supplier_id: data?.supplier_id?.id,
+          date_of_invoice: parseDateForBackend(data?.date_of_invoice),
+          date_of_start: parseDateForBackend(data?.date_of_start),
+          receipt_date: parseDateForBackend(data?.receipt_date),
+          sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+          type: 'contracts',
+          supplier_title: data.supplier_title,
+          issuer: data?.issuer,
+          activity_id: data?.activity_id?.id,
+          source_of_funding: data?.source_of_funding?.id,
+          date_of_payment: parseDateForBackend(data?.date_of_payment),
+          description: data?.description,
+          file_id: files[0]?.id,
+          additional_expenses: fields.map((_, index) => ({
+            title: data.additionalExpenses[index]?.title,
+            price: data.additionalExpenses[index]?.price,
+            account_id: data.additionalExpenses[index]?.account?.id,
+            bank_account: data.additionalExpenses[index]?.bank_account.id,
+            subject_id:
+              index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
+          })),
+        };
 
-    insertInvoice(
-      payload as any,
-      () => {
-        alert.success('Uspješno dodavanje ugovora.');
-        navigate('/finance/liabilities-receivables/liabilities/contracts');
-      },
-      () => alert.error('Neuspješno dodavanje ugovora.'),
-    );
+        insertInvoice(
+          payload as any,
+          () => {
+            alert.success('Uspješno dodavanje ugovora.');
+            navigate('/finance/liabilities-receivables/liabilities/contracts');
+          },
+          () => alert.error('Neuspješno dodavanje ugovora.'),
+        );
+      });
 
-    return;
+      return;
+    } else {
+      const payload = {
+        id: data?.id,
+        invoice_number: data.invoice_number,
+        tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
+        municipality_id: data?.municipality_id?.id,
+        supplier_id: data?.supplier_id?.id,
+        date_of_invoice: parseDateForBackend(data?.date_of_invoice),
+        date_of_start: parseDateForBackend(data?.date_of_start),
+        receipt_date: parseDateForBackend(data?.receipt_date),
+        sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+        type: 'contracts',
+        supplier_title: data.supplier_title,
+        issuer: data?.issuer,
+        activity_id: data?.activity_id?.id,
+        source_of_funding: data?.source_of_funding?.id,
+        date_of_payment: parseDateForBackend(data?.date_of_payment),
+        description: data?.description,
+        additional_expenses: fields.map((_, index) => ({
+          title: data.additionalExpenses[index]?.title,
+          price: data.additionalExpenses[index]?.price,
+          account_id: data.additionalExpenses[index]?.account?.id,
+          bank_account: data.additionalExpenses[index]?.bank_account.id,
+          subject_id: index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
+        })),
+      };
+
+      insertInvoice(
+        payload as any,
+        () => {
+          alert.success('Uspješno dodavanje ugovora.');
+          navigate('/finance/liabilities-receivables/liabilities/contracts');
+        },
+        () => alert.error('Neuspješno dodavanje ugovora.'),
+      );
+
+      return;
+    }
   };
 
   useEffect(() => {
@@ -405,6 +467,28 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             disabled={contract?.status === 'Na nalogu'}
           />
         </Row>
+        <Row>
+          <FileUploadWrapper>
+            <FileUpload
+              icon={null}
+              files={uploadedFile}
+              variant="secondary"
+              onUpload={handleUpload}
+              note={<Typography variant="bodySmall" content="Ugovor" />}
+              hint={'Fajlovi neće biti učitani dok ne sačuvate ugovor.'}
+              buttonText="Učitaj"
+              disabled={contract?.status === 'Na nalogu'}
+            />
+          </FileUploadWrapper>
+        </Row>
+        <Row>
+          {!!contract?.file.id && (
+            <FileListWrapper>
+              <Typography variant="bodySmall" style={{fontWeight: 600}} content={'UGOVOR:'} />
+              <FileListComponent files={(contract?.file && [contract.file]) ?? []} />
+            </FileListWrapper>
+          )}
+        </Row>
         {!!supplier_id && (
           <>
             <HalfWidthContainer>
@@ -461,7 +545,10 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
                   disabled={
-                    !!previous_income_net || selectedSupplierEntity !== 'employee' || contract?.status === 'Na nalogu'
+                    !!net_price ||
+                    !!previous_income_net ||
+                    selectedSupplierEntity !== 'employee' ||
+                    contract?.status === 'Na nalogu'
                   }
                   error={errors.previous_income_gross?.message}
                 />
@@ -481,7 +568,10 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
                   disabled={
-                    !!previous_income_gross || selectedSupplierEntity !== 'employee' || contract?.status === 'Na nalogu'
+                    !!gross_price ||
+                    !!previous_income_gross ||
+                    selectedSupplierEntity !== 'employee' ||
+                    contract?.status === 'Na nalogu'
                   }
                   error={errors.previous_income_net?.message}
                 />

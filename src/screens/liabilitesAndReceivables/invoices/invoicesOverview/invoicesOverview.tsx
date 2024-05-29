@@ -56,6 +56,7 @@ const InvoicesOverview = () => {
 
   const onDelete = (invoice: InvoiceItem) => {
     setShowDeleteModalInvoiceId(invoice.id);
+    console.log(invoice);
   };
 
   const handleCloseDeleteModal = () => {
@@ -161,7 +162,7 @@ const InvoicesOverview = () => {
             name: 'Izbriši',
             onClick: onDelete,
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => row.status === 'Kreiran' && !row.registred,
+            shouldRender: row => !row.receipt_date && row.status === 'Kreiran' && !row.registred,
           },
         ]}
       />

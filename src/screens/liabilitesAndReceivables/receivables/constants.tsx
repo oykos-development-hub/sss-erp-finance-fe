@@ -71,7 +71,7 @@ export const receivableSchema = yup.object().shape({
   id: yup.number(),
   organization_unit_id: optionsNumberSchema.default(null),
   supplier_id: optionsNumberSchema.default(null),
-  id_of_statement: yup.string().default(null).required(requiredError),
+  id_of_statement: yup.string().nullable(),
   sap_id: yup.string().default(null).nullable(),
   date_of_payment: yup.date().required(requiredError).default(null),
   date_of_sap: yup.date().nullable(),

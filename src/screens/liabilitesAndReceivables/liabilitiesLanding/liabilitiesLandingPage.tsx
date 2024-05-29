@@ -29,7 +29,11 @@ export const LiabilitiesLandingPage: React.FC = () => {
             path={'/finance/liabilities-receivables/liabilities/decisions'}
             icon={<FeesIcon />}
           />
-          <LandingPageContentBox title={'Unos ugovora'} path={'/finance/contracts'} icon={<FlatRateIcon />} />
+          <LandingPageContentBox
+            title={'Unos ugovora'}
+            path={'/finance/liabilities-receivables/liabilities/contracts'}
+            icon={<FlatRateIcon />}
+          />
           <LandingPageContentBox
             title={'Unos zarada'}
             path={'/finance/liabilities-receivables/liabilities/salaries'}

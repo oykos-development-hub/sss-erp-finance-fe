@@ -6,6 +6,7 @@ import {GraphQL} from '../index.ts';
 
 const useInsertEnforcedPayment = () => {
   const [loading, setLoading] = useState(false);
+
   const {fetch} = useAppContext();
 
   const insertEnforcedPayment = async (

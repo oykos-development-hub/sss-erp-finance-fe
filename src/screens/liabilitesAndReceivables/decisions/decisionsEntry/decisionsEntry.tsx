@@ -1,6 +1,6 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {Button, Datepicker, Dropdown, Input, Table, TableHead, Typography} from 'client-library';
-import {useEffect, useMemo} from 'react';
+import {Button, Datepicker, Dropdown, Input, Table, TableHead, Typography, FileUpload} from 'client-library';
+import {useEffect, useMemo, useState} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {generateDropdownOptions} from '../../../../constants.ts';
@@ -18,6 +18,11 @@ import {SourceOfFunding} from '../constants.tsx';
 import {decisionsSchema} from './constants.tsx';
 import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
 import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
+import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
+import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
+import FileListComponent from '../../../../components/fileList/fileList.tsx';
+import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 
 type DecisionEntryForm = yup.InferType<typeof decisionsSchema>;
 interface DecisionFormProps {
@@ -28,6 +33,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   const {
     alert,
     navigation: {navigate},
+    contextMain,
+    fileService: {uploadFile},
   } = useAppContext();
 
   const {
@@ -39,6 +46,9 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     formState: {errors},
     setValue,
   } = useForm<DecisionEntryForm>({
+    defaultValues: {
+      issuer: contextMain?.organization_unit?.title,
+    },
     resolver: yupResolver(decisionsSchema),
   });
   const {
@@ -50,6 +60,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     municipality_id,
     supplier_id,
   } = watch();
+
+  const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
 
   const {suppliers} = useGetSuppliers({});
   const {suppliers: municipalities} = useGetSuppliers({entity: 'municipalities'});
@@ -94,7 +106,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       title: 'Iznos',
       accessor: 'price',
       type: 'custom',
-      renderContents: price => <Typography content={price || ''} />,
+      renderContents: price => <Typography content={roundCurrency(price)} />,
     },
     {
       title: 'Konto',
@@ -164,45 +176,95 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
 
+  const handleUpload = (files: FileList) => {
+    setUploadedFile(files);
+  };
+
   const onSubmit = async (data: any) => {
     if (loading) return;
+    if (uploadedFile) {
+      const formData = new FormData();
+      formData.append('file', uploadedFile[0]);
 
-    const payload = {
-      id: data?.id,
-      invoice_number: data.invoice_number,
-      tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
-      municipality_id: data?.municipality_id?.id,
-      supplier_id: data?.supplier_id?.id,
-      date_of_invoice: parseDateForBackend(data?.date_of_invoice),
-      receipt_date: parseDateForBackend(data?.receipt_date),
-      sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
-      type: 'decisions',
-      type_of_decision: data?.type_of_decision?.id,
-      supplier_title: data.supplier_title,
-      issuer: data?.issuer,
-      activity_id: data?.activity_id?.id,
-      source_of_funding: data?.source_of_funding?.id,
-      date_of_payment: parseDateForBackend(data?.date_of_payment),
-      description: data?.description,
-      additional_expenses: fields.map((_, index) => ({
-        title: data.additionalExpenses[index]?.title,
-        price: data.additionalExpenses[index]?.price,
-        account_id: data.additionalExpenses[index]?.account?.id,
-        bank_account: data.additionalExpenses[index]?.bank_account?.id,
-        subject_id: index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
-      })),
-    };
+      await uploadFile(formData, (files: FileResponseItem[]) => {
+        setUploadedFile(null);
+        const payload = {
+          id: data?.id,
+          invoice_number: data.invoice_number,
+          tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
+          municipality_id: data?.municipality_id?.id,
+          supplier_id: data?.supplier_id?.id,
+          date_of_invoice: parseDateForBackend(data?.date_of_invoice),
+          receipt_date: parseDateForBackend(data?.receipt_date),
+          sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+          type: 'decisions',
+          type_of_decision: data?.type_of_decision?.id,
+          supplier_title: data.supplier_title,
+          issuer: data?.issuer,
+          activity_id: data?.activity_id?.id,
+          source_of_funding: data?.source_of_funding?.id,
+          date_of_payment: parseDateForBackend(data?.date_of_payment),
+          description: data?.description,
+          file_id: files[0]?.id,
+          additional_expenses: fields.map((_, index) => ({
+            title: data.additionalExpenses[index]?.title,
+            price: data.additionalExpenses[index]?.price,
+            account_id: data.additionalExpenses[index]?.account?.id,
+            bank_account: data.additionalExpenses[index]?.bank_account?.id,
+            subject_id:
+              index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
+          })),
+        };
 
-    insertInvoice(
-      payload as any,
-      () => {
-        alert.success('Uspješno dodavanje rješenja.');
-        navigate('/finance/liabilities-receivables/liabilities/decisions');
-      },
-      () => alert.error('Neuspješno dodavanje rješenja.'),
-    );
+        insertInvoice(
+          payload as any,
+          () => {
+            alert.success('Uspješno dodavanje rješenja.');
+            navigate('/finance/liabilities-receivables/liabilities/decisions');
+          },
+          () => alert.error('Neuspješno dodavanje rješenja.'),
+        );
+      });
 
-    return;
+      return;
+    } else {
+      const payload = {
+        id: data?.id,
+        invoice_number: data.invoice_number,
+        tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
+        municipality_id: data?.municipality_id?.id,
+        supplier_id: data?.supplier_id?.id,
+        date_of_invoice: parseDateForBackend(data?.date_of_invoice),
+        receipt_date: parseDateForBackend(data?.receipt_date),
+        sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+        type: 'decisions',
+        type_of_decision: data?.type_of_decision?.id,
+        supplier_title: data.supplier_title,
+        issuer: data?.issuer,
+        activity_id: data?.activity_id?.id,
+        source_of_funding: data?.source_of_funding?.id,
+        date_of_payment: parseDateForBackend(data?.date_of_payment),
+        description: data?.description,
+        additional_expenses: fields.map((_, index) => ({
+          title: data.additionalExpenses[index]?.title,
+          price: data.additionalExpenses[index]?.price,
+          account_id: data.additionalExpenses[index]?.account?.id,
+          bank_account: data.additionalExpenses[index]?.bank_account?.id,
+          subject_id: index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
+        })),
+      };
+
+      insertInvoice(
+        payload as any,
+        () => {
+          alert.success('Uspješno dodavanje rješenja.');
+          navigate('/finance/liabilities-receivables/liabilities/decisions');
+        },
+        () => alert.error('Neuspješno dodavanje rješenja.'),
+      );
+
+      return;
+    }
   };
 
   useEffect(() => {
@@ -404,6 +466,29 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             disabled={decision?.status === 'Na nalogu'}
           />
         </Row>
+        <Row>
+          <FileUploadWrapper>
+            <FileUpload
+              icon={null}
+              files={uploadedFile}
+              variant="secondary"
+              onUpload={handleUpload}
+              note={<Typography variant="bodySmall" content="Rješenje" />}
+              hint={'Fajlovi neće biti učitani dok ne sačuvate rješenje.'}
+              buttonText="Učitaj"
+              disabled={decision?.status === 'Na nalogu'}
+            />
+          </FileUploadWrapper>
+        </Row>
+        <Row>
+          {!!decision?.file.id && (
+            <FileListWrapper>
+              <Typography variant="bodySmall" style={{fontWeight: 600}} content={'RJEŠENJE:'} />
+              <FileListComponent files={(decision?.file && [decision.file]) ?? []} />
+            </FileListWrapper>
+          )}
+        </Row>
+
         {!!supplier_id && (
           <>
             <HalfWidthContainer>
@@ -459,7 +544,10 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
                   disabled={
-                    !!previous_income_net || selectedSupplierEntity !== 'employee' || decision?.status === 'Na nalogu'
+                    !!net_price ||
+                    !!previous_income_net ||
+                    selectedSupplierEntity !== 'employee' ||
+                    decision?.status === 'Na nalogu'
                   }
                   error={errors.previous_income_gross?.message}
                 />
@@ -479,7 +567,10 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
                   disabled={
-                    !!previous_income_gross || selectedSupplierEntity !== 'employee' || decision?.status === 'Na nalogu'
+                    !!gross_price ||
+                    !!previous_income_gross ||
+                    selectedSupplierEntity !== 'employee' ||
+                    decision?.status === 'Na nalogu'
                   }
                   error={errors.previous_income_net?.message}
                 />

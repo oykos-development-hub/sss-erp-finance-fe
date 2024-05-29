@@ -1,5 +1,5 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {Button, Datepicker, Dropdown, Input, Table, TableHead, Typography} from 'client-library';
+import {Button, Datepicker, Dropdown, FileUpload, Input, Table, TableHead, Typography} from 'client-library';
 import {useEffect, useMemo, useState} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
@@ -15,17 +15,19 @@ import Footer from '../../../../shared/footer.ts';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import SectionBox from '../../../../shared/sectionBox.ts';
 import StatusTableCell from '../../../../shared/statusTableCell/statusTableCell.tsx';
+import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
 import {TypesTitles, enforcedPaymentSchema} from '../constants.tsx';
-import {FormContainer, Row} from '../styles.ts';
+import {FileUploadWrapper, FormContainer, Row} from '../styles.ts';
 
 type EnforcedPaymentEntryForm = yup.InferType<typeof enforcedPaymentSchema>;
 
 const EnforcedPaymentEntry = () => {
   const {
     alert,
-    navigation: {navigate},
+    navigation: {navigate, location},
+    fileService: {uploadFile},
   } = useAppContext();
 
   const {
@@ -34,13 +36,18 @@ const EnforcedPaymentEntry = () => {
     handleSubmit,
     watch,
     formState: {errors},
+    setError,
+    clearErrors,
   } = useForm<EnforcedPaymentEntryForm>({
     resolver: yupResolver(enforcedPaymentSchema),
   });
+  const enforcedPaymentID = location.pathname.split('/').at(-1);
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
-  const [amountValue, setAmountValue] = useState<number>();
+  const [totalAmount, setTotalAmount] = useState<string>();
+  const [manualAmount, setManualAmount] = useState<string | null>(null);
   const [totalForPayment, setTotalForPayment] = useState<number>();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
 
   const {organization_unit_id, supplier_id, amount_for_agent, amount_for_lawyer} = watch();
 
@@ -130,36 +137,76 @@ const EnforcedPaymentEntry = () => {
 
   const onSubmit = async (data: any) => {
     if (loading) return;
+    if (uploadedFile) {
+      const formData = new FormData();
+      formData.append('file', uploadedFile[0]);
 
-    const payload = {
-      organization_unit_id: organization_unit_id?.id,
-      supplier_id: supplier_id?.id,
-      amount: Number(amountValue),
-      id_of_statement: data?.id_of_statement,
-      date_of_payment: parseDateForBackend(data?.date_of_payment),
-      description: data?.description,
-      amount_for_lawyer: data?.amount_for_lawyer,
-      amount_for_agent: data?.amount_for_agent,
-      date_of_sap: parseDateForBackend(data?.date_of_sap),
-      sap_id: data?.sap_id,
-      items: fields
-        .filter(field => selectedRows.includes(field.id))
-        .map(item => ({
-          invoice_id: item?.invoice_id || null,
-          account_id: item?.account?.id || null,
-        })),
-    };
+      await uploadFile(formData, (files: FileResponseItem[]) => {
+        setUploadedFile(null);
+        const payload = {
+          organization_unit_id: organization_unit_id?.id,
+          supplier_id: supplier_id?.id,
+          amount: manualAmount ? parseFloat(manualAmount) : totalAmount ? parseFloat(totalAmount) : null,
+          date_of_payment: parseDateForBackend(data?.date_of_payment),
+          description: data?.description,
+          amount_for_lawyer: data?.amount_for_lawyer,
+          amount_for_agent: data?.amount_for_agent,
+          date_of_sap: parseDateForBackend(data?.date_of_sap),
+          sap_id: data?.sap_id,
+          file_id: files[0].id,
+          items: fields
+            .filter(field => selectedRows.includes(field.id))
+            .map(item => ({
+              invoice_id: item?.invoice_id || null,
+              account_id: item?.account?.id || null,
+            })),
+        };
 
-    insertEnforcedPayment(
-      payload,
-      () => {
-        alert.success('Uspješno dodavanje naloga.');
-        navigate('/finance/liabilities-receivables/receivables/enforced-payments');
-      },
-      () => alert.error('Neuspješno dodavanje naloga.'),
-    );
+        insertEnforcedPayment(
+          payload,
+          () => {
+            alert.success('Uspješno dodavanje naloga.');
+            navigate('/finance/liabilities-receivables/receivables/enforced-payments');
+          },
+          () => alert.error('Neuspješno dodavanje naloga.'),
+        );
+      });
 
-    return;
+      return;
+    } else {
+      const payload = {
+        organization_unit_id: organization_unit_id?.id,
+        supplier_id: supplier_id?.id,
+        amount: manualAmount ? parseFloat(manualAmount) : totalAmount ? parseFloat(totalAmount) : null,
+        date_of_payment: parseDateForBackend(data?.date_of_payment),
+        description: data?.description,
+        amount_for_lawyer: data?.amount_for_lawyer,
+        amount_for_agent: data?.amount_for_agent,
+        date_of_sap: parseDateForBackend(data?.date_of_sap),
+        sap_id: data?.sap_id,
+        items: fields
+          .filter(field => selectedRows.includes(field.id))
+          .map(item => ({
+            invoice_id: item?.invoice_id || null,
+            account_id: item?.account?.id || null,
+          })),
+      };
+
+      insertEnforcedPayment(
+        payload,
+        () => {
+          alert.success('Uspješno dodavanje naloga.');
+          navigate('/finance/liabilities-receivables/receivables/enforced-payments');
+        },
+        () => alert.error('Neuspješno dodavanje naloga.'),
+      );
+
+      return;
+    }
+  };
+
+  const handleUpload = (files: FileList) => {
+    setUploadedFile(files);
   };
 
   const onCheck = (checked: boolean, currId: number | null) => {
@@ -171,19 +218,23 @@ const EnforcedPaymentEntry = () => {
   };
 
   const calculateTotalPrice = () => {
-    const relevantFields = fields.filter(field => selectedRows.includes(field.id));
+    if (manualAmount !== null) {
+      setManualAmount(manualAmount);
+    } else {
+      const relevantFields = fields.filter(field => selectedRows.includes(field.id));
 
-    let totalRemainingPrice = 0;
-    relevantFields.forEach(field => {
-      totalRemainingPrice += field.total_price || 0;
-    });
+      let totalRemainingPrice = 0;
+      relevantFields.forEach(field => {
+        totalRemainingPrice += field.total_price || 0;
+      });
 
-    return setAmountValue(totalRemainingPrice);
+      setTotalAmount(roundCurrency(totalRemainingPrice));
+    }
   };
 
   const calculateTotalForPayment = () => {
-    if (amountValue && amount_for_agent && amount_for_lawyer) {
-      const parsedAmountValue = parseFloat(amountValue.toString());
+    if (totalAmount && amount_for_agent && amount_for_lawyer) {
+      const parsedAmountValue = parseFloat(totalAmount.toString());
       const parsedAmountForAgent = parseFloat(amount_for_agent.toString());
       const parsedAmountForLawyer = parseFloat(amount_for_lawyer.toString());
 
@@ -196,6 +247,26 @@ const EnforcedPaymentEntry = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+  };
+
+  const handleAmountChange = (e: any) => {
+    const value = parseFloat(e.target.value);
+    if (isNaN(value)) {
+      setManualAmount('');
+      clearErrors('amount');
+    } else {
+      if (totalAmount) {
+        if (value > parseFloat(totalAmount)) {
+          setError('amount', {
+            type: 'manual',
+            message: 'Iznos za plaćanje ne može biti veći od ukupnog iznosa.',
+          });
+        } else {
+          clearErrors('amount');
+        }
+      }
+      setManualAmount(e.target.value);
+    }
   };
 
   useEffect(() => {
@@ -281,13 +352,15 @@ const EnforcedPaymentEntry = () => {
               <>
                 <>
                   <Row>
-                    <Input
-                      {...register('id_of_statement')}
-                      label="ID NALOGA:"
-                      error={errors.id_of_statement?.message}
-                      style={{width: '350px'}}
-                      isRequired
-                    />
+                    {enforcedPaymentID > 0 && (
+                      <Input
+                        {...register('id_of_statement')}
+                        label="ID NALOGA:"
+                        error={errors.id_of_statement?.message}
+                        style={{width: '350px'}}
+                        disabled
+                      />
+                    )}
                     <Input
                       {...register('sap_id')}
                       label="SAP ID:"
@@ -326,6 +399,19 @@ const EnforcedPaymentEntry = () => {
                     />
                   </Row>
                   <Row>
+                    <FileUploadWrapper>
+                      <FileUpload
+                        icon={null}
+                        files={uploadedFile}
+                        variant="secondary"
+                        onUpload={handleUpload}
+                        note={<Typography variant="bodySmall" content="Dokument" />}
+                        hint={'Fajlovi neće biti učitani dok ne sačuvate prinudnu naplatu.'}
+                        buttonText="Učitaj"
+                      />
+                    </FileUploadWrapper>
+                  </Row>
+                  <Row>
                     <Input {...register('description')} label="OPIS:" textarea placeholder="Unesite opis" />
                   </Row>
                 </>
@@ -337,10 +423,11 @@ const EnforcedPaymentEntry = () => {
                           {...register('amount')}
                           label="Iznos za plaćanje:"
                           error={errors.amount?.message}
-                          value={amountValue ? roundCurrency(amountValue) : ''}
+                          value={manualAmount !== null ? manualAmount : totalAmount ? totalAmount : ''}
                           style={{width: '250px'}}
-                          disabled
+                          onChange={handleAmountChange}
                         />
+
                         <Input
                           {...register('amount_for_lawyer')}
                           label="Troškovi advokata:"

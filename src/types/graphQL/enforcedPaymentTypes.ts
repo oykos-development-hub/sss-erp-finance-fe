@@ -64,7 +64,6 @@ export interface EnforcedPaymentInsertParams {
   amount_for_lawyer?: number | null;
   amount_for_agent?: number | null;
   date_of_payment: string | Date | null;
-  id_of_statement: string;
   items: {
     invoice_id: number | null;
     account_id: number | null;

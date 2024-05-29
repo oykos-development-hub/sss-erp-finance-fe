@@ -41,6 +41,32 @@ interface InvoiceFormProps {
   invoice?: InvoiceItem;
 }
 
+const defaultValues = {
+  id: undefined,
+  invoice_number: '',
+  pro_forma_invoice_number: '',
+  description: '',
+  supplier_id: undefined,
+  order_id: undefined,
+  date_of_invoice: undefined,
+  pro_forma_invoice_date: undefined,
+  receipt_date: undefined,
+  sss_invoice_receipt_date: new Date(),
+  bank_account: undefined,
+  date_of_payment: undefined,
+  type_for_invoice: undefined,
+  is_invoice: {
+    id: true,
+    title: 'Račun',
+  },
+  invoice_type: {id: 'manual', title: 'Ručni unos'},
+  file_id: null,
+  organization_unit_id: undefined,
+  passed_to_accounting: false,
+  passed_to_inventory: false,
+  articles: [],
+};
+
 const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
   const [showFileUploadError, setShowFileUploadError] = useState<boolean>(false);
@@ -63,6 +89,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     setValue,
     reset,
   } = useForm<InvoiceEntryForm>({
+    defaultValues: defaultValues,
     resolver: yupResolver(invoiceSchema),
   });
 
@@ -431,7 +458,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     setValue('order_id', null);
     setValue('invoice_number', '');
     setValue('articles', []);
-    setValue('invoice_type', {id: '', title: ''});
     setValue('date_of_invoice', undefined);
     setValue('receipt_date', undefined);
   };
@@ -444,6 +470,10 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
 
   const passedToInventory = watch('passed_to_inventory');
   const passedToAccounting = watch('passed_to_accounting');
+
+  useEffect(() => {
+    setValue('receipt_date', undefined);
+  }, [passedToInventory, passedToAccounting]);
 
   useEffect(() => {
     if (invoice) {
@@ -634,7 +664,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA ROBE:"
                 onChange={onChange}
-                disabled={(Boolean(selectedOrderOption) && receipt_date) || invoice?.status === 'Na nalogu'}
+                disabled={
+                  invoiceType?.id === 'accounting' ||
+                  invoice?.status === 'Na nalogu' ||
+                  passedToInventory === true ||
+                  passedToAccounting === true
+                }
               />
             )}
           />
@@ -733,7 +768,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="DATUM VALUTE:"
                 onChange={onChange}
                 error={errors?.date_of_payment?.message}
-                isRequired
                 disabled={invoice?.status === 'Na nalogu'}
               />
             )}
@@ -801,7 +835,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         )}
         {isManual && (
           <PlusButtonWrapper>
-            <PlusButton onClick={handleSubmit(handleAddRow)} />
+            <PlusButton onClick={() => handleAddRow()} />
           </PlusButtonWrapper>
         )}
 

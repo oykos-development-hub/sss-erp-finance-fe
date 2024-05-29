@@ -13,8 +13,8 @@ export const invoiceSchema = yup.object().shape({
   pro_forma_invoice_date: yup.date().nullable(),
   receipt_date: yup.date().nullable(),
   sss_invoice_receipt_date: yup.date().required('Datum prijema računa SSS je obavezan.'),
-  bank_account: optionsStringSchema.required(requiredError).default(null),
-  date_of_payment: yup.date().required('Datum valute je obavezan.'),
+  bank_account: optionsStringSchema.required(requiredError),
+  date_of_payment: yup.date().nullable(),
   type_for_invoice: yup
     .object()
     .shape({
@@ -23,8 +23,8 @@ export const invoiceSchema = yup.object().shape({
     })
     .required('Tip računa je obavezan.')
     .nullable(),
-  is_invoice: optionsBooleanSchema.required(requiredError).default(null),
-  invoice_type: optionsStringSchema.required(requiredError).default(null),
+  is_invoice: optionsBooleanSchema.required(requiredError),
+  invoice_type: optionsStringSchema.required(requiredError),
   file_id: yup.number().nullable(),
   organization_unit_id: yup.number(),
   passed_to_accounting: yup.boolean(),

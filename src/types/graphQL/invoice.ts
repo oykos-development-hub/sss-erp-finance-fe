@@ -52,6 +52,11 @@ export interface DecisionItem {
   municipality: DropdownData<number>;
   type_of_contract: DropdownData<number>;
   status: string;
+  file: {
+    id: number;
+    name: string;
+    type: string;
+  };
 }
 
 export interface ContractItem {
@@ -77,6 +82,11 @@ export interface ContractItem {
   municipality: DropdownData<number>;
   type_of_decision: DropdownData<number>;
   status: string;
+  file: {
+    id: number;
+    name: string;
+    type: string;
+  };
 }
 
 export interface InvoiceItem {

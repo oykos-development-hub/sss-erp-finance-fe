@@ -25,7 +25,7 @@ type ReceivableEntryForm = yup.InferType<typeof receivableSchema>;
 const ReceivableEntry = () => {
   const {
     alert,
-    navigation: {navigate},
+    navigation: {navigate, location},
   } = useAppContext();
 
   const {
@@ -39,6 +39,8 @@ const ReceivableEntry = () => {
   } = useForm<ReceivableEntryForm>({
     resolver: yupResolver(receivableSchema),
   });
+
+  const paymentID = location.pathname.split('/').at(-1);
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [amountValue, setAmountValue] = useState<number>();
 
@@ -167,7 +169,6 @@ const ReceivableEntry = () => {
       organization_unit_id: organization_unit_id?.id,
       supplier_id: supplier_id?.id,
       amount: selectedRows.length > 1 ? Number(amountValue) : amount?.toString().replace(',', '.'),
-      id_of_statement: data?.id_of_statement,
       date_of_payment: parseDateForBackend(data?.date_of_payment),
       description: data?.description,
       source_of_funding: data?.source_of_funding?.id,
@@ -344,32 +345,36 @@ const ReceivableEntry = () => {
                     name="source_of_funding"
                     control={control}
                     render={({field: {name, value, onChange}}) => (
-                      <Dropdown
-                        name={name}
-                        value={value}
-                        onChange={onChange}
-                        label="IZVOR SREDSTAVA:"
-                        options={sourceOfFunding}
-                        error={errors.source_of_funding?.message}
-                        isSearchable
-                      />
+                      <div style={{width: '250px'}}>
+                        <Dropdown
+                          name={name}
+                          value={value}
+                          onChange={onChange}
+                          label="IZVOR SREDSTAVA:"
+                          options={sourceOfFunding}
+                          error={errors.source_of_funding?.message}
+                          isSearchable
+                        />
+                      </div>
                     )}
                   />
-                  <Input
-                    {...register('id_of_statement')}
-                    label="ID NALOGA:"
-                    error={errors.id_of_statement?.message}
-                    style={{width: '350px'}}
-                  />
+                  {paymentID > 0 && (
+                    <Input
+                      {...register('id_of_statement')}
+                      label="ID NALOGA:"
+                      error={errors.id_of_statement?.message}
+                      style={{width: '250px'}}
+                      disabled
+                    />
+                  )}
                   <Input
                     {...register('sap_id')}
                     label="SAP ID:"
                     disabled
                     error={errors.sap_id?.message}
-                    style={{width: '350px'}}
+                    style={{width: '250px'}}
                   />
-                </Row>
-                <Row>
+
                   <Controller
                     name={'date_of_sap'}
                     control={control}

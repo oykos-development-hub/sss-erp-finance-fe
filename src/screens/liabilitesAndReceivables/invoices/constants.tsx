@@ -19,12 +19,6 @@ export const invoicesOverviewTableHeads: TableHead[] = [
     renderContents: (date_of_invoice: Date) => <Typography content={parseDate(date_of_invoice)} />,
   },
   {
-    title: 'Datum valute',
-    accessor: 'date_of_payment',
-    type: 'custom',
-    renderContents: (date_of_payment: Date) => <Typography content={parseDate(date_of_payment)} />,
-  },
-  {
     title: 'Broj računa',
     accessor: 'invoice_number',
     type: 'custom',

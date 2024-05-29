@@ -84,7 +84,6 @@ export interface InsertPaymentOrderParams {
   supplier_id?: number;
   amount?: number | string;
   date_of_payment: string | Date | null;
-  id_of_statement: string;
   items: {
     invoice_id: number | null;
     additional_expense_id: number | null;

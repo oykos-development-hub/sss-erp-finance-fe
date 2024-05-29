@@ -20,6 +20,7 @@ import {roundCurrency} from '../../../../utils/roundCurrency.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import {enforcedPaymentSchema} from '../constants.tsx';
 import {CaptionWrapper, FileUploadWrapper, FormContainer, ReturnWrapper, Row} from '../styles.ts';
+import FileListComponent from '../../../../components/fileList/fileList.tsx';
 
 type EnforcedPaymentEntryForm = yup.InferType<typeof enforcedPaymentSchema>;
 
@@ -89,28 +90,61 @@ const EnforcedPaymentsDetails = () => {
 
   const onSubmit = async (data: any) => {
     if (loading) return;
-    const payload = {
-      id: enforcedPaymentID,
-      organization_unit_id: organization_unit_id?.id,
-      supplier_id: supplier_id?.id,
-      amount: enforcedPaymentData?.amount,
-      id_of_statement: data?.id_of_statement,
-      date_of_payment: parseDateForBackend(data?.date_of_payment),
-      description: data?.description,
-      amount_for_lawyer: enforcedPaymentData?.amount_for_lawyer,
-      amount_for_agent: enforcedPaymentData?.amount_for_agent,
-      date_of_sap: parseDateForBackend(data?.date_of_sap),
-      sap_id: data?.sap_id,
-    };
+    if (uploadedFile) {
+      const formData = new FormData();
+      formData.append('file', uploadedFile[0]);
 
-    insertEnforcedPayment(
-      payload as any,
-      () => {
-        alert.success('Uspješno ste izmijenili nalog.');
-        navigate('/finance/liabilities-receivables/receivables/enforced-payments');
-      },
-      () => alert.error('Nije moguće izmijeniti nalog.'),
-    );
+      await uploadFile(formData, (files: FileResponseItem[]) => {
+        setUploadedFile(null);
+        const payload = {
+          id: enforcedPaymentID,
+          organization_unit_id: organization_unit_id?.id,
+          supplier_id: supplier_id?.id,
+          amount: enforcedPaymentData?.amount,
+          date_of_payment: parseDateForBackend(data?.date_of_payment),
+          description: data?.description,
+          amount_for_lawyer: enforcedPaymentData?.amount_for_lawyer,
+          amount_for_agent: enforcedPaymentData?.amount_for_agent,
+          date_of_sap: parseDateForBackend(data?.date_of_sap),
+          sap_id: data?.sap_id,
+          file_id: files[0].id,
+          id_of_statement: enforcedPaymentData?.id_of_statement,
+        };
+        insertEnforcedPayment(
+          payload as any,
+          () => {
+            alert.success('Uspješno ste izmijenili nalog.');
+            navigate('/finance/liabilities-receivables/receivables/enforced-payments');
+          },
+          () => alert.error('Nije moguće izmijeniti nalog.'),
+        );
+      });
+
+      return;
+    } else {
+      const payload = {
+        id: enforcedPaymentID,
+        organization_unit_id: organization_unit_id?.id,
+        supplier_id: supplier_id?.id,
+        amount: enforcedPaymentData?.amount,
+        date_of_payment: parseDateForBackend(data?.date_of_payment),
+        description: data?.description,
+        amount_for_lawyer: enforcedPaymentData?.amount_for_lawyer,
+        amount_for_agent: enforcedPaymentData?.amount_for_agent,
+        date_of_sap: parseDateForBackend(data?.date_of_sap),
+        sap_id: data?.sap_id,
+        id_of_statement: enforcedPaymentData?.id_of_statement,
+      };
+
+      insertEnforcedPayment(
+        payload as any,
+        () => {
+          alert.success('Uspješno ste izmijenili nalog.');
+          navigate('/finance/liabilities-receivables/receivables/enforced-payments');
+        },
+        () => alert.error('Nije moguće izmijeniti nalog.'),
+      );
+    }
   };
 
   const handleUpload = (files: FileList) => {
@@ -270,6 +304,27 @@ const EnforcedPaymentsDetails = () => {
               )}
             />
           </Row>
+          <Row>
+            <FileUploadWrapper>
+              <FileUpload
+                icon={null}
+                files={uploadedFile}
+                variant="secondary"
+                onUpload={handleUpload}
+                note={<Typography variant="bodySmall" content="Dokument" />}
+                hint={'Fajlovi neće biti učitani dok ne sačuvate povraćaj.'}
+                buttonText="Učitaj"
+                disabled={enforcedPaymentData?.status === 'Povraćaj'}
+              />
+            </FileUploadWrapper>
+          </Row>
+          {!!enforcedPaymentData?.file.id && (
+            <FileListWrapper>
+              <Typography variant="bodySmall" style={{fontWeight: 600}} content={'DOKUMENT:'} />
+              <FileListComponent files={(enforcedPaymentData?.file && [enforcedPaymentData.file]) ?? []} />
+            </FileListWrapper>
+          )}
+
           <Row>
             <Input
               {...register('description')}
