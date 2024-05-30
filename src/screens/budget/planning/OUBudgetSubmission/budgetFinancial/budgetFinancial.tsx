@@ -13,6 +13,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
   const {
     contextMain: {organization_unit},
     alert,
+    navigation: {navigate},
   } = useAppContext();
 
   const year = budgetRequestDetails?.budget?.title ? parseInt(budgetRequestDetails.budget.title) : 0;
@@ -21,6 +22,16 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
   const budgetTableDonationsRef = useRef<BudgetTableMethods>(null);
 
   const [comment, setComment] = useState('');
+  const [currentBudgetSuccessfullySaved, setCurrentBudgetSuccessfullySaved] = useState(false);
+  const [donationsBudgetSuccessfullySaved, setDonationsBudgetSuccessfullySaved] = useState(false);
+
+  //TODO unify all statuses in one enum - {id: 3, title: "Na čekanju"}
+  const editingDisabled = budgetRequestDetails?.status?.id === 3;
+
+  useEffect(() => {
+    if (!currentBudgetSuccessfullySaved || !donationsBudgetSuccessfullySaved) return;
+    navigate(`/finance/budget/planning/${budgetRequestDetails?.budget.id}/summary`);
+  }, [currentBudgetSuccessfullySaved, donationsBudgetSuccessfullySaved]);
 
   useEffect(() => {
     if (!budgetRequestDetails) return;
@@ -37,6 +48,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
     financialBudgetFill(
       {data: currentData, request_id: budgetRequestDetails?.financial.current_request_id ?? 0, comment},
       () => {
+        setCurrentBudgetSuccessfullySaved(true);
         alert.success('Uspješno sačuvan tekući budžet.');
       },
       () => {
@@ -46,6 +58,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
     financialBudgetFill(
       {data: donationData, request_id: budgetRequestDetails?.financial.donation_request_id ?? 0, comment},
       () => {
+        setDonationsBudgetSuccessfullySaved(true);
         alert.success('Uspješno sačuvan budžet donacija.');
       },
       () => {
@@ -79,6 +92,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
         year={year}
         countsProps={budgetRequestDetails?.financial.current_accounts}
         ref={budgetTableCurrentRef}
+        isTableDisabled={editingDisabled}
       />
       <Typography
         content={'Donacije:'}
@@ -92,6 +106,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
         year={year}
         countsProps={budgetRequestDetails?.financial.donation_accounts}
         ref={budgetTableDonationsRef}
+        isTableDisabled={editingDisabled}
       />
       <TextAreaWrapper>
         <Input
@@ -102,12 +117,13 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
           label={'Komentar:'}
           textarea
           placeholder={'Dodaj komentar'}
+          disabled={editingDisabled}
         />
       </TextAreaWrapper>
 
       <Footer>
         {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
-        <Button content="Sačuvaj" variant="secondary" onClick={handleSubmitFinancial} />
+        <Button content="Sačuvaj" variant="secondary" onClick={handleSubmitFinancial} disabled={editingDisabled} />
       </Footer>
     </>
   );

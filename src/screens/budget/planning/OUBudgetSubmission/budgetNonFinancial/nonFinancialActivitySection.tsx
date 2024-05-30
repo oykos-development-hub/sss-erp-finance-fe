@@ -17,9 +17,10 @@ import {Activity} from '../../../../../types/graphQL/budgetRequestDetails.ts';
 
 interface NonFinancialActivitySectionProps {
   activity?: Activity;
+  disabled?: boolean;
 }
 
-export const NonFinancialActivitySection = ({activity}: NonFinancialActivitySectionProps) => {
+export const NonFinancialActivitySection = ({activity, disabled}: NonFinancialActivitySectionProps) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const {control} = useFormContext<NonFinancialForm>();
   const {fields, append} = useFieldArray({name: 'goals', control});
@@ -51,7 +52,12 @@ export const NonFinancialActivitySection = ({activity}: NonFinancialActivitySect
           })}
         </>
         <ButtonWrapper>
-          <Button content="Dodajte ciljeve" variant="secondary" onClick={() => setShowModal(prevState => !prevState)} />
+          <Button
+            content="Dodajte ciljeve"
+            variant="secondary"
+            onClick={() => setShowModal(prevState => !prevState)}
+            disabled={disabled}
+          />
         </ButtonWrapper>
       </ProgramWrapper>
       {showModal && (

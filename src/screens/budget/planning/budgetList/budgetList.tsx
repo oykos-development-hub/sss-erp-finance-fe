@@ -143,11 +143,11 @@ const BudgetList = () => {
     {
       name: 'Izmijeni',
       onClick: (row: any) => {
-        if (useRoleCheck(role_id, [UserRole.ADMIN])) {
-          navigate(`/finance/budget/planning/budget-create-${row.year}/${row.id}`);
-        } else {
-          navigate(`/finance/budget/planning/${row.id}/summary`);
-        }
+        // if (useRoleCheck(role_id, [UserRole.ADMIN])) {
+        //   navigate(`/finance/budget/planning/budget-create-${row.year}/${row.id}`);
+        // } else {
+        navigate(`/finance/budget/planning/${row.id}/summary`);
+        // }
       },
       icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
       shouldRender: (row: any) => {

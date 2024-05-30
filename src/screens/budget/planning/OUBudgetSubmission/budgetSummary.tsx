@@ -1,9 +1,11 @@
-import {Button, Table} from 'client-library';
+import {Button, Table, Typography} from 'client-library';
 import useAppContext from '../../../../context/useAppContext';
 import {FooterWrapper} from '../budgetList/styles';
 import {budgetSummaryTableHeads} from './constants';
 import {BudgetRequestItem} from '../../../../types/graphQL/budgetRequestDetails.ts';
 import useSendBudgetOnReview from '../../../../services/graphQL/sendBudgetOnReview/useSendBudgetOnReview.ts';
+import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
+import {useState} from 'react';
 
 const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetRequestItem}) => {
   const {
@@ -14,6 +16,9 @@ const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetReq
     },
     breadcrumbs,
   } = useAppContext();
+
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const toggleModal = () => setShowModal(prevState => !prevState);
 
   const tableData = [
     {
@@ -57,12 +62,14 @@ const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetReq
     sendBudgetOnReview(
       budgetRequestDetails.request_id,
       () => {
+        navigate('/finance/budget/planning');
         alert.success('Uspješno poslat budžet.');
       },
       () => {
         alert.error('Došlo je do greške prilikom slanja budžeta.');
       },
     );
+    toggleModal();
   };
 
   return (
@@ -82,8 +89,27 @@ const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetReq
             breadcrumbs.remove();
           }}
         />
-        <Button content="Pošalji" variant="primary" disabled={!isButtonEnabled} onClick={handleSend} />
+        <Button content="Pošalji" variant="primary" disabled={!isButtonEnabled} onClick={toggleModal} />
       </FooterWrapper>
+      <ConfirmationModal
+        open={showModal}
+        onClose={toggleModal}
+        onConfirm={handleSend}
+        customContent={
+          <>
+            <Typography
+              content="Da li ste sigurni da želite poslati budžet?"
+              variant="bodyMedium"
+              style={{fontWeight: 600, textAlign: 'center'}}
+            />
+            <Typography
+              content={'Naknadne izmjene neće biti moguće.'}
+              variant="bodySmall"
+              style={{textAlign: 'center'}}
+            />
+          </>
+        }
+      />
     </>
   );
 };

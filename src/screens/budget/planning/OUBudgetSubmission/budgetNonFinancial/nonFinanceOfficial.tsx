@@ -14,10 +14,14 @@ export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails
   const {
     alert,
     contextMain: {organization_unit},
+    navigation: {navigate},
   } = useAppContext();
   const {nonFinancialBudgetFill} = useNonFinancialBudgetFill();
 
-  const methods = useForm<NonFinancialForm>();
+  //TODO unify all statuses in one enum - {id: 3, title: "Na čekanju"}
+  const editingDisabled = budgetRequestDetails?.status?.id === 3;
+
+  const methods = useForm<NonFinancialForm>({disabled: editingDisabled});
   const {
     register,
     formState: {isValid, errors},
@@ -47,6 +51,7 @@ export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails
       await nonFinancialBudgetFill(
         {...data, request_id: budgetRequestDetails?.non_financial.request_id},
         () => {
+          navigate(`/finance/budget/planning/${budgetRequestDetails?.budget.id}/summary`);
           alert.success('Nefinansijski dio budžeta uspješno dodat');
         },
         () => {
@@ -130,10 +135,18 @@ export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails
           </InputWrapper>
         </SectionWrapper>
 
-        <NonFinancialActivitySection activity={budgetRequestDetails?.non_financial.activity} />
+        <NonFinancialActivitySection
+          activity={budgetRequestDetails?.non_financial.activity}
+          disabled={editingDisabled}
+        />
         <Footer>
           {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
-          <Button content="Sačuvaj" variant="secondary" onClick={handleSubmit(handleSubmitNonFinancial)} />
+          <Button
+            content="Sačuvaj"
+            variant="secondary"
+            onClick={handleSubmit(handleSubmitNonFinancial)}
+            disabled={editingDisabled}
+          />
         </Footer>
       </FormProvider>
     </Container>
