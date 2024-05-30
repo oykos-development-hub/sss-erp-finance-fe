@@ -6,7 +6,7 @@ import {BudgetTableMethods, BudgetTableStep} from '../../../../../shared/budgetT
 import Footer from '../../../../../shared/footer.ts';
 import useFinancialBudgetFill from '../../../../../services/graphQL/financialBudgetFill/useFinancialBudgetFill.ts';
 import {flattenBudgetData} from '../../../../../shared/budgetTable/utils.ts';
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import BudgetTableFinanceManager from '../../../../../shared/budgetTable/budgetTableFinanceManager.tsx';
 
 const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetRequestItem}) => {
@@ -21,6 +21,12 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
   const budgetTableDonationsRef = useRef<BudgetTableMethods>(null);
 
   const [comment, setComment] = useState('');
+
+  useEffect(() => {
+    if (!budgetRequestDetails) return;
+
+    setComment(budgetRequestDetails?.financial.current_budget_comment ?? '');
+  }, [budgetRequestDetails]);
 
   const {financialBudgetFill} = useFinancialBudgetFill();
 
@@ -92,6 +98,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
           onChange={e => {
             setComment(e.target.value);
           }}
+          value={comment}
           label={'Komentar:'}
           textarea
           placeholder={'Dodaj komentar'}
