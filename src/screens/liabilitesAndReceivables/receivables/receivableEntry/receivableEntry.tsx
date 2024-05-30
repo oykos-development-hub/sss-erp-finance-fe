@@ -43,6 +43,8 @@ const ReceivableEntry = () => {
   const paymentID = location.pathname.split('/').at(-1);
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [amountValue, setAmountValue] = useState<number>();
+  const [totalAmount, setTotalAmount] = useState<string>();
+  const [manualAmount, setManualAmount] = useState<string | null>(null);
 
   const {organization_unit_id, supplier_id, type, amount} = watch();
 
@@ -137,14 +139,6 @@ const ReceivableEntry = () => {
   const validateAmount = (fields: any, amount?: number | null) => {
     const selectedRow = fields.filter((field: Items) => selectedRows.includes(field.id));
 
-    if (selectedRows.length === 1 && !amount) {
-      setError('amount', {
-        type: 'manual',
-        message: 'Ovo polje je obavezno.',
-      });
-      return false;
-    }
-
     if (amount && amount > selectedRow[0].remain_price) {
       setError('amount', {
         type: 'manual',
@@ -168,7 +162,14 @@ const ReceivableEntry = () => {
     const payload = {
       organization_unit_id: organization_unit_id?.id,
       supplier_id: supplier_id?.id,
-      amount: selectedRows.length > 1 ? Number(amountValue) : amount?.toString().replace(',', '.'),
+      amount:
+        selectedRows.length > 1
+          ? Number(amountValue)
+          : manualAmount
+          ? manualAmount.replace(',', '.')
+          : totalAmount
+          ? parseFloat(totalAmount)
+          : null,
       date_of_payment: parseDateForBackend(data?.date_of_payment),
       description: data?.description,
       source_of_funding: data?.source_of_funding?.id,
@@ -237,6 +238,21 @@ const ReceivableEntry = () => {
     return () => false;
   };
 
+  const calculateTotalPrice = () => {
+    if (manualAmount !== null) {
+      setManualAmount(manualAmount);
+    } else {
+      const relevantFields = fields.filter(field => selectedRows.includes(field.id));
+
+      let totalRemainingPrice = 0;
+      relevantFields.forEach(field => {
+        totalRemainingPrice += field.remain_price || 0;
+      });
+
+      setTotalAmount(roundCurrency(totalRemainingPrice));
+    }
+  };
+
   const calculateTotalRemainingPrice = () => {
     const relevantFields = fields.filter(field => selectedRows.includes(field.id));
 
@@ -247,6 +263,41 @@ const ReceivableEntry = () => {
 
     return setAmountValue(totalRemainingPrice);
   };
+
+  const handleAmountChange = (e: any) => {
+    const value = e.target.value.trim();
+
+    if (!value) {
+      setManualAmount('');
+      setError('amount', {
+        type: 'manual',
+        message: 'Polje iznos je obavezno.',
+      });
+      return;
+    }
+    const numericValue = parseFloat(value);
+
+    if (isNaN(numericValue)) {
+      setManualAmount('');
+      clearErrors('amount');
+    } else {
+      if (totalAmount) {
+        if (numericValue > parseFloat(totalAmount)) {
+          setError('amount', {
+            type: 'manual',
+            message: 'Iznos za plaćanje ne može biti veći od ukupnog iznosa.',
+          });
+        } else {
+          clearErrors('amount');
+        }
+      }
+      setManualAmount(value);
+    }
+  };
+
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [selectedRows]);
 
   useEffect(() => {
     if (obligations) {
@@ -417,7 +468,9 @@ const ReceivableEntry = () => {
                       {...register('amount')}
                       label="Iznos za plaćanje:"
                       error={errors.amount?.message}
+                      value={manualAmount !== null ? manualAmount : totalAmount ? totalAmount : ''}
                       style={{width: '250px'}}
+                      onChange={handleAmountChange}
                     />
                   )}
                   {selectedRows.length > 1 && (

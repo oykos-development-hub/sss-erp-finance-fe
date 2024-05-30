@@ -22,6 +22,7 @@ import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import FileListComponent from '../../../../components/fileList/fileList.tsx';
+import {MainTitle} from '../../../../shared/pageElements.ts';
 
 type ContractEntryForm = yup.InferType<typeof contractsSchema>;
 interface ContractFormProps {
@@ -96,12 +97,6 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
 
   const additionalExpensesTableHeads: TableHead[] = [
     {
-      title: 'Iznos',
-      accessor: 'price',
-      type: 'custom',
-      renderContents: price => <Typography content={roundCurrency(price)} />,
-    },
-    {
       title: 'Konto',
       accessor: 'account',
       type: 'custom',
@@ -125,6 +120,12 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
       ),
     },
     {title: 'Opis', accessor: 'title'},
+    {
+      title: 'Iznos',
+      accessor: 'price',
+      type: 'custom',
+      renderContents: price => <Typography content={roundCurrency(price)} />,
+    },
     {
       title: 'Subjekat',
       accessor: 'subject',
@@ -586,7 +587,20 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
           </>
         )}
 
-        {!!fields.length && <Table tableHeads={additionalExpensesTableHeads} data={fields} />}
+        {!!fields.length && (
+          <>
+            {' '}
+            <Table tableHeads={additionalExpensesTableHeads} data={fields} />
+            {!!contract && contract?.net_price && contract?.vat_price && (
+              <Row>
+                <MainTitle
+                  content={`Ukupno: ${roundCurrency(contract?.net_price + contract?.vat_price)}`}
+                  style={{marginTop: 20, marginLeft: 10}}
+                />
+              </Row>
+            )}{' '}
+          </>
+        )}
         <Footer>
           <Button
             content="Odustani"

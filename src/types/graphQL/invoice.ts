@@ -52,6 +52,8 @@ export interface DecisionItem {
   municipality: DropdownData<number>;
   type_of_contract: DropdownData<number>;
   status: string;
+  net_price?: number;
+  vat_price?: number;
   file: {
     id: number;
     name: string;
@@ -68,6 +70,8 @@ export interface ContractItem {
     id: number;
     title: string;
   };
+  net_price?: number;
+  vat_price?: number;
   date_of_invoice: string | Date;
   sss_invoice_receipt_date: Date;
   date_of_payment: string | Date;

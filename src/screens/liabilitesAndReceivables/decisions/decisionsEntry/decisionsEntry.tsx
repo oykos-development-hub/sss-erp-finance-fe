@@ -23,6 +23,7 @@ import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import FileListComponent from '../../../../components/fileList/fileList.tsx';
 import {FileResponseItem} from '../../../../types/fileUploadType.ts';
+import {MainTitle} from '../../../../shared/pageElements.ts';
 
 type DecisionEntryForm = yup.InferType<typeof decisionsSchema>;
 interface DecisionFormProps {
@@ -103,12 +104,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
 
   const additionalExpensesTableHeads: TableHead[] = [
     {
-      title: 'Iznos',
-      accessor: 'price',
-      type: 'custom',
-      renderContents: price => <Typography content={roundCurrency(price)} />,
-    },
-    {
       title: 'Konto',
       accessor: 'account',
       type: 'custom',
@@ -132,6 +127,12 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       ),
     },
     {title: 'Opis', accessor: 'title'},
+    {
+      title: 'Iznos',
+      accessor: 'price',
+      type: 'custom',
+      renderContents: price => <Typography content={roundCurrency(price)} />,
+    },
     {
       title: 'Subjekat',
       accessor: 'subject',
@@ -311,6 +312,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
           id: decision.tax_authority_codebook.id,
           title: decision.tax_authority_codebook.title,
         },
+        net_price: decision?.net_price,
+        vat_price: decision?.vat_price,
         additionalExpenses: decision.additional_expenses.map((_, index) => ({
           id: decision.additional_expenses[index]?.id,
           title: decision.additional_expenses[index]?.title,
@@ -585,8 +588,19 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
           </>
         )}
 
-        {!!fields.length && <Table tableHeads={additionalExpensesTableHeads} data={fields} />}
-
+        {!!fields.length && (
+          <>
+            <Table tableHeads={additionalExpensesTableHeads} data={fields} />
+            {!!decision && decision?.net_price && decision?.vat_price && (
+              <Row>
+                <MainTitle
+                  content={`Ukupno: ${roundCurrency(decision?.net_price + decision?.vat_price)}`}
+                  style={{marginTop: 20, marginLeft: 10}}
+                />
+              </Row>
+            )}
+          </>
+        )}
         <Footer>
           <Button
             content="Odustani"

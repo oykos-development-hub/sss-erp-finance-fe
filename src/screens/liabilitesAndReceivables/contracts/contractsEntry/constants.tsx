@@ -33,6 +33,7 @@ export const contractsSchema = yup.object().shape({
   receipt_date: yup.date().nullable(),
   description: yup.string().nullable(),
   date_of_start: yup.date().required(requiredError),
+  vat_price: yup.number().nullable(),
   additionalExpenses: yup
     .array()
     .of(

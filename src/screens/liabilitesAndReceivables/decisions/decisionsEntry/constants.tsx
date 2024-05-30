@@ -33,18 +33,16 @@ export const decisionsSchema = yup.object().shape({
   date_of_invoice: yup.date().required(requiredError),
   receipt_date: yup.date().nullable(),
   description: yup.string().nullable(),
-  additionalExpenses: yup
-    .array()
-    .of(
-      yup.object().shape({
-        id: yup.number().default(null),
-        title: yup.string(),
-        price: yup.number(),
-        subject: optionsNumberSchema.default(null),
-        bank_account: optionsStringSchema.required(requiredError),
-        organization_unit_id: optionsNumberSchema.default(null),
-        account: optionsNumberSchema.required(requiredError).default(null),
-      }),
-    )
-    .nullable(),
+  vat_price: yup.number().nullable(),
+  additionalExpenses: yup.array().of(
+    yup.object().shape({
+      id: yup.number().default(null),
+      title: yup.string(),
+      price: yup.number(),
+      subject: optionsNumberSchema.default(null),
+      bank_account: optionsStringSchema.required(requiredError),
+      organization_unit_id: optionsNumberSchema.default(null),
+      account: optionsNumberSchema.required(requiredError).default(null),
+    }),
+  ),
 });

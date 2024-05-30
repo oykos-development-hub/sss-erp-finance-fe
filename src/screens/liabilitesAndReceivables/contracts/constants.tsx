@@ -2,6 +2,7 @@ import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {ExtendedTab, StatusOptions} from '../../../constants.ts';
+import {roundCurrency} from '../../../utils/roundCurrency.ts';
 
 export enum Tabs {
   ContractOverview = 1,
@@ -48,7 +49,16 @@ export const contractsOverviewTableHeads: TableHead[] = [
     title: 'Neto iznos',
     accessor: 'net_price',
     type: 'custom',
-    renderContents: net_price => <Typography content={net_price ? net_price?.toFixed(2) : ''} />,
+    renderContents: net_price => <Typography content={roundCurrency(net_price)} />,
+  },
+  {
+    title: 'Bruto iznos',
+    accessor: '',
+    type: 'custom',
+    renderContents: (_, row) => {
+      const brutoPrice = row?.net_price + row?.vat_price;
+      return <Typography content={roundCurrency(brutoPrice)} />;
+    },
   },
   {
     title: 'Status',
