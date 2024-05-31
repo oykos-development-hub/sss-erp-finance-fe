@@ -599,7 +599,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
 
   useEffect(() => {
     if (!bankAccounts.length) return;
-    setValue(`bank_account`, bankAccounts[0]);
+    setValue('bank_account', bankAccounts[0]);
   }, [supplier_id?.id]);
 
   return (
