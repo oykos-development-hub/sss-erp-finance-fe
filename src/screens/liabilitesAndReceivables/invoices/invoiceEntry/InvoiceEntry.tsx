@@ -22,18 +22,16 @@ import useInsertInvoice from '../../../../services/graphQL/invoice/useInsertInvo
 import useGetOrderList from '../../../../services/graphQL/orders/useGetOrders.ts';
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
-import {FlexRow} from '../../../../shared/flex.ts';
 import Footer from '../../../../shared/footer.ts';
 import PlusButton from '../../../../shared/plusButton.tsx';
 import {FileItem, FileResponseItem} from '../../../../types/fileUploadType.ts';
+import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
+import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {pdvOptions} from '../constants';
 import {FileListWrapper} from '../invoicesOverview/styles.ts';
 import {invoiceSchema} from './constants.tsx';
 import {InvoiceEntryForm, PlusButtonWrapper, Row, StyledSwitch} from './styles';
 import {TypeOptions, invoiceTypeOptions} from './types.ts';
-import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
-import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import {DropdownData} from '../../../../types/dropdownData.ts';
 
 type InvoiceEntryForm = yup.InferType<typeof invoiceSchema>;
 
@@ -69,6 +67,7 @@ const defaultValues = {
 
 const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
+  const [uploadedFileProForma, setUploadedFileProForma] = useState<FileList | null>(null);
   const [showFileUploadError, setShowFileUploadError] = useState<boolean>(false);
   const [accountingInvoiceFile, setAccountingInvoiceFile] = useState<FileItem | null>(null);
   const [accountingProFormaInvoiceFile, setAccountingProFormaInvoiceFile] = useState<FileItem | null>(null);
@@ -88,19 +87,33 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     formState: {errors},
     setValue,
     reset,
+    setError,
+    clearErrors,
   } = useForm<InvoiceEntryForm>({
     defaultValues: defaultValues,
     resolver: yupResolver(invoiceSchema),
   });
 
-  const selectedOrderOption = watch('order_id')?.id;
-
-  const [invoiceType, invoice_number, date_of_invoice, receipt_date, pro_forma_invoice_date] = watch([
+  const [
+    invoiceType,
+    invoice_number,
+    date_of_invoice,
+    receipt_date,
+    pro_forma_invoice_date,
+    supplier_id,
+    order_id,
+    sss_pro_forma_invoice_receipt_date,
+    sss_invoice_receipt_date,
+  ] = watch([
     'invoice_type',
     'invoice_number',
     'date_of_invoice',
     'receipt_date',
     'pro_forma_invoice_date',
+    'supplier_id',
+    'order_id',
+    'sss_pro_forma_invoice_receipt_date',
+    'sss_invoice_receipt_date',
   ]);
 
   const {fields, append, remove} = useFieldArray({name: 'articles', control});
@@ -109,7 +122,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
 
   const {suppliers} = useGetSuppliers({});
   const {orders} = useGetOrderList({
-    supplier_id: watch('supplier_id')?.id,
+    supplier_id: supplier_id?.id,
     finance_overview: true,
     page: 1,
     size: 1000,
@@ -123,6 +136,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   const dropdowncountsOptions = useMemo(() => {
     return generateDropdownOptions(counts);
   }, [counts]);
+
+  const handleUploadProForma = (files: FileList) => {
+    setUploadedFileProForma(files);
+    setShowFileUploadError(false);
+  };
 
   const handleUpload = (files: FileList) => {
     setUploadedFile(files);
@@ -142,7 +160,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 {...register(`articles.${index}.title`)}
                 style={{minWidth: '100px'}}
                 error={errors.articles?.[index]?.title?.message}
-                disabled={invoice?.status == 'Na nalogu'}
+                disabled={invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
               />
             );
           } else {
@@ -161,7 +179,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               style={{minWidth: '100px'}}
               leftContent={<>Є</>}
               error={errors.articles?.[index]?.net_price?.message}
-              disabled={!isManual || invoice?.status == 'Na nalogu'}
+              disabled={!isManual || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
             />
           );
         },
@@ -183,7 +201,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                       name={name}
                       value={value as any}
                       onChange={onChange}
-                      isDisabled={invoice?.status == 'Na nalogu'}
+                      isDisabled={invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
                     />
                   </div>
                 )}
@@ -215,7 +233,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               {...register(`articles.${index}.amount`)}
               style={{minWidth: '100px'}}
               error={errors.articles?.[index]?.amount?.message}
-              disabled={!isManual || invoice?.status == 'Na nalogu'}
+              disabled={!isManual || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
             />
           );
         },
@@ -247,7 +265,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                   value={value as any}
                   onChange={onChange}
                   error={errors.articles?.[index]?.account?.message}
-                  isDisabled={invoice?.status == 'Na nalogu'}
+                  isDisabled={invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
                 />
               </div>
             )}
@@ -264,7 +282,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               <Input
                 {...register(`articles.${index}.description`)}
                 style={{minWidth: '200px'}}
-                disabled={invoice?.status == 'Na nalogu'}
+                disabled={invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
               />
             );
           } else {
@@ -310,6 +328,24 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   const onSubmit = async (data: any) => {
     if (loading) return;
 
+    if (type.id === false && !sss_pro_forma_invoice_receipt_date) {
+      setError('sss_pro_forma_invoice_receipt_date', {
+        type: 'manual',
+        message: 'Ovo polje je obavezno.',
+      });
+    } else {
+      clearErrors('sss_pro_forma_invoice_receipt_date');
+    }
+
+    if (type.id === true && !sss_invoice_receipt_date) {
+      setError('sss_invoice_receipt_date', {
+        type: 'manual',
+        message: 'Ovo polje je obavezno.',
+      });
+    } else {
+      clearErrors('sss_invoice_receipt_date');
+    }
+
     if (uploadedFile) {
       setShowFileUploadError(false);
 
@@ -318,17 +354,69 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
 
       await uploadFile(formData, (files: FileResponseItem[]) => {
         setUploadedFile(null);
+
         const payload = {
           id: data?.id,
           supplier_id: data?.supplier_id?.id,
-          order_id: selectedOrderOption,
+          order_id: order_id,
           is_invoice: data.is_invoice.id,
-          file_id: type.id === true ? files[0].id : null,
-          pro_forma_invoice_file_id: type.id === false ? files[0].id : null,
+          file_id: files[0].id,
+          pro_forma_invoice_file_id: invoice?.pro_forma_invoice_file?.id || null,
           invoice_number: invoice_number,
           date_of_invoice: date_of_invoice ? parseDateForBackend(date_of_invoice) : null,
           receipt_date: receipt_date ? parseDateForBackend(receipt_date) : null,
           sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+          sss_pro_forma_invoice_receipt_date: parseDateForBackend(data?.sss_pro_forma_invoice_receipt_date),
+          bank_account: data?.bank_account?.id,
+          date_of_payment: parseDateForBackend(data?.date_of_payment),
+          description: data?.description,
+          passed_to_accounting: data?.passed_to_accounting,
+          passed_to_inventory: data?.passed_to_inventory,
+          type: 'invoices',
+          organization_unit_id: contextMain?.organization_unit?.id,
+          pro_forma_invoice_number: data?.pro_forma_invoice_number,
+          pro_forma_invoice_date: pro_forma_invoice_date ? parseDateForBackend(pro_forma_invoice_date) : null,
+          articles: fields.map((_, index) => ({
+            title: data.articles[index]?.title,
+            net_price: data.articles[index]?.net_price,
+            description: data.articles[index]?.description,
+            account_id: data.articles[index]?.account?.id,
+            vat_percentage: data.articles[index]?.vat_percentage?.id,
+            amount: data.articles[index]?.amount,
+          })),
+        };
+        insertInvoice(
+          payload,
+          () => {
+            alert.success('Uspješno dodavanje računa.');
+            navigate('/finance/liabilities-receivables/liabilities/invoices');
+          },
+          () => alert.error('Neuspješno dodavanje računa.'),
+        );
+      });
+
+      return;
+    } else if (uploadedFileProForma) {
+      setShowFileUploadError(false);
+
+      const formData = new FormData();
+      formData.append('file', uploadedFileProForma[0]);
+
+      await uploadFile(formData, (files: FileResponseItem[]) => {
+        setUploadedFileProForma(null);
+
+        const payload = {
+          id: data?.id,
+          supplier_id: data?.supplier_id?.id,
+          order_id: order_id,
+          is_invoice: data.is_invoice.id,
+          file_id: invoice?.file?.id || null,
+          pro_forma_invoice_file_id: files[0].id,
+          invoice_number: invoice_number,
+          date_of_invoice: date_of_invoice ? parseDateForBackend(date_of_invoice) : null,
+          receipt_date: receipt_date ? parseDateForBackend(receipt_date) : null,
+          sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+          sss_pro_forma_invoice_receipt_date: parseDateForBackend(data?.sss_pro_forma_invoice_receipt_date),
           bank_account: data?.bank_account?.id,
           date_of_payment: parseDateForBackend(data?.date_of_payment),
           description: data?.description,
@@ -365,13 +453,14 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         id: data?.id,
         is_invoice: data.is_invoice?.id,
         supplier_id: data?.supplier_id?.id,
-        order_id: selectedOrderOption,
+        order_id: order_id,
         file_id: invoice?.file?.id || null,
         pro_forma_invoice_file_id: invoice?.pro_forma_invoice_file?.id,
         invoice_number: invoice_number,
         date_of_invoice: date_of_invoice ? parseDateForBackend(date_of_invoice) : null,
         receipt_date: receipt_date ? parseDateForBackend(receipt_date) : null,
         sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+        sss_pro_forma_invoice_receipt_date: parseDateForBackend(data?.sss_pro_forma_invoice_receipt_date),
         bank_account: data?.bank_account?.id,
         date_of_payment: parseDateForBackend(data?.date_of_payment),
         organization_unit_id: contextMain?.organization_unit?.id,
@@ -412,8 +501,8 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
 
   useEffect(() => {
     // * When order is selected, invoice number, date of invoice, receipt date and articles are set from its values
-    if (selectedOrderOption) {
-      const selectedOrder = orders.find(order => order.id === selectedOrderOption)!;
+    if (order_id) {
+      const selectedOrder = orders.find(order => order.id === order_id)!;
 
       if (!selectedOrder) return;
 
@@ -443,19 +532,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         }
       }
     }
-  }, [selectedOrderOption]);
-
-  const dropdownOrderOptions = useMemo(() => {
-    return orders?.map(item => {
-      return {
-        id: item.id,
-        title: item.invoice_number,
-      };
-    });
-  }, [orders]);
+  }, [order_id]);
 
   const resetFormValues = () => {
-    setValue('order_id', null);
     setValue('invoice_number', '');
     setValue('articles', []);
     setValue('date_of_invoice', undefined);
@@ -487,7 +566,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             ? {id: 'accounting', title: 'Materijalno knjigovodstvo'}
             : {id: 'manual', title: 'Ručni unos'},
         supplier_id: {id: invoice.supplier.id, title: invoice.supplier.title},
-        order_id: dropdownOrderOptions.find((ord: DropdownData<number>) => ord?.id === invoice.order_id),
+        order_id: invoice.order_id,
         file_id: invoice.file.id,
         is_invoice: invoice.is_invoice === false ? {id: false, title: 'Predračun'} : {id: true, title: 'Račun'},
         invoice_number: invoice.invoice_number,
@@ -514,6 +593,14 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
       });
     }
   }, [invoice]);
+
+  const supplierOptions = suppliers?.find(supplier => supplier.id === supplier_id?.id);
+  const bankAccounts = supplierOptions?.bank_accounts.map(account => ({id: account, title: account})) ?? [];
+
+  useEffect(() => {
+    if (!bankAccounts.length) return;
+    setValue(`bank_account`, bankAccounts[0]);
+  }, [supplier_id?.id]);
 
   return (
     <InvoiceEntryForm>
@@ -549,12 +636,10 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 options={type?.id === false ? [invoiceTypeOptions[0]] : invoiceTypeOptions}
                 error={errors?.invoice_type?.message}
                 isRequired
-                isDisabled={type === undefined || invoice !== undefined}
+                isDisabled
               />
             )}
           />
-        </Row>
-        <Row>
           <Controller
             name="supplier_id"
             control={control}
@@ -566,55 +651,31 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="DOBAVLJAČ:"
                 placeholder="Odaberite ime dobavljača"
                 options={suppliers}
-                isDisabled={type === undefined || invoice?.status === 'Na nalogu'}
+                isDisabled={
+                  type === undefined || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                }
                 error={errors?.supplier_id?.message}
                 isRequired
               />
             )}
           />
-          <Controller
-            name="order_id"
-            control={control}
-            render={({field: {name, value, onChange}}) => (
-              <Dropdown
-                name={name}
-                value={value}
-                onChange={onChange}
-                label="NARUDŽBENICA:"
-                placeholder="Odaberite narudžbenicu"
-                options={dropdownOrderOptions}
-                isDisabled={isManual || isManual === undefined || invoice?.status === 'Na nalogu'}
-                error={errors?.order_id?.message}
-              />
-            )}
-          />
-
+          <Input {...register('order_id')} label="NARUDŽBENICA:" disabled />
+        </Row>
+        <Row>
           <Input
             {...register('pro_forma_invoice_number')}
             label="BROJ PREDRAČUNA:"
             placeholder="Unesite broj računa"
             error={errors?.invoice_number?.message}
             isRequired
-            disabled={type?.id === true || Boolean(selectedOrderOption) || invoice?.status === 'Na nalogu'}
+            disabled={
+              type?.id === true ||
+              Boolean(order_id) ||
+              invoice?.status === 'Na nalogu' ||
+              invoice?.status === 'Djelimično na nalogu'
+            }
           />
 
-          <Input
-            {...register('invoice_number')}
-            label="BROJ RAČUNA:"
-            placeholder="Unesite broj računa"
-            disabled={
-              (!invoice && type?.id === false) ||
-              (!invoice && type?.id === true && !isManual) ||
-              (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_number) ||
-              (invoice?.status === 'Na nalogu' && invoice?.is_invoice)
-            }
-            error={errors?.invoice_number?.message}
-            isRequired
-          />
-        </Row>
-        {/* TODO: This date is being added by the accountant of SSS */}
-        {/* Flex row shared flex component is being tested here */}
-        <FlexRow gap="0.5rem" justify="between" style={{marginBottom: 25}} stretchChildren>
           <Controller
             name="pro_forma_invoice_date"
             control={control}
@@ -626,15 +687,29 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 onChange={onChange}
                 disabled={
                   type?.id === true ||
-                  (Boolean(selectedOrderOption) && pro_forma_invoice_date) ||
-                  invoice?.status === 'Na nalogu'
+                  (Boolean(order_id) && pro_forma_invoice_date) ||
+                  invoice?.status === 'Na nalogu' ||
+                  invoice?.status === 'Djelimično na nalogu'
                 }
                 error={errors?.date_of_invoice?.message}
                 isRequired
               />
             )}
           />
-
+          <Input
+            {...register('invoice_number')}
+            label="BROJ RAČUNA:"
+            placeholder="Unesite broj računa"
+            disabled={
+              (!invoice && type?.id === false) ||
+              (!invoice && type?.id === true && !isManual) ||
+              (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_number) ||
+              (invoice?.status === 'Na nalogu' && invoice?.is_invoice) ||
+              invoice?.status === 'Djelimično na nalogu'
+            }
+            error={errors?.invoice_number?.message}
+            isRequired
+          />
           <Controller
             name="date_of_invoice"
             control={control}
@@ -648,13 +723,16 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                   (!invoice && type?.id === false) ||
                   (!invoice && type?.id === true && !isManual) ||
                   (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_date) ||
-                  (invoice?.status === 'Na nalogu' && invoice?.is_invoice)
+                  (invoice?.status === 'Na nalogu' && invoice?.is_invoice) ||
+                  invoice?.status === 'Djelimično na nalogu'
                 }
                 error={errors?.date_of_invoice?.message}
                 isRequired
               />
             )}
           />
+        </Row>
+        <Row>
           <Controller
             name="receipt_date"
             control={control}
@@ -668,7 +746,28 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                   invoiceType?.id === 'accounting' ||
                   invoice?.status === 'Na nalogu' ||
                   passedToInventory === true ||
-                  passedToAccounting === true
+                  passedToAccounting === true ||
+                  invoice?.status === 'Djelimično na nalogu'
+                }
+              />
+            )}
+          />
+          <Controller
+            name="sss_pro_forma_invoice_receipt_date"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Datepicker
+                name={name}
+                selected={value ? new Date(value) : ''}
+                label={'DATUM PRIJEMA PREDRAČUNA SSS'}
+                onChange={onChange}
+                error={errors?.sss_pro_forma_invoice_receipt_date?.message}
+                isRequired
+                disabled={
+                  type?.id === true ||
+                  invoice?.status === 'Na nalogu' ||
+                  invoice?.status === 'Djelimično na nalogu' ||
+                  (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_date)
                 }
               />
             )}
@@ -680,29 +779,41 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               <Datepicker
                 name={name}
                 selected={value ? new Date(value) : ''}
-                label={type?.id === false ? 'DATUM PRIJEMA PREDRAČUNA SSS' : 'DATUM PRIJEMA RAČUNA SSS:'}
+                label={'DATUM PRIJEMA RAČUNA SSS:'}
                 onChange={onChange}
                 error={errors?.sss_invoice_receipt_date?.message}
                 isRequired
-                disabled={invoice?.status === 'Na nalogu'}
+                disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
               />
             )}
           />
-        </FlexRow>
-        {isManual && (
+        </Row>
+        {((order_id !== 0 && type?.id === false && isManual) ||
+          (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_date)) && (
+          <FileUploadWrapper>
+            <FileUpload
+              icon={null}
+              files={uploadedFileProForma}
+              disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+              variant="secondary"
+              onUpload={handleUploadProForma}
+              note={<Typography variant="bodySmall" content="Predračun" />}
+              hint="Fajlovi neće biti učitani dok ne sačuvate predračun."
+              buttonText="Učitaj"
+              error={showFileUploadError ? 'Morate učitati fajl' : undefined}
+            />
+          </FileUploadWrapper>
+        )}
+        {((order_id !== 0 && type?.id === true && isManual) || invoice?.pro_forma_invoice_date) && (
           <FileUploadWrapper>
             <FileUpload
               icon={null}
               files={uploadedFile}
-              disabled={invoice?.status === 'Na nalogu'}
+              disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
               variant="secondary"
               onUpload={handleUpload}
-              note={<Typography variant="bodySmall" content={type.id === false ? 'Predračun' : 'Račun'} />}
-              hint={
-                type.id === false
-                  ? 'Fajlovi neće biti učitani dok ne sačuvate predračun.'
-                  : 'Fajlovi neće biti učitani dok ne sačuvate račun.'
-              }
+              note={<Typography variant="bodySmall" content="Račun" />}
+              hint="Fajlovi neće biti učitani dok ne sačuvate račun."
               buttonText="Učitaj"
               error={showFileUploadError ? 'Morate učitati fajl' : undefined}
             />
@@ -754,7 +865,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 }
                 error={errors?.bank_account?.message}
                 isRequired
-                isDisabled={invoice?.status === 'Na nalogu'}
+                isDisabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
               />
             )}
           />
@@ -768,7 +879,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="DATUM VALUTE:"
                 onChange={onChange}
                 error={errors?.date_of_payment?.message}
-                disabled={invoice?.status === 'Na nalogu'}
+                disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
               />
             )}
           />
@@ -779,7 +890,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             label="OPIS:"
             textarea
             placeholder="Unesite opis"
-            disabled={invoice?.status === 'Na nalogu'}
+            disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
           />
         </Row>
 
@@ -800,7 +911,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                       style={{marginLeft: 10}}
                     />
                   }
-                  disabled={passedToInventory === true || invoice?.status === 'Na nalogu'}
+                  disabled={passedToInventory === true || !!invoice?.id}
                   theme={Theme}
                 />
               )}
@@ -825,7 +936,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                         style={{marginLeft: 10}}
                       />
                     }
-                    disabled={passedToAccounting === true || invoice?.status === 'Na nalogu'}
+                    disabled={
+                      passedToAccounting === true ||
+                      invoice?.status === 'Na nalogu' ||
+                      invoice?.status === 'Djelimično na nalogu'
+                    }
                     theme={Theme}
                   />
                 );
@@ -866,7 +981,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           content="Sačuvaj"
           variant="primary"
           onClick={handleSubmit(onSubmit)}
-          disabled={invoice?.status === 'Na nalogu' && invoice?.is_invoice}
+          disabled={
+            (invoice?.status === 'Na nalogu' && invoice?.is_invoice) || invoice?.status === 'Djelimično na nalogu'
+          }
         />
       </Footer>
     </InvoiceEntryForm>

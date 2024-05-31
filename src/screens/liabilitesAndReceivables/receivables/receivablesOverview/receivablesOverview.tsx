@@ -5,6 +5,7 @@ import {
   EditIconTwo,
   Input,
   Pagination,
+  RotateCWIcon,
   SearchIcon,
   Table,
   Theme,
@@ -13,24 +14,25 @@ import {
 import {ChangeEvent, useMemo, useState} from 'react';
 import {PAGE_SIZE} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
+import useCancelOrderPayments from '../../../../services/graphQL/cancelOrderPayment/useCancelOrderPayments.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useDeletePaymentOrder from '../../../../services/graphQL/receivables/useDeletePaymentOrder.ts';
 import useGetPaymentOrder from '../../../../services/graphQL/receivables/useGetPaymentOrder.ts';
+import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import {MainTitle} from '../../../../shared/pageElements.ts';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import SectionBox from '../../../../shared/sectionBox.ts';
 import {DropdownData} from '../../../../types/dropdownData.ts';
 import {PaymentOrderItem} from '../../../../types/graphQL/receivablesTypes.ts';
+import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {Row} from '../../decisions/decisionsOverview/styles.ts';
 import {receivablesStatusOptions, tableHeads} from '../constants.tsx';
 import {ButtonOverviewWrapper, FilterWrapper, RowWrapper} from '../styles.ts';
-import {Supplier} from '../../../../types/graphQL/suppliers.ts';
-import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 
-export interface DecisionsOverviewFilters {
+export interface OverviewFilters {
   year?: DropdownData<string> | null;
   organization_unit_id?: DropdownData<number> | null;
   status?: DropdownData<string> | null;
@@ -38,7 +40,7 @@ export interface DecisionsOverviewFilters {
   supplier_id?: DropdownData<number> | null;
 }
 
-const initialDecisionsFilterValues = {
+const initialFilterValues = {
   year: null,
   organization_unit_id: null,
   status: null,
@@ -52,7 +54,7 @@ const ReceivablesOverview = () => {
     navigation: {navigate},
   } = useAppContext();
   const [page, setPage] = useState(1);
-  const [filterValues, setFilterValues] = useState<DecisionsOverviewFilters>(initialDecisionsFilterValues);
+  const [filterValues, setFilterValues] = useState<OverviewFilters>(initialFilterValues);
   const [showDeleteModalId, setShowDeleteModalId] = useState<number | undefined>(undefined);
 
   const [search, setSearch] = useState('');
@@ -69,6 +71,8 @@ const ReceivablesOverview = () => {
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
+
+  const {cancelOrderPayments} = useCancelOrderPayments();
   const {organizationUnits} = useGetOrganizationUnits(undefined, {allOption: true});
   const {suppliers} = useGetSuppliers({});
 
@@ -83,6 +87,25 @@ const ReceivablesOverview = () => {
   });
 
   const {deletePaymentOrder} = useDeletePaymentOrder();
+
+  const cancelPayment = async (row: PaymentOrderItem) => {
+    if (row.registred) {
+      alert.info(
+        'Nalog za knjiženje ovog naloga za plaćanje mora najprije da bude izbrisan da bi se stornirao nalog za plaćanje.',
+      );
+    } else {
+      await cancelOrderPayments(
+        row.id,
+        () => {
+          alert.success('Uspješno ste stornirali nalog.');
+          fetch();
+        },
+        () => {
+          alert.error('Došlo je do greške prilikom storniranja naloga.');
+        },
+      );
+    }
+  };
 
   const onPageChange = (page: number) => {
     setPage(page + 1);
@@ -199,6 +222,13 @@ const ReceivablesOverview = () => {
               onClick: (row: PaymentOrderItem) => navigate(`/finance/liabilities-receivables/receivables/${row.id}`),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
               shouldRender: row => row.status !== 'Plaćen',
+            },
+            {
+              name: 'Storniraj',
+              onClick: (row: PaymentOrderItem) => cancelPayment(row),
+              icon: <RotateCWIcon stroke={Theme?.palette?.gray800} />,
+              shouldRender: row => row.status === 'Plaćen',
+              tooltip: () => 'Storniraj',
             },
             {
               name: 'Izbriši',

@@ -142,6 +142,7 @@ export interface InvoiceItem {
   tax_authority_codebook: DropdownData<number>;
   type_of_decision: DropdownData<number>;
   type_of_contract: DropdownData<number>;
+  registred: boolean;
 }
 
 export interface GetInvoiceParams {

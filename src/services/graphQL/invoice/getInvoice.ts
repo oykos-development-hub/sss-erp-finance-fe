@@ -35,6 +35,7 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
             date_of_invoice
             receipt_date
             sss_invoice_receipt_date
+            sss_pro_forma_invoice_receipt_date
             date_of_payment
             date_of_start
             file{

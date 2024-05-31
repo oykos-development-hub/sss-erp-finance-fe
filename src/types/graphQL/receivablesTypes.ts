@@ -52,6 +52,7 @@ export interface PaymentOrderItem {
   created_at: string;
   updated_at: string;
   description: string;
+  registred: string;
 }
 
 export interface ObligationsParams {

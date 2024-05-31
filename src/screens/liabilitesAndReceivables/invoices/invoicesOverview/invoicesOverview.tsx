@@ -1,6 +1,6 @@
 import {Dropdown, EditIconTwo, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {ChangeEvent, useMemo, useState} from 'react';
-import {PAGE_SIZE, StatusOptions} from '../../../../constants.ts';
+import {PAGE_SIZE} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useDeleteInvoice from '../../../../services/graphQL/invoice/useDeleteInvoice.ts';
 import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts';
@@ -11,7 +11,7 @@ import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {useDebounce} from '../../../../utils/useDebounce.ts';
-import {invoicesOverviewTableHeads} from '../constants.tsx';
+import {StatusOptionsInvoice, invoicesOverviewTableHeads} from '../constants.tsx';
 import {Row} from './styles.ts';
 
 export interface InvoiceOverviewFilters {
@@ -56,7 +56,6 @@ const InvoicesOverview = () => {
 
   const onDelete = (invoice: InvoiceItem) => {
     setShowDeleteModalInvoiceId(invoice.id);
-    console.log(invoice);
   };
 
   const handleCloseDeleteModal = () => {
@@ -127,7 +126,7 @@ const InvoicesOverview = () => {
           name="status"
           label="STATUS:"
           placeholder="Odaberi status"
-          options={StatusOptions}
+          options={StatusOptionsInvoice}
           value={filterValues.status}
           onChange={value => onFilter(value as DropdownData<string>, 'status')}
         />
@@ -146,8 +145,7 @@ const InvoicesOverview = () => {
         style={{marginBottom: 22}}
         emptyMessage="Još nema računa"
         onRowClick={row =>
-          row.status === 'Na nalogu' &&
-          row?.is_invoice &&
+          (row.status === 'Djelimično na nalogu' || (row.status === 'Na nalogu' && row?.is_invoice)) &&
           navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`)
         }
         tableActions={[
@@ -156,7 +154,9 @@ const InvoicesOverview = () => {
             onClick: (row: InvoiceItem) => navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`),
             icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
             shouldRender: row =>
-              (row.status === 'Kreiran' && !row.registred) || (row.status === 'Na nalogu' && !row?.is_invoice),
+              row.status === 'Nepotpun' ||
+              (row.status === 'Kreiran' && !row.registred) ||
+              (row.status === 'Na nalogu' && !row?.is_invoice),
           },
           {
             name: 'Izbriši',

@@ -10,6 +10,7 @@ export const receivablesStatusOptions = [
   {id: '', title: 'Svi statusi'},
   {id: 'Na čekanju', title: 'Na čekanju'},
   {id: 'Plaćen', title: 'Plaćen'},
+  {id: 'Storniran', title: 'Storniran'},
 ];
 
 export const tableHeads: TableHead[] = [

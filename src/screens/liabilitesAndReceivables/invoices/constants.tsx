@@ -2,10 +2,8 @@ import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import {parseDate} from '../../../utils/dateUtils.ts';
-import {StatusOptions} from '../../../constants.ts';
 
 export const invoicesOverviewTableHeads: TableHead[] = [
-  {title: 'Broj', accessor: 'id', type: 'text'},
   {
     title: 'Dobavljač',
     accessor: 'supplier',
@@ -13,10 +11,16 @@ export const invoicesOverviewTableHeads: TableHead[] = [
     renderContents: (supplier: DropdownData<number>) => <Typography content={supplier?.title} />,
   },
   {
-    title: 'Datum računa',
-    accessor: 'date_of_invoice',
+    title: 'Broj predračuna',
+    accessor: 'pro_forma_invoice_number',
     type: 'custom',
-    renderContents: (date_of_invoice: Date) => <Typography content={parseDate(date_of_invoice)} />,
+    renderContents: (pro_forma_invoice_number: string) => <Typography content={pro_forma_invoice_number} />,
+  },
+  {
+    title: 'Datum predračuna',
+    accessor: 'pro_forma_invoice_date',
+    type: 'custom',
+    renderContents: (pro_forma_invoice_date: Date) => <Typography content={parseDate(pro_forma_invoice_date)} />,
   },
   {
     title: 'Broj računa',
@@ -25,20 +29,10 @@ export const invoicesOverviewTableHeads: TableHead[] = [
     renderContents: (invoice_number: string) => <Typography content={invoice_number} />,
   },
   {
-    title: 'Neto iznos',
-    accessor: 'net_price',
+    title: 'Datum računa',
+    accessor: 'date_of_invoice',
     type: 'custom',
-    renderContents: net_price => {
-      return <Typography content={net_price ? net_price?.toFixed(2) : '0.00'} />;
-    },
-  },
-  {
-    title: 'PDV',
-    accessor: 'vat_price',
-    type: 'custom',
-    renderContents: vat_price => {
-      return <Typography content={vat_price ? vat_price?.toFixed(2) : '0.00'} />;
-    },
+    renderContents: (date_of_invoice: Date) => <Typography content={parseDate(date_of_invoice)} />,
   },
   {
     title: 'Ukupan iznos',
@@ -53,7 +47,7 @@ export const invoicesOverviewTableHeads: TableHead[] = [
     accessor: 'status',
     type: 'custom',
     renderContents: (_, row) => {
-      const statusValue = StatusOptions.find(option => option.id === row.status);
+      const statusValue = StatusOptionsInvoice.find(option => option.id === row.status);
       return <StatusTableCell status={statusValue ? statusValue?.title : ''} />;
     },
   },
@@ -77,4 +71,11 @@ export const pdvOptions: DropdownData<number>[] = [
   {id: 0, title: '0 %'},
   {id: 7, title: '7 %'},
   {id: 21, title: '21 %'},
+];
+
+export const StatusOptionsInvoice = [
+  {id: '', title: 'Svi statusi'},
+  {id: 'Kreiran', title: 'Kreiran'},
+  {id: 'Djelimično na nalogu', title: 'Djelimično na nalogu'},
+  {id: 'Nepotpun', title: 'Nepotpun'},
 ];

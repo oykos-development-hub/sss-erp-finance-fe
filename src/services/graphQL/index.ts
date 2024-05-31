@@ -93,6 +93,7 @@ import analyticalCardOverview from './accounting/analyticalCardOverview.ts';
 import financialBudgetFill from './financialBudgetFill/financialBudgetFill.ts';
 import nonFinancialBudgetFill from './nonFinancialBudgetFill/nonFinancialBudgetFill.ts';
 import sendBudgetOnReview from './sendBudgetOnReview/sendBudgetOnReview.ts';
+import cancelOrderPayment from './cancelOrderPayment/cancelOrderPayment.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -205,4 +206,5 @@ export const GraphQL = {
   financialBudgetFill: financialBudgetFill,
   nonFinancialBudgetFill: nonFinancialBudgetFill,
   sendBudgetOnReview: sendBudgetOnReview,
+  cancelOrderPayment: cancelOrderPayment,
 };

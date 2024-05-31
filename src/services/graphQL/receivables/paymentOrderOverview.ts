@@ -16,6 +16,7 @@ const paymentOrderOverview = `query paymentOrder_Overview($id: Int,$status: Stri
             }
             amount
             bank_account
+            registred
             date_of_payment
             date_of_sap
             date_of_order 
