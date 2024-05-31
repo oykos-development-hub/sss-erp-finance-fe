@@ -75,7 +75,8 @@ export const pdvOptions: DropdownData<number>[] = [
 
 export const StatusOptionsInvoice = [
   {id: '', title: 'Svi statusi'},
+  {id: 'Nepotpun', title: 'Nepotpun'},
   {id: 'Kreiran', title: 'Kreiran'},
   {id: 'Djelimično na nalogu', title: 'Djelimično na nalogu'},
-  {id: 'Nepotpun', title: 'Nepotpun'},
+  {id: 'Na nalogu', title: 'Na nalogu'},
 ];
