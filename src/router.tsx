@@ -65,7 +65,7 @@ import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
 import {AccountingReports} from './screens/reports/reports.tsx';
 import {useRoleCheck} from './utils/useRoleCheck.ts';
-import BudgetDynamicDetails from './screens/budget/spendingDynamics/budgetDynamicDetails.tsx';
+import BudgetDynamicDetails from './screens/budget/spendingDynamics/budgetDynamicPreview/budgetDynamicDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official

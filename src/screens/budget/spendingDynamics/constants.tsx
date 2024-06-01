@@ -1,5 +1,6 @@
 import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../../utils/dateUtils';
+import {months} from '../../../shared/budgetTable/constants';
 
 export enum Tabs {
   SpendingDynamics = 1,
@@ -7,7 +8,7 @@ export enum Tabs {
 }
 
 export const stockTabs = [
-  {id: Tabs.SpendingDynamics, title: 'Trenutna dinamika', routeName: 'current-dynamics'},
+  {id: Tabs.SpendingDynamics, title: 'Trenutna dinamika', routeName: 'spending-dynamics'},
   {id: Tabs.Requests, title: 'Istorija dinamike', routeName: 'requests'},
 ];
 
@@ -63,4 +64,18 @@ export const monthVars: MonthType[] = [
   'october',
   'november',
   'december',
+];
+
+export const dynamicTableHeads = [
+  {name: 'Konto', width: 10},
+  ...months.map(month => ({name: month, width: 4})),
+  {name: 'Ukupan ostatak', width: 10},
+  {name: 'Ukupno', width: 10},
+];
+
+export const dynamicPreviewTableHeads = [
+  {name: 'Konto', width: 20},
+  ...months.map(month => ({name: month, width: 5.5})),
+  {name: 'Ukupan ostatak', width: 5.5},
+  {name: 'Ukupno', width: 5.5},
 ];

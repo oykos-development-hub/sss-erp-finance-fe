@@ -1,11 +1,11 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {useEffect, useMemo, useState} from 'react';
-import {Tabs, getCurrentTab, getRouteName, stockTabs} from './constants';
-import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from './styles';
 import useAppContext from '../../../context/useAppContext';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
-import SpendingDynamicsOverview from './activeBudgetDynamic';
 import SpendingDinamicsRequests from './budgetDynamicHistory';
+import BudgetDynamicPreview from './budgetDynamicPreview/budgetDynamicPreview';
+import {Tabs, getCurrentTab, getRouteName, stockTabs} from './constants';
+import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from './styles';
 
 export const SpendingDynamicsTabs = () => {
   const {
@@ -32,7 +32,7 @@ export const SpendingDynamicsTabs = () => {
       case 'requests':
         return <SpendingDinamicsRequests />;
       default:
-        return <SpendingDynamicsOverview />;
+        return <BudgetDynamicPreview />;
     }
   }, [spendingDynamicsPath]);
 

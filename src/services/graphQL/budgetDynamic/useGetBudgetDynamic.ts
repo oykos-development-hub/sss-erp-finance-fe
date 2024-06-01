@@ -2,10 +2,14 @@ import {useEffect, useState} from 'react';
 import {GraphQL} from '..';
 import useAppContext from '../../../context/useAppContext';
 
-import {BudgetDynamic, GetBudgetDynamicParams, GetBudgetDynamicResponse} from '../../../types/graphQL/budgetDynamic';
+import {
+  BudgetDynamicCount,
+  GetBudgetDynamicParams,
+  GetBudgetDynamicResponse,
+} from '../../../types/graphQL/budgetDynamic';
 
 const useGetBudgetDynamic = ({budget_id, unit_id, version}: GetBudgetDynamicParams) => {
-  const [budgetDynamic, setBudgetDynamic] = useState<BudgetDynamic[]>([]);
+  const [budgetDynamic, setBudgetDynamic] = useState<BudgetDynamicCount[]>([]);
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
 

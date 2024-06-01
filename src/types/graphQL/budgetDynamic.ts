@@ -16,12 +16,14 @@ export type BudgetDynamicMonth = {
   savings: string;
 };
 
-export type BudgetDynamic = {
+export type BudgetDynamicCount = {
   id: number;
   budget_id: number;
   unit_id: number;
   account_id: number;
   current_budget_id: number;
+  account_serial_number: string;
+  account_title: string;
   actual: any;
   username: string;
   january: BudgetDynamicMonth;
@@ -37,6 +39,7 @@ export type BudgetDynamic = {
   november: BudgetDynamicMonth;
   december: BudgetDynamicMonth;
   total_savings: number;
+  children: BudgetDynamicCount[];
 };
 
 export type BudgetDynamicHistoryItem = {
@@ -48,7 +51,7 @@ export type BudgetDynamicHistoryItem = {
 };
 
 export type GetBudgetDynamicResponse = {
-  spendingDynamic_Overview: GetResponse<BudgetDynamic>;
+  spendingDynamic_Overview: GetResponse<BudgetDynamicCount>;
 };
 
 export type GetBudgetDynamicHistoryResponse = {
@@ -56,7 +59,7 @@ export type GetBudgetDynamicHistoryResponse = {
 };
 
 export type InsertBudgetDynamicResponse = {
-  spendingDynamic_Insert: InsertResponse<BudgetDynamic>;
+  spendingDynamic_Insert: InsertResponse<BudgetDynamicCount[]>;
 };
 
 export type InsertBudgetDynamicCountItem = {
