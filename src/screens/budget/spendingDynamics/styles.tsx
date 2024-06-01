@@ -13,6 +13,7 @@ export const TitleTabsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 `;
 
 export const MainTitle = styled(Typography)`
@@ -79,4 +80,18 @@ export const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+export const SubmitContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  position: absolute;
+  bottom: -50px;
+`;
+
+export const TableWrapper = styled.div`
+  overflow-x: scroll;
+  margin-top: 22;
+  position: relative;
 `;

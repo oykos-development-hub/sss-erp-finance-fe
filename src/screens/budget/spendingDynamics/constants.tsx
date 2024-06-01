@@ -1,4 +1,5 @@
-import {TableHead} from 'client-library';
+import {TableHead, Typography} from 'client-library';
+import {parseDate} from '../../../utils/dateUtils';
 
 export enum Tabs {
   SpendingDynamics = 1,
@@ -6,8 +7,8 @@ export enum Tabs {
 }
 
 export const stockTabs = [
-  {id: Tabs.SpendingDynamics, title: 'Pregled', routeName: 'spending-dynamics'},
-  {id: Tabs.Requests, title: 'Zahtjevi', routeName: 'requests'},
+  {id: Tabs.SpendingDynamics, title: 'Trenutna dinamika', routeName: 'current-dynamics'},
+  {id: Tabs.Requests, title: 'Istorija dinamike', routeName: 'requests'},
 ];
 
 export const getCurrentTab = (pathname: string) => {
@@ -21,25 +22,45 @@ export const getRouteName = (tabName: string) => {
   return stockTabs[tabIndex].routeName;
 };
 
-export const tableHeadsRequests: TableHead[] = [
+export const budgetDynamicHistoryTHeads: TableHead[] = [
   {
-    title: 'ID',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Datum zahtjeva',
-    accessor: '',
-    type: 'text',
+    title: 'Datum kreiranja',
+    accessor: 'created_at',
+    type: 'custom',
+    renderContents: (data: string) => <Typography content={parseDate(data)} variant="bodyMedium" />,
   },
   {
     title: 'Podnosilac zahtjeva',
-    accessor: 'amount',
+    accessor: 'username',
     type: 'text',
   },
-  {
-    title: 'Status',
-    accessor: 'status',
-    type: 'text',
-  },
+];
+
+export type MonthType =
+  | 'january'
+  | 'february'
+  | 'march'
+  | 'april'
+  | 'may'
+  | 'june'
+  | 'july'
+  | 'august'
+  | 'september'
+  | 'october'
+  | 'november'
+  | 'december';
+
+export const monthVars: MonthType[] = [
+  'january',
+  'february',
+  'march',
+  'april',
+  'may',
+  'june',
+  'july',
+  'august',
+  'september',
+  'october',
+  'november',
+  'december',
 ];

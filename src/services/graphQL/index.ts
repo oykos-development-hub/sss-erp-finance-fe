@@ -1,7 +1,26 @@
 import {getEnvironment} from '../get-environment';
+import accountingEntryInsert from './accounting/accountingEntryInsert.ts';
+import accountingEntryOverview from './accounting/accountingEntryOverview.ts';
+import analyticalCardOverview from './accounting/analyticalCardOverview.ts';
+import buildAccountingOrderForObligations from './accounting/buildAccountingOrderForObligations.ts';
+import deleteAccountingEntry from './accounting/deleteAccountingEntry.ts';
+import getEnforcedPaymentsForAccounting from './accounting/getEnforcedPaymentsForAccounting.ts';
+import getObligationsForAccounting from './accounting/getObligationsForAccounting.ts';
+import getPaymentOrdersForAccounting from './accounting/getPaymentOrdersForAccounting.ts';
+import getReturnedEnforcedPaymentsForAccounting from './accounting/getReturnedEnforcedPaymentsForAccounting.ts';
+import additionalExpensesOverview from './additionalExpensesOverview/additionalExpensesOverview.ts';
+import getBudgetDynamic from './budgetDynamic/getBudgetDynamic.ts';
+import getBudgetDynamicHistory from './budgetDynamic/getBudgetDynamicHistory.ts';
+import insertBudgetDynamic from './budgetDynamic/insertBudgetDynamic.ts';
+import getBudgetRequestDetails from './budgetRequestDetails/getBudgetRequestDetails.ts';
+import acceptBudgetRequestOfficial from './budgetRequestOfficial/acceptBudgetRequestOfficial.ts';
+import rejectBudgetRequestOfficial from './budgetRequestOfficial/rejectBudgetRequestOfficial.ts';
 import calculateAdditionalExpenses from './calculateAdditionalExpenses/calculateAdditionalExpenses.ts';
 import getCountOverview from './counts/getCountOverview.ts';
 import deleteBudget from './deleteBudget/deleteBudget';
+import enforcedPaymentInsert from './enforcedPayments/enforcedPaymentInsert.ts';
+import enforcedPaymentOverview from './enforcedPayments/enforcedPaymentOverview.ts';
+import returnEnforcedPayment from './enforcedPayments/returnEnforcedPayment.ts';
 import deleteFee from './fees/deleteFee.ts';
 import deleteFeesPayment from './fees/feesPayments/deleteFeesPayment.ts';
 import getFeesPayments from './fees/feesPayments/getFeesPayments.ts';
@@ -53,6 +72,9 @@ import insertPaymentOrder from './receivables/insertPaymentOrder.ts';
 import obligationsOverview from './receivables/obligationsOverview.ts';
 import payPaymentOrder from './receivables/payPaymentOrder.ts';
 import paymentOrderOverview from './receivables/paymentOrderOverview.ts';
+import deleteSalary from './salaries/deleteSalary.ts';
+import insertSalary from './salaries/insertSalary.ts';
+import salariesOverview from './salaries/salariesOverview.ts';
 import sendBudget from './sendBudget/sendBudget.ts';
 import deleteDepositPayment from './transitDeposits/deleteDepositPayment.ts';
 import deleteDepositPaymentOrder from './transitDeposits/deleteDepositPaymentOrder.ts';
@@ -65,31 +87,12 @@ import getRemainAmountByCaseNumber from './transitDeposits/getRemainAmountByCase
 import insertDepositPayment from './transitDeposits/insertDepositPayment.ts';
 import insertDepositPaymentOrder from './transitDeposits/insertDepositPaymentOrder.ts';
 import payOrder from './transitDeposits/payOrder.ts';
+import getUserProfiles from './userProfiles/getUserProfiles.ts';
 import deleteWill from './wills/deleteWill.ts';
+import deleteWillDispatch from './wills/deleteWillDispatch.ts';
 import getWill from './wills/getWill.ts';
 import insertWill from './wills/insertWill.ts';
 import insertWillDispatch from './wills/insertWillDispatch.ts';
-import deleteWillDispatch from './wills/deleteWillDispatch.ts';
-import additionalExpensesOverview from './additionalExpensesOverview/additionalExpensesOverview.ts';
-import salariesOverview from './salaries/salariesOverview.ts';
-import insertSalary from './salaries/insertSalary.ts';
-import deleteSalary from './salaries/deleteSalary.ts';
-import getUserProfiles from './userProfiles/getUserProfiles.ts';
-import enforcedPaymentOverview from './enforcedPayments/enforcedPaymentOverview.ts';
-import enforcedPaymentInsert from './enforcedPayments/enforcedPaymentInsert.ts';
-import returnEnforcedPayment from './enforcedPayments/returnEnforcedPayment.ts';
-import getBudgetRequestDetails from './budgetRequestDetails/getBudgetRequestDetails.ts';
-import getObligationsForAccounting from './accounting/getObligationsForAccounting.ts';
-import buildAccountingOrderForObligations from './accounting/buildAccountingOrderForObligations.ts';
-import accountingEntryInsert from './accounting/accountingEntryInsert.ts';
-import accountingEntryOverview from './accounting/accountingEntryOverview.ts';
-import deleteAccountingEntry from './accounting/deleteAccountingEntry.ts';
-import getPaymentOrdersForAccounting from './accounting/getPaymentOrdersForAccounting.ts';
-import getEnforcedPaymentsForAccounting from './accounting/getEnforcedPaymentsForAccounting.ts';
-import getReturnedEnforcedPaymentsForAccounting from './accounting/getReturnedEnforcedPaymentsForAccounting.ts';
-import acceptBudgetRequestOfficial from './budgetRequestOfficial/acceptBudgetRequestOfficial.ts';
-import rejectBudgetRequestOfficial from './budgetRequestOfficial/rejectBudgetRequestOfficial.ts';
-import analyticalCardOverview from './accounting/analyticalCardOverview.ts';
 import financialBudgetFill from './financialBudgetFill/financialBudgetFill.ts';
 import nonFinancialBudgetFill from './nonFinancialBudgetFill/nonFinancialBudgetFill.ts';
 import sendBudgetOnReview from './sendBudgetOnReview/sendBudgetOnReview.ts';
@@ -207,4 +210,7 @@ export const GraphQL = {
   nonFinancialBudgetFill: nonFinancialBudgetFill,
   sendBudgetOnReview: sendBudgetOnReview,
   cancelOrderPayment: cancelOrderPayment,
+  getBudgetDynamic: getBudgetDynamic,
+  getBudgetDynamicHistory: getBudgetDynamicHistory,
+  insertBudgetDynamic: insertBudgetDynamic,
 };

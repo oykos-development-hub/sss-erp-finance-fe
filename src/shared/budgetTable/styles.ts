@@ -18,7 +18,7 @@ export const CustomTable = styled.table<{disabled: boolean}>`
   }
 `;
 
-export const CustomTableHead = styled.th<{rebalanceCol: boolean}>`
+export const CustomTableHead = styled.th<{rebalanceCol?: boolean}>`
   padding: 60px 24px;
   border: 1px solid ${Theme.palette.gray300};
   background-color: ${({rebalanceCol}) => (rebalanceCol ? Theme.palette.gray50 : Theme.palette.white)};

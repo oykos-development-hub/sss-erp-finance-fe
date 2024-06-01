@@ -21,8 +21,8 @@ import NonFinancialOverview from './screens/budget/nonFinancialOverview/nonFinan
 import OUBudgetSubmission from './screens/budget/planning/OUBudgetSubmission/OUBudgetSubmission.tsx';
 import SSSBudgetDetails from './screens/budget/planning/SSSBudgetDetails/SSSBudgetDetails.tsx';
 import BudgetList from './screens/budget/planning/budgetList/budgetList.tsx';
-import RequestDynamics from './screens/budget/spendingDynamics/requestDynamics.tsx';
-import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/spendingDynamicsTabs.tsx';
+import RequestDynamics from './screens/budget/spendingDynamics/requestNewDynamic.tsx';
+import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/budgetDynamicTabs.tsx';
 import FinanceDepositDetails from './screens/deposit/fixedDeposit/financeDeposit/financeDepositDetails.tsx';
 import {FixedDepositTabs} from './screens/deposit/fixedDeposit/fixedDepositTabs.tsx';
 import MaterialDepositDetails from './screens/deposit/fixedDeposit/materialDeposit/materialDepositDetails.tsx';
@@ -66,6 +66,7 @@ import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
 import {AccountingReports} from './screens/reports/reports.tsx';
 import {useRoleCheck} from './utils/useRoleCheck.ts';
+import BudgetDynamicDetails from './screens/budget/spendingDynamics/budgetDynamicDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -123,6 +124,7 @@ export const Router = () => {
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
     const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');
     const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
+    const currentBudgetDynamicDetails = new RegExp('/finance/budget/current/requests/\\d+$');
 
     //todo: check if this is actually the role SSS will use here
     if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])) {
@@ -199,6 +201,8 @@ export const Router = () => {
     if (pathname === '/finance/budget/current/spending-dynamics') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests-dynamics') return <RequestDynamics />;
+    if (pathname === '/finance/budget/current/requests/add-new') return <BudgetDynamicDetails />;
+    if (currentBudgetDynamicDetails.test(pathname)) return <BudgetDynamicDetails />;
 
     if (pathname === '/finance/budget/current/internal-reallocation') return <InternalReallocationOverview />;
     if (pathname === '/finance/budget/current/internal-reallocation/create') return <InternalReallocationBudget />;
