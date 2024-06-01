@@ -95,3 +95,26 @@ export const TableWrapper = styled.div`
   margin-top: 22;
   position: relative;
 `;
+
+const resolveBackgroundColor = (level: number) => {
+  if (level === 1) return Theme.palette.gray200;
+  if (level === 2) return Theme.palette.gray100;
+  if (level === 3) return Theme.palette.gray50;
+  return Theme.palette.white;
+};
+
+export const DynamicTableCell = styled.td<{
+  level: number;
+  first?: boolean;
+  lastLevel?: boolean;
+  hasChildren?: boolean;
+}>`
+  padding: 12px 24px;
+  border: 1px solid ${Theme.palette.gray300};
+
+  background-color: ${({level}) => resolveBackgroundColor(level)};
+
+  cursor: ${({first, hasChildren}) => (first && hasChildren ? 'pointer' : 'default')};
+
+  ${({first}) => first && 'min-width: 280px'}
+`;

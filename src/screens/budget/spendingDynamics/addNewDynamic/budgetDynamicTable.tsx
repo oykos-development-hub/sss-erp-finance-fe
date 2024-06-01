@@ -1,83 +1,41 @@
-import {Input, Theme, Typography} from 'client-library';
-import {useMemo} from 'react';
-import {useFormContext} from 'react-hook-form';
-import styled from 'styled-components';
+import {Input, Typography} from 'client-library';
+import {useMemo, useState} from 'react';
+import {FormProvider, useFormContext} from 'react-hook-form';
+import ChevronIcon from '../../../../components/icons/ChevronIcon.tsx';
 import {BudgetText, CustomTable, CustomTableHead, FlexContainer} from '../../../../shared/budgetTable/styles.ts';
-import {Count} from '../../../../types/graphQL/counts.ts';
+import {BudgetDynamicCount} from '../../../../types/graphQL/budgetDynamic.ts';
 import {MonthType, dynamicTableHeads, monthVars} from '../constants.tsx';
-import {DynamicCountSchemaType, DynamicSchemaType} from './budgetDynamicTemplate.tsx';
+import {DynamicTableCell} from '../styles.tsx';
+import {DynamicSchemaType} from './budgetDynamicTemplate.tsx';
 
 type BudgetTableProps = {
-  counts: Count[];
-  disabled?: boolean;
-  version?: number | null;
-  fields: DynamicCountSchemaType[];
-  invalidRows: number[];
+  counts: BudgetDynamicCount[];
+  invalidRows: string[];
   loading?: boolean;
 };
 
-const BudgetDynamicTable = ({counts, disabled, fields = [], invalidRows}: BudgetTableProps) => {
+const BudgetDynamicTable = ({counts, invalidRows}: BudgetTableProps) => {
   const methods = useFormContext<DynamicSchemaType>();
-  const currentMonth = new Date().getMonth();
 
-  const contentRender = (items: Count[]) => {
+  const recursiveRowRendering = (items: BudgetDynamicCount[], level = 1, path = [] as string[]) => {
     if (!items) return null;
 
-    return items.map((item: Count) => {
-      const field = fields.find((field: DynamicCountSchemaType) => field.account_id === item.id);
-      const fieldIndex = fields.findIndex((field: DynamicCountSchemaType) => field.account_id === item.id);
-
-      const invalid = invalidRows.includes(fieldIndex);
+    return items.map((item: BudgetDynamicCount) => {
+      const fieldPath = [...path, item.id.toString()];
+      const rowInvalid = invalidRows.includes(item.account_serial_number);
       return (
-        <>
-          <tr>
-            <CountTableCell invalid={invalid}>
-              <FlexContainer>
-                <Typography
-                  content={`${item.serial_number} - ${item.title}`}
-                  variant="bodySmall"
-                  style={{
-                    padding: '12px 7px',
-                  }}
-                />
-              </FlexContainer>
-            </CountTableCell>
-
-            {monthVars.map((value: MonthType, index) => (
-              <CountTableCell key={`${value}-${index}`} invalid={invalid}>
-                <div style={{width: 100}}>
-                  <Input
-                    {...methods.register(`accounts.${fieldIndex}.${value}`, {valueAsNumber: true})}
-                    disabled={disabled || currentMonth > index}
-                    type={'number'}
-                  />
-                  <BudgetText content="0.00" variant="bodySmall" style={{color: 'red'}} />
-                </div>
-              </CountTableCell>
-            ))}
-            <CountTableCell invalid={invalid}>
-              <div style={{width: 100}}>
-                <Input
-                  {...methods.register(`accounts.${fieldIndex}.totalSavings`, {valueAsNumber: true})}
-                  disabled={disabled}
-                  type={'number'}
-                />
-              </div>
-            </CountTableCell>
-            <CountTableCell invalid={invalid}>
-              <BudgetText content={field?.actual} variant="bodySmall" />
-            </CountTableCell>
-          </tr>
-        </>
+        <BudgetDynamicFormRow key={item.account_id} level={level} count={item} invalid={rowInvalid}>
+          {recursiveRowRendering(item.children ?? [], item.children ? level + 1 : level - 1, fieldPath)}
+        </BudgetDynamicFormRow>
       );
     });
   };
 
   const content = useMemo(() => {
-    if (counts && fields.length) {
-      return contentRender(counts);
+    if (counts) {
+      return recursiveRowRendering(counts);
     }
-  }, [counts, fields, invalidRows]);
+  }, [counts]);
 
   return (
     <CustomTable disabled={false}>
@@ -93,15 +51,102 @@ const BudgetDynamicTable = ({counts, disabled, fields = [], invalidRows}: Budget
         </tr>
       </thead>
 
-      <tbody>{content}</tbody>
+      <tbody>
+        <FormProvider {...methods}>{content}</FormProvider>
+      </tbody>
     </CustomTable>
   );
 };
 
 export default BudgetDynamicTable;
 
-const CountTableCell = styled.td<{invalid?: boolean}>`
-  padding: 12px 24px;
-  border: 1px solid ${Theme.palette.gray300};
-  background-color: ${props => (props.invalid ? Theme.palette.gray50 : Theme.palette.white)};
-`;
+type BudgetTableRowProps = {
+  count: BudgetDynamicCount;
+  level: number;
+  children: React.ReactNode;
+  methods?: any;
+  invalid: boolean;
+};
+
+const BudgetDynamicFormRow = ({count, level, children, invalid}: BudgetTableRowProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  const methods = useFormContext<any>();
+  const currentMonth = new Date().getMonth();
+
+  const onCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  const generateChevronIcon = () => {
+    return (
+      <div style={{width: 28}}>
+        <ChevronIcon
+          fill="black"
+          style={{
+            transform: isCollapsed ? 'rotate(0deg)' : 'rotate(-90deg)',
+            width: `${28 - level * 1}px`,
+            height: `${28 - level * 1}px`,
+            marginRight: 10,
+          }}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <tr>
+        <DynamicTableCell
+          level={level}
+          onClick={count.children?.length ? onCollapse : undefined}
+          first
+          hasChildren={!!count.children.length}>
+          <FlexContainer>
+            {!!count.children?.length && generateChevronIcon()}
+            <Typography
+              content={`${count.account_serial_number} - ${count.account_title}`}
+              variant="bodySmall"
+              style={{
+                marginLeft: 26,
+                fontWeight: level < 4 ? 600 : 400,
+                padding: `12px ${(level - 1) * 7}`,
+                fontSize: `${24 - level * 2}px`,
+              }}
+            />
+          </FlexContainer>
+        </DynamicTableCell>
+
+        {monthVars.map((value: MonthType, index) => (
+          <DynamicTableCell key={`${value}-${index}`} level={level}>
+            <div style={{width: 100}}>
+              <Input
+                {...methods.register(`${count.account_serial_number}.${value}` as any, {valueAsNumber: true})}
+                disabled={currentMonth > index || count.children?.length > 0}
+                type={'number'}
+                style={invalid ? {border: '1px solid red'} : {}}
+              />
+              <BudgetText content="0.00" variant="bodySmall" />
+            </div>
+          </DynamicTableCell>
+        ))}
+        <DynamicTableCell level={level}>
+          <div style={{width: 100}}>
+            <Input
+              {...methods.register(`${count.account_serial_number}.totalSavings` as any, {
+                valueAsNumber: true,
+              })}
+              type={'number'}
+              disabled={count.children?.length > 0}
+            />
+          </div>
+        </DynamicTableCell>
+        <DynamicTableCell level={level}>
+          <BudgetText content={count?.actual} variant="bodySmall" />
+        </DynamicTableCell>
+      </tr>
+
+      {isCollapsed && children}
+    </>
+  );
+};

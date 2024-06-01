@@ -1,15 +1,14 @@
 import {Button} from 'client-library';
 import {useCallback, useEffect, useState} from 'react';
-import {FormProvider, useFieldArray, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import useAppContext from '../../../../context/useAppContext';
 import useGetBudgetDynamic from '../../../../services/graphQL/budgetDynamic/useGetBudgetDynamic';
 import useInsertBudgetDynamic from '../../../../services/graphQL/budgetDynamic/useInsertBudgetDynamic';
-import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview';
+import {BudgetDynamicCount} from '../../../../types/graphQL/budgetDynamic';
 import {MonthType, monthVars} from '../constants';
 import {TableWrapper} from '../styles';
 import BudgetDynamicTable from './budgetDynamicTable';
-import {BudgetDynamicCount} from '../../../../types/graphQL/budgetDynamic';
 
 const dynamicCountSchema = yup.object().shape({
   january: yup.number().required(),
@@ -27,41 +26,31 @@ const dynamicCountSchema = yup.object().shape({
   account_id: yup.number().required(),
   actual: yup.number().required(),
   totalSavings: yup.number().required(),
-});
+  bottomLevel: yup.boolean().required(),
+}) as any;
 
-const dynamicCountArraySchema = yup.array().of(dynamicCountSchema);
+const mapRules = (map: any, rule: any) => Object.keys(map).reduce((newMap, key) => ({...newMap, [key]: rule}), {});
 
-const dynamicSchema = yup.object().shape({
-  accounts: dynamicCountArraySchema.required(),
-});
+const dynamicSchema = yup.lazy(map => yup.object(mapRules(map, yup.object(dynamicCountSchema))));
 
 export type DynamicCountSchemaType = yup.InferType<typeof dynamicCountSchema>;
 export type DynamicSchemaType = yup.InferType<typeof dynamicSchema>;
 
 const BudgetDynamicTemplate = () => {
-  const [invalidRows, setInvalidRows] = useState<number[]>([]);
+  const [invalidRows, setInvalidRows] = useState<string[]>([]);
 
-  const {
-    navigation: {
-      location: {pathname},
-    },
-    alert,
-  } = useAppContext();
+  const {alert} = useAppContext();
 
-  const version = isNaN(parseInt(pathname?.split('/')[5])) ? null : parseInt(pathname?.split('/')[5]);
-  const isNew = pathname?.split('/')[5] === 'add-new';
+  const methods = useForm<any>();
 
-  const methods = useForm<DynamicSchemaType>();
-  const {append, fields} = useFieldArray({name: 'accounts', control: methods.control});
-
-  const {counts} = useGetCountOverview({id: 0, tree: false, leaf: true});
-  const {budgetDynamic, refetch, loading} = useGetBudgetDynamic({version});
+  const {budgetDynamic, refetch, loading} = useGetBudgetDynamic({});
   const {insertBudgetDynamic} = useInsertBudgetDynamic();
 
-  const setupBudgetingFormFields = useCallback(
+  const setupBudgetingFormFieldsRecursively = useCallback(
     (item: BudgetDynamicCount) => {
       const months: {[key: string]: number} = {};
       let totalSavings = 0;
+      const bottomLevel = item.children.length === 0;
 
       monthVars.forEach((month: MonthType) => {
         months[month] = parseInt(item[month].value);
@@ -72,29 +61,31 @@ const BudgetDynamicTemplate = () => {
         account_id: item.account_id,
         actual: parseInt(item.actual),
         totalSavings,
+        bottomLevel,
         ...months,
       };
-      append(data);
+
+      methods.setValue(item.account_serial_number, data);
+
+      item.children.forEach((child: BudgetDynamicCount) => {
+        setupBudgetingFormFieldsRecursively(child);
+      });
     },
-    [append, monthVars],
+    [methods, monthVars],
   );
 
   useEffect(() => {
-    if (budgetDynamic && counts) {
+    if (budgetDynamic && budgetDynamic) {
       budgetDynamic.forEach((item: BudgetDynamicCount) => {
-        const count = counts.find(count => count.id === item.account_id);
-        if (!count) {
-          return;
-        }
-        setupBudgetingFormFields(item);
+        setupBudgetingFormFieldsRecursively(item);
       });
     }
-  }, [counts, budgetDynamic, setupBudgetingFormFields]);
+  }, [budgetDynamic, setupBudgetingFormFieldsRecursively]);
 
   const validateAmounts = (data: DynamicSchemaType) => {
-    const invalidCounts: number[] = [];
+    const invalidCounts: string[] = [];
 
-    data.accounts.forEach((item: DynamicCountSchemaType, index: number) => {
+    Object.values(data).forEach((item: DynamicCountSchemaType) => {
       const total = Object.keys(item).reduce((acc: number, key) => {
         const monthKey = key as keyof DynamicCountSchemaType;
 
@@ -105,7 +96,7 @@ const BudgetDynamicTemplate = () => {
 
       const totalAmount = total + Number(item.totalSavings);
       if (totalAmount !== item.actual) {
-        invalidCounts.push(index);
+        invalidCounts.push(item.account_serial_number);
       }
     });
 
@@ -114,57 +105,52 @@ const BudgetDynamicTemplate = () => {
 
   const onSubmit = async (data: DynamicSchemaType) => {
     const invalidCounts = validateAmounts(data);
-    if (invalidCounts.length) {
-      setInvalidRows(invalidCounts);
-      alert.error('Uneseni iznosi nisu ispravni!');
-      return;
-    } else {
-      setInvalidRows([]);
-      const insertData = data.accounts.map((item: DynamicCountSchemaType) => {
-        const {account_id, actual, totalSavings, ...months} = item;
+    console.log(invalidCounts);
+    // if (invalidCounts.length) {
+    //   setInvalidRows(invalidCounts);
+    //   alert.error('Uneseni iznosi nisu ispravni!');
+    //   return;
+    // } else {
+    setInvalidRows([]);
+    const insertData = Object.values(data)
+      .filter((item: DynamicCountSchemaType) => !!item.bottomLevel)
+      .map((item: DynamicCountSchemaType) => {
+        const {account_id, actual, totalSavings, bottomLevel, ...months} = item;
 
         return {
           account_id,
           ...months,
         };
       });
-      await insertBudgetDynamic(
-        insertData,
-        () => {
-          alert.success('Uspešno ste sačuvali podatke!');
-          refetch();
-        },
-        () => alert.error('Došlo je do greške prilikom čuvanja podataka!'),
-      );
-    }
+
+    await insertBudgetDynamic(
+      insertData,
+      () => {
+        alert.success('Uspešno ste sačuvali podatke!');
+        refetch();
+      },
+      () => alert.error('Došlo je do greške prilikom čuvanja podataka!'),
+    );
+    // }
   };
 
   return (
     <div>
       <FormProvider {...methods}>
         <TableWrapper>
-          <BudgetDynamicTable
-            invalidRows={invalidRows}
-            fields={fields}
-            counts={counts}
-            disabled={!isNew}
-            version={version}
-            loading={loading}
-          />
+          <BudgetDynamicTable invalidRows={invalidRows} counts={budgetDynamic} loading={loading} />
         </TableWrapper>
       </FormProvider>
 
-      {isNew && (
-        <div style={{marginTop: 22, display: 'flex'}}>
-          <Button
-            variant="secondary"
-            content="Otkaži"
-            style={{marginLeft: 'auto', marginRight: 15}}
-            onClick={() => window.history.back()}
-          />
-          <Button variant="primary" onClick={methods.handleSubmit(onSubmit)} content="Sačuvaj" />
-        </div>
-      )}
+      <div style={{marginTop: 22, display: 'flex'}}>
+        <Button
+          variant="secondary"
+          content="Otkaži"
+          style={{marginLeft: 'auto', marginRight: 15}}
+          onClick={() => window.history.back()}
+        />
+        <Button variant="primary" onClick={methods.handleSubmit(onSubmit)} content="Sačuvaj" />
+      </div>
     </div>
   );
 };

@@ -65,7 +65,8 @@ import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
 import {AccountingReports} from './screens/reports/reports.tsx';
 import {useRoleCheck} from './utils/useRoleCheck.ts';
-import BudgetDynamicDetails from './screens/budget/spendingDynamics/budgetDynamicPreview/budgetDynamicDetails.tsx';
+import BudgetDynamicVersionPreview from './screens/budget/spendingDynamics/budgetDynamicPreview/budgetDynamicVersion.tsx';
+import AddNewBudgetDynamic from './screens/budget/spendingDynamics/addNewDynamic/addNewDynamic.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -199,8 +200,8 @@ export const Router = () => {
 
     if (pathname === '/finance/budget/current/spending-dynamics') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests') return <SpendingDynamicsTabs />;
-    if (pathname === '/finance/budget/current/requests/add-new') return <BudgetDynamicDetails />;
-    if (currentBudgetDynamicDetails.test(pathname)) return <BudgetDynamicDetails />;
+    if (pathname === '/finance/budget/current/requests/add-new') return <AddNewBudgetDynamic />;
+    if (currentBudgetDynamicDetails.test(pathname)) return <BudgetDynamicVersionPreview />;
 
     if (pathname === '/finance/budget/current/internal-reallocation') return <InternalReallocationOverview />;
     if (pathname === '/finance/budget/current/internal-reallocation/create') return <InternalReallocationBudget />;

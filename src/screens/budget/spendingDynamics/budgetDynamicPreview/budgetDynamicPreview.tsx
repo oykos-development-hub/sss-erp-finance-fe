@@ -1,12 +1,12 @@
-import {Input, Theme, Typography} from 'client-library';
+import {Input, Typography} from 'client-library';
 import {ReactNode, useMemo, useState} from 'react';
-import styled from 'styled-components';
 import ChevronIcon from '../../../../components/icons/ChevronIcon';
 import useAppContext from '../../../../context/useAppContext';
 import useGetBudgetDynamic from '../../../../services/graphQL/budgetDynamic/useGetBudgetDynamic';
 import {BudgetText, CustomTable, CustomTableHead, FlexContainer} from '../../../../shared/budgetTable/styles';
 import {BudgetDynamicCount} from '../../../../types/graphQL/budgetDynamic';
 import {MonthType, dynamicPreviewTableHeads, monthVars} from '../constants';
+import {DynamicTableCell} from '../styles';
 
 // There is no form functionality in this component, it is only for viewing the data
 
@@ -104,7 +104,11 @@ const BudgetDynamicTableRow = ({count, level, children}: BudgetTableRowProps) =>
   return (
     <>
       <tr>
-        <DynamicPreviewTableCell level={level} onClick={count.children?.length ? onCollapse : undefined} first>
+        <DynamicTableCell
+          level={level}
+          onClick={count.children?.length ? onCollapse : undefined}
+          first
+          hasChildren={!!count.children.length}>
           <FlexContainer>
             {!!count.children?.length && generateChevronIcon()}
             <Typography
@@ -118,52 +122,30 @@ const BudgetDynamicTableRow = ({count, level, children}: BudgetTableRowProps) =>
               }}
             />
           </FlexContainer>
-        </DynamicPreviewTableCell>
+        </DynamicTableCell>
 
         {monthVars.map((value: MonthType, index) => {
           const monthObj = count[value as keyof BudgetDynamicCount];
           return (
-            <DynamicPreviewTableCell key={`${value}-${index}`} level={level}>
+            <DynamicTableCell key={`${value}-${index}`} level={level}>
               <div style={{width: 100}}>
                 <Input disabled={true} value={monthObj.value as any} />
                 <BudgetText variant="bodySmall" content={monthObj.savings} />
               </div>
-            </DynamicPreviewTableCell>
+            </DynamicTableCell>
           );
         })}
-        <DynamicPreviewTableCell level={level}>
+        <DynamicTableCell level={level}>
           <div style={{width: 100}}>
             <Input disabled={true} value={totalSavings?.toString()} />
           </div>
-        </DynamicPreviewTableCell>
-        <DynamicPreviewTableCell level={level}>
+        </DynamicTableCell>
+        <DynamicTableCell level={level}>
           <BudgetText content={count.actual} variant="bodySmall" />
-        </DynamicPreviewTableCell>
+        </DynamicTableCell>
       </tr>
 
       {isCollapsed && children}
     </>
   );
 };
-
-const resolveBackgroundColor = (level: number) => {
-  if (level === 1) return Theme.palette.gray200;
-  if (level === 2) return Theme.palette.gray100;
-  if (level === 3) return Theme.palette.gray50;
-  return Theme.palette.white;
-};
-
-const DynamicPreviewTableCell = styled.td<{
-  level: number;
-  first?: boolean;
-  lastLevel?: boolean;
-}>`
-  padding: 12px 24px;
-  border: 1px solid ${Theme.palette.gray300};
-
-  background-color: ${({level}) => resolveBackgroundColor(level)};
-
-  cursor: ${({level, first}) => (level === 1 && first ? 'pointer' : 'default')};
-
-  ${({first}) => first && 'min-width: 280px'}
-`;
