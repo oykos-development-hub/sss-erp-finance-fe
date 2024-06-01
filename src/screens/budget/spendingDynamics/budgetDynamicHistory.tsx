@@ -1,22 +1,23 @@
 import {Button, Dropdown, Table} from 'client-library';
-import {Controller, useForm} from 'react-hook-form';
+import {useState} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import useAppContext from '../../../context/useAppContext';
 import useGetBudgetDynamicHistory from '../../../services/graphQL/budgetDynamic/useGetBudgetDynamicHistory';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits';
+import {BudgetDynamicHistoryItem} from '../../../types/graphQL/budgetDynamic';
 import {budgetDynamicHistoryTHeads} from './constants';
 import {ButtonWrapper, DropdownWrapper, HeaderWrapper, Wrapper} from './styles';
-import {BudgetDynamicHistoryItem} from '../../../types/graphQL/budgetDynamic';
 
 const BudgetDynamicHistory = () => {
+  const [organizationUnit, setOrganizationUnit] = useState<any>(null);
+
   const {
     navigation: {navigate},
     breadcrumbs,
   } = useAppContext();
   const {organizationUnits} = useGetOrganizationUnits();
-  const {control} = useForm();
 
-  const {budgetDynamicHistory} = useGetBudgetDynamicHistory({budget_id: 88});
+  const {budgetDynamicHistory} = useGetBudgetDynamicHistory({budget_id: 88, unit_id: organizationUnit?.id});
 
   const dynamicHistory = budgetDynamicHistory?.map(item => ({id: uuidv4(), ...item}));
 
@@ -28,23 +29,20 @@ const BudgetDynamicHistory = () => {
     });
   };
 
+  const onChange = (value: any) => {
+    setOrganizationUnit(value);
+  };
+
   return (
     <div>
       <Wrapper>
         <HeaderWrapper>
           <DropdownWrapper>
-            <Controller
-              name="organization_unit_id"
-              control={control}
-              render={({field: {name, value, onChange}}) => (
-                <Dropdown
-                  name={name}
-                  value={value}
-                  onChange={onChange}
-                  options={organizationUnits}
-                  label="ORGANIZACIONA JEDINICA:"
-                />
-              )}
+            <Dropdown
+              value={organizationUnit}
+              onChange={onChange}
+              options={organizationUnits}
+              label="ORGANIZACIONA JEDINICA:"
             />
           </DropdownWrapper>
         </HeaderWrapper>
@@ -56,8 +54,11 @@ const BudgetDynamicHistory = () => {
           />
         </ButtonWrapper>
       </Wrapper>
-      {/* @ts-ignore */}
-      <Table data={dynamicHistory || []} tableHeads={budgetDynamicHistoryTHeads} onRowClick={navigateToDetails} />
+      <Table
+        data={(dynamicHistory as any) || []}
+        tableHeads={budgetDynamicHistoryTHeads}
+        onRowClick={navigateToDetails}
+      />
     </div>
   );
 };

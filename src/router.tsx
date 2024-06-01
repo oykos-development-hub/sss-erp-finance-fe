@@ -21,7 +21,6 @@ import NonFinancialOverview from './screens/budget/nonFinancialOverview/nonFinan
 import OUBudgetSubmission from './screens/budget/planning/OUBudgetSubmission/OUBudgetSubmission.tsx';
 import SSSBudgetDetails from './screens/budget/planning/SSSBudgetDetails/SSSBudgetDetails.tsx';
 import BudgetList from './screens/budget/planning/budgetList/budgetList.tsx';
-import RequestDynamics from './screens/budget/spendingDynamics/requestNewDynamic.tsx';
 import {SpendingDynamicsTabs} from './screens/budget/spendingDynamics/budgetDynamicTabs.tsx';
 import FinanceDepositDetails from './screens/deposit/fixedDeposit/financeDeposit/financeDepositDetails.tsx';
 import {FixedDepositTabs} from './screens/deposit/fixedDeposit/fixedDepositTabs.tsx';
@@ -200,7 +199,6 @@ export const Router = () => {
 
     if (pathname === '/finance/budget/current/spending-dynamics') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests') return <SpendingDynamicsTabs />;
-    if (pathname === '/finance/budget/current/requests-dynamics') return <RequestDynamics />;
     if (pathname === '/finance/budget/current/requests/add-new') return <BudgetDynamicDetails />;
     if (currentBudgetDynamicDetails.test(pathname)) return <BudgetDynamicDetails />;
 

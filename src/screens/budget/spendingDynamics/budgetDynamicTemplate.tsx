@@ -88,7 +88,7 @@ const BudgetDynamicTemplate = () => {
   }, [counts, budgetDynamic, setupBudgetingFormFields]);
 
   const validateAmounts = (data: DynamicSchemaType) => {
-    let invalidCounts: number[] = [];
+    const invalidCounts: number[] = [];
 
     data.accounts.forEach((item: DynamicCountSchemaType, index: number) => {
       const total = Object.keys(item).reduce((acc: number, key) => {

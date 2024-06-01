@@ -17,7 +17,7 @@ type BudgetTableProps = {
   loading?: boolean;
 };
 
-const BudgetDynamicTable = ({counts, disabled, fields = [], invalidRows, loading}: BudgetTableProps) => {
+const BudgetDynamicTable = ({counts, disabled, fields = [], invalidRows}: BudgetTableProps) => {
   const methods = useFormContext<DynamicSchemaType>();
   const currentMonth = new Date().getMonth();
 
@@ -38,7 +38,7 @@ const BudgetDynamicTable = ({counts, disabled, fields = [], invalidRows, loading
                   content={`${item.serial_number} - ${item.title}`}
                   variant="bodySmall"
                   style={{
-                    padding: `12px 7px`,
+                    padding: '12px 7px',
                   }}
                 />
               </FlexContainer>

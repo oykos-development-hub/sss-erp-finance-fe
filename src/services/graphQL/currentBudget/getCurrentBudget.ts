@@ -1,1 +1,1 @@
-const getCurrentBudget = ``;
+const getCurrentBudget = '';
