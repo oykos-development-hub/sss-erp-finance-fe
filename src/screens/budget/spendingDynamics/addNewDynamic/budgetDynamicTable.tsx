@@ -1,11 +1,11 @@
-import {Input, Typography} from 'client-library';
+import {Typography} from 'client-library';
 import {useMemo, useState} from 'react';
 import {FormProvider, useFormContext} from 'react-hook-form';
 import ChevronIcon from '../../../../components/icons/ChevronIcon.tsx';
 import {BudgetText, CustomTable, CustomTableHead, FlexContainer} from '../../../../shared/budgetTable/styles.ts';
 import {BudgetDynamicCount} from '../../../../types/graphQL/budgetDynamic.ts';
 import {MonthType, dynamicTableHeads, monthVars} from '../constants.tsx';
-import {DynamicTableCell} from '../styles.tsx';
+import {DynamicTableCell, DynamicTableInput} from '../styles.tsx';
 import {DynamicSchemaType} from './budgetDynamicTemplate.tsx';
 
 type BudgetTableProps = {
@@ -35,7 +35,7 @@ const BudgetDynamicTable = ({counts, invalidRows}: BudgetTableProps) => {
     if (counts) {
       return recursiveRowRendering(counts);
     }
-  }, [counts]);
+  }, [counts, invalidRows]);
 
   return (
     <CustomTable disabled={false}>
@@ -120,11 +120,11 @@ const BudgetDynamicFormRow = ({count, level, children, invalid}: BudgetTableRowP
         {monthVars.map((value: MonthType, index) => (
           <DynamicTableCell key={`${value}-${index}`} level={level}>
             <div style={{width: 100}}>
-              <Input
+              <DynamicTableInput
                 {...methods.register(`${count.account_serial_number}.${value}` as any, {valueAsNumber: true})}
                 disabled={currentMonth > index || count.children?.length > 0}
                 type={'number'}
-                style={invalid ? {border: '1px solid red'} : {}}
+                invalid={invalid}
               />
               <BudgetText content="0.00" variant="bodySmall" />
             </div>
@@ -132,12 +132,13 @@ const BudgetDynamicFormRow = ({count, level, children, invalid}: BudgetTableRowP
         ))}
         <DynamicTableCell level={level}>
           <div style={{width: 100}}>
-            <Input
+            <DynamicTableInput
               {...methods.register(`${count.account_serial_number}.totalSavings` as any, {
                 valueAsNumber: true,
               })}
               type={'number'}
               disabled={count.children?.length > 0}
+              invalid={invalid}
             />
           </div>
         </DynamicTableCell>

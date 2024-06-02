@@ -29,6 +29,8 @@ const dynamicCountSchema = yup.object().shape({
   bottomLevel: yup.boolean().required(),
 }) as any;
 
+const nonMonthKeys = ['account_id', 'actual', 'totalSavings', 'bottomLevel', 'account_serial_number'];
+
 const mapRules = (map: any, rule: any) => Object.keys(map).reduce((newMap, key) => ({...newMap, [key]: rule}), {});
 
 const dynamicSchema = yup.lazy(map => yup.object(mapRules(map, yup.object(dynamicCountSchema))));
@@ -62,6 +64,7 @@ const BudgetDynamicTemplate = () => {
         actual: parseInt(item.actual),
         totalSavings,
         bottomLevel,
+        account_serial_number: item.account_serial_number,
         ...months,
       };
 
@@ -89,13 +92,11 @@ const BudgetDynamicTemplate = () => {
       const total = Object.keys(item).reduce((acc: number, key) => {
         const monthKey = key as keyof DynamicCountSchemaType;
 
-        return monthKey !== 'account_id' && monthKey !== 'actual' && monthKey !== 'totalSavings'
-          ? acc + item[monthKey]
-          : acc;
+        return nonMonthKeys.indexOf(monthKey as string) === -1 ? acc + parseInt(item[monthKey]) : acc;
       }, 0);
 
-      const totalAmount = total + Number(item.totalSavings);
-      if (totalAmount !== item.actual) {
+      const totalAmount = total + parseInt(item.totalSavings);
+      if (totalAmount !== parseInt(item.actual)) {
         invalidCounts.push(item.account_serial_number);
       }
     });
@@ -105,33 +106,31 @@ const BudgetDynamicTemplate = () => {
 
   const onSubmit = async (data: DynamicSchemaType) => {
     const invalidCounts = validateAmounts(data);
-    console.log(invalidCounts);
-    // if (invalidCounts.length) {
-    //   setInvalidRows(invalidCounts);
-    //   alert.error('Uneseni iznosi nisu ispravni!');
-    //   return;
-    // } else {
-    setInvalidRows([]);
-    const insertData = Object.values(data)
-      .filter((item: DynamicCountSchemaType) => !!item.bottomLevel)
-      .map((item: DynamicCountSchemaType) => {
-        const {account_id, actual, totalSavings, bottomLevel, ...months} = item;
+    if (invalidCounts.length) {
+      setInvalidRows(invalidCounts);
+      alert.error('Uneseni iznosi nisu ispravni!');
+      return;
+    } else {
+      setInvalidRows([]);
+      const insertData = Object.values(data)
+        .filter((item: DynamicCountSchemaType) => !!item.bottomLevel)
+        .map((item: DynamicCountSchemaType) => {
+          const {account_id, actual, totalSavings, bottomLevel, account_serial_number, ...months} = item;
 
-        return {
-          account_id,
-          ...months,
-        };
-      });
-
-    await insertBudgetDynamic(
-      insertData,
-      () => {
-        alert.success('Uspešno ste sačuvali podatke!');
-        refetch();
-      },
-      () => alert.error('Došlo je do greške prilikom čuvanja podataka!'),
-    );
-    // }
+          return {
+            account_id,
+            ...months,
+          };
+        });
+      await insertBudgetDynamic(
+        insertData,
+        () => {
+          alert.success('Uspešno ste sačuvali podatke!');
+          refetch();
+        },
+        () => alert.error('Došlo je do greške prilikom čuvanja podataka!'),
+      );
+    }
   };
 
   return (

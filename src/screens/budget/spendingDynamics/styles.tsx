@@ -1,4 +1,4 @@
-import {Divider, Tabs, Theme, Typography} from 'client-library';
+import {Divider, Tabs, Theme, Typography, Input} from 'client-library';
 import styled from 'styled-components';
 
 export const SectionBox = styled.div`
@@ -117,4 +117,10 @@ export const DynamicTableCell = styled.td<{
   cursor: ${({first, hasChildren}) => (first && hasChildren ? 'pointer' : 'default')};
 
   ${({first}) => first && 'min-width: 280px'}
+`;
+
+export const DynamicTableInput = styled(Input)<{invalid?: boolean}>`
+  input {
+    border-color: ${({invalid}) => (invalid ? Theme.palette.error500 : Theme.palette.gray300)};
+  }
 `;
