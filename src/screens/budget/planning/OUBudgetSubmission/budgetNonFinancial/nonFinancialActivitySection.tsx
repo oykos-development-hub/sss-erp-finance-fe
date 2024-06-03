@@ -24,7 +24,6 @@ export const NonFinancialActivitySection = ({activity, disabled}: NonFinancialAc
   const [goalId, setGoalId] = useState<number | undefined>(undefined);
   const [trigger, setTrigger] = useState(false);
   const toggleModal = (id?: number) => {
-    console.log(id, 'toggle modal id');
     id !== undefined ? setGoalId(id) : setGoalId(undefined);
   };
 
@@ -49,7 +48,6 @@ export const NonFinancialActivitySection = ({activity, disabled}: NonFinancialAc
   ];
 
   const handleAddGoal = (data: Goal) => {
-    console.log('handleAddGoal', data);
     append({title: data.title, description: data.description, indicators: data.indicators});
     setTrigger(true);
     toggleModal();
@@ -58,7 +56,6 @@ export const NonFinancialActivitySection = ({activity, disabled}: NonFinancialAc
   useEffect(() => {
     // TODO remove
     //  temp fix because table won't update when adding new goal
-    console.log(trigger, 'trigger');
     if (trigger) {
       handleRemoveGoal(fields.length - 1);
       setTrigger(false);
@@ -103,7 +100,6 @@ export const NonFinancialActivitySection = ({activity, disabled}: NonFinancialAc
         </TextAreaWrapper>
         {memoizedTable}
         <ButtonWrapper>
-          {/*<Button content="Dodajte ciljeve" variant="secondary" onClick={toggleModal} disabled={disabled} />*/}
           <Button
             content="Dodajte ciljeve"
             variant="secondary"

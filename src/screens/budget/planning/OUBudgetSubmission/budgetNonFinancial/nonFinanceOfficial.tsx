@@ -41,6 +41,7 @@ export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails
       setValue('impl_contact_fullname', non_financial.impl_contact_fullname);
       setValue('impl_contact_phone', non_financial.impl_contact_phone);
       setValue('impl_contact_working_place', non_financial.impl_contact_working_place);
+      setValue('goals', non_financial.activity.goals ?? []);
     }
   }, [budgetRequestDetails]);
 

@@ -30,7 +30,7 @@ const useGetBudgetRequestDetails = ({budgetId, organizationUnitId}: BudgetReques
     getBudgetRequestDetails();
   }, [budgetId, organizationUnitId]);
 
-  return {budgetRequestDetails, loading, getBudgetRequestDetails};
+  return {budgetRequestDetails, loading, refetch: getBudgetRequestDetails};
 };
 
 export default useGetBudgetRequestDetails;

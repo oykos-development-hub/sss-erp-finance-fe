@@ -1,5 +1,6 @@
 import {DropdownData} from '../dropdownData.ts';
 import {Count} from './counts.ts';
+import {Goal} from '../nonFinance.ts';
 
 export type BudgetRequestItem = {
   financial: FinancialDetails;
@@ -38,12 +39,13 @@ type NonFinancialDetails = {
   request_id: number;
   status: DropdownData<number>;
   statement: string;
+  goals?: Goal[];
 };
 
 export type Activity = {
   code: string;
   description: string;
-  goals: any[]; // Specify the type if goals have a defined structure
+  goals: Goal[];
   id: number;
   sub_program: DropdownData<number>;
   title: string;

@@ -1,4 +1,5 @@
 // This file contains types for non-financial form that manager sends to SSS
+
 export interface NonFinancialForm {
   id: number;
   request_id: number;
@@ -41,4 +42,5 @@ export interface Indicator {
   planned_value_3?: string;
   revised_value_3?: string;
   achieved_value_3?: string;
+  original_id?: number;
 }

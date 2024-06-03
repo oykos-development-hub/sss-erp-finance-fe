@@ -36,7 +36,7 @@ export const NonFinanceAccordion = ({programNo, handleDeleteProgram, isPreview}:
     }
     return (
       <>
-        <ProgramSectionPreview section={1} goals={['Goal 1', 'Goal 2']} />
+        <ProgramSectionPreview section={1} goals={[]} />
         <ProgramSectionPreview section={2} goals={[]} />
         <ProgramSectionPreview section={3} goals={[]} />
       </>

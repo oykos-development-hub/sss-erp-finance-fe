@@ -92,7 +92,7 @@ export const SubmitContainer = styled.div`
 
 export const TableWrapper = styled.div`
   overflow-x: scroll;
-  margin-top: 22;
+  margin-top: 22px;
   position: relative;
 `;
 

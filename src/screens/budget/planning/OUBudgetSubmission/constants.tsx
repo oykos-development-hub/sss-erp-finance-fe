@@ -20,6 +20,6 @@ export const activityGoalsTableHeads: TableHead[] = [
 
 export const goalIndicatorsTableHeads: TableHead[] = [
   {title: 'Kod indikatora učinka', accessor: 'performance_indicator_code'},
-  {title: 'Planirana vrijednost u N+1 godini', accessor: 'title'},
+  {title: 'Planirana vrijednost u N+1 godini', accessor: 'planned_value_1'},
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

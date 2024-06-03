@@ -28,14 +28,10 @@ const BudgetSubmissionTabs = () => {
   }, [pathname]);
 
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname, budgetTabs) || 1);
-  const {budgetRequestDetails} = useGetBudgetRequestDetails({
+  const {budgetRequestDetails, refetch} = useGetBudgetRequestDetails({
     budgetId: id,
     organizationUnitId: organization_unit.id,
   });
-
-  // TOOD check if this is needed
-  // const {budgetFinancial} = useGetBudgetFinancial({budget_id: id});
-  // console.log(budgetFinancial);
 
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
@@ -83,6 +79,7 @@ const BudgetSubmissionTabs = () => {
 
   useEffect(() => {
     setActiveTab(getCurrentTab(pathname, budgetTabs) || 1);
+    activeTab === 1 && refetch();
   }, [pathname]);
 
   return (

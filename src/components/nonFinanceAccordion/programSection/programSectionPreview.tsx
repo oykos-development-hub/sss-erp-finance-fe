@@ -8,10 +8,11 @@ import {
   TextWrapper,
   ItemWrapper,
 } from '../styles.ts';
+import {Goal} from '../../../types/nonFinance.ts';
 
 interface SectionPreviewProps {
   section: 1 | 2 | 3;
-  goals: string[];
+  goals: Goal[];
   code?: string;
   description?: string;
   id?: number;
@@ -63,7 +64,7 @@ export const ProgramSectionPreview = (props: SectionPreviewProps) => {
             <Divider />
             <TextAreaWrapper>
               {goals.map((goal, index) => (
-                <Typography key={index} content={goal} style={{color: Theme.palette.gray600}} />
+                <Typography key={index} content={goal.title} style={{color: Theme.palette.gray600}} />
               ))}
             </TextAreaWrapper>
           </>

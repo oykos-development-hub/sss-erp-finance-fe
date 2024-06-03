@@ -11,7 +11,6 @@ import {goalIndicatorsTableHeads} from '../../screens/budget/planning/OUBudgetSu
 export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal}: GoalsModalFinanceOfficerProps) => {
   const [indicatorId, setIndicatorId] = useState<number | undefined>(undefined);
   const toggleModal = (id?: number) => {
-    console.log(id, 'toggle modal indicator id');
     id !== undefined ? setIndicatorId(id) : setIndicatorId(undefined);
   };
   const {
@@ -48,7 +47,6 @@ export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal}: Goals
   };
 
   const handleAddIndicator = (data: any) => {
-    console.log(data, 'handleAddIndicator');
     append(data);
     setTrigger(true);
     toggleModal();
@@ -65,7 +63,6 @@ export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal}: Goals
   useEffect(() => {
     // TODO remove
     //  temp fix because table won't update when adding new goal
-    console.log(trigger, 'trigger');
     if (trigger) {
       handleRemoveIndicator(fields.length - 1);
       setTrigger(false);
