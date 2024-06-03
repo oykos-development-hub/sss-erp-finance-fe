@@ -46,8 +46,6 @@ export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails
 
   const handleSubmitNonFinancial = async (data: NonFinancialForm) => {
     if (isValid && budgetRequestDetails?.non_financial.request_id) {
-      // TODO remove console log
-      console.log(data, 'NonFinancialForm');
       await nonFinancialBudgetFill(
         {...data, request_id: budgetRequestDetails?.non_financial.request_id},
         () => {

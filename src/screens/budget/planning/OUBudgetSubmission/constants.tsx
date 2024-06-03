@@ -11,3 +11,15 @@ export const budgetSummaryTableHeads: TableHead[] = [
     renderContents: (status: DropdownData<string>) => <StatusTableCell status={status.title} />,
   },
 ];
+
+export const activityGoalsTableHeads: TableHead[] = [
+  {title: 'Naziv cilja', accessor: 'title'},
+  {title: 'Opis', accessor: 'description'},
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
+];
+
+export const goalIndicatorsTableHeads: TableHead[] = [
+  {title: 'Kod indikatora učinka', accessor: 'performance_indicator_code'},
+  {title: 'Planirana vrijednost u N+1 godini', accessor: 'title'},
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
+];

@@ -15,10 +15,11 @@ export interface NonFinancialForm {
 }
 
 export interface Goal {
-  id: number;
+  id?: number;
   title: string;
   description: string;
   indicators: Indicator[];
+  original_id?: number;
 }
 
 export interface Indicator {
