@@ -25,7 +25,7 @@ export const tableHeads: TableHead[] = [
     renderContents: obligation_number => <Typography content={obligation_number || ''} />,
   },
   {
-    title: 'Subjekat',
+    title: 'Subjekt',
     accessor: 'obligation_supplier',
     type: 'custom',
     renderContents: obligation_supplier => <Typography content={obligation_supplier?.title || ''} />,
