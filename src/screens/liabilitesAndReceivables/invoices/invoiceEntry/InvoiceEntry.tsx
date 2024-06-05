@@ -49,7 +49,7 @@ const defaultValues = {
   date_of_invoice: undefined,
   pro_forma_invoice_date: undefined,
   receipt_date: undefined,
-  sss_invoice_receipt_date: new Date(),
+  sss_invoice_receipt_date: undefined,
   bank_account: undefined,
   date_of_payment: undefined,
   type_for_invoice: undefined,
@@ -601,6 +601,15 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     if (!bankAccounts.length) return;
     setValue('bank_account', bankAccounts[0]);
   }, [supplier_id?.id]);
+
+  useEffect(() => {
+    if (type.id === true) {
+      setValue('sss_invoice_receipt_date', new Date());
+    } else if (type.id === false) {
+      setValue('sss_invoice_receipt_date', undefined);
+      setValue('sss_pro_forma_invoice_receipt_date', new Date());
+    }
+  }, [type?.id]);
 
   return (
     <InvoiceEntryForm>

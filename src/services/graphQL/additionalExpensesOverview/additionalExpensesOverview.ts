@@ -16,6 +16,12 @@ const additionalExpensesOverview = `query additionalExpensesOverview($id: Int, $
                     title
                 }
                 status
+                obligation_number
+                obligation_type
+                obligation_supplier{
+                    id
+                    title
+                }
             }
         }
     }`;

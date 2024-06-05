@@ -1,5 +1,6 @@
 import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
+import {TypesTitles} from '../enforcedPayments/constants.tsx';
 
 export const tableHeads: TableHead[] = [
   {
@@ -7,6 +8,27 @@ export const tableHeads: TableHead[] = [
     accessor: 'title',
     type: 'custom',
     renderContents: title => <Typography content={title || ''} />,
+  },
+  {
+    title: 'Tip dokumenta',
+    accessor: 'obligation_type',
+    type: 'custom',
+    renderContents: (_, row) => {
+      const typeValue = TypesTitles.find(option => option.id === row.obligation_type);
+      return <Typography content={typeValue ? typeValue?.title : ''} />;
+    },
+  },
+  {
+    title: 'Broj dokumenta',
+    accessor: 'obligation_number',
+    type: 'custom',
+    renderContents: obligation_number => <Typography content={obligation_number || ''} />,
+  },
+  {
+    title: 'Subjekat',
+    accessor: 'obligation_supplier',
+    type: 'custom',
+    renderContents: obligation_supplier => <Typography content={obligation_supplier?.title || ''} />,
   },
   {
     title: 'Vezani subjekt',

@@ -249,7 +249,7 @@ const ReceivableEntry = () => {
         totalRemainingPrice += field.remain_price || 0;
       });
 
-      setTotalAmount(roundCurrency(totalRemainingPrice));
+      setTotalAmount(totalRemainingPrice?.toFixed(2));
     }
   };
 

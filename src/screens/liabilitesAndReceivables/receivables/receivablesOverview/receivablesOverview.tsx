@@ -56,6 +56,7 @@ const ReceivablesOverview = () => {
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState<OverviewFilters>(initialFilterValues);
   const [showDeleteModalId, setShowDeleteModalId] = useState<number | undefined>(undefined);
+  const [showCancelPaymentModal, setShowCancelPaymentModal] = useState<PaymentOrderItem>();
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
@@ -88,23 +89,32 @@ const ReceivablesOverview = () => {
 
   const {deletePaymentOrder} = useDeletePaymentOrder();
 
-  const cancelPayment = async (row: PaymentOrderItem) => {
-    if (row.registred) {
+  const cancelPayment = async () => {
+    if (showCancelPaymentModal?.registred) {
       alert.info(
         'Nalog za knjiženje ovog naloga za plaćanje mora najprije da bude izbrisan da bi se stornirao nalog za plaćanje.',
       );
-    } else {
+    } else if (showCancelPaymentModal?.id) {
       await cancelOrderPayments(
-        row.id,
+        showCancelPaymentModal.id,
         () => {
           alert.success('Uspješno ste stornirali nalog.');
           fetch();
+          setShowCancelPaymentModal(undefined);
         },
         () => {
           alert.error('Došlo je do greške prilikom storniranja naloga.');
         },
       );
     }
+  };
+
+  const handleCloseCancelPaymentModal = () => {
+    setShowCancelPaymentModal(undefined);
+  };
+
+  const onCancelPayment = (row?: PaymentOrderItem) => {
+    setShowCancelPaymentModal(row);
   };
 
   const onPageChange = (page: number) => {
@@ -221,11 +231,11 @@ const ReceivablesOverview = () => {
               name: 'Izmijeni',
               onClick: (row: PaymentOrderItem) => navigate(`/finance/liabilities-receivables/receivables/${row.id}`),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status !== 'Plaćen',
+              shouldRender: row => row.status !== 'Plaćen' && row.status !== 'Storniran',
             },
             {
               name: 'Storniraj',
-              onClick: (row: PaymentOrderItem) => cancelPayment(row),
+              onClick: (row: PaymentOrderItem) => onCancelPayment(row),
               icon: <RotateCWIcon stroke={Theme?.palette?.gray800} />,
               shouldRender: row => row.status === 'Plaćen',
               tooltip: () => 'Storniraj',
@@ -234,7 +244,7 @@ const ReceivablesOverview = () => {
               name: 'Izbriši',
               onClick: onDelete,
               icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status !== 'Plaćen',
+              shouldRender: row => row.status !== 'Plaćen' && row.status !== 'Storniran',
             },
           ]}
         />
@@ -251,6 +261,13 @@ const ReceivablesOverview = () => {
           subTitle="Ovaj nalog će biti trajno izbrisan iz sistema."
           onClose={() => handleCloseDeleteModal()}
           onConfirm={() => handleDelete()}
+        />
+
+        <ConfirmationModal
+          open={!!showCancelPaymentModal}
+          subTitle="Ovaj nalog će biti storniran."
+          onClose={() => handleCloseCancelPaymentModal()}
+          onConfirm={() => cancelPayment()}
         />
       </SectionBox>
     </ScreenWrapper>

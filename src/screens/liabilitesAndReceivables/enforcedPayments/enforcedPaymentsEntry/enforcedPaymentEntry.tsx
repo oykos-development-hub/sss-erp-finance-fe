@@ -3,7 +3,7 @@ import {Button, Datepicker, Dropdown, FileUpload, Input, Table, TableHead, Typog
 import {useEffect, useMemo, useState} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
-import {StatusOptions, generateDropdownOptions} from '../../../../constants.ts';
+import {generateDropdownOptions} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 import useInsertEnforcedPayment from '../../../../services/graphQL/enforcedPayments/useInsertEnforcedPayment.ts';
@@ -18,6 +18,7 @@ import StatusTableCell from '../../../../shared/statusTableCell/statusTableCell.
 import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {StatusOptionsInvoice} from '../../invoices/constants.tsx';
 import {TypesTitles, enforcedPaymentSchema} from '../constants.tsx';
 import {FileUploadWrapper, FormContainer, Row} from '../styles.ts';
 
@@ -128,7 +129,7 @@ const EnforcedPaymentEntry = () => {
       accessor: 'status',
       type: 'custom',
       renderContents: (_, row) => {
-        const statusValue = StatusOptions.find(option => option.id === row.status);
+        const statusValue = StatusOptionsInvoice.find(option => option.id === row.status);
         return <StatusTableCell status={statusValue ? statusValue?.title : ''} />;
       },
     },
