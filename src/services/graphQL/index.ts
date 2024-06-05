@@ -97,6 +97,8 @@ import financialBudgetFill from './financialBudgetFill/financialBudgetFill.ts';
 import nonFinancialBudgetFill from './nonFinancialBudgetFill/nonFinancialBudgetFill.ts';
 import sendBudgetOnReview from './sendBudgetOnReview/sendBudgetOnReview.ts';
 import cancelOrderPayment from './cancelOrderPayment/cancelOrderPayment.ts';
+import getFundRelease from './fundRelease/getFundRelease.ts';
+import insertFundRelease from './fundRelease/insertFundRelease.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -213,4 +215,6 @@ export const GraphQL = {
   getBudgetDynamic: getBudgetDynamic,
   getBudgetDynamicHistory: getBudgetDynamicHistory,
   insertBudgetDynamic: insertBudgetDynamic,
+  getFundRelease: getFundRelease,
+  insertFundRelease: insertFundRelease,
 };

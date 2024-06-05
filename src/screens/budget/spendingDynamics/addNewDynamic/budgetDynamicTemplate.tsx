@@ -40,6 +40,7 @@ export type DynamicSchemaType = yup.InferType<typeof dynamicSchema>;
 
 const BudgetDynamicTemplate = () => {
   const [invalidRows, setInvalidRows] = useState<string[]>([]);
+  const [totalSavingsList, setTotalSavingsList] = useState<{value: number; serialNumber: string}[]>([]);
 
   const {alert} = useAppContext();
 
@@ -58,6 +59,8 @@ const BudgetDynamicTemplate = () => {
         months[month] = parseInt(item[month].value);
         totalSavings += parseInt(item[month].savings);
       });
+
+      setTotalSavingsList(prev => [...prev, {value: totalSavings, serialNumber: item.account_serial_number}]);
 
       const data: any = {
         account_id: item.account_id,
@@ -96,7 +99,10 @@ const BudgetDynamicTemplate = () => {
       }, 0);
 
       const totalAmount = total + parseInt(item.totalSavings);
-      if (totalAmount !== parseInt(item.actual)) {
+      const initialTotalSaving = totalSavingsList.find(
+        totalItem => totalItem.serialNumber === item.account_serial_number,
+      )!;
+      if (totalAmount !== parseInt(item.actual) || item.totalSavings > initialTotalSaving?.value) {
         invalidCounts.push(item.account_serial_number);
       }
     });
@@ -122,6 +128,7 @@ const BudgetDynamicTemplate = () => {
             ...months,
           };
         });
+
       await insertBudgetDynamic(
         insertData,
         () => {

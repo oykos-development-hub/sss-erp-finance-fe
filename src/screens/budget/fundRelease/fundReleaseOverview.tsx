@@ -1,41 +1,48 @@
-import {Button, Divider, Dropdown, Table, TableHead} from 'client-library';
-import {useState} from 'react';
-import {Controller, useForm} from 'react-hook-form';
-import FundReleaseModal from '../../../components/fundReleaseModal/fundReleaseModal';
+import {Button, Divider, Dropdown, Table} from 'client-library';
+import {useMemo, useState} from 'react';
+import useAppContext from '../../../context/useAppContext';
+import useGetFundRelease from '../../../services/graphQL/fundRelease/useGetFundRelease';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
-import {getYearOptions} from '../../../utils/getYearOptions';
-import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
+import {DropdownData} from '../../../types/dropdownData';
 import {getMonthOptions} from '../../../utils/getMonthOptions';
+import {getYearOptions} from '../../../utils/getYearOptions';
+import {fundReleaseTableHeads} from './constants';
+import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
 
-const tableHeads: TableHead[] = [
-  {
-    title: 'ID',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Datum zahtjeva',
-    accessor: '',
-    type: 'text',
-  },
-  {
-    title: 'Podnosilac zahtjeva',
-    accessor: 'amount',
-    type: 'text',
-  },
-  {
-    title: 'Status',
-    accessor: 'status',
-    type: 'text',
-  },
-];
+type FundReleaseFilters = {
+  year: DropdownData<number>;
+  month: DropdownData<number> | null;
+};
 
 const FundReleaseOverview = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const {control} = useForm();
+  const {
+    navigation: {navigate},
+  } = useAppContext();
 
-  const toogleModal = () => setIsOpen(prev => !prev);
-  // TO DO add BE
+  const [filters, setFilters] = useState<FundReleaseFilters>({
+    year: {id: new Date().getFullYear(), title: new Date().getFullYear().toString()},
+    month: null,
+  });
+
+  const {fundRelease} = useGetFundRelease({year: filters.year.id, month: filters.month?.id});
+
+  const fundReleaseList = useMemo(() => {
+    return fundRelease
+      ? fundRelease.map(item => ({
+          ...item,
+          id: `${item.year}-${item.month}`,
+        }))
+      : [];
+  }, [fundRelease]);
+
+  const onChange = (value: any) => {
+    setFilters({...filters, [value.name]: value.value});
+  };
+
+  const navigateToCreateFundRelease = () => {
+    navigate('/finance/budget/current/fund-release/new-request');
+  };
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -44,36 +51,21 @@ const FundReleaseOverview = () => {
         <Wrapper>
           <HeaderWrapper>
             <DropdownWrapper>
-              <Controller
+              <Dropdown
                 name="year"
-                control={control}
-                render={({field: {name, value, onChange}}) => (
-                  <Dropdown
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    options={getYearOptions(10, true, 5)}
-                    label="GODINA:"
-                  />
-                )}
+                value={filters.year}
+                onChange={onChange}
+                options={getYearOptions(10, true, 5)}
+                label="GODINA:"
               />
             </DropdownWrapper>
             <DropdownWrapper>
-              <Controller
+              <Dropdown
                 name="month"
-                control={control}
-                render={({field: {name, value, onChange}}) => (
-                  <Dropdown name={name} value={value} onChange={onChange} options={getMonthOptions()} label="MJESEC:" />
-                )}
-              />
-            </DropdownWrapper>
-            <DropdownWrapper>
-              <Controller
-                name="status"
-                control={control}
-                render={({field: {name, value, onChange}}) => (
-                  <Dropdown name={name} value={value} onChange={onChange} options={[]} label="STATUS:" />
-                )}
+                value={filters.month}
+                onChange={onChange}
+                options={getMonthOptions()}
+                label="MJESEC:"
               />
             </DropdownWrapper>
           </HeaderWrapper>
@@ -82,13 +74,11 @@ const FundReleaseOverview = () => {
               content="Kreiraj zahtjev za otpuštanje sredstava"
               style={{width: '200px'}}
               variant="secondary"
-              onClick={() => toogleModal()}
+              onClick={navigateToCreateFundRelease}
             />
           </ButtonWrapper>
         </Wrapper>
-        <Table data={[]} tableHeads={tableHeads} />
-
-        {isOpen && <FundReleaseModal open={isOpen} onClose={() => toogleModal()} />}
+        <Table data={fundReleaseList as any} tableHeads={fundReleaseTableHeads} />
       </SectionBox>
     </ScreenWrapper>
   );

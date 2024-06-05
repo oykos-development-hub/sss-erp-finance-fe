@@ -255,10 +255,10 @@ export const Router = () => {
     if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;
     if (proceduralCostDetailsRegex.test(pathname)) return <ProceduralCostDetails />;
 
-    if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
-      if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;
-      if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
-    }
+    // if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
+    if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;
+    if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
+    // }
     if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.MANAGER_OJ])) {
       // add role specific routes here
       if (pathname === '/blablabla') return <div />;

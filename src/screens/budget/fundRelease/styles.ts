@@ -1,4 +1,4 @@
-import {Typography} from 'client-library';
+import {Typography, Checkbox, Input, Theme} from 'client-library';
 import styled from 'styled-components';
 
 export const SectionBox = styled.div`
@@ -19,7 +19,7 @@ export const HeaderWrapper = styled.div`
   display: flex;
   margin-block: 10px;
   flex-wrap: wrap;
-  justify-content: space-between;
+  /* justify-content: space-between; */
 `;
 
 export const SubTitle = styled(Typography)`
@@ -40,4 +40,17 @@ export const ButtonWrapper = styled.div`
 export const MainTitle = styled(Typography)`
   margin-bottom: 10px;
   font-weight: 600;
+`;
+
+export const FundReleaseCheckbox = styled(Checkbox)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const FundReleaseInput = styled(Input)<{invalid?: boolean}>`
+  max-width: 100px !important;
+  input {
+    border-color: ${({invalid}) => (invalid ? Theme.palette.error500 : Theme.palette.gray300)};
+  }
 `;
