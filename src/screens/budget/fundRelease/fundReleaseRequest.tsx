@@ -28,7 +28,7 @@ const FundReleaseRequest = () => {
 
   const methods = useForm<any>();
 
-  const {budgetDynamic, refetch, loading} = useGetBudgetDynamic({});
+  const {budgetDynamic, loading} = useGetBudgetDynamic({});
   const {insertFundRelease} = useInsertFundRelease();
 
   const onEnabledRowsChange = (row: string) => {
