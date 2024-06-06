@@ -14,9 +14,15 @@ const enforcedPaymentOverview = `query enforcedPayment_Overview($id: Int,$status
                 id
                 title
             }
+            agent{
+                id
+                title
+            }
             amount
             amount_for_lawyer
 		    amount_for_agent
+            amount_for_bank
+            execution_number
             bank_account
             date_of_payment
             date_of_sap
@@ -35,7 +41,7 @@ const enforcedPaymentOverview = `query enforcedPayment_Overview($id: Int,$status
             }
 			return_date
             return_amount
-            items {
+            items{
                  id
                  invoice_id
                  account{
@@ -48,7 +54,6 @@ const enforcedPaymentOverview = `query enforcedPayment_Overview($id: Int,$status
             created_at
             updated_at
         }
-    
         }
     }`;
 

@@ -50,10 +50,12 @@ const EnforcedPaymentEntry = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
 
-  const {organization_unit_id, supplier_id, amount_for_agent, amount_for_lawyer} = watch();
+  const {organization_unit_id, supplier_id, amount_for_agent, amount_for_lawyer, agent_id} = watch();
 
   const {counts} = useGetCountOverview({level: 3});
   const {suppliers} = useGetSuppliers({});
+  const {suppliers: executor} = useGetSuppliers({entity: 'executor'});
+
   const {organizationUnits} = useGetOrganizationUnits();
   const {invoice, fetchInvoice} = useGetInvoice(
     {
@@ -154,6 +156,8 @@ const EnforcedPaymentEntry = () => {
           amount_for_agent: data?.amount_for_agent,
           date_of_sap: parseDateForBackend(data?.date_of_sap),
           sap_id: data?.sap_id,
+          agent_id: agent_id?.id,
+          execution_number: data?.execution_number,
           file_id: files[0].id,
           items: fields
             .filter(field => selectedRows.includes(field.id))
@@ -182,6 +186,8 @@ const EnforcedPaymentEntry = () => {
         date_of_payment: parseDateForBackend(data?.date_of_payment),
         description: data?.description,
         amount_for_lawyer: data?.amount_for_lawyer,
+        agent_id: agent_id?.id,
+        execution_number: data?.execution_number,
         amount_for_agent: data?.amount_for_agent,
         date_of_sap: parseDateForBackend(data?.date_of_sap),
         sap_id: data?.sap_id,
@@ -353,6 +359,36 @@ const EnforcedPaymentEntry = () => {
               <>
                 <>
                   <Row>
+                    <Input
+                      {...register('execution_number')}
+                      label="BROJ IZVRŠENJA:"
+                      error={errors.sap_id?.message}
+                      style={{width: '350px'}}
+                    />
+                    <Controller
+                      name={'agent_id'}
+                      control={control}
+                      render={({field: {name, value, onChange}}) => (
+                        <Dropdown
+                          name={name}
+                          label="IZVRŠITELJ:"
+                          value={value}
+                          onChange={onChange}
+                          error={errors.date_of_payment?.message}
+                          options={executor}
+                        />
+                      )}
+                    />
+
+                    <Input
+                      {...register('sap_id')}
+                      label="SAP ID:"
+                      error={errors.sap_id?.message}
+                      style={{width: '350px'}}
+                      isRequired
+                    />
+                  </Row>
+                  <Row>
                     {enforcedPaymentID > 0 && (
                       <Input
                         {...register('id_of_statement')}
@@ -362,13 +398,6 @@ const EnforcedPaymentEntry = () => {
                         disabled
                       />
                     )}
-                    <Input
-                      {...register('sap_id')}
-                      label="SAP ID:"
-                      error={errors.sap_id?.message}
-                      style={{width: '350px'}}
-                      isRequired
-                    />
 
                     <Controller
                       name={'date_of_sap'}

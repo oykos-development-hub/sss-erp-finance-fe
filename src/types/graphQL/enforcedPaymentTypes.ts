@@ -29,6 +29,11 @@ export interface EnforcedPaymentItem {
     id: number;
     title: string;
   };
+  agent: {
+    id: number;
+    title: string;
+  };
+  execution_number: string;
   amount: number;
   amount_for_lawyer: number;
   amount_for_agent: number;

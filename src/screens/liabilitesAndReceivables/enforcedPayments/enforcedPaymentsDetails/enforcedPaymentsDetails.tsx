@@ -47,11 +47,12 @@ const EnforcedPaymentsDetails = () => {
   const [totalForPayment, setTotalForPayment] = useState<number>();
   const enforcedPaymentID = location.pathname.split('/').at(-1);
 
-  const {organization_unit_id, supplier_id, return_date, return_amount} = watch();
+  const {organization_unit_id, supplier_id, return_date, return_amount, agent_id} = watch();
 
   const {suppliers} = useGetSuppliers({});
   const {organizationUnits} = useGetOrganizationUnits();
   const {loading: returnLoading, returnEnforcedPayment} = useReturnEnforcedPayment();
+  const {suppliers: executor} = useGetSuppliers({entity: 'executor'});
 
   const {enforcedPayment} = useGetEnforcedPayment({
     id: enforcedPaymentID,
@@ -107,6 +108,8 @@ const EnforcedPaymentsDetails = () => {
           amount_for_agent: enforcedPaymentData?.amount_for_agent,
           date_of_sap: parseDateForBackend(data?.date_of_sap),
           sap_id: data?.sap_id,
+          agent_id: agent_id?.id,
+          execution_number: data?.execution_number,
           file_id: files[0].id,
           id_of_statement: enforcedPaymentData?.id_of_statement,
         };
@@ -133,6 +136,8 @@ const EnforcedPaymentsDetails = () => {
         amount_for_agent: enforcedPaymentData?.amount_for_agent,
         date_of_sap: parseDateForBackend(data?.date_of_sap),
         sap_id: data?.sap_id,
+        agent_id: agent_id?.id,
+        execution_number: data?.execution_number,
         id_of_statement: enforcedPaymentData?.id_of_statement,
       };
 
@@ -200,6 +205,11 @@ const EnforcedPaymentsDetails = () => {
   useEffect(() => {
     calculateTotalForPayment();
     reset({
+      agent_id: {
+        id: enforcedPaymentData?.agent?.id,
+        title: enforcedPaymentData?.agent?.title,
+      },
+      execution_number: enforcedPaymentData?.execution_number,
       amount: enforcedPaymentData?.amount,
       organization_unit_id: {
         id: enforcedPaymentData?.organization_unit?.id,
@@ -265,6 +275,38 @@ const EnforcedPaymentsDetails = () => {
               error={errors.id_of_statement?.message}
               style={{width: '350px'}}
               disabled={enforcedPaymentData?.status === 'Povraćaj'}
+            />
+          </Row>
+          <Row>
+            <Input
+              {...register('execution_number')}
+              label="BROJ IZVRŠENJA:"
+              error={errors.sap_id?.message}
+              style={{width: '350px'}}
+              disabled={enforcedPaymentData?.status === 'Povraćaj'}
+            />
+            <Controller
+              name={'agent_id'}
+              control={control}
+              render={({field: {name, value, onChange}}) => (
+                <Dropdown
+                  name={name}
+                  label="IZVRŠITELJ:"
+                  value={value}
+                  onChange={onChange}
+                  error={errors.date_of_payment?.message}
+                  options={executor}
+                  isDisabled={enforcedPaymentData?.status === 'Povraćaj'}
+                />
+              )}
+            />
+
+            <Input
+              {...register('sap_id')}
+              label="SAP ID:"
+              error={errors.sap_id?.message}
+              style={{width: '350px'}}
+              isRequired
             />
           </Row>
           <Row>
