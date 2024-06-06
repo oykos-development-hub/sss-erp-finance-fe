@@ -27,7 +27,7 @@ import PlusButton from '../../../../shared/plusButton.tsx';
 import {FileItem, FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {InvoiceItem} from '../../../../types/graphQL/invoice.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import {pdvOptions} from '../constants';
+import {invoiceAmountTableHeads, pdvOptions} from '../constants';
 import {FileListWrapper} from '../invoicesOverview/styles.ts';
 import {invoiceSchema} from './constants.tsx';
 import {InvoiceEntryForm, PlusButtonWrapper, Row, StyledSwitch} from './styles';
@@ -978,6 +978,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             },
           ]}
         />
+        {invoice?.account_amounts[0].account && invoice?.account_amounts[0]?.amount && (
+          <>
+            <Table tableHeads={invoiceAmountTableHeads} data={invoice.account_amounts} />
+          </>
+        )}
       </>
       <Footer>
         <Button

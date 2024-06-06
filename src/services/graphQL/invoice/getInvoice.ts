@@ -8,6 +8,11 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
             type
             net_price
             vat_price
+            account_amounts{
+                account
+                amount
+                id
+            }
             type_of_contract{
                 id
                 title

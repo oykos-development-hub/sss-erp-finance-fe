@@ -110,6 +110,13 @@ export interface InvoiceItem {
     title: string;
   };
   order_id: number;
+  account_amounts: [
+    {
+      account: string;
+      amount: number;
+      id: number;
+    },
+  ];
   order: {
     id: number;
     title: string;
