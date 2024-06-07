@@ -1,6 +1,6 @@
 import {FormProvider, useForm} from 'react-hook-form';
 import {Container, InputWrapper, MainTitle, SectionWrapper, InputComponent} from './styles.ts';
-import {Input, Button} from 'client-library';
+import {Input, Button, Typography} from 'client-library';
 import {NonFinancialForm} from '../../../../../types/nonFinance.ts';
 import useAppContext from '../../../../../context/useAppContext.ts';
 import {NonFinancialActivitySection} from './nonFinancialActivitySection.tsx';
@@ -8,8 +8,15 @@ import useNonFinancialBudgetFill from '../../../../../services/graphQL/nonFinanc
 import {BudgetRequestItem} from '../../../../../types/graphQL/budgetRequestDetails.ts';
 import Footer from '../../../../../shared/footer.ts';
 import {useEffect} from 'react';
+import {BorderBox, BorderBoxItem} from '../styles.ts';
 
-export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetRequestItem}) => {
+export const NonFinanceOfficial = ({
+  budgetRequestDetails,
+  isPreview,
+}: {
+  budgetRequestDetails?: BudgetRequestItem;
+  isPreview?: boolean;
+}) => {
   // const [programs, setPrograms] = useState<number[]>([]);
   const {
     alert,
@@ -64,6 +71,13 @@ export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails
     <Container>
       <FormProvider {...methods}>
         <SectionWrapper>
+          {/*TODO check if comment goes here*/}
+          <BorderBox>
+            <BorderBoxItem>
+              <Typography content={'Komentar OJ:'} variant={'bodySmall'} style={{fontWeight: 600, marginRight: 10}} />
+              <Typography content={budgetRequestDetails?.non_financial?.official_comment ?? ''} variant={'bodySmall'} />
+            </BorderBoxItem>
+          </BorderBox>
           <MainTitle content="OSNOVNE INFORMACIJE" variant="bodyMedium" />
           <InputWrapper>
             <Input label="Naziv organizacione jedinice:" value={organization_unit?.title ?? ''} disabled />
@@ -136,17 +150,19 @@ export const NonFinanceOfficial = ({budgetRequestDetails}: {budgetRequestDetails
 
         <NonFinancialActivitySection
           activity={budgetRequestDetails?.non_financial.activity}
-          disabled={editingDisabled}
+          disabled={editingDisabled || isPreview}
         />
-        <Footer>
-          {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
-          <Button
-            content="Sačuvaj"
-            variant="secondary"
-            onClick={handleSubmit(handleSubmitNonFinancial)}
-            disabled={editingDisabled}
-          />
-        </Footer>
+        {!isPreview && (
+          <Footer>
+            {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
+            <Button
+              content="Sačuvaj"
+              variant="secondary"
+              onClick={handleSubmit(handleSubmitNonFinancial)}
+              disabled={editingDisabled}
+            />
+          </Footer>
+        )}
       </FormProvider>
     </Container>
   );

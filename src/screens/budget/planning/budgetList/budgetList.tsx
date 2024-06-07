@@ -14,7 +14,7 @@ import {BudgetStatusOptions, BudgetStatusTypeEnum, BudgetSubmissionStatusEnum} f
 import {BudgetOverviewItem} from '../../../../types/graphQL/budgetOverview';
 import {optionsNumberSchema} from '../../../../utils/formSchemas';
 import {getYearOptions} from '../../../../utils/getYearOptions';
-import {budgetListTableHeads, budgetTypeFilterOptions} from './constants';
+import {budgetListTableHeads, budgetListTableHeadsOfficial, budgetTypeFilterOptions} from './constants';
 import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
 import {useRoleCheck} from '../../../../utils/useRoleCheck.ts';
 
@@ -118,11 +118,11 @@ const BudgetList = () => {
   };
 
   const onRowClick = (row: BudgetOverviewItem) => {
-    if (useRoleCheck(role_id, [UserRole.ADMIN])) {
-      navigate(`/finance/budget/planning/${row.id}`);
+    if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])) {
+      navigate(`/finance/budget/planning/${row.id}/details`);
       breadcrumbs.add({
         name: 'Detalji',
-        to: `/finance/budget/planning/${row.id}`,
+        to: `/finance/budget/planning/${row.id}/details`,
       });
     } else {
       navigate(`/finance/budget/planning/${row.id}/summary`);
@@ -232,7 +232,11 @@ const BudgetList = () => {
           </Controls>
         </Header>
         <Table
-          tableHeads={budgetListTableHeads}
+          tableHeads={
+            useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])
+              ? budgetListTableHeadsOfficial
+              : budgetListTableHeads
+          }
           data={budgets}
           style={{marginBottom: 22}}
           tableActions={useRoleCheck(role_id, [UserRole.MANAGER_OJ]) ? [] : tableActions}

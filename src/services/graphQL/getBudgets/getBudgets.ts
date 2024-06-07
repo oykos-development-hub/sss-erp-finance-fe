@@ -16,6 +16,7 @@ const budgetOverview = `query BudgetOverview($id: Int, $status: Int, $year: Int,
                 organization_unit_id
                 limit
             }
+            number_of_requests
         }
     }
 }`;

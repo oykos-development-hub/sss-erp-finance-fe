@@ -250,6 +250,11 @@ export type BudgetRequestDetails = {
     budgetRequests_Details: DetailsResponse<BudgetRequestItem>;
   };
 };
+export type BudgetRequestOverview = {
+  get: {
+    officialBudgetRequests_Overview: GetResponse<any>;
+  };
+};
 
 export type AccountingResponse = {
   get: {

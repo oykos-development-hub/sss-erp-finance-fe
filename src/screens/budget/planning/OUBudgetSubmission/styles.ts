@@ -23,7 +23,18 @@ export const BorderBoxItem = styled.div`
   margin-bottom: 16px;
 `;
 
-export const TextAreaWrapper = styled.div`
-  width: 50%;
+export const FormWrapper = styled.div`
+  display: flex;
   margin: 24px 0;
+  gap: 24px;
+  width: 70%;
+`;
+
+export const TextAreaWrapper = styled.div`
+  width: 70%;
+`;
+
+export const DropdownWrapper = styled.div`
+  display: flex;
+  width: 30%;
 `;

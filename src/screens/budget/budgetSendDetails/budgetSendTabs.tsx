@@ -5,7 +5,7 @@ import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from
 import useAppContext from '../../../context/useAppContext';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {RequestsPage} from './requests';
-import BudgetSendPreview from './budgetSendPreview';
+import SSSBudgetDetails from '../planning/SSSBudgetDetails/SSSBudgetDetails.tsx';
 
 export const BudgetSendTabs = () => {
   const {
@@ -32,7 +32,7 @@ export const BudgetSendTabs = () => {
       case 'requests':
         return <RequestsPage />;
       default:
-        return <BudgetSendPreview />;
+        return <SSSBudgetDetails hasWrapper={false} />;
     }
   }, [sentBudgetPath]);
 

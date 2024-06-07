@@ -42,8 +42,7 @@ const BudgetLimitModal = ({onClose, open, onSubmit}: BudgetLimitModalProps) => {
     alert,
   } = useAppContext();
 
-  // todo: fix this
-  const budgetID = pathname.split('/').at(-1);
+  const budgetID = pathname.split('/').at(-2);
   const isNew = budgetID === 'add-new';
 
   const {

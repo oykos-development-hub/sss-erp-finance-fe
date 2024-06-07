@@ -1,15 +1,38 @@
-import {Datepicker, Dropdown, Table} from 'client-library';
-import {useState} from 'react';
+import {Dropdown} from 'client-library';
+import {useMemo, useState} from 'react';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits';
 import {tableHeadsRequests} from './constants';
-import {Column, DropdownWrapperRequests, Price, SubTitle, Totals} from './styles';
+import {DropdownWrapperRequests, StyledTable} from './styles';
+import useGetOverviewBudgetRequestOfficial from '../../../services/graphQL/budgetRequestOfficial/useGetOverviewBudgetRequestOfficial.ts';
+import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
+import useAppContext from '../../../context/useAppContext.ts';
 
 export const RequestsPage = () => {
+  const {
+    breadcrumbs,
+    navigation: {
+      navigate,
+      location: {pathname},
+    },
+  } = useAppContext();
+
   const [organizationUnit, setOrganizationUnit] = useState({id: 0, title: 'Sve'});
   const {organizationUnits} = useGetOrganizationUnits();
 
+  const budget_id = useMemo(() => {
+    const path = pathname.split('/');
+    return path[path.length - 2];
+  }, [pathname]);
+
+  const {requests} = useGetOverviewBudgetRequestOfficial({budget_id});
+  const [filteredRequests, setFilteredRequests] = useState<any[]>(requests);
+
   const handleOrganizationUnitChange = (value: any) => {
     setOrganizationUnit(value);
+    console.log(value);
+    console.log(value ? [requests.filter(request => request?.unit?.id === value?.id)] : requests);
+    console.log(requests, 'requests');
+    setFilteredRequests([requests.find(request => request?.unit?.id === value?.id)]);
   };
 
   return (
@@ -17,32 +40,22 @@ export const RequestsPage = () => {
       <DropdownWrapperRequests>
         <Dropdown
           name="organization_unit"
-          options={organizationUnits}
+          options={usePrependedDropdownOptions(organizationUnits)}
           value={organizationUnit}
           onChange={handleOrganizationUnitChange}
           label="ORGANIZACIONA JEDINICA:"
         />
       </DropdownWrapperRequests>
-      <Table data={[]} tableHeads={tableHeadsRequests} />
-      <Totals>
-        <Column>
-          <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST:" />
-          <Price variant="bodySmall" content={'€ '} />
-        </Column>
-        <Column>
-          <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST:" />
-          <Price variant="bodySmall" content={'€ '} />
-        </Column>
-      </Totals>
-      <Column>
-        <Datepicker
-          name="date_of_closing"
-          onChange={() => {
-            console.log('');
-          }}
-          disabled
-        />
-      </Column>
+      <StyledTable
+        tableHeads={tableHeadsRequests}
+        data={organizationUnit.id ? filteredRequests : requests}
+        onRowClick={row => {
+          if (!row?.unit?.id) return;
+          breadcrumbs.add({name: 'Detalji zahtjeva', to: `${pathname}/${row?.unit?.id}`});
+
+          navigate(`${pathname}/${row?.unit?.id}/financial`);
+        }}
+      />
     </div>
   );
 };

@@ -8,7 +8,7 @@ import {IndicatorModalFinanceOfficer} from '../indicatorModalFinanceOfficer/indi
 import {goalIndicatorsTableHeads} from '../../screens/budget/planning/OUBudgetSubmission/constants.tsx';
 
 // Goals modal used by finance officer when filling non-financial part of the budget
-export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal}: GoalsModalFinanceOfficerProps) => {
+export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal, disabled}: GoalsModalFinanceOfficerProps) => {
   const [indicatorId, setIndicatorId] = useState<number | undefined>(undefined);
   const toggleModal = (id?: number) => {
     id !== undefined ? setIndicatorId(id) : setIndicatorId(undefined);
@@ -77,6 +77,9 @@ export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal}: Goals
         leftButtonText="Otkaži"
         rightButtonText="Sačuvaj"
         rightButtonOnClick={handleSave}
+        //hides footer with buttons when in preview mode
+        customButtonsControls={disabled ? <></> : undefined}
+        title={disabled ? 'PREGLED CILJEVA' : 'DODAJTE NOVE CILJEVE'}
         content={
           <FormWrapper>
             <InputWrapper>
@@ -98,19 +101,19 @@ export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal}: Goals
             <IndicatorButtonWrapper>
               <IndicatorTitle content="INDIKATORI" variant="bodySmall" />
               <ButtonWrapper>
-                <Button variant="secondary" content="Dodaj indikator" onClick={() => toggleModal(fields.length)} />
-                {/*<Button*/}
-                {/*  variant="secondary"*/}
-                {/*  content="Dodaj fixed indikator"*/}
-                {/*  onClick={() => handleAddIndicator({performance_indicator_code: 'test123'})}*/}
-                {/*/>*/}
+                <Button
+                  variant="secondary"
+                  content="Dodaj indikator"
+                  onClick={() => toggleModal(fields.length)}
+                  disabled={disabled}
+                />
               </ButtonWrapper>
             </IndicatorButtonWrapper>
             {!!fields.length && (
               <Table
                 tableHeads={goalIndicatorsTableHeads}
                 emptyMessage={'Nema indikatora'}
-                tableActions={tableActions}
+                tableActions={disabled ? [] : tableActions}
                 data={fields}
                 onRowClick={row => {
                   handleEditIndicator(row.id);
@@ -119,7 +122,6 @@ export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal}: Goals
             )}
           </FormWrapper>
         }
-        title="DODAJTE NOVE CILJEVE"
       />
       {indicatorId !== undefined && (
         <IndicatorModalFinanceOfficer
@@ -127,6 +129,7 @@ export const GoalsModalFinanceOfficer = ({goalId, onClose, handleAddGoal}: Goals
           goalId={goalId}
           onClose={toggleModal}
           handleAddIndicator={handleAddIndicator}
+          disabled={disabled}
         />
       )}
     </>

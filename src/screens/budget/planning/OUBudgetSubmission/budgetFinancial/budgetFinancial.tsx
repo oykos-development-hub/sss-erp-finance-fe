@@ -1,6 +1,6 @@
 import {BudgetRequestItem} from '../../../../../types/graphQL/budgetRequestDetails.ts';
 import {BorderBox, BorderBoxItem, TextAreaWrapper} from '../styles.ts';
-import {Typography, Button, Input} from 'client-library';
+import {Typography, Button, Input, Theme} from 'client-library';
 import useAppContext from '../../../../../context/useAppContext.ts';
 import {BudgetTableMethods, BudgetTableStep} from '../../../../../shared/budgetTable/types.ts';
 import Footer from '../../../../../shared/footer.ts';
@@ -25,8 +25,10 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
   const [currentBudgetSuccessfullySaved, setCurrentBudgetSuccessfullySaved] = useState(false);
   const [donationsBudgetSuccessfullySaved, setDonationsBudgetSuccessfullySaved] = useState(false);
 
-  //TODO unify all statuses in one enum - {id: 3, title: "Na čekanju"}
-  const editingDisabled = budgetRequestDetails?.status?.id === 3;
+  //TODO unify all statuses in one enum -
+  //   {id: 3, title: "Na čekanju"}
+  //   {id: 4, title: "Odobreno"}
+  const editingDisabled = budgetRequestDetails?.status?.id === 3 || budgetRequestDetails?.status?.id === 4;
 
   useEffect(() => {
     if (!currentBudgetSuccessfullySaved || !donationsBudgetSuccessfullySaved) return;
@@ -39,7 +41,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
     setComment(budgetRequestDetails?.financial.current_budget_comment ?? '');
   }, [budgetRequestDetails]);
 
-  const {financialBudgetFill} = useFinancialBudgetFill();
+  const {financialBudgetFill, loading} = useFinancialBudgetFill();
 
   const handleSubmitFinancial = () => {
     const currentData = flattenBudgetData(budgetTableCurrentRef.current?.getInternalState());
@@ -84,6 +86,18 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
           <Typography content={'Limit: :'} variant={'bodySmall'} style={{fontWeight: 600, marginRight: 10}} />
           <Typography content={budgetRequestDetails?.limit ?? ''} variant={'bodySmall'} />
         </BorderBoxItem>
+        <BorderBoxItem>
+          <Typography
+            content={'Razlog odbijanja:'}
+            variant={'bodySmall'}
+            style={{fontWeight: 600, marginRight: 10, color: Theme?.palette?.error500}}
+          />
+          <Typography
+            content={budgetRequestDetails?.financial?.current_budget_comment ?? ''}
+            variant={'bodySmall'}
+            style={{color: Theme?.palette?.error500}}
+          />
+        </BorderBoxItem>
       </BorderBox>
       <Typography content={'Tekući:'} variant={'bodyMedium'} style={{fontWeight: 600, marginRight: 10}} />
       <BudgetTableFinanceManager
@@ -123,7 +137,13 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
 
       <Footer>
         {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
-        <Button content="Sačuvaj" variant="secondary" onClick={handleSubmitFinancial} disabled={editingDisabled} />
+        <Button
+          content="Sačuvaj"
+          variant="secondary"
+          onClick={handleSubmitFinancial}
+          disabled={editingDisabled}
+          loader={loading}
+        />
       </Footer>
     </>
   );

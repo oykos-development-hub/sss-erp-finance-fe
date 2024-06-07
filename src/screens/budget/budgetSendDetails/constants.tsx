@@ -1,4 +1,8 @@
-import {TableHead} from 'client-library';
+import {TableHead, Typography} from 'client-library';
+import {DropdownData} from '../../../types/dropdownData.ts';
+import {parseDate} from '../../../utils/dateUtils.ts';
+import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
+import {formatCurrency} from '../../../utils/roundCurrency.ts';
 
 export enum Tabs {
   SentBudget = 1,
@@ -24,37 +28,28 @@ export const getRouteName = (tabName: string) => {
 export const tableHeadsRequests: TableHead[] = [
   {
     title: 'Organizaciona jedinica',
-    accessor: 'organization_unit',
-    type: 'text',
+    accessor: 'unit',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
   {
-    title: 'Godina',
-    accessor: 'year',
-    type: 'text',
+    title: 'Datum',
+    accessor: 'receive_date',
+    type: 'custom',
+    renderContents: (date: string) => <Typography content={parseDate(date)} variant="bodySmall" />,
   },
   {
-    title: 'Naslov',
-    accessor: 'title',
-    type: 'text',
-  },
-  {
-    title: 'Datum kreiranja',
-    accessor: 'date_of_publishing',
-    type: 'text',
-  },
-  {
-    title: 'Ukupna vrijednost',
-    accessor: 'amount',
-    type: 'text',
-  },
-  {
-    title: 'Posljednja izmjena',
-    accessor: 'updated_at',
-    type: 'text',
+    title: 'Ukupan iznos',
+    accessor: 'total',
+    type: 'custom',
+    renderContents: (ammount: string) => (
+      <Typography content={ammount !== '0' ? formatCurrency(ammount) : ''} variant="bodySmall" />
+    ),
   },
   {
     title: 'Status',
     accessor: 'status',
-    type: 'text',
+    type: 'custom',
+    renderContents: (status: string) => <StatusTableCell status={status} />,
   },
 ];

@@ -17,4 +17,5 @@ export interface BudgetOverviewItem {
     organization_unit_id: number;
     limit: number;
   }[];
+  number_of_requests: number;
 }

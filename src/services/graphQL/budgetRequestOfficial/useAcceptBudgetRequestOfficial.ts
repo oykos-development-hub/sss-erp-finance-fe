@@ -7,11 +7,13 @@ const useAcceptBudgetRequestOfficial = () => {
   const [loading, setLoading] = useState(false);
   const {fetch} = useAppContext();
 
-  const acceptBudgetRequestOfficial = async (id: number, onSuccess?: () => void, onError?: () => void) => {
+  const acceptBudgetRequestOfficial = async (request_id: number, onSuccess?: () => void, onError?: () => void) => {
     if (loading) return;
     setLoading(true);
-    const response: BudgetRequestOfficialResponse['accept'] = await fetch(GraphQL.acceptBudgetRequestOfficial, {id});
-    if (response.budgetRequest_Accept.status === 'success') {
+    const response: BudgetRequestOfficialResponse['accept'] = await fetch(GraphQL.acceptBudgetRequestOfficial, {
+      request_id,
+    });
+    if (response?.budgetRequest_Accept?.status === 'success') {
       onSuccess && onSuccess();
     } else {
       onError && onError();

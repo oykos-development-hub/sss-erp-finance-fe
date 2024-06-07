@@ -5,4 +5,5 @@ export interface GoalsModalFinanceOfficerProps {
   onClose: (refetch?: any, message?: any) => void;
   handleAddGoal: (goal: Goal) => void;
   goals: Goal[];
+  disabled?: boolean;
 }

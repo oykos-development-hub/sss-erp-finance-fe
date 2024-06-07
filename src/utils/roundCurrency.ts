@@ -6,16 +6,18 @@ export const roundCurrency = (value?: number) => {
   return `${value.toFixed(2)} €`;
 };
 
-export const formatCurrency = (value?: number, currencyPosition?: 'left' | 'right') => {
+export const formatCurrency = (value?: number | string, currencyPosition?: 'left' | 'right') => {
   let locale = 'de-DE';
   if (currencyPosition === 'left') {
     locale = 'en-DE';
   }
 
+  const valueNumber = typeof value === 'string' ? parseInt(value) : value;
+
   return Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'EUR',
   })
-    .format(value || 0)
+    .format(valueNumber || 0)
     .replace(/([\d,.]+)$/, ' $1');
 };

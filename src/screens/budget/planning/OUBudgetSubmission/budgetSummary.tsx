@@ -54,7 +54,7 @@ const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetReq
     }
   };
 
-  const {sendBudgetOnReview} = useSendBudgetOnReview();
+  const {sendBudgetOnReview, loading} = useSendBudgetOnReview();
 
   const handleSend = () => {
     if (!budgetRequestDetails) return;
@@ -89,7 +89,13 @@ const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetReq
             breadcrumbs.remove();
           }}
         />
-        <Button content="Pošalji" variant="primary" disabled={!isButtonEnabled} onClick={toggleModal} />
+        <Button
+          content="Pošalji"
+          variant="primary"
+          disabled={!isButtonEnabled}
+          onClick={toggleModal}
+          loader={loading}
+        />
       </FooterWrapper>
       <ConfirmationModal
         open={showModal}

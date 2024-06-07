@@ -19,7 +19,7 @@ const useRejectBudgetRequestOfficial = () => {
       request_id,
       comment,
     });
-    if (response.budgetRequest_Reject.status === 'success') {
+    if (response?.budgetRequest_Reject?.status === 'success') {
       onSuccess && onSuccess();
     } else {
       onError && onError();

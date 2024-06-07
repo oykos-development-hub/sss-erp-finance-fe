@@ -15,7 +15,8 @@ const budgetRequestDetails = `query BudgetRequestsDetails($budget_id: Int!, $uni
             }
             non_financial {
                 id
-                request_id
+                request_id 
+                official_comment
                 status {
                     id
                     title

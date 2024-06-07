@@ -21,6 +21,13 @@ export const budgetListTableHeads: TableHead[] = [
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
+export const budgetListTableHeadsOfficial: TableHead[] = [...budgetListTableHeads];
+
+budgetListTableHeadsOfficial.splice(4, 0, {
+  title: 'Broj zahtjeva',
+  accessor: 'number_of_requests',
+});
+
 export const budgetTypeFilterOptions: DropdownData<number | null>[] = [
   {id: null, title: 'Sve'},
   {id: 1, title: 'Kapitalni'},

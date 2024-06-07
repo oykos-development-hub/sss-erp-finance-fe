@@ -30,6 +30,7 @@ type NonFinancialDetails = {
   contact_email: string;
   contact_fullname: string;
   contact_phone: string;
+  official_comment: string;
   contact_working_place: string;
   id: number;
   impl_contact_email: string;

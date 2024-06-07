@@ -40,7 +40,7 @@ const addBudgetSchema = yup.object().shape({
 
 export type AddBudgetFormType = yup.InferType<typeof addBudgetSchema>;
 
-const SSSBudgetDetails = () => {
+const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
   const [limitModal, setLimitModal] = useState(false);
 
   const {
@@ -60,11 +60,12 @@ const SSSBudgetDetails = () => {
     setValue,
   } = useForm<AddBudgetFormType>({resolver: yupResolver(addBudgetSchema), mode: 'onBlur'});
 
-  const budgetID = pathname.split('/').at(-1);
+  const budgetID = pathname.split('/').at(-2);
   const isNew = budgetID === 'add-new';
 
   const {insertBudget, loading: isSaving} = useInsertBudget();
   const {budgets} = useGetBudgets({id: isNew ? null : parseInt(budgetID)});
+  const currentBudget = budgets[0] ?? undefined;
 
   //todo check if the same api endpoint is used when the OJ manager is filling the budget
   const onSubmit = async (data: AddBudgetFormType) => {
@@ -103,27 +104,32 @@ const SSSBudgetDetails = () => {
   }, [budgets]);
 
   useEffect(() => {
-    if (budgets && budgets && budgets.length > 0 && !isNew) {
-      setValue('year', {id: budgets[0].year.toString(), title: budgets[0].year.toString()});
-      setValue('budget_type', budgetTypeOptions.find(option => option.id === parseInt(budgets[0].budget_type))!);
-      setValue('limits', budgets[0].limits);
+    if (budgets && budgets.length > 0 && !isNew) {
+      setValue('year', {id: currentBudget.year.toString(), title: currentBudget.year.toString()});
+      setValue('budget_type', budgetTypeOptions.find(option => option.id === parseInt(currentBudget.budget_type))!);
+      setValue('limits', currentBudget.limits);
     }
   }, [budgets, isNew]);
 
   const year = watch('year')?.id;
-  console.log(errors);
-  return (
-    <ScreenWrapper>
+
+  const body = (
+    <>
       <OverviewBox>
         <MainTitle variant="bodyMedium" content={isNew ? 'NOVI BUDŽET' : `BUDŽET ZA ${year} GODINU`} />
-        <hr />
         <Box>
           <Controls>
             <TableGrid>
               <BoldText variant="bodySmall" content="NAZIV PREDLAGAČA:" />
               <Typography variant="bodySmall" content={contextMain.organization_unit.title} />
             </TableGrid>
-            <Button content="Limiti" variant="secondary" style={{width: 130}} onClick={() => setLimitModal(true)} />
+            <Button
+              content="Limiti"
+              variant="secondary"
+              style={{width: 130}}
+              onClick={() => setLimitModal(true)}
+              disabled={!!currentBudget?.number_of_requests}
+            />
           </Controls>
 
           <FlexRow gap="1rem" style={{marginTop: '1rem'}}>
@@ -183,20 +189,22 @@ const SSSBudgetDetails = () => {
             variant="secondary"
             style={{width: 130}}
             onClick={() => navigate('/finance/budget/planning')}
+            disabled={!!currentBudget?.number_of_requests}
           />
           <Button
             content="Sačuvaj"
             variant="primary"
             style={{width: 130}}
             onClick={handleSubmit(onSubmit)}
-            // disabled={!isValid && isNew}
+            disabled={!!currentBudget?.number_of_requests}
           />
         </Footer>
       </OverviewBox>
-
       <BudgetLimitModal open={limitModal} onClose={() => setLimitModal(false)} onSubmit={onLimitModalSubmit} />
-    </ScreenWrapper>
+    </>
   );
+
+  return hasWrapper ? <ScreenWrapper>{body}</ScreenWrapper> : body;
 };
 
 export default SSSBudgetDetails;

@@ -76,7 +76,7 @@ export const NonFinancialActivitySection = ({activity, disabled}: NonFinancialAc
         <Table
           tableHeads={activityGoalsTableHeads}
           emptyMessage={'Nema ciljeva'}
-          tableActions={tableActions}
+          tableActions={disabled ? [] : tableActions}
           data={fields}
           onRowClick={row => {
             handleEditGoal(row.id);
@@ -114,6 +114,7 @@ export const NonFinancialActivitySection = ({activity, disabled}: NonFinancialAc
           onClose={() => toggleModal()}
           handleAddGoal={handleAddGoal}
           goals={fields}
+          disabled={disabled}
         />
       )}
     </>

@@ -67,6 +67,7 @@ import {AccountingReports} from './screens/reports/reports.tsx';
 import {useRoleCheck} from './utils/useRoleCheck.ts';
 import BudgetDynamicVersionPreview from './screens/budget/spendingDynamics/budgetDynamicPreview/budgetDynamicVersion.tsx';
 import AddNewBudgetDynamic from './screens/budget/spendingDynamics/addNewDynamic/addNewDynamic.tsx';
+import BudgetRequestDetailsOfficial from './screens/budget/budgetRequestDetailsOfficial/budgetRequestDetailsOfficial.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -125,13 +126,18 @@ export const Router = () => {
     const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');
     const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
     const currentBudgetDynamicDetails = new RegExp('/finance/budget/current/requests/\\d+$');
+    const budgetRequestDetailsRegex = new RegExp(
+      '^/finance/budget/planning/\\d+/requests/\\d+/(financial|non-financial)$',
+    );
+
+    if (budgetRequestDetailsRegex.test(pathname)) return <BudgetRequestDetailsOfficial />;
 
     //todo: check if this is actually the role SSS will use here
     if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])) {
       if (SSSBudgetDetailsRegex.test(pathname)) return <SSSBudgetDetails />;
     }
 
-    if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
+    if (useRoleCheck(role_id, [UserRole.MANAGER_OJ, UserRole.FINANCE_OFFICIAL])) {
       if (OUBudgetDetailsSummary.test(pathname)) return <OUBudgetSubmission />;
     }
 
@@ -210,8 +216,6 @@ export const Router = () => {
 
     if (pathname === '/finance/liabilities-receivables/liabilities/related-expenses')
       return <AdditionalExpensesOverview />;
-
-    // if (budgetDetails.test(pathname)) return <BudgetDetails />;
 
     if (pathname === '/finance/liabilities-receivables/receivables') return <ReceivablesOverview />;
     if (receiveRegex.test(pathname)) return <ReceivableEntry />;
