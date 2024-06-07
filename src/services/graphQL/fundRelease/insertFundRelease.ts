@@ -1,9 +1,9 @@
-const insertFundRelease = `mutation($data: SpendingReleaseMutation) {
+const insertFundRelease = `mutation($data: [SpendingReleaseMutation]) {
     spendingRelease_Insert(data: $data) {
         status 
         message 
         data
-        item {
+        items {
             id
             budget_id
             current_budget_id
@@ -14,6 +14,6 @@ const insertFundRelease = `mutation($data: SpendingReleaseMutation) {
             year
         }
     }
-}  `;
+}`;
 
 export default insertFundRelease;

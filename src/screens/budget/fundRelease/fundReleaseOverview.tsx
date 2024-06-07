@@ -4,8 +4,8 @@ import useAppContext from '../../../context/useAppContext';
 import useGetFundRelease from '../../../services/graphQL/fundRelease/useGetFundRelease';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {DropdownData} from '../../../types/dropdownData';
-import {getMonthOptions} from '../../../utils/getMonthOptions';
 import {getYearOptions} from '../../../utils/getYearOptions';
+import {monthVarsSr} from '../spendingDynamics/constants';
 import {fundReleaseTableHeads} from './constants';
 import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
 
@@ -24,7 +24,7 @@ const FundReleaseOverview = () => {
     month: null,
   });
 
-  const {fundRelease} = useGetFundRelease({year: filters.year.id, month: filters.month?.id});
+  const {fundRelease} = useGetFundRelease({year: filters.year?.id, month: filters.month?.id});
 
   const fundReleaseList = useMemo(() => {
     return fundRelease
@@ -35,13 +35,17 @@ const FundReleaseOverview = () => {
       : [];
   }, [fundRelease]);
 
-  const onChange = (value: any) => {
-    setFilters({...filters, [value.name]: value.value});
+  const onChange = (value: any, name: string) => {
+    console.log(value);
+    setFilters(prev => ({...prev, [name]: value}));
   };
 
   const navigateToCreateFundRelease = () => {
     navigate('/finance/budget/current/fund-release/new-request');
   };
+
+  const monthOptions = monthVarsSr.map((month, index) => ({id: index, title: month}));
+  const yearOptions = getYearOptions(10, true, 5);
 
   return (
     <ScreenWrapper>
@@ -54,8 +58,8 @@ const FundReleaseOverview = () => {
               <Dropdown
                 name="year"
                 value={filters.year}
-                onChange={onChange}
-                options={getYearOptions(10, true, 5)}
+                onChange={(val: any) => onChange(val, 'year')}
+                options={yearOptions}
                 label="GODINA:"
               />
             </DropdownWrapper>
@@ -63,8 +67,8 @@ const FundReleaseOverview = () => {
               <Dropdown
                 name="month"
                 value={filters.month}
-                onChange={onChange}
-                options={getMonthOptions()}
+                onChange={(val: any) => onChange(val, 'month')}
+                options={monthOptions}
                 label="MJESEC:"
               />
             </DropdownWrapper>

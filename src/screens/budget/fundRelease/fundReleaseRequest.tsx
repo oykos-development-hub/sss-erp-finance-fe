@@ -19,9 +19,6 @@ const FundReleaseRequest = () => {
   const {
     navigation: {navigate},
     alert,
-    contextMain: {
-      organization_unit: {id: unit_id},
-    },
   } = useAppContext();
 
   const currentMonth = new Date().toLocaleString('default', {month: 'long'}).toLowerCase();
@@ -58,7 +55,6 @@ const FundReleaseRequest = () => {
         month: monthVars.findIndex(month => month === currentMonth),
         value: item[currentMonth as keyof BudgetDynamicCount].value,
         account_id: item.account_id,
-        unit_id: unit_id,
         maxValue: parseInt(item[currentMonth as keyof BudgetDynamicCount].value),
         account_serial_number: item.account_serial_number,
       };
@@ -110,21 +106,21 @@ const FundReleaseRequest = () => {
     if (invalidRows.length > 0) {
       alert.error('Neispravni podaci!');
       return;
+    } else {
+      const payload = insertData.map((item: any) => {
+        const {account_serial_number, maxValue, ...rest} = item;
+        return rest;
+      });
+
+      await insertFundRelease(
+        payload,
+        () => {
+          alert.success('Uspješno ste sačuvali podatke!');
+          navigate('/finance/budget/current/fund-release');
+        },
+        () => alert.error('Došlo je do greške prilikom čuvanja podataka!'),
+      );
     }
-
-    const payload = insertData.map((item: any) => {
-      const {account_serial_number, maxValue, ...rest} = item;
-      return rest;
-    });
-
-    await insertFundRelease(
-      payload,
-      () => {
-        alert.success('Uspešno ste sačuvali podatke!');
-        navigate('/finance/budget/current/fund-release');
-      },
-      () => alert.error('Došlo je do greške prilikom čuvanja podataka!'),
-    );
   };
 
   return (

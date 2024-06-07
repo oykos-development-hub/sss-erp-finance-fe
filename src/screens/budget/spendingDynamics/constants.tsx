@@ -66,6 +66,21 @@ export const monthVars: MonthType[] = [
   'december',
 ];
 
+export const monthVarsSr = [
+  'januar',
+  'februar',
+  'mart',
+  'april',
+  'maj',
+  'jun',
+  'jul',
+  'avgust',
+  'septembar',
+  'oktobar',
+  'novembar',
+  'decembar',
+];
+
 export const dynamicTableHeads = [
   {name: 'Konto', width: 10},
   ...months.map(month => ({name: month, width: 4})),
