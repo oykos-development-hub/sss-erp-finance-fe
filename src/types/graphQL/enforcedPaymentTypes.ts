@@ -35,6 +35,7 @@ export interface EnforcedPaymentItem {
   };
   execution_number: string;
   amount: number;
+  amount_for_bank: number;
   amount_for_lawyer: number;
   amount_for_agent: number;
   bank_account: string;

@@ -431,32 +431,44 @@ const EnforcedPaymentsDetails = () => {
             )}
           </div>
 
-          <Row>
-            <Input
-              label="Iznos za plaćanje:"
-              value={roundCurrency(enforcedPaymentData?.amount)}
-              style={{width: '250px'}}
-              disabled
-            />
-            <Input
-              label="Troškovi advokata:"
-              value={roundCurrency(enforcedPaymentData?.amount_for_lawyer)}
-              style={{width: '250px'}}
-              disabled
-            />
-            <Input
-              label="Troškovi izvršitelja:"
-              value={roundCurrency(enforcedPaymentData?.amount_for_agent)}
-              style={{width: '250px'}}
-              disabled
-            />
-            <Input
-              label="Ukupno za plaćanje:"
-              value={roundCurrency(totalForPayment)}
-              style={{width: '250px'}}
-              disabled
-            />
-          </Row>
+          <div>
+            <Row>
+              <Input
+                label="Iznos za plaćanje:"
+                value={roundCurrency(enforcedPaymentData?.amount)}
+                style={{width: '250px'}}
+                disabled
+              />
+              <Input
+                label="Troškovi advokata:"
+                value={roundCurrency(enforcedPaymentData?.amount_for_lawyer)}
+                style={{width: '250px'}}
+                disabled
+              />
+            </Row>
+            <Row>
+              <Input
+                label="Troškovi izvršitelja:"
+                value={roundCurrency(enforcedPaymentData?.amount_for_agent)}
+                style={{width: '250px'}}
+                disabled
+              />
+              <Input
+                label="Naknada Centralne banke:"
+                value={roundCurrency(enforcedPaymentData?.amount_for_bank)}
+                style={{width: '250px'}}
+                disabled
+              />
+            </Row>
+            <Row>
+              <Input
+                label="Ukupno za plaćanje:"
+                value={roundCurrency(totalForPayment)}
+                style={{width: '250px'}}
+                disabled
+              />
+            </Row>
+          </div>
 
           <Table tableHeads={tableHeads} data={enforcedPaymentData?.items || []} />
 

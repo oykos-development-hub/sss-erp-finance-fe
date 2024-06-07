@@ -40,6 +40,7 @@ const EnforcedPaymentEntry = () => {
     setError,
     clearErrors,
   } = useForm<EnforcedPaymentEntryForm>({
+    defaultValues: {amount_for_bank: roundCurrency(15)},
     resolver: yupResolver(enforcedPaymentSchema),
   });
   const enforcedPaymentID = location.pathname.split('/').at(-1);
@@ -50,7 +51,7 @@ const EnforcedPaymentEntry = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
 
-  const {organization_unit_id, supplier_id, amount_for_agent, amount_for_lawyer, agent_id} = watch();
+  const {organization_unit_id, supplier_id, amount_for_agent, amount_for_lawyer, agent_id, amount_for_bank} = watch();
 
   const {counts} = useGetCountOverview({level: 3});
   const {suppliers} = useGetSuppliers({});
@@ -159,6 +160,7 @@ const EnforcedPaymentEntry = () => {
           agent_id: agent_id?.id,
           execution_number: data?.execution_number,
           file_id: files[0].id,
+          amount_for_bank: parseFloat(data?.amount_for_bank),
           items: fields
             .filter(field => selectedRows.includes(field.id))
             .map(item => ({
@@ -190,6 +192,7 @@ const EnforcedPaymentEntry = () => {
         execution_number: data?.execution_number,
         amount_for_agent: data?.amount_for_agent,
         date_of_sap: parseDateForBackend(data?.date_of_sap),
+        amount_for_bank: parseFloat(data?.amount_for_bank),
         sap_id: data?.sap_id,
         items: fields
           .filter(field => selectedRows.includes(field.id))
@@ -240,12 +243,13 @@ const EnforcedPaymentEntry = () => {
   };
 
   const calculateTotalForPayment = () => {
-    if (totalAmount && amount_for_agent && amount_for_lawyer) {
+    if (totalAmount && amount_for_agent && amount_for_lawyer && amount_for_bank) {
       const parsedAmountValue = parseFloat(totalAmount.toString());
       const parsedAmountForAgent = parseFloat(amount_for_agent.toString());
       const parsedAmountForLawyer = parseFloat(amount_for_lawyer.toString());
+      const parsedAmountForBank = parseFloat(amount_for_bank);
 
-      const totalForPayment = parsedAmountValue + parsedAmountForAgent + parsedAmountForLawyer;
+      const totalForPayment = parsedAmountValue + parsedAmountForAgent + parsedAmountForLawyer + parsedAmountForBank;
       return setTotalForPayment(totalForPayment);
     } else {
       return '';
@@ -446,41 +450,56 @@ const EnforcedPaymentEntry = () => {
                   </Row>
                 </>
                 <>
-                  <Row>
+                  <div>
                     {!!selectedRows.length && (
                       <>
-                        <Input
-                          {...register('amount')}
-                          label="Iznos za plaćanje:"
-                          error={errors.amount?.message}
-                          value={manualAmount !== null ? manualAmount : totalAmount ? totalAmount : ''}
-                          style={{width: '250px'}}
-                          onChange={handleAmountChange}
-                        />
+                        <Row>
+                          <Input
+                            {...register('amount')}
+                            label="Iznos za plaćanje:"
+                            error={errors.amount?.message}
+                            value={manualAmount !== null ? manualAmount : totalAmount ? totalAmount : ''}
+                            style={{width: '250px'}}
+                            onChange={handleAmountChange}
+                          />
 
-                        <Input
-                          {...register('amount_for_lawyer')}
-                          label="Troškovi advokata:"
-                          error={errors.amount_for_lawyer?.message}
-                          style={{width: '250px'}}
-                          isRequired
-                        />
-                        <Input
-                          {...register('amount_for_agent')}
-                          label="Troškovi izvršitelja:"
-                          error={errors.amount_for_agent?.message}
-                          style={{width: '250px'}}
-                          isRequired
-                        />
-                        <Input
-                          label="Ukupno za plaćanje:"
-                          value={totalForPayment ? roundCurrency(totalForPayment) : ''}
-                          style={{width: '250px'}}
-                          disabled
-                        />
+                          <Input
+                            {...register('amount_for_lawyer')}
+                            label="Troškovi advokata:"
+                            error={errors.amount_for_lawyer?.message}
+                            style={{width: '250px'}}
+                            isRequired
+                          />
+                        </Row>
+
+                        <Row>
+                          <Input
+                            {...register('amount_for_agent')}
+                            label="Troškovi izvršitelja:"
+                            error={errors.amount_for_agent?.message}
+                            style={{width: '250px'}}
+                            isRequired
+                          />
+                          <Input
+                            {...register('amount_for_bank')}
+                            label="Naknada Centralne banke:"
+                            error={errors.amount_for_agent?.message}
+                            style={{width: '250px'}}
+                            isRequired
+                          />
+                        </Row>
+
+                        <Row>
+                          <Input
+                            label="Ukupno za plaćanje:"
+                            value={totalForPayment ? roundCurrency(totalForPayment) : ''}
+                            style={{width: '250px'}}
+                            disabled
+                          />
+                        </Row>
                       </>
                     )}
-                  </Row>
+                  </div>
                   <Table
                     tableHeads={receivableTableHeads}
                     data={fields}

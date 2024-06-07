@@ -92,6 +92,10 @@ export const enforcedPaymentSchema = yup.object().shape({
     .number()
     .transform(value => (Number.isNaN(value) ? null : value))
     .nullable(),
+  amount_for_bank: yup
+    .string()
+    .transform(value => (Number.isNaN(value) ? null : value))
+    .nullable(),
   items: yup
     .array()
     .of(
