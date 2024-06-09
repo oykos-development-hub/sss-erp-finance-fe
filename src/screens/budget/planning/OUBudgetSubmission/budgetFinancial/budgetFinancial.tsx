@@ -9,7 +9,13 @@ import {flattenBudgetData} from '../../../../../shared/budgetTable/utils.ts';
 import {useEffect, useRef, useState} from 'react';
 import BudgetTableFinanceManager from '../../../../../shared/budgetTable/budgetTableFinanceManager.tsx';
 
-const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetRequestItem}) => {
+const budgetFinancial = ({
+  budgetRequestDetails,
+  refetch,
+}: {
+  budgetRequestDetails?: BudgetRequestItem;
+  refetch?: () => void;
+}) => {
   const {
     contextMain: {organization_unit},
     alert,
@@ -32,6 +38,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
 
   useEffect(() => {
     if (!currentBudgetSuccessfullySaved || !donationsBudgetSuccessfullySaved) return;
+    refetch && refetch();
     navigate(`/finance/budget/planning/${budgetRequestDetails?.budget.id}/summary`);
   }, [currentBudgetSuccessfullySaved, donationsBudgetSuccessfullySaved]);
 
@@ -86,18 +93,20 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
           <Typography content={'Limit: :'} variant={'bodySmall'} style={{fontWeight: 600, marginRight: 10}} />
           <Typography content={budgetRequestDetails?.limit ?? ''} variant={'bodySmall'} />
         </BorderBoxItem>
-        <BorderBoxItem>
-          <Typography
-            content={'Razlog odbijanja:'}
-            variant={'bodySmall'}
-            style={{fontWeight: 600, marginRight: 10, color: Theme?.palette?.error500}}
-          />
-          <Typography
-            content={budgetRequestDetails?.financial?.current_budget_comment ?? ''}
-            variant={'bodySmall'}
-            style={{color: Theme?.palette?.error500}}
-          />
-        </BorderBoxItem>
+        {budgetRequestDetails?.financial?.official_comment ? (
+          <BorderBoxItem>
+            <Typography
+              content={'Razlog odbijanja:'}
+              variant={'bodySmall'}
+              style={{fontWeight: 600, marginRight: 10, color: Theme?.palette?.error500}}
+            />
+            <Typography
+              content={budgetRequestDetails?.financial?.official_comment}
+              variant={'bodySmall'}
+              style={{color: Theme?.palette?.error500}}
+            />
+          </BorderBoxItem>
+        ) : null}
       </BorderBox>
       <Typography content={'Tekući:'} variant={'bodyMedium'} style={{fontWeight: 600, marginRight: 10}} />
       <BudgetTableFinanceManager
@@ -122,7 +131,7 @@ const budgetFinancial = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetR
         ref={budgetTableDonationsRef}
         isTableDisabled={editingDisabled}
       />
-      <TextAreaWrapper>
+      <TextAreaWrapper style={{marginTop: '20px'}}>
         <Input
           onChange={e => {
             setComment(e.target.value);

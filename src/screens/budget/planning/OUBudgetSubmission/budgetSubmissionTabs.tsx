@@ -11,6 +11,7 @@ import BudgetFinancial from './budgetFinancial/budgetFinancial.tsx';
 import BudgetSummary from './budgetSummary.tsx';
 import useGetBudgetRequestDetails from '../../../../services/graphQL/budgetRequestDetails/useGetBudgetRequestDetails.ts';
 import {NonFinanceOfficial} from './budgetNonFinancial/nonFinanceOfficial.tsx';
+import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 
 const BudgetSubmissionTabs = () => {
   const {
@@ -67,12 +68,9 @@ const BudgetSubmissionTabs = () => {
     if (pathname === `/finance/budget/planning/${id}/summary`)
       return <BudgetSummary budgetRequestDetails={budgetRequestDetails} />;
     if (pathname === `/finance/budget/planning/${id}/financial`)
-      return <BudgetFinancial budgetRequestDetails={budgetRequestDetails} />;
+      return <BudgetFinancial budgetRequestDetails={budgetRequestDetails} refetch={refetch} />;
     if (pathname === `/finance/budget/planning/${id}/non-financial`)
-      // return <BudgetNonFinancial budgetRequestDetails={budgetRequestDetails} />;
-      return <NonFinanceOfficial budgetRequestDetails={budgetRequestDetails} />;
-    // return <NonFinance budgetRequestDetails={budgetRequestDetails} />;
-    // return <BudgetNonFinancialOverview />;
+      return <NonFinanceOfficial budgetRequestDetails={budgetRequestDetails} refetch={refetch} />;
 
     return <NotFound404 />;
   }, [pathname, budgetRequestDetails]);
@@ -83,10 +81,12 @@ const BudgetSubmissionTabs = () => {
   }, [pathname]);
 
   return (
-    <SectionBox>
-      <StyledTabsWithTitle tabs={budgetTabs} activeTab={activeTab} onChange={onTabChange} />
-      {content}
-    </SectionBox>
+    <ScreenWrapper>
+      <SectionBox>
+        <StyledTabsWithTitle tabs={budgetTabs} activeTab={activeTab} onChange={onTabChange} />
+        {content}
+      </SectionBox>
+    </ScreenWrapper>
   );
 };
 

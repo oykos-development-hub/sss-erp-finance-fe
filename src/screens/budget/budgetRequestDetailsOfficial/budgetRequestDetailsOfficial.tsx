@@ -57,6 +57,12 @@ const BudgetRequestDetailsOfficial = () => {
     setComment(budgetRequestDetails?.financial.official_comment ?? '');
   }, [budgetRequestDetails]);
 
+  useEffect(() => {
+    if (status.id === 1) {
+      setComment('');
+    }
+  }, [status]);
+
   const handleDropdownChange = (value: any) => {
     setStatus(value as DropdownData<number>);
   };

@@ -1,6 +1,6 @@
 import {FormProvider, useForm} from 'react-hook-form';
 import {Container, InputWrapper, MainTitle, SectionWrapper, InputComponent} from './styles.ts';
-import {Input, Button, Typography} from 'client-library';
+import {Input, Button} from 'client-library';
 import {NonFinancialForm} from '../../../../../types/nonFinance.ts';
 import useAppContext from '../../../../../context/useAppContext.ts';
 import {NonFinancialActivitySection} from './nonFinancialActivitySection.tsx';
@@ -8,14 +8,15 @@ import useNonFinancialBudgetFill from '../../../../../services/graphQL/nonFinanc
 import {BudgetRequestItem} from '../../../../../types/graphQL/budgetRequestDetails.ts';
 import Footer from '../../../../../shared/footer.ts';
 import {useEffect} from 'react';
-import {BorderBox, BorderBoxItem} from '../styles.ts';
 
 export const NonFinanceOfficial = ({
   budgetRequestDetails,
   isPreview,
+  refetch,
 }: {
   budgetRequestDetails?: BudgetRequestItem;
   isPreview?: boolean;
+  refetch?: () => void;
 }) => {
   // const [programs, setPrograms] = useState<number[]>([]);
   const {
@@ -23,6 +24,7 @@ export const NonFinanceOfficial = ({
     contextMain: {organization_unit},
     navigation: {navigate},
   } = useAppContext();
+
   const {nonFinancialBudgetFill} = useNonFinancialBudgetFill();
 
   //TODO unify all statuses in one enum - {id: 3, title: "Na čekanju"}
@@ -57,6 +59,7 @@ export const NonFinanceOfficial = ({
       await nonFinancialBudgetFill(
         {...data, request_id: budgetRequestDetails?.non_financial.request_id},
         () => {
+          refetch && refetch();
           navigate(`/finance/budget/planning/${budgetRequestDetails?.budget.id}/summary`);
           alert.success('Nefinansijski dio budžeta uspješno dodat');
         },
@@ -71,13 +74,13 @@ export const NonFinanceOfficial = ({
     <Container>
       <FormProvider {...methods}>
         <SectionWrapper>
-          {/*TODO check if comment goes here*/}
-          <BorderBox>
-            <BorderBoxItem>
-              <Typography content={'Komentar OJ:'} variant={'bodySmall'} style={{fontWeight: 600, marginRight: 10}} />
-              <Typography content={budgetRequestDetails?.non_financial?.official_comment ?? ''} variant={'bodySmall'} />
-            </BorderBoxItem>
-          </BorderBox>
+          {/*/!*TODO check if comment goes here*!/*/}
+          {/*<BorderBox>*/}
+          {/*  <BorderBoxItem>*/}
+          {/*    <Typography content={'Komentar OJ:'} variant={'bodySmall'} style={{fontWeight: 600, marginRight: 10}} />*/}
+          {/*    <Typography content={budgetRequestDetails?.non_financial?.official_comment ?? ''} variant={'bodySmall'} />*/}
+          {/*  </BorderBoxItem>*/}
+          {/*</BorderBox>*/}
           <MainTitle content="OSNOVNE INFORMACIJE" variant="bodyMedium" />
           <InputWrapper>
             <Input label="Naziv organizacione jedinice:" value={organization_unit?.title ?? ''} disabled />

@@ -127,7 +127,7 @@ const BudgetList = () => {
     } else {
       navigate(`/finance/budget/planning/${row.id}/summary`);
       breadcrumbs.add({
-        name: 'Summary',
+        name: 'Pregled',
         to: `/finance/budget/planning/${row.id}/summary`,
       });
     }
