@@ -661,7 +661,10 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 placeholder="Odaberite ime dobavljača"
                 options={suppliers}
                 isDisabled={
-                  type === undefined || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                  ((type?.id === false || type.id === true) && Boolean(order_id)) ||
+                  type === undefined ||
+                  invoice?.status === 'Na nalogu' ||
+                  invoice?.status === 'Djelimično na nalogu'
                 }
                 error={errors?.supplier_id?.message}
                 isRequired

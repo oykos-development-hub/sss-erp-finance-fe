@@ -15,7 +15,7 @@ import {DecisionItem} from '../../../../types/graphQL/invoice.ts';
 import {createDropdownOptions} from '../../../../utils/createOptions.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {SourceOfFunding} from '../constants.tsx';
-import {decisionsSchema} from './constants.tsx';
+import {decisionsSchema, generateDropdownOptionsForType} from './constants.tsx';
 import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
 import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
@@ -24,6 +24,7 @@ import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import FileListComponent from '../../../../components/fileList/fileList.tsx';
 import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {MainTitle} from '../../../../shared/pageElements.ts';
+import useGetSettings from '../../../../services/graphQL/getSettings/useGetSettings.ts';
 
 type DecisionEntryForm = yup.InferType<typeof decisionsSchema>;
 interface DecisionFormProps {
@@ -60,11 +61,13 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     tax_authority_codebook_id,
     municipality_id,
     supplier_id,
+    type_of_decision,
   } = watch();
 
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
 
   const {suppliers} = useGetSuppliers({});
+  const {data: typeOfDecision} = useGetSettings({entity: 'type_of_decision'});
   const {suppliers: municipalities} = useGetSuppliers({entity: 'municipalities'});
   const {data: taxAuthorityCodebook} = useGetTaxAuthorityCodebook();
   const {counts} = useGetCountOverview({level: 3});
@@ -97,6 +100,10 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   const dropdowncountsOptions = useMemo(() => {
     return generateDropdownOptions(counts);
   }, [counts]);
+
+  const dropdownTypeOfDecisionOptions = useMemo(() => {
+    return generateDropdownOptionsForType(typeOfDecision?.items);
+  }, [typeOfDecision]);
 
   const onCount = () => {
     calculateAdditionalExpenses();
@@ -182,6 +189,10 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   };
 
   const onSubmit = async (data: any) => {
+    const selectedOption = dropdownTypeOfDecisionOptions.find(option => option.id === type_of_decision.id);
+    const abbreviation = selectedOption ? selectedOption.abbreviation : '';
+    const formattedInvoiceNumber = `${abbreviation}  ${data.invoice_number}`;
+
     if (loading) return;
     if (uploadedFile) {
       const formData = new FormData();
@@ -191,7 +202,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         setUploadedFile(null);
         const payload = {
           id: data?.id,
-          invoice_number: data.invoice_number,
+          invoice_number: formattedInvoiceNumber,
           tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
           municipality_id: data?.municipality_id?.id,
           supplier_id: data?.supplier_id?.id,
@@ -231,7 +242,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     } else {
       const payload = {
         id: data?.id,
-        invoice_number: data.invoice_number,
+        invoice_number: formattedInvoiceNumber,
         tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
         municipality_id: data?.municipality_id?.id,
         supplier_id: data?.supplier_id?.id,
@@ -355,10 +366,25 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               />
             )}
           />
+          <Controller
+            name="type_of_decision"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={value}
+                onChange={onChange}
+                label="VRSTA PREDMETA:"
+                placeholder={'Odaberite vrstu predmeta'}
+                options={dropdownTypeOfDecisionOptions}
+                isDisabled={decision?.status === 'Na nalogu'}
+              />
+            )}
+          />
           <Input
             {...register('invoice_number')}
-            label="BROJ PREDMETA:"
-            placeholder="Unesite broj predmeta"
+            label="BROJ PREDMETA/DJELOVODNI BROJ:"
+            placeholder="Unesite broj predmeta/djelovodni broj"
             error={errors.invoice_number?.message}
             disabled={decision?.status === 'Na nalogu'}
           />

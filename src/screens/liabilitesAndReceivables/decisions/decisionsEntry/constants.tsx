@@ -1,10 +1,14 @@
 import * as yup from 'yup';
 import {requiredError} from '../../../../constants';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
+import {GeneralSettings} from '../../../../types/graphQL/generalSettings';
 
 export const decisionsSchema = yup.object().shape({
   id: yup.number(),
-  invoice_number: yup.string().required(requiredError),
+  invoice_number: yup
+    .string()
+    .matches(/^\d{1,5}\/\d{4}$/, 'Broj predmeta/Djelovodni broj mora biti u formatu [1-5 cifara]/[4 cifre]')
+    .required(requiredError),
   net_price: yup
     .number()
     .transform(value => (Number.isNaN(value) ? null : value))
@@ -34,6 +38,7 @@ export const decisionsSchema = yup.object().shape({
   receipt_date: yup.date().nullable(),
   description: yup.string().nullable(),
   vat_price: yup.number().nullable(),
+  type_of_decision: optionsNumberSchema.default(null).required(requiredError),
   additionalExpenses: yup.array().of(
     yup.object().shape({
       id: yup.number().default(null),
@@ -46,3 +51,15 @@ export const decisionsSchema = yup.object().shape({
     }),
   ),
 });
+
+export function generateDropdownOptionsForType(typeOfDecisionItem: GeneralSettings[]) {
+  return typeOfDecisionItem?.map(item => {
+    const dropdownTitle = `${item.title} - ${item.abbreviation}`;
+
+    return {
+      id: item.id,
+      title: dropdownTitle,
+      abbreviation: item.abbreviation,
+    };
+  });
+}
