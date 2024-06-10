@@ -33,27 +33,6 @@ export const LandingPage: React.FC = () => {
           <LandingPageContentBox title={'Kazne i takse'} path={'/finance/fines-taxes'} icon={<FinesTaxesIcon />} />
           <LandingPageContentBox title={'Izvještaji'} path={'/finance/reports'} icon={<ReportIcon />} />
         </Container>
-        {/*  TODO remove after creating routing for all these pages*/}
-        <Typography
-          variant="bodyLarge"
-          style={{fontWeight: 600, marginTop: 30}}
-          content="Mocked pages that have no logic/BE yet, remove later"
-        />
-        <Container>
-          <LandingPageContentBox
-            title={'Non finance page'}
-            path={'/finance/budget/nonFinance'}
-            icon={<DepositIcon />}
-          />
-          <LandingPageContentBox
-            title={'Non finance page preview (sluzbenik)'}
-            path={'/finance/budget/nonFinancePreview/non-financial'}
-            icon={<DepositIcon />}
-          />
-          <LandingPageContentBox title={'Budget template'} path={'/finance/budget-template'} icon={<DepositIcon />} />
-          <LandingPageContentBox title={'Budget FO'} path={'/finance/budgetFO/2023/'} icon={<DepositIcon />} />
-        </Container>
-        {/*  TODO end*/}
       </div>
     </ScreenWrapper>
   );

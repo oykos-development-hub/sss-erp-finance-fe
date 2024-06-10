@@ -60,11 +60,12 @@ const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
     setValue,
   } = useForm<AddBudgetFormType>({resolver: yupResolver(addBudgetSchema), mode: 'onBlur'});
 
-  const budgetID = pathname.split('/').at(-2);
-  const isNew = budgetID === 'add-new';
+  const pathnameSplit = pathname.split('/');
+  const budgetID = pathnameSplit.at(-2);
+  const isNew = pathnameSplit.includes('add-new');
 
   const {insertBudget, loading: isSaving} = useInsertBudget();
-  const {budgets} = useGetBudgets({id: isNew ? null : parseInt(budgetID)});
+  const {budgets} = useGetBudgets({id: isNew ? null : parseInt(budgetID)}, undefined, undefined, isNew);
   const currentBudget = budgets[0] ?? undefined;
 
   //todo check if the same api endpoint is used when the OJ manager is filling the budget
