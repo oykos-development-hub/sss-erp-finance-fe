@@ -7,13 +7,20 @@ const useAccountingEntryReport = () => {
   const [total, setTotal] = useState(0);
   const {fetch} = useAppContext();
 
-  const fetchAccountingOverview = async (organization_unit_id?: number, type?: string) => {
+  const fetchAccountingOverview = async (
+    organization_unit_id?: number,
+    type?: string,
+    date_of_start?: string | null,
+    date_of_end?: string | null,
+  ) => {
     setLoading(true);
 
     try {
       const response = await fetch(GraphQL.accountingEntryOverview, {
         organization_unit_id,
         type,
+        date_of_start,
+        date_of_end,
       });
 
       setLoading(false);

@@ -50,7 +50,12 @@ export const AccountingReports = () => {
   };
 
   const generateReportPostingJournal = async () => {
-    const dataForReport = await fetchAccountingOverview(organizationUnit, type);
+    const dataForReport = await fetchAccountingOverview(
+      organizationUnit,
+      type,
+      parseDateForBackend(date_of_start),
+      parseDateForBackend(date_of_end),
+    );
     if (dataForReport.length > 0) {
       generatePdf('ALL_ACCOUNTING', dataForReport);
     } else {
@@ -146,112 +151,144 @@ export const AccountingReports = () => {
               />
             )}
           </OptionsRow>
-          {reportType === AccountingReportType.AnalyticalCard && (
-            <OptionsRow>
-              <Controller
-                control={control}
-                name="date_of_start"
-                rules={{
-                  validate: value => {
-                    if (!date_of_end && !date_of_start_booking && !date_of_end_booking && !value) {
-                      return 'Ovo polje je obavezno.';
-                    } else if (!!date_of_end && !value) {
-                      return 'Ovo polje je obavezno.';
-                    }
-                    return true;
-                  },
-                }}
-                render={({field: {onChange, value}}) => (
-                  <Datepicker
-                    label="DATUM DOKUMENTA OD:"
-                    selected={value ? new Date(value) : ''}
-                    onChange={onChange}
-                    disabled={!!date_of_start_booking || !!date_of_end_booking}
-                    isRequired={!!date_of_end}
-                    error={errors.date_of_start?.message as string}
-                  />
-                )}
-              />
+          <OptionsRow>
+            <Controller
+              control={control}
+              name="date_of_start"
+              rules={{
+                validate: value => {
+                  if (
+                    !date_of_end &&
+                    !date_of_start_booking &&
+                    !date_of_end_booking &&
+                    !value &&
+                    reportType === AccountingReportType.AnalyticalCard
+                  ) {
+                    return 'Ovo polje je obavezno.';
+                  } else if (!!date_of_end && !value && reportType === AccountingReportType.AnalyticalCard) {
+                    return 'Ovo polje je obavezno.';
+                  }
+                  return true;
+                },
+              }}
+              render={({field: {onChange, value}}) => (
+                <Datepicker
+                  label="DATUM DOKUMENTA OD:"
+                  selected={value ? new Date(value) : ''}
+                  onChange={onChange}
+                  disabled={!!date_of_start_booking || !!date_of_end_booking}
+                  isRequired={!!date_of_end}
+                  error={errors.date_of_start?.message as string}
+                />
+              )}
+            />
 
-              <Controller
-                control={control}
-                name="date_of_end"
-                rules={{
-                  validate: value => {
-                    if (!date_of_start && !date_of_start_booking && !date_of_end_booking && !value) {
-                      return 'Ovo polje je obavezno.';
-                    } else if (!!date_of_start && !value) {
-                      return 'Ovo polje je obavezno.';
-                    }
-                    return true;
-                  },
-                }}
-                render={({field: {onChange, value}}) => (
-                  <Datepicker
-                    label="DATUM DOKUMENTA DO:"
-                    value={value}
-                    selected={value ? new Date(value) : ''}
-                    onChange={onChange}
-                    options={accountingReportOptions}
-                    disabled={!!date_of_start_booking || !!date_of_end_booking}
-                    isRequired={!!date_of_start}
-                    error={errors.date_of_end?.message as string}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="date_of_start_booking"
-                rules={{
-                  validate: value => {
-                    if (!date_of_start && !date_of_end && !date_of_end_booking && !value) {
-                      return 'Ovo polje je obavezno.';
-                    } else if (!!date_of_end_booking && !value) {
-                      return 'Ovo polje je obavezno.';
-                    }
-                    return true;
-                  },
-                }}
-                render={({field: {onChange, value}}) => (
-                  <Datepicker
-                    label="DATUM KNJIŽENJA OD:"
-                    selected={value ? new Date(value) : ''}
-                    onChange={onChange}
-                    disabled={!!date_of_start || !!date_of_end}
-                    isRequired={!!date_of_end_booking}
-                    error={errors.date_of_start_booking?.message as string}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="date_of_end_booking"
-                rules={{
-                  validate: value => {
-                    if (!date_of_start && !date_of_end && !date_of_start_booking && !value) {
-                      return 'Ovo polje je obavezno.';
-                    } else if (!!date_of_start_booking && !value) {
-                      return 'Ovo polje je obavezno.';
-                    }
-                    return true;
-                  },
-                }}
-                render={({field: {onChange, value}}) => (
-                  <Datepicker
-                    label="DATUM KNJIŽENJA DO:"
-                    selected={value ? new Date(value) : ''}
-                    onChange={onChange}
-                    options={accountingReportOptions}
-                    disabled={!!date_of_start || !!date_of_end}
-                    isRequired={!!date_of_start_booking}
-                    error={errors.date_of_end_booking?.message as string}
-                  />
-                )}
-              />
-            </OptionsRow>
-          )}
+            <Controller
+              control={control}
+              name="date_of_end"
+              rules={{
+                validate: value => {
+                  if (
+                    !date_of_start &&
+                    !date_of_start_booking &&
+                    !date_of_end_booking &&
+                    !value &&
+                    reportType === AccountingReportType.AnalyticalCard
+                  ) {
+                    return 'Ovo polje je obavezno.';
+                  } else if (!!date_of_start && !value && reportType === AccountingReportType.AnalyticalCard) {
+                    return 'Ovo polje je obavezno.';
+                  }
+                  return true;
+                },
+              }}
+              render={({field: {onChange, value}}) => (
+                <Datepicker
+                  label="DATUM DOKUMENTA DO:"
+                  value={value}
+                  selected={value ? new Date(value) : ''}
+                  onChange={onChange}
+                  options={accountingReportOptions}
+                  disabled={!!date_of_start_booking || !!date_of_end_booking}
+                  isRequired={!!date_of_start}
+                  error={errors.date_of_end?.message as string}
+                />
+              )}
+            />
+            {reportType === AccountingReportType.AnalyticalCard && (
+              <>
+                <Controller
+                  control={control}
+                  name="date_of_start_booking"
+                  rules={{
+                    validate: value => {
+                      if (
+                        !date_of_start &&
+                        !date_of_end &&
+                        !date_of_end_booking &&
+                        !value &&
+                        reportType === AccountingReportType.AnalyticalCard
+                      ) {
+                        return 'Ovo polje je obavezno.';
+                      } else if (
+                        !!date_of_end_booking &&
+                        !value &&
+                        reportType === AccountingReportType.AnalyticalCard
+                      ) {
+                        return 'Ovo polje je obavezno.';
+                      }
+                      return true;
+                    },
+                  }}
+                  render={({field: {onChange, value}}) => (
+                    <Datepicker
+                      label="DATUM KNJIŽENJA OD:"
+                      selected={value ? new Date(value) : ''}
+                      onChange={onChange}
+                      disabled={!!date_of_start || !!date_of_end}
+                      isRequired={!!date_of_end_booking}
+                      error={errors.date_of_start_booking?.message as string}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="date_of_end_booking"
+                  rules={{
+                    validate: value => {
+                      if (
+                        !date_of_start &&
+                        !date_of_end &&
+                        !date_of_start_booking &&
+                        !value &&
+                        reportType === AccountingReportType.AnalyticalCard
+                      ) {
+                        return 'Ovo polje je obavezno.';
+                      } else if (
+                        !!date_of_start_booking &&
+                        !value &&
+                        reportType === AccountingReportType.AnalyticalCard
+                      ) {
+                        return 'Ovo polje je obavezno.';
+                      }
+                      return true;
+                    },
+                  }}
+                  render={({field: {onChange, value}}) => (
+                    <Datepicker
+                      label="DATUM KNJIŽENJA DO:"
+                      selected={value ? new Date(value) : ''}
+                      onChange={onChange}
+                      options={accountingReportOptions}
+                      disabled={!!date_of_start || !!date_of_end}
+                      isRequired={!!date_of_start_booking}
+                      error={errors.date_of_end_booking?.message as string}
+                    />
+                  )}
+                />
+              </>
+            )}
+          </OptionsRow>
         </Options>
         <Button content="Generiši izvještaj" style={{width: 'fit-content'}} type="submit" isLoading={loadingPDF} />
       </FormContainer>
