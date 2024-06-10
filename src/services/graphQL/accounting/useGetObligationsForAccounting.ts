@@ -4,7 +4,13 @@ import {ObligationsItemForAccounting} from '../../../types/graphQL/accountingTyp
 import {AccountingResponse} from '../../../types/graphQL/response';
 import {GraphQL} from '../index.ts';
 
-const useGetObligationsForAccounting = (organization_unit_id: number, type: string | null, search: string) => {
+const useGetObligationsForAccounting = (
+  organization_unit_id: number,
+  type: string | null,
+  search: string,
+  date_of_start?: string | null,
+  date_of_end?: string | null,
+) => {
   const [obligationsForAccounting, setObligationsForAccounting] = useState<ObligationsItemForAccounting[]>([]);
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
@@ -14,6 +20,8 @@ const useGetObligationsForAccounting = (organization_unit_id: number, type: stri
       organization_unit_id,
       type,
       search,
+      date_of_start,
+      date_of_end,
     });
 
     const items = response?.getObligationsForAccounting?.items;
@@ -24,7 +32,7 @@ const useGetObligationsForAccounting = (organization_unit_id: number, type: stri
 
   useEffect(() => {
     fetchObligationsForAccounting();
-  }, [organization_unit_id, type, search]);
+  }, [organization_unit_id, type, search, date_of_start, date_of_end]);
 
   return {obligationsForAccounting, loading, fetch: fetchObligationsForAccounting};
 };

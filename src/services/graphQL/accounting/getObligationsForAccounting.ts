@@ -1,5 +1,5 @@
-const getObligationsForAccounting = `query getObligationsForAccounting( $organization_unit_id: Int!, $type: String, $search: String) {
-    getObligationsForAccounting( organization_unit_id: $organization_unit_id, type: $type, search: $search){
+const getObligationsForAccounting = `query getObligationsForAccounting( $organization_unit_id: Int!, $type: String, $search: String, $date_of_start: String, $date_of_end: String) {
+    getObligationsForAccounting( organization_unit_id: $organization_unit_id, type: $type, search: $search, date_of_start: $date_of_start, date_of_end: $date_of_end){
         message
         items {
                 id

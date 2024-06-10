@@ -1,4 +1,4 @@
-import {Button, EyeIcon, SearchIcon, Table, Theme} from 'client-library';
+import {Button, EyeIcon, SearchIcon, Table, Theme, Datepicker} from 'client-library';
 import {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {AccountingPaymentOrdersModal} from '../../../components/accountingPaymentOrdersModal/accountingPaymentOrdersModal.tsx';
@@ -9,6 +9,17 @@ import {useDebounce} from '../../../utils/useDebounce.ts';
 import {Controls, Filters} from '../../budget/planning/budgetList/styles.ts';
 import {tableHeadsForAccountingPaymentOrders} from '../constants.tsx';
 import {FilterInput, Header} from '../styles.tsx';
+import {parseDateForBackend} from '../../../utils/dateUtils.ts';
+
+interface AccountingFilters {
+  date_of_start?: Date;
+  date_of_end?: Date;
+}
+
+const initialAccountingFilterValues = {
+  date_of_start: undefined,
+  date_of_end: undefined,
+};
 
 const AddAccountingEnforcedPaymentOrdes = () => {
   const {
@@ -19,6 +30,7 @@ const AddAccountingEnforcedPaymentOrdes = () => {
 
   const {handleSubmit} = useForm();
 
+  const [filterValues, setFilterValues] = useState<AccountingFilters>(initialAccountingFilterValues);
   const [accountingModal, setAccountingtModal] = useState(false);
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [search, setSearch] = useState('');
@@ -27,12 +39,18 @@ const AddAccountingEnforcedPaymentOrdes = () => {
   const {enforcedPaymentOrdersForAccounting} = useGetEnforcedPaymentsForAccounting(
     contextMain?.organization_unit?.id,
     debouncedSearch,
+    filterValues.date_of_start ? parseDateForBackend(filterValues.date_of_start) : null,
+    filterValues.date_of_end ? parseDateForBackend(filterValues.date_of_end) : null,
   );
 
   const {accountingOrder, loading, buildAccountingOrderForObligations} = useBuildAccountingOrderForObligations();
 
   const toggleModal = () => {
     setAccountingtModal(prev => !prev);
+  };
+
+  const onFilter = (value: Date, name: string) => {
+    setFilterValues({...filterValues, [name]: value});
   };
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,6 +102,16 @@ const AddAccountingEnforcedPaymentOrdes = () => {
             onChange={onSearch}
             value={search}
             rightContent={<SearchIcon style={{marginLeft: 10, marginRight: 10}} stroke={Theme.palette.gray500} />}
+          />
+          <Datepicker
+            label="DATUM DOKUMENTA OD:"
+            selected={filterValues.date_of_start ? new Date(filterValues.date_of_start) : null}
+            onChange={date => onFilter(date as Date, 'date_of_start')}
+          />
+          <Datepicker
+            label="DATUM DOKUMENTA DO:"
+            selected={filterValues.date_of_end ? new Date(filterValues.date_of_end) : null}
+            onChange={date => onFilter(date as Date, 'date_of_end')}
           />
         </Filters>
         <Controls>

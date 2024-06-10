@@ -1,25 +1,30 @@
-import {Button, EyeIcon, SearchIcon, Table, Theme} from 'client-library';
+import {Button, Datepicker, EyeIcon, SearchIcon, Table, Theme} from 'client-library';
 import {ChangeEvent, useState} from 'react';
+import {useForm} from 'react-hook-form';
 import {AccountingModal} from '../../../components/accountingModal/accountingModal.tsx';
 import useAppContext from '../../../context/useAppContext.ts';
+import useBuildAccountingOrderForObligations from '../../../services/graphQL/accounting/useBuildAccountingOrderForObligations.ts';
+import useGetObligationsForAccounting from '../../../services/graphQL/accounting/useGetObligationsForAccounting.ts';
+import {DropdownData} from '../../../types/dropdownData.ts';
+import {useDebounce} from '../../../utils/useDebounce.ts';
 import {Controls, FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
 import {TypesForReceivables} from '../../liabilitesAndReceivables/receivables/constants.tsx';
 import {tableHeads} from '../constants.tsx';
 import {FilterInput, Header} from '../styles.tsx';
-import {useDebounce} from '../../../utils/useDebounce.ts';
-import {DropdownData} from '../../../types/dropdownData.ts';
-import useGetObligationsForAccounting from '../../../services/graphQL/accounting/useGetObligationsForAccounting.ts';
-import useBuildAccountingOrderForObligations from '../../../services/graphQL/accounting/useBuildAccountingOrderForObligations.ts';
-import {useForm} from 'react-hook-form';
+import {parseDateForBackend} from '../../../utils/dateUtils.ts';
 
 export interface AccountingFilters {
   type?: DropdownData<string> | null;
   search?: string;
+  date_of_start?: Date;
+  date_of_end?: Date;
 }
 
 const initialAccountingFilterValues = {
   type: null,
   search: '',
+  date_of_start: undefined,
+  date_of_end: undefined,
 };
 
 const AddAccountingObligations = () => {
@@ -41,6 +46,8 @@ const AddAccountingObligations = () => {
     contextMain?.organization_unit?.id,
     filterValues.type ? filterValues.type.id : null,
     debouncedSearch,
+    filterValues.date_of_start ? parseDateForBackend(filterValues.date_of_start) : null,
+    filterValues.date_of_end ? parseDateForBackend(filterValues.date_of_end) : null,
   );
 
   const {accountingOrder, loading, buildAccountingOrderForObligations} = useBuildAccountingOrderForObligations();
@@ -49,7 +56,7 @@ const AddAccountingObligations = () => {
     setAccountingtModal(prev => !prev);
   };
 
-  const onFilter = (value: DropdownData<string> | ChangeEvent<HTMLInputElement>, name: string) => {
+  const onFilter = (value: DropdownData<string> | ChangeEvent<HTMLInputElement> | Date, name: string) => {
     setFilterValues({...filterValues, [name]: value});
   };
 
@@ -112,6 +119,17 @@ const AddAccountingObligations = () => {
             onChange={onSearch}
             value={search}
             rightContent={<SearchIcon style={{marginLeft: 10, marginRight: 10}} stroke={Theme.palette.gray500} />}
+          />
+
+          <Datepicker
+            label="DATUM DOKUMENTA OD:"
+            selected={filterValues.date_of_start ? new Date(filterValues.date_of_start) : null}
+            onChange={date => onFilter(date as Date, 'date_of_start')}
+          />
+          <Datepicker
+            label="DATUM DOKUMENTA DO:"
+            selected={filterValues.date_of_end ? new Date(filterValues.date_of_end) : null}
+            onChange={date => onFilter(date as Date, 'date_of_end')}
           />
         </Filters>
         <Controls>

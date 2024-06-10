@@ -208,7 +208,6 @@ export const AccountingReports = () => {
                   value={value}
                   selected={value ? new Date(value) : ''}
                   onChange={onChange}
-                  options={accountingReportOptions}
                   disabled={!!date_of_start_booking || !!date_of_end_booking}
                   isRequired={!!date_of_start}
                   error={errors.date_of_end?.message as string}

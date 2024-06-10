@@ -4,7 +4,12 @@ import {PaymentOrderItemForAccounting} from '../../../types/graphQL/accountingTy
 import {AccountingResponse} from '../../../types/graphQL/response';
 import {GraphQL} from '../index.ts';
 
-const useGetReturnedEnforcedPaymentsForAccounting = (organization_unit_id: number, search: string) => {
+const useGetReturnedEnforcedPaymentsForAccounting = (
+  organization_unit_id: number,
+  search: string,
+  date_of_start?: string | null,
+  date_of_end?: string | null,
+) => {
   const [returnedEnforcedPaymentsForAccounting, setReturnedEnforcedPaymentsForAccounting] = useState<
     PaymentOrderItemForAccounting[]
   >([]);
@@ -17,6 +22,8 @@ const useGetReturnedEnforcedPaymentsForAccounting = (organization_unit_id: numbe
       {
         organization_unit_id,
         search,
+        date_of_start,
+        date_of_end,
       },
     );
 
@@ -28,7 +35,7 @@ const useGetReturnedEnforcedPaymentsForAccounting = (organization_unit_id: numbe
 
   useEffect(() => {
     fetchReturnedEnforcedPaymentsForAccounting();
-  }, [organization_unit_id, search]);
+  }, [organization_unit_id, search, date_of_end, date_of_start]);
 
   return {returnedEnforcedPaymentsForAccounting, loading, fetch: fetchReturnedEnforcedPaymentsForAccounting};
 };
