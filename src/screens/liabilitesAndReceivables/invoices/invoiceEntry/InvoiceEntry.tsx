@@ -603,9 +603,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   }, [supplier_id?.id]);
 
   useEffect(() => {
-    if (type.id === true) {
+    if (type.id === true && !invoice?.sss_invoice_receipt_date) {
       setValue('sss_invoice_receipt_date', new Date());
-    } else if (type.id === false) {
+    } else if (type.id === false && !invoice?.sss_pro_forma_invoice_receipt_date) {
       setValue('sss_invoice_receipt_date', undefined);
       setValue('sss_pro_forma_invoice_receipt_date', new Date());
     }

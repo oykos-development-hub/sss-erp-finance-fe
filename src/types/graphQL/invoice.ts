@@ -126,6 +126,7 @@ export interface InvoiceItem {
   pro_forma_invoice_date: Date;
   receipt_date: Date;
   sss_invoice_receipt_date: Date;
+  sss_pro_forma_invoice_receipt_date: Date;
   date_of_payment: Date;
   date_of_start: Date;
   file: {
