@@ -50,21 +50,18 @@ const BudgetSummary = ({
     budgetRequestDetails?.financial.status.id === 2 && budgetRequestDetails?.non_financial.status.id === 2;
 
   const handleRowClick = (rowType: string) => {
+    console.log('handleRowClick');
     if (rowType === 'Finansijski') {
       if (navigationRoutePrefix) {
-        // breadcrumbs.add({name: 'Finansijski', to: `${navigationRoutePrefix}/financial`});
         navigate(`${navigationRoutePrefix}/financial`);
       } else {
-        breadcrumbs.add({name: 'Finansijski', to: `/finance/budget/planning/${id}/financial`});
         navigate(`/finance/budget/planning/${id}/financial`);
       }
     }
     if (rowType === 'Nefinansijski') {
       if (navigationRoutePrefix) {
-        // breadcrumbs.add({name: 'Nefinansijski', to: `${navigationRoutePrefix}/non-financial`});
         navigate(`${navigationRoutePrefix}/non-financial`);
       } else {
-        breadcrumbs.add({name: 'Nefinansijski', to: `/finance/budget/planning/${id}/non-financial`});
         navigate(`/finance/budget/planning/${id}/non-financial`);
       }
     }
