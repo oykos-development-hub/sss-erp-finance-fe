@@ -127,7 +127,7 @@ export const Router = () => {
     const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
     const currentBudgetDynamicDetails = new RegExp('/finance/budget/current/requests/\\d+$');
     const budgetRequestDetailsRegex = new RegExp(
-      '^/finance/budget/planning/\\d+/requests/\\d+/(financial|non-financial)$',
+      '^/finance/budget/planning/\\d+/requests/\\d+/(financial|non-financial|summary)$',
     );
 
     if (budgetRequestDetailsRegex.test(pathname)) return <BudgetRequestDetailsOfficial />;

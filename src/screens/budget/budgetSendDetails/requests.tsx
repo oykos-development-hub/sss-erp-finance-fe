@@ -29,9 +29,6 @@ export const RequestsPage = () => {
 
   const handleOrganizationUnitChange = (value: any) => {
     setOrganizationUnit(value);
-    console.log(value);
-    console.log(value ? [requests.filter(request => request?.unit?.id === value?.id)] : requests);
-    console.log(requests, 'requests');
     setFilteredRequests([requests.find(request => request?.unit?.id === value?.id)]);
   };
 
@@ -51,9 +48,9 @@ export const RequestsPage = () => {
         data={organizationUnit.id ? filteredRequests : requests}
         onRowClick={row => {
           if (!row?.unit?.id) return;
-          breadcrumbs.add({name: 'Detalji zahtjeva', to: `${pathname}/${row?.unit?.id}`});
+          breadcrumbs.add({name: 'Detalji zahtjeva', to: `${pathname}/${row?.unit?.id}/summary`});
 
-          navigate(`${pathname}/${row?.unit?.id}/financial`);
+          navigate(`${pathname}/${row?.unit?.id}/summary`);
         }}
       />
     </div>

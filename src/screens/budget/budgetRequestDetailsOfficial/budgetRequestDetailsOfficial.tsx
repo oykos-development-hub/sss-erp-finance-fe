@@ -16,6 +16,8 @@ import useAcceptBudgetRequestOfficial from '../../../services/graphQL/budgetRequ
 import useRejectBudgetRequestOfficial from '../../../services/graphQL/budgetRequestOfficial/useRejectBudgetRequestOfficial.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import {DropdownWrapper, FormWrapper, TextAreaWrapper} from '../planning/OUBudgetSubmission/styles.ts';
+import {getRouteName} from '../../../utils/getRouteName.ts';
+import BudgetSummary from '../planning/OUBudgetSubmission/budgetSummary.tsx';
 
 const BudgetRequestDetailsOfficial = () => {
   const {
@@ -24,6 +26,7 @@ const BudgetRequestDetailsOfficial = () => {
       location: {pathname},
     },
     alert,
+    breadcrumbs,
   } = useAppContext();
 
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname, budgetTabs) || 1);
@@ -32,8 +35,6 @@ const BudgetRequestDetailsOfficial = () => {
     setActiveTab(getCurrentTab(pathname, budgetTabs) || 1);
     activeTab === 1 && refetch();
   }, [pathname]);
-
-  const tabs = budgetTabs.slice(1, 3);
 
   const ids = useMemo(() => {
     const path = pathname.split('/');
@@ -71,12 +72,19 @@ const BudgetRequestDetailsOfficial = () => {
     const financialBudgetId = budgetRequestDetails?.financial?.request_id;
     const nonFinancialBudgetId = budgetRequestDetails?.non_financial?.request_id;
 
+    const onSuccess = () => {
+      setActiveTab(1);
+      navigate(`/finance/budget/planning/${ids.budgetId}/requests/${ids.organizationUnitId}/summary`);
+      breadcrumbs.remove();
+    };
+
     if (!financialBudgetId || !nonFinancialBudgetId) return;
 
     if (status.id === 1) {
       acceptBudgetRequestOfficial(
         activeTab === 2 ? financialBudgetId : nonFinancialBudgetId,
         () => {
+          onSuccess();
           alert.success('Uspješno odobreno.');
         },
         () => {
@@ -88,6 +96,7 @@ const BudgetRequestDetailsOfficial = () => {
         activeTab === 2 ? financialBudgetId : nonFinancialBudgetId,
         comment,
         () => {
+          onSuccess();
           alert.success('Uspješno odbijeno.');
         },
         () => {
@@ -98,12 +107,9 @@ const BudgetRequestDetailsOfficial = () => {
   };
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
+    const routeName = getRouteName(tab.title as string, budgetTabs);
     if (activeTab !== tab.id) {
-      navigate(
-        tab.id === 2
-          ? `/finance/budget/planning/${ids.budgetId}/requests/${ids.organizationUnitId}/financial`
-          : `/finance/budget/planning/${ids.budgetId}/requests/${ids.organizationUnitId}/non-financial`,
-      );
+      navigate(`/finance/budget/planning/${ids.budgetId}/requests/${ids.organizationUnitId}/${routeName}`);
     }
   };
 
@@ -112,6 +118,13 @@ const BudgetRequestDetailsOfficial = () => {
       return <BudgetFinancialRequest budgetRequestDetails={budgetRequestDetails} />;
     if (pathname === `/finance/budget/planning/${ids.budgetId}/requests/${ids.organizationUnitId}/non-financial`)
       return <NonFinanceOfficial budgetRequestDetails={budgetRequestDetails} isPreview={true} />;
+    if (pathname === `/finance/budget/planning/${ids.budgetId}/requests/${ids.organizationUnitId}/summary`)
+      return (
+        <BudgetSummary
+          budgetRequestDetails={budgetRequestDetails}
+          navigationRoutePrefix={`/finance/budget/planning/${ids.budgetId}/requests/${ids.organizationUnitId}`}
+        />
+      );
 
     return <NotFound404 />;
   }, [pathname, budgetRequestDetails]);
@@ -119,41 +132,45 @@ const BudgetRequestDetailsOfficial = () => {
   return (
     <ScreenWrapper>
       <SectionBox>
-        <StyledTabsWithTitle tabs={tabs} activeTab={activeTab} onChange={onTabChange} />
+        <StyledTabsWithTitle tabs={budgetTabs} activeTab={activeTab} onChange={onTabChange} />
         {content}
-        <FormWrapper>
-          <DropdownWrapper>
-            <Dropdown
-              name="status"
-              label="Status:"
-              placeholder="Odaberi status"
-              options={
-                [
-                  {id: 1, title: 'Odobreno'},
-                  {id: 2, title: 'Odbijeno'},
-                ] as DropdownData<number>[]
-              }
-              value={status}
-              onChange={handleDropdownChange}
-            />
-          </DropdownWrapper>
-          <TextAreaWrapper>
-            <Input
-              onChange={e => {
-                setComment(e.target.value);
-              }}
-              value={comment}
-              label={'Komentar:'}
-              textarea
-              placeholder={'Dodaj komentar'}
-              disabled={status.id === 1}
-            />
-          </TextAreaWrapper>
-        </FormWrapper>
+        {activeTab !== 1 && (
+          <FormWrapper>
+            <DropdownWrapper>
+              <Dropdown
+                name="status"
+                label="Status:"
+                placeholder="Odaberi status"
+                options={
+                  [
+                    {id: 1, title: 'Odobreno'},
+                    {id: 2, title: 'Odbijeno'},
+                  ] as DropdownData<number>[]
+                }
+                value={status}
+                onChange={handleDropdownChange}
+              />
+            </DropdownWrapper>
+            <TextAreaWrapper>
+              <Input
+                onChange={e => {
+                  setComment(e.target.value);
+                }}
+                value={comment}
+                label={'Komentar:'}
+                textarea
+                placeholder={'Dodaj komentar'}
+                disabled={status.id === 1}
+              />
+            </TextAreaWrapper>
+          </FormWrapper>
+        )}
       </SectionBox>
-      <Footer>
-        <Button content="Sačuvaj" variant="secondary" onClick={handleSubmitBudgetRequest} />
-      </Footer>
+      {activeTab !== 1 && (
+        <Footer>
+          <Button content="Sačuvaj" variant="secondary" onClick={handleSubmitBudgetRequest} />
+        </Footer>
+      )}
     </ScreenWrapper>
   );
 };

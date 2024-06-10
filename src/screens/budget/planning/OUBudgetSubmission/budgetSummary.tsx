@@ -7,7 +7,13 @@ import useSendBudgetOnReview from '../../../../services/graphQL/sendBudgetOnRevi
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import {useState} from 'react';
 
-const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetRequestItem}) => {
+const BudgetSummary = ({
+  budgetRequestDetails,
+  navigationRoutePrefix,
+}: {
+  budgetRequestDetails?: BudgetRequestItem;
+  navigationRoutePrefix?: string;
+}) => {
   const {
     navigation: {
       navigate,
@@ -45,12 +51,22 @@ const BudgetSummary = ({budgetRequestDetails}: {budgetRequestDetails?: BudgetReq
 
   const handleRowClick = (rowType: string) => {
     if (rowType === 'Finansijski') {
-      breadcrumbs.add({name: 'Finansijski', to: `/finance/budget/planning/${id}/financial`});
-      navigate(`/finance/budget/planning/${id}/financial`);
+      if (navigationRoutePrefix) {
+        // breadcrumbs.add({name: 'Finansijski', to: `${navigationRoutePrefix}/financial`});
+        navigate(`${navigationRoutePrefix}/financial`);
+      } else {
+        breadcrumbs.add({name: 'Finansijski', to: `/finance/budget/planning/${id}/financial`});
+        navigate(`/finance/budget/planning/${id}/financial`);
+      }
     }
     if (rowType === 'Nefinansijski') {
-      breadcrumbs.add({name: 'Nefinansijski', to: `/finance/budget/planning/${id}/non-financial`});
-      navigate(`/finance/budget/planning/${id}/non-financial`);
+      if (navigationRoutePrefix) {
+        // breadcrumbs.add({name: 'Nefinansijski', to: `${navigationRoutePrefix}/non-financial`});
+        navigate(`${navigationRoutePrefix}/non-financial`);
+      } else {
+        breadcrumbs.add({name: 'Nefinansijski', to: `/finance/budget/planning/${id}/non-financial`});
+        navigate(`/finance/budget/planning/${id}/non-financial`);
+      }
     }
   };
 
