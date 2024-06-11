@@ -52,4 +52,5 @@ export const tableHeadsRequests: TableHead[] = [
     type: 'custom',
     renderContents: (status: string) => <StatusTableCell status={status} />,
   },
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

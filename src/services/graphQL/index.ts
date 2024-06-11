@@ -101,6 +101,7 @@ import getFundRelease from './fundRelease/getFundRelease.ts';
 import insertFundRelease from './fundRelease/insertFundRelease.ts';
 import deleteFundRelease from './fundRelease/deleteFundRelease.ts';
 import getOverviewBudgetRequestOfficial from './budgetRequestOfficial/getOverviewBudgetRequestOfficial.ts';
+import financialBudgetActualFill from './financialBudgetActualFill/financialBudgetActualFill.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -221,4 +222,5 @@ export const GraphQL = {
   insertFundRelease: insertFundRelease,
   deleteFundRelease: deleteFundRelease,
   getOverviewBudgetRequestOfficial: getOverviewBudgetRequestOfficial,
+  financialBudgetActualFill: financialBudgetActualFill,
 };

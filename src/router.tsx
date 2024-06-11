@@ -68,6 +68,7 @@ import {useRoleCheck} from './utils/useRoleCheck.ts';
 import BudgetDynamicVersionPreview from './screens/budget/spendingDynamics/budgetDynamicPreview/budgetDynamicVersion.tsx';
 import AddNewBudgetDynamic from './screens/budget/spendingDynamics/addNewDynamic/addNewDynamic.tsx';
 import BudgetRequestDetailsOfficial from './screens/budget/budgetRequestDetailsOfficial/budgetRequestDetailsOfficial.tsx';
+import BudgetFillActual from './screens/budget/budgetFillActual/budgetFillActual.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -129,12 +130,13 @@ export const Router = () => {
     const budgetRequestDetailsRegex = new RegExp(
       '^/finance/budget/planning/\\d+/requests/\\d+/(financial|non-financial|summary)$',
     );
+    const fillActualBudgetRegex = new RegExp('^/finance/budget/planning/\\d+/requests/\\d+/actual$');
 
     if (budgetRequestDetailsRegex.test(pathname)) return <BudgetRequestDetailsOfficial />;
 
-    //todo: check if this is actually the role SSS will use here
     if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])) {
       if (SSSBudgetDetailsRegex.test(pathname)) return <SSSBudgetDetails />;
+      if (fillActualBudgetRegex.test(pathname)) return <BudgetFillActual />;
     }
 
     if (useRoleCheck(role_id, [UserRole.MANAGER_OJ, UserRole.FINANCE_OFFICIAL])) {

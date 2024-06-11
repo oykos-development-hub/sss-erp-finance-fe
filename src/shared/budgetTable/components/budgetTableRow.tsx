@@ -23,9 +23,18 @@ type BudgetTableRowProps = {
   fieldPath: string[];
   children: ReactNode;
   updateParentValues: (fieldPath: string) => void;
+  disabled?: boolean;
 };
 
-const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentValues}: BudgetTableRowProps) => {
+const BudgetTableRow = ({
+  step,
+  count,
+  level,
+  fieldPath,
+  children,
+  updateParentValues,
+  disabled,
+}: BudgetTableRowProps) => {
   const {control} = useFormContext();
 
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -72,6 +81,7 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
             lastLevel={!count.children?.length}
             fieldPath={fieldPath}
             actual={step === BudgetTableStep.BUDGETING_ACTUAL}
+            disabled={disabled}
           />
         );
       case BudgetTableStep.VIEW_ANNUAL:
@@ -241,6 +251,7 @@ const BudgetTableRow = ({step, count, level, fieldPath, children, updateParentVa
           step !== BudgetTableStep.VIEW_MONTHLY_WITH_EDIT &&
           step !== BudgetTableStep.INTERNAL_REALLOCATION &&
           step !== BudgetTableStep.BUDGET_FINANCIAL &&
+          step !== BudgetTableStep.BUDGETING_ACTUAL &&
           step !== BudgetTableStep.REQUEST_FUND_RELEASE && (
             <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
           )}

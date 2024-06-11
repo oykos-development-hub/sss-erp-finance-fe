@@ -7,9 +7,10 @@ type BudgetingFormProps = {
   fieldPath: string[];
   updateParentValues: (fieldPath: string) => void;
   actual: boolean;
+  disabled?: boolean;
 };
 
-const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}: BudgetingFormProps) => {
+const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual, disabled}: BudgetingFormProps) => {
   const {control} = useFormContext();
 
   return (
@@ -26,7 +27,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
                 updateParentValues(name);
               }}
               type={'number'}
-              disabled={!lastLevel}
+              disabled={disabled || !lastLevel || actual}
               isBold={!lastLevel}
             />
           )}
@@ -38,7 +39,12 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
             name={`${fieldPath.join('.')}-description`}
             control={control}
             render={({field: {onChange, value}}) => (
-              <DescriptionTextarea value={value} onChange={onChange} style={{textAlign: 'left'}} />
+              <DescriptionTextarea
+                value={value}
+                onChange={onChange}
+                style={{textAlign: 'left'}}
+                disabled={disabled || actual}
+              />
             )}
           />
         )}
@@ -56,7 +62,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
                   updateParentValues(name);
                 }}
                 type={'number'}
-                disabled={!lastLevel}
+                disabled={disabled || !lastLevel}
                 isBold={!lastLevel}
               />
             )}
@@ -75,7 +81,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
                 updateParentValues(name);
               }}
               type={'number'}
-              disabled={!lastLevel}
+              disabled={disabled || !lastLevel || actual}
               isBold={!lastLevel}
             />
           )}
@@ -93,7 +99,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual}
                 updateParentValues(name);
               }}
               type={'number'}
-              disabled={!lastLevel}
+              disabled={disabled || !lastLevel || actual}
               isBold={!lastLevel}
             />
           )}

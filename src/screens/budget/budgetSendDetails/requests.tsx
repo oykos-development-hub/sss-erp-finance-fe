@@ -1,11 +1,12 @@
-import {Dropdown} from 'client-library';
-import {useMemo, useState} from 'react';
+import {Dropdown, BudgetIcon, Theme} from 'client-library';
+import {useEffect, useMemo, useState} from 'react';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits';
 import {tableHeadsRequests} from './constants';
 import {DropdownWrapperRequests, StyledTable} from './styles';
 import useGetOverviewBudgetRequestOfficial from '../../../services/graphQL/budgetRequestOfficial/useGetOverviewBudgetRequestOfficial.ts';
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import useAppContext from '../../../context/useAppContext.ts';
+import {IconWrapper} from '../budgetFillActual/styles.ts';
 
 export const RequestsPage = () => {
   const {
@@ -24,13 +25,17 @@ export const RequestsPage = () => {
     return path[path.length - 2];
   }, [pathname]);
 
-  const {requests} = useGetOverviewBudgetRequestOfficial({budget_id});
+  const {requests, refetch} = useGetOverviewBudgetRequestOfficial({budget_id});
   const [filteredRequests, setFilteredRequests] = useState<any[]>(requests);
 
   const handleOrganizationUnitChange = (value: any) => {
     setOrganizationUnit(value);
     setFilteredRequests([requests.find(request => request?.unit?.id === value?.id)]);
   };
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   return (
     <div>
@@ -52,6 +57,23 @@ export const RequestsPage = () => {
 
           navigate(`${pathname}/${row?.unit?.id}/summary`);
         }}
+        tableActions={[
+          {
+            name: 'actual',
+            onClick: row => {
+              breadcrumbs.add({name: 'Tekući budžet', to: `${pathname}/${row?.unit?.id}/actual`});
+              navigate(`${pathname}/${row?.unit?.id}/actual`);
+            },
+            tooltip: () => 'Unos tekućeg budžeta',
+            icon: (
+              <IconWrapper>
+                <BudgetIcon stroke={Theme?.palette?.gray800} />
+              </IconWrapper>
+            ),
+            // TODO add condition for rendering after BE is done
+            shouldRender: () => true,
+          },
+        ]}
       />
     </div>
   );

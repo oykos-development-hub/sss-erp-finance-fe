@@ -107,6 +107,9 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
       [methods, step],
     );
 
+    const tableDisabled =
+      step === BudgetTableStep.CREATING || step === BudgetTableStep.AWAITING_APPROVAL || !!isTableDisabled;
+
     const recursiveRowRendering = (items: Count[], level = 1, path = [] as string[]) => {
       if (!items) return null;
 
@@ -119,6 +122,7 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
             count={item}
             level={level}
             fieldPath={fieldPath}
+            disabled={tableDisabled}
             updateParentValues={updateParentValues}>
             {recursiveRowRendering(item.children ?? [], item.children ? level + 1 : level - 1, fieldPath)}
           </BudgetTableRow>
@@ -137,9 +141,6 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
     const tableHeads = useMemo(() => {
       return getBudgetTableHeads(year, step);
     }, [year, step]);
-
-    const tableDisabled =
-      step === BudgetTableStep.CREATING || step === BudgetTableStep.AWAITING_APPROVAL || !!isTableDisabled;
 
     useImperativeHandle(ref, () => ({
       getInternalState: () => {

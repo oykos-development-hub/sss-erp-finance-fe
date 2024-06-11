@@ -7,6 +7,11 @@ interface BudgetItem {
   description: string;
 }
 
+interface ActualBudgetItem {
+  id: number;
+  actual: number;
+}
+
 export const flattenBudgetData = (data: any, parentId = 0) => {
   const result: BudgetItem[] = [];
   const traverse = (obj: any, id: number) => {
@@ -52,6 +57,49 @@ export const flattenBudgetData = (data: any, parentId = 0) => {
               break;
             case 'description':
               entry.description = setValue(value, match[2]);
+              break;
+          }
+        }
+      }
+    });
+  };
+
+  traverse(data, parentId);
+  return result;
+};
+
+export const flattenActualBudgetData = (data: any, parentId = 0) => {
+  const result: ActualBudgetItem[] = [];
+  const traverse = (obj: any, id: number) => {
+    Object.entries(obj).forEach(([key, value]) => {
+      if (typeof value === 'object') {
+        // Continue to traverse deeper if the value is an object
+        traverse(value, key.match(/^\d+$/) ? parseInt(key, 10) : id);
+      } else {
+        // Process budget and description fields
+        const match = key.match(/^(\d+)-(actualBudget)$/);
+        if (match) {
+          // Ensure an entry for this account_id exists
+          let entry = result.find(entry => entry.id === parseInt(match[1], 10));
+          if (!entry) {
+            entry = {
+              id: parseInt(match[1], 10),
+              actual: 0,
+            };
+            result.push(entry);
+          }
+          // Determine the appropriate value based on the type and suffix
+          const setValue = (value: any, suffix: string) => {
+            if (typeof value === 'string' && suffix !== 'description') {
+              return parseInt(value, 10); // Parse to integer for budget fields
+            }
+            return value; // Use the value directly for 'description' or if it's already a number
+          };
+
+          // Fill the entry based on the suffix
+          switch (match[2]) {
+            case 'actualBudget':
+              entry.actual = setValue(value, match[2]);
               break;
           }
         }

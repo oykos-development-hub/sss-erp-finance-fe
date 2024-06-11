@@ -72,15 +72,6 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
         {name: '-', width: 6},
         {name: '+', width: 6},
       ];
-    // case BudgetTableStep.BUDGET_FINANCIAL:
-    //   return [
-    //     {name: 'Opis konta', width: 12},
-    //     {name: 'Izvor', width: 23},
-    //     {name: `Budžet za ${year}. godinu`, width: 12},
-    //     {name: 'Opis', width: 23},
-    //     {name: `Budžet za ${year + 1}. godinu`, width: 12},
-    //     {name: `Budžet za ${year + 2}. godinu`, width: 12},
-    //   ];
     default:
       return [];
   }

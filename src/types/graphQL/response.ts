@@ -303,3 +303,9 @@ export type NonFinancialBudgetFillResponse = {
     nonFinancialBudget_Insert: InsertResponse<any>;
   };
 };
+
+export type FinancialBudgetActualFillResponse = {
+  fill: {
+    financialBudgetActual_Fill: GetResponse<any>;
+  };
+};

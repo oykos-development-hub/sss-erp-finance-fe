@@ -48,7 +48,7 @@ const BudgetInputStyles = css`
   width: 100%;
 `;
 
-export const BudgetInput = styled.input<{isBold?: boolean}>`
+export const BudgetInput = styled.input<{isBold?: boolean; disabled?: boolean}>`
   ${BudgetInputStyles};
 
   font-weight: ${({isBold}) => (isBold ? '600' : '400')};
@@ -58,12 +58,15 @@ export const BudgetInput = styled.input<{isBold?: boolean}>`
     appearance: none;
     margin: 0;
   }
+
+  color: ${({disabled}) => (disabled ? Theme.palette.gray300 : Theme.palette.gray900)};
 `;
 
-export const DescriptionTextarea = styled.textarea`
+export const DescriptionTextarea = styled.textarea<{disabled?: boolean}>`
   ${BudgetInputStyles}
 
   resize: none;
+  color: ${({disabled}) => (disabled ? Theme.palette.gray300 : Theme.palette.gray900)};
 `;
 
 export const BudgetText = styled(Typography)`
