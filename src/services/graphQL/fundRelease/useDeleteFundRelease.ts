@@ -6,10 +6,10 @@ const useDeleteFundRelease = () => {
   const [loading, setLoading] = useState(false);
   const {fetch} = useAppContext();
 
-  const deleteFundRelease = async (id: number, onSuccess?: () => void, onError?: () => void) => {
+  const deleteFundRelease = async (onSuccess?: () => void, onError?: () => void) => {
     if (loading) return;
     setLoading(true);
-    const response: any = await fetch(GraphQL.deleteFundRelease, {id});
+    const response: any = await fetch(GraphQL.deleteFundRelease, {});
     if (response.spendingRelease_Delete.status === 'success') {
       onSuccess && onSuccess();
     } else {

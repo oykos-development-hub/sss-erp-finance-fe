@@ -1,5 +1,5 @@
 import {Button, Divider} from 'client-library';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import useAppContext from '../../../context/useAppContext';
 import useGetBudgetDynamic from '../../../services/graphQL/budgetDynamic/useGetBudgetDynamic';
@@ -10,6 +10,8 @@ import {monthVars} from '../spendingDynamics/constants';
 import {TableWrapper} from '../spendingDynamics/styles';
 import FundReleaseTable from './fundReleaseTable';
 import {MainTitle, SectionBox} from './styles';
+import useGetFundReleaseDetails from '../../../services/graphQL/fundRelease/useGetFundReleaseDetails';
+import {fundReleaseDetailsRegex} from '../../../router';
 
 const FundReleaseRequest = () => {
   const [invalidRows, setInvalidRows] = useState<string[]>([]);
@@ -17,19 +19,37 @@ const FundReleaseRequest = () => {
   const [allEnabled, setAllEnabled] = useState<boolean>(false);
   const [allBottomCounts, setAllBottomCounts] = useState<string[]>([]);
   const {
-    navigation: {navigate},
+    navigation: {
+      navigate,
+      location: {pathname},
+    },
     alert,
   } = useAppContext();
+
+  const currentMonthYear: {month: number; year: number} | null = useMemo(() => {
+    const match = pathname.match(fundReleaseDetailsRegex);
+
+    if (match) {
+      return {
+        month: parseInt(match[1]),
+        year: parseInt(match[2]),
+      };
+    } else {
+      return null;
+    }
+  }, [pathname]);
 
   const currentMonth = new Date().toLocaleString('default', {month: 'long'}).toLowerCase();
 
   const methods = useForm<any>();
 
   const {budgetDynamic, loading} = useGetBudgetDynamic({});
+  const {fundReleaseDetails} = useGetFundReleaseDetails({month: currentMonthYear?.month, year: currentMonthYear?.year});
   const {insertFundRelease} = useInsertFundRelease();
 
+  const isDetails = fundReleaseDetailsRegex.test(pathname);
+
   const onEnabledRowsChange = (row: string) => {
-    console.log(row, enabledRows, allEnabled);
     if (row === 'all') {
       if (allEnabled) {
         setEnabledRows([]);
@@ -52,7 +72,7 @@ const FundReleaseRequest = () => {
   const setupFundReleaseFieldsRecursively = useCallback(
     (item: BudgetDynamicCount) => {
       const data = {
-        month: monthVars.findIndex(month => month === currentMonth),
+        month: monthVars.findIndex(month => month === currentMonth) + 1,
         value: item[currentMonth as keyof BudgetDynamicCount].value,
         account_id: item.account_id,
         maxValue: parseInt(item[currentMonth as keyof BudgetDynamicCount].value),
@@ -83,10 +103,12 @@ const FundReleaseRequest = () => {
   };
 
   useEffect(() => {
-    if (budgetDynamic && budgetDynamic) {
-      budgetDynamic.forEach((item: BudgetDynamicCount) => {
-        setupFundReleaseFieldsRecursively(item);
-      });
+    if (!isDetails) {
+      if (budgetDynamic && budgetDynamic) {
+        budgetDynamic.forEach((item: BudgetDynamicCount) => {
+          setupFundReleaseFieldsRecursively(item);
+        });
+      }
     }
   }, [budgetDynamic, setupFundReleaseFieldsRecursively]);
 
@@ -138,19 +160,22 @@ const FundReleaseRequest = () => {
               invalidRows={invalidRows}
               counts={budgetDynamic}
               loading={loading}
+              details={fundReleaseDetails}
             />
           </TableWrapper>
         </FormProvider>
 
-        <div style={{marginTop: 22, display: 'flex'}}>
-          <Button
-            variant="secondary"
-            content="Otkaži"
-            style={{marginLeft: 'auto', marginRight: 15}}
-            onClick={() => window.history.back()}
-          />
-          <Button variant="primary" onClick={methods.handleSubmit(onSubmit)} content="Sačuvaj" />
-        </div>
+        {!isDetails && (
+          <div style={{marginTop: 22, display: 'flex'}}>
+            <Button
+              variant="secondary"
+              content="Otkaži"
+              style={{marginLeft: 'auto', marginRight: 15}}
+              onClick={() => window.history.back()}
+            />
+            <Button variant="primary" onClick={methods.handleSubmit(onSubmit)} content="Sačuvaj" />
+          </div>
+        )}
       </SectionBox>
     </ScreenWrapper>
   );

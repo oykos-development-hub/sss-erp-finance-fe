@@ -73,6 +73,8 @@ import BudgetFillActual from './screens/budget/budgetFillActual/budgetFillActual
 //* OU - organization unit
 //* SSS - judicial council official
 
+export const fundReleaseDetailsRegex = /^\/finance\/budget\/current\/fund-release\/([1-9]|1[0-2])_(\d{4})$/;
+
 export const Router = () => {
   const {
     navigation: {
@@ -264,8 +266,9 @@ export const Router = () => {
     // if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
     if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;
     if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
-    // }
+    if (fundReleaseDetailsRegex.test(pathname)) return <FundReleaseRequest />;
     if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.MANAGER_OJ])) {
+      // }
       // add role specific routes here
       if (pathname === '/blablabla') return <div />;
     } else if (useRoleCheck(role_id, [UserRole.FINANCE_OFFICIAL])) {

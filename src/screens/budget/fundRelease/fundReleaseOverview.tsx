@@ -1,13 +1,15 @@
-import {Button, Divider, Dropdown, Table} from 'client-library';
+import {Button, Divider, Dropdown, Table, TrashIcon, Theme} from 'client-library';
 import {useMemo, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
 import useGetFundRelease from '../../../services/graphQL/fundRelease/useGetFundRelease';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {DropdownData} from '../../../types/dropdownData';
 import {getYearOptions} from '../../../utils/getYearOptions';
-import {monthVarsSr} from '../spendingDynamics/constants';
+import {MonthType, monthVars, monthVarsSr} from '../spendingDynamics/constants';
 import {fundReleaseTableHeads} from './constants';
 import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
+import useDeleteFundRelease from '../../../services/graphQL/fundRelease/useDeleteFundRelease';
+import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal';
 
 type FundReleaseFilters = {
   year: DropdownData<number>;
@@ -15,8 +17,11 @@ type FundReleaseFilters = {
 };
 
 const FundReleaseOverview = () => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const {
     navigation: {navigate},
+    alert,
   } = useAppContext();
 
   const [filters, setFilters] = useState<FundReleaseFilters>({
@@ -24,7 +29,8 @@ const FundReleaseOverview = () => {
     month: null,
   });
 
-  const {fundRelease} = useGetFundRelease({year: filters.year?.id, month: filters.month?.id});
+  const {fundRelease, refetch} = useGetFundRelease({year: filters.year?.id, month: filters.month?.id});
+  const {deleteFundRelease} = useDeleteFundRelease();
 
   const fundReleaseList = useMemo(() => {
     return fundRelease
@@ -44,7 +50,26 @@ const FundReleaseOverview = () => {
     navigate('/finance/budget/current/fund-release/new-request');
   };
 
-  const monthOptions = monthVarsSr.map((month, index) => ({id: index, title: month}));
+  const onDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (!showDeleteModal) return;
+
+    await deleteFundRelease(
+      () => {
+        alert.success('Uspješno obrisano.');
+        refetch();
+      },
+      () => {
+        alert.error('Došlo je do greške prilikom brisanja.');
+      },
+    );
+    setShowDeleteModal(false);
+  };
+
+  const monthOptions = monthVarsSr.map((month, index) => ({id: index + 1, title: month}));
   const yearOptions = getYearOptions(10, true, 5);
 
   return (
@@ -82,8 +107,34 @@ const FundReleaseOverview = () => {
             />
           </ButtonWrapper>
         </Wrapper>
-        <Table data={fundReleaseList as any} tableHeads={fundReleaseTableHeads} />
+        <Table
+          data={fundReleaseList as any}
+          tableHeads={fundReleaseTableHeads}
+          tableActions={[
+            {
+              name: 'Izbriši',
+              onClick: () => {
+                onDeleteClick();
+              },
+              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+              shouldRender: (row: any) => {
+                const currentMonth = new Date().toLocaleString('default', {month: 'long'}).toLowerCase() as MonthType;
+                const monthNumber = monthVars.indexOf(currentMonth) + 1;
+                console.log(row.month, monthNumber);
+                return row.month === monthNumber;
+              },
+            },
+          ]}
+          onRowClick={(row: any) => navigate(`/finance/budget/current/fund-release/${row.month}_${row.year}`)}
+        />
       </SectionBox>
+
+      <ConfirmationModal
+        open={!!showDeleteModal}
+        subTitle="Ovo otpuštanje će biti trajno izbrisano iz sistema."
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDelete()}
+      />
     </ScreenWrapper>
   );
 };

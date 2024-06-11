@@ -1,5 +1,5 @@
-const deleteFundRelease = `mutation($id: Int!) {
-    spendingRelease_Delete(id: $id) {
+const deleteFundRelease = `mutation($unit_id: Int) {
+    spendingRelease_Delete(unit_id: $unit_id) {
         message
         status
         data
