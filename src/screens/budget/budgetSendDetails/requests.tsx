@@ -70,8 +70,7 @@ export const RequestsPage = () => {
                 <BudgetIcon stroke={Theme?.palette?.gray800} />
               </IconWrapper>
             ),
-            // TODO add condition for rendering after BE is done
-            shouldRender: () => true,
+            shouldRender: row => row?.status === 'Odobreno',
           },
         ]}
       />
