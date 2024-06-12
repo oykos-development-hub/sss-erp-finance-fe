@@ -75,7 +75,7 @@ const BudgetFillActual = () => {
         customContent={
           <>
             <Typography
-              content="Da li ste sigurni da želite poslati budžet?"
+              content="Da li ste sigurni da želite sačuvati tekući budžet?"
               variant="bodyMedium"
               style={{fontWeight: 600, textAlign: 'center'}}
             />

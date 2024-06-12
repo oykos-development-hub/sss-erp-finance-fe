@@ -6,6 +6,8 @@ import {BudgetRequestItem} from '../../../../types/graphQL/budgetRequestDetails.
 import useSendBudgetOnReview from '../../../../services/graphQL/sendBudgetOnReview/useSendBudgetOnReview.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import {useState} from 'react';
+import {useRoleCheck} from '../../../../utils/useRoleCheck.ts';
+import {UserRole} from '../../../../constants.ts';
 
 const BudgetSummary = ({
   budgetRequestDetails,
@@ -20,6 +22,7 @@ const BudgetSummary = ({
       location: {pathname},
       alert,
     },
+    contextMain: {role_id},
     breadcrumbs,
   } = useAppContext();
 
@@ -50,7 +53,6 @@ const BudgetSummary = ({
     budgetRequestDetails?.financial.status.id === 2 && budgetRequestDetails?.non_financial.status.id === 2;
 
   const handleRowClick = (rowType: string) => {
-    console.log('handleRowClick');
     if (rowType === 'Finansijski') {
       if (navigationRoutePrefix) {
         navigate(`${navigationRoutePrefix}/financial`);
@@ -87,6 +89,7 @@ const BudgetSummary = ({
 
   return (
     <>
+      asdasddd
       <Table
         tableHeads={budgetSummaryTableHeads}
         data={tableData}
@@ -102,13 +105,17 @@ const BudgetSummary = ({
             breadcrumbs.remove();
           }}
         />
-        <Button
-          content="Pošalji"
-          variant="primary"
-          disabled={!isButtonEnabled}
-          onClick={toggleModal}
-          loader={loading}
-        />
+        {/*This screen is used both for managers and finance official*/}
+        {/*Hide button for finance official because only manager can send the budget*/}
+        {!useRoleCheck(role_id, [UserRole.FINANCE_OFFICIAL]) && (
+          <Button
+            content="Pošalji"
+            variant="primary"
+            disabled={!isButtonEnabled}
+            onClick={toggleModal}
+            loader={loading}
+          />
+        )}
       </FooterWrapper>
       <ConfirmationModal
         open={showModal}
