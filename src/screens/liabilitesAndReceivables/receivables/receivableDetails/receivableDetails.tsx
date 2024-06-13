@@ -106,7 +106,7 @@ const ReceivableDetails = () => {
       payload as any,
       () => {
         alert.success('Uspješno dodavanje naloga.');
-        navigate('/finance/liabilities-receivables/receivables');
+        navigate('/finance/liabilities-receivables/receivables/payment-orders');
       },
       () => alert.error('Neuspješno dodavanje naloga.'),
     );

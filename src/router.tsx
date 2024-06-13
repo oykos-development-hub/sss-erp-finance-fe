@@ -69,6 +69,7 @@ import BudgetDynamicVersionPreview from './screens/budget/spendingDynamics/budge
 import AddNewBudgetDynamic from './screens/budget/spendingDynamics/addNewDynamic/addNewDynamic.tsx';
 import BudgetRequestDetailsOfficial from './screens/budget/budgetRequestDetailsOfficial/budgetRequestDetailsOfficial.tsx';
 import BudgetFillActual from './screens/budget/budgetFillActual/budgetFillActual.tsx';
+import {ReceivablesLandingPage} from './screens/liabilitesAndReceivables/receivablesLandingPage/receivablesLandingPage.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -103,8 +104,10 @@ export const Router = () => {
     const invoiceEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices/\\d+$');
     const decisionsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions/\\d+$');
     const contractsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/contracts/\\d+$');
-    const receiveRegex = new RegExp('^/finance/liabilities-receivables/receivables(?:/add-receivable)?$');
-    const receiveEditRegex = new RegExp('^/finance/liabilities-receivables/receivables/\\d+$');
+    const receiveRegex = new RegExp(
+      '^/finance/liabilities-receivables/receivables/payment-orders(?:/add-receivable)?$',
+    );
+    const receiveEditRegex = new RegExp('^/finance/liabilities-receivables/receivables/payment-orders/\\d+$');
     const salariesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries(?:/add-salary)?$');
     const salaryDetailsRegex = new RegExp('^/finance/liabilities-receivables/liabilities/salaries/\\d+$');
     const enforcedPaymentRegex = new RegExp(
@@ -221,7 +224,8 @@ export const Router = () => {
     if (pathname === '/finance/liabilities-receivables/liabilities/related-expenses')
       return <AdditionalExpensesOverview />;
 
-    if (pathname === '/finance/liabilities-receivables/receivables') return <ReceivablesOverview />;
+    if (pathname === '/finance/liabilities-receivables/receivables') return <ReceivablesLandingPage />;
+    if (pathname === '/finance/liabilities-receivables/receivables/payment-orders') return <ReceivablesOverview />;
     if (receiveRegex.test(pathname)) return <ReceivableEntry />;
     if (receiveEditRegex.test(pathname)) return <ReceivableDetails />;
     if (invoicesRegex.test(pathname)) return <Invoices />;

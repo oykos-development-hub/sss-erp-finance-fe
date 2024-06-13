@@ -1,30 +1,30 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {Button, Datepicker, Dropdown, Input, Table, TableHead, Typography, FileUpload} from 'client-library';
+import {Button, Datepicker, Dropdown, FileUpload, Input, Table, TableHead, Typography} from 'client-library';
 import {useEffect, useMemo, useState} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
+import FileListComponent from '../../../../components/fileList/fileList.tsx';
 import {generateDropdownOptions} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useCalculateAdditionalExpenses from '../../../../services/graphQL/calculateAdditionalExpenses/useCalculateAdditionalExpenses.ts';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
+import useGetSettings from '../../../../services/graphQL/getSettings/useGetSettings.ts';
 import useInsertInvoice from '../../../../services/graphQL/invoice/useInsertInvoice.ts';
 import useGetSuppliers from '../../../../services/graphQL/suppliers/useGetSuppliers.ts';
 import useGetTaxAuthorityCodebook from '../../../../services/graphQL/taxAuthorityCodebook/useGetTaxAuthorityCodebookOverview.tsx';
+import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
 import Footer from '../../../../shared/footer.ts';
+import {MainTitle} from '../../../../shared/pageElements.ts';
+import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {DecisionItem} from '../../../../types/graphQL/invoice.ts';
 import {createDropdownOptions} from '../../../../utils/createOptions.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import {SourceOfFunding} from '../constants.tsx';
-import {decisionsSchema, generateDropdownOptionsForType} from './constants.tsx';
-import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
-import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
-import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
-import FileListComponent from '../../../../components/fileList/fileList.tsx';
-import {FileResponseItem} from '../../../../types/fileUploadType.ts';
-import {MainTitle} from '../../../../shared/pageElements.ts';
-import useGetSettings from '../../../../services/graphQL/getSettings/useGetSettings.ts';
+import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
+import {SourceOfFunding} from '../constants.tsx';
+import {decisionsSchema} from './constants.tsx';
+import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
 
 type DecisionEntryForm = yup.InferType<typeof decisionsSchema>;
 interface DecisionFormProps {
@@ -100,10 +100,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   const dropdowncountsOptions = useMemo(() => {
     return generateDropdownOptions(counts);
   }, [counts]);
-
-  const dropdownTypeOfDecisionOptions = useMemo(() => {
-    return generateDropdownOptionsForType(typeOfDecision?.items);
-  }, [typeOfDecision]);
 
   const onCount = () => {
     calculateAdditionalExpenses();
@@ -189,7 +185,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   };
 
   const onSubmit = async (data: any) => {
-    const selectedOption = dropdownTypeOfDecisionOptions.find(option => option.id === type_of_decision.id);
+    const selectedOption = typeOfDecision?.items?.find(option => option.id === type_of_decision.id);
     const abbreviation = selectedOption ? selectedOption.abbreviation : '';
     const formattedInvoiceNumber = `${abbreviation}  ${data.invoice_number}`;
 
@@ -376,7 +372,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 onChange={onChange}
                 label="VRSTA PREDMETA:"
                 placeholder={'Odaberite vrstu predmeta'}
-                options={dropdownTypeOfDecisionOptions}
+                options={typeOfDecision?.items}
                 isDisabled={decision?.status === 'Na nalogu'}
               />
             )}
@@ -390,7 +386,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
           />
           <Input
             {...register('issuer')}
-            label="SUBJEKT KOJI JE IZDAO RJEŠENJE:"
+            label="ORGANIZACIONA JEDINICA:"
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
             disabled={decision?.status === 'Na nalogu'}

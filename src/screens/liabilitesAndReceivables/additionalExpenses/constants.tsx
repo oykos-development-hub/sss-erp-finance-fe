@@ -37,7 +37,7 @@ export const tableHeads: TableHead[] = [
     renderContents: subject => <Typography content={subject?.title} />,
   },
   {
-    title: 'Neto iznos',
+    title: 'Iznos',
     accessor: 'price',
     type: 'custom',
     renderContents: price => <Typography content={price ? price?.toFixed(2) : ''} />,

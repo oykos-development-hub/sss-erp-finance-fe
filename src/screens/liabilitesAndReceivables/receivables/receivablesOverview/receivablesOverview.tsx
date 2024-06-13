@@ -215,7 +215,7 @@ const ReceivablesOverview = () => {
           <Button
             content="Kreirajte nalog za plaćanje"
             size="md"
-            onClick={() => navigate('/finance/liabilities-receivables/receivables/add-receivable')}
+            onClick={() => navigate('/finance/liabilities-receivables/receivables/payment-orders/add-receivable')}
           />
         </ButtonOverviewWrapper>
 
@@ -223,13 +223,14 @@ const ReceivablesOverview = () => {
           tableHeads={tableHeads}
           data={paymentOrder || []}
           onRowClick={(row: PaymentOrderItem) =>
-            row.status === 'Plaćen' && navigate(`/finance/liabilities-receivables/receivables/${row.id}`)
+            row.status === 'Plaćen' && navigate(`/finance/liabilities-receivables/receivables/payment-orders/${row.id}`)
           }
           emptyMessage={'Još nema naloga za plaćanje'}
           tableActions={[
             {
               name: 'Izmijeni',
-              onClick: (row: PaymentOrderItem) => navigate(`/finance/liabilities-receivables/receivables/${row.id}`),
+              onClick: (row: PaymentOrderItem) =>
+                navigate(`/finance/liabilities-receivables/receivables/payment-orders/${row.id}`),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
               shouldRender: row => row.status !== 'Plaćen' && row.status !== 'Storniran',
             },

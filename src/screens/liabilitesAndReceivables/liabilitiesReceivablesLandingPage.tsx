@@ -13,12 +13,12 @@ export const LiabilitiesReceivablesLandingPage: React.FC = () => {
         </LandingPageTitle>
         <Container>
           <LandingPageContentBox
-            title={'Kreiranje obaveza'}
+            title={'Obaveze'}
             path={'/finance/liabilities-receivables/liabilities'}
             icon={<FinesIcon />}
           />
           <LandingPageContentBox
-            title={'Kreiranje naloga'}
+            title={'Nalozi'}
             path={'/finance/liabilities-receivables/receivables'}
             icon={<FeesIcon />}
           />

@@ -1,7 +1,6 @@
 import * as yup from 'yup';
 import {requiredError} from '../../../../constants';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
-import {GeneralSettings} from '../../../../types/graphQL/generalSettings';
 
 export const decisionsSchema = yup.object().shape({
   id: yup.number(),
@@ -51,15 +50,3 @@ export const decisionsSchema = yup.object().shape({
     }),
   ),
 });
-
-export function generateDropdownOptionsForType(typeOfDecisionItem: GeneralSettings[]) {
-  return typeOfDecisionItem?.map(item => {
-    const dropdownTitle = `${item.title} - ${item.abbreviation}`;
-
-    return {
-      id: item.id,
-      title: dropdownTitle,
-      abbreviation: item.abbreviation,
-    };
-  });
-}

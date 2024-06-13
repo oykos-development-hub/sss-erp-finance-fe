@@ -23,6 +23,7 @@ import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import FileListComponent from '../../../../components/fileList/fileList.tsx';
 import {MainTitle} from '../../../../shared/pageElements.ts';
+import {SourceOfFunding} from '../../decisions/constants.tsx';
 
 type ContractEntryForm = yup.InferType<typeof contractsSchema>;
 interface ContractFormProps {
@@ -300,11 +301,14 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         supplier_id: {id: contract.supplier.id, title: contract.supplier.title},
         supplier_title: contract.supplier_title,
         invoice_number: contract.invoice_number,
+        sss_invoice_receipt_date:
+          contract.sss_invoice_receipt_date !== null ? new Date(contract.sss_invoice_receipt_date) : undefined,
         date_of_invoice: contract.date_of_invoice !== null ? new Date(contract.date_of_invoice) : undefined,
         date_of_start: contract.date_of_start !== null ? new Date(contract.date_of_start) : undefined,
         receipt_date: contract.receipt_date !== null ? new Date(contract.receipt_date) : undefined,
         date_of_payment: contract.date_of_payment !== null ? new Date(contract.date_of_payment) : undefined,
         description: contract?.description,
+        source_of_funding: {id: contract.source_of_funding, title: contract.source_of_funding},
         issuer: contract?.issuer,
         municipality_id: {id: contract.municipality.id, title: contract.municipality.title},
         tax_authority_codebook_id: {
@@ -362,14 +366,11 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
 
           <Input
             {...register('issuer')}
-            label="SUBJEKT KOJI JE IZDAO RJEŠENJE:"
+            label="ORGANIZACIONA JEDINICA:"
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
             disabled={contract?.status === 'Na nalogu'}
           />
-        </Row>
-
-        <Row>
           {/*Treba da se prikazu opcije iz sifarnika kad se zavrsi budzet*/}
           <Controller
             name={'activity_id'}
@@ -382,6 +383,25 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="AKTIVNOST:"
                 placeholder={'Odaberite aktivnost'}
                 options={[]}
+                isDisabled={contract?.status === 'Na nalogu'}
+              />
+            )}
+          />
+        </Row>
+
+        <Row>
+          <Controller
+            name="source_of_funding"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={value}
+                onChange={onChange}
+                label="IZVOR FINANSIRANJA:"
+                placeholder="Odaberite izvor finansiranja"
+                options={SourceOfFunding}
+                error={errors.source_of_funding?.message}
                 isDisabled={contract?.status === 'Na nalogu'}
               />
             )}

@@ -68,7 +68,7 @@ const EnforcedPaymentsOverview = () => {
   return (
     <ScreenWrapper>
       <SectionBox>
-        <MainTitle variant="bodyMedium" content="PRINUDNI NALOZI ZA PLAĆANJE" />
+        <MainTitle variant="bodyMedium" content="PRINUDNA NAPLATA" />
         <Divider color="#615959" height="1px" />
         <RowWrapper>
           <Row>
