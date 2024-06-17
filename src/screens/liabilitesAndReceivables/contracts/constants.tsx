@@ -44,7 +44,7 @@ export const contractsOverviewTableHeads: TableHead[] = [
     type: 'custom',
     renderContents: date_of_payment => <Typography content={parseDate(date_of_payment)} />,
   },
-  {title: 'Broj predmeta', accessor: 'invoice_number'},
+  {title: 'Djelovodni broj', accessor: 'invoice_number'},
   {
     title: 'Neto iznos',
     accessor: 'net_price',

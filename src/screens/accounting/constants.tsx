@@ -31,7 +31,7 @@ export const tableHeads: TableHead[] = [
     },
   },
   {
-    title: 'Broj predmeta',
+    title: 'Broj obaveze',
     accessor: 'title',
     type: 'text',
   },
