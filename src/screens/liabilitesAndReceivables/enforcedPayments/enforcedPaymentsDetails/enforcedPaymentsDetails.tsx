@@ -300,14 +300,6 @@ const EnforcedPaymentsDetails = () => {
                 />
               )}
             />
-
-            <Input
-              {...register('sap_id')}
-              label="SAP ID:"
-              error={errors.sap_id?.message}
-              style={{width: '350px'}}
-              isRequired
-            />
           </Row>
           <Row>
             <Input

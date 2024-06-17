@@ -421,7 +421,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           date_of_payment: parseDateForBackend(data?.date_of_payment),
           description: data?.description,
           passed_to_accounting: data?.passed_to_accounting,
-          passed_to_inventory: data?.passed_to_inventory,
           type: 'invoices',
           organization_unit_id: contextMain?.organization_unit?.id,
           pro_forma_invoice_number: data?.pro_forma_invoice_number,
@@ -469,7 +468,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         pro_forma_invoice_number: data?.pro_forma_invoice_number,
         pro_forma_invoice_date: pro_forma_invoice_date ? parseDateForBackend(pro_forma_invoice_date) : null,
         passed_to_accounting: data?.passed_to_accounting,
-        passed_to_inventory: data?.passed_to_inventory,
         articles: fields.map((_, index) => ({
           title: data.articles[index]?.title,
           net_price: data.articles[index]?.net_price,
@@ -547,12 +545,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
 
   const type = watch('is_invoice');
 
-  const passedToInventory = watch('passed_to_inventory');
   const passedToAccounting = watch('passed_to_accounting');
 
   useEffect(() => {
     setValue('receipt_date', undefined);
-  }, [passedToInventory, passedToAccounting]);
+  }, [passedToAccounting]);
 
   useEffect(() => {
     if (invoice) {
@@ -575,7 +572,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         date_of_payment: invoice.date_of_payment,
         bank_account: {id: invoice.bank_account, title: invoice.bank_account},
         description: invoice?.description,
-        passed_to_inventory: invoice?.passed_to_inventory,
         passed_to_accounting: invoice?.passed_to_accounting,
         pro_forma_invoice_date: invoice?.pro_forma_invoice_date,
         pro_forma_invoice_number: invoice?.pro_forma_invoice_number,
@@ -757,7 +753,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 disabled={
                   invoiceType?.id === 'accounting' ||
                   invoice?.status === 'Na nalogu' ||
-                  passedToInventory === true ||
                   passedToAccounting === true ||
                   invoice?.status === 'Djelimično na nalogu'
                 }
@@ -923,43 +918,14 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                       style={{marginLeft: 10}}
                     />
                   }
-                  disabled={passedToInventory === true || !!invoice?.id}
+                  disabled={!!invoice?.id}
                   theme={Theme}
                 />
               )}
             />
           </div>
         )}
-        {type?.id === true && isManual && (
-          <div style={{width: 350, marginBlock: 20}}>
-            <Controller
-              name="passed_to_inventory"
-              control={control}
-              render={({field: {onChange, name, value}}) => {
-                return (
-                  <StyledSwitch
-                    name={name}
-                    checked={value as any}
-                    onChange={onChange}
-                    content={
-                      <Typography
-                        variant="bodyMedium"
-                        content="PROSLIJEDITE U OSNOVNA SREDSTVA:"
-                        style={{marginLeft: 10}}
-                      />
-                    }
-                    disabled={
-                      passedToAccounting === true ||
-                      invoice?.status === 'Na nalogu' ||
-                      invoice?.status === 'Djelimično na nalogu'
-                    }
-                    theme={Theme}
-                  />
-                );
-              }}
-            />
-          </div>
-        )}
+
         {isManual && (
           <PlusButtonWrapper>
             <PlusButton onClick={() => handleAddRow()} />

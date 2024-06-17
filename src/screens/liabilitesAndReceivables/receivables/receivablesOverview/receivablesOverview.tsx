@@ -163,20 +163,20 @@ const ReceivablesOverview = () => {
           <Row>
             <FilterWrapper>
               <Dropdown
-                label="SUBJEKT:"
-                placeholder="Odaberi subjekt"
-                options={suppliersOptions}
-                value={filterValues.supplier_id}
-                onChange={value => onFilter(value as DropdownData<string>, 'supplier_id')}
-              />
-            </FilterWrapper>
-            <FilterWrapper>
-              <Dropdown
                 label="ORGANIZACIONA JEDINICA:"
                 placeholder={'Odaberite organizacionu jedinicu'}
                 options={organizationUnits}
                 value={filterValues.organization_unit_id}
                 onChange={value => onFilter(value as DropdownData<string>, 'organization_unit_id')}
+              />
+            </FilterWrapper>
+            <FilterWrapper>
+              <Dropdown
+                label="DOBAVLJAČ:"
+                placeholder="Odaberite dobavljača"
+                options={suppliersOptions}
+                value={filterValues.supplier_id}
+                onChange={value => onFilter(value as DropdownData<string>, 'supplier_id')}
               />
             </FilterWrapper>
             <FilterWrapper>

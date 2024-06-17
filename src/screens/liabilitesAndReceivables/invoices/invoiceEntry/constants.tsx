@@ -29,7 +29,6 @@ export const invoiceSchema = yup.object().shape({
   file_id: yup.number().nullable(),
   organization_unit_id: yup.number(),
   passed_to_accounting: yup.boolean(),
-  passed_to_inventory: yup.boolean(),
   articles: yup
     .array()
     .of(

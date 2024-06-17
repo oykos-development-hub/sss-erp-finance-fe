@@ -32,7 +32,7 @@ export const tableHeads: TableHead[] = [
     renderContents: id_of_statement => <Typography content={id_of_statement || ''} />,
   },
   {
-    title: 'Datum plaćanja',
+    title: 'Datum prinudne naplate',
     accessor: 'date_of_payment',
     type: 'custom',
     renderContents: date_of_payment => <Typography content={parseDate(date_of_payment)} />,

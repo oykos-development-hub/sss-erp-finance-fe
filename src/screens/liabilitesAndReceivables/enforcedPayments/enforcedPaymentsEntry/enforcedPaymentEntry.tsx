@@ -243,7 +243,15 @@ const EnforcedPaymentEntry = () => {
   };
 
   const calculateTotalForPayment = () => {
-    if (totalAmount && amount_for_agent && amount_for_lawyer && amount_for_bank) {
+    if (manualAmount && amount_for_agent && amount_for_lawyer && amount_for_bank) {
+      const parsedAmountValue = parseFloat(manualAmount.toString());
+      const parsedAmountForAgent = parseFloat(amount_for_agent.toString());
+      const parsedAmountForLawyer = parseFloat(amount_for_lawyer.toString());
+      const parsedAmountForBank = parseFloat(amount_for_bank);
+
+      const totalForPayment = parsedAmountValue + parsedAmountForAgent + parsedAmountForLawyer + parsedAmountForBank;
+      return setTotalForPayment(totalForPayment);
+    } else if (totalAmount && amount_for_agent && amount_for_lawyer && amount_for_bank) {
       const parsedAmountValue = parseFloat(totalAmount.toString());
       const parsedAmountForAgent = parseFloat(amount_for_agent.toString());
       const parsedAmountForLawyer = parseFloat(amount_for_lawyer.toString());
@@ -305,7 +313,7 @@ const EnforcedPaymentEntry = () => {
   useEffect(() => {
     calculateTotalPrice();
     calculateTotalForPayment();
-  }, [selectedRows, amount_for_agent, amount_for_lawyer]);
+  }, [selectedRows, amount_for_agent, amount_for_lawyer, manualAmount]);
 
   const onSaveClick = () => {
     setShowModal(true);
