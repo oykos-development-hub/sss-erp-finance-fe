@@ -76,7 +76,6 @@ const salarySchema = yup.object().shape({
     .test('unique-title-for-contributions', 'Naziv doprinosa mora biti jedinstven', function (expenses) {
       // Collect all titles where type is 'contributions'
       const contributions = expenses?.filter(expense => expense.type === 'contributions').map(expense => expense.title);
-      console.log(contributions, 'contributions');
       // Use a Set to find unique titles
       const uniqueContributions = new Set(contributions);
       return contributions?.length === uniqueContributions.size;
@@ -135,6 +134,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
   const {counts} = useGetCountOverview({});
   const {insertSalary} = useInsertSalary();
   const {suppliers} = useGetSuppliers({entity: 'other'});
+  const {suppliers: banks} = useGetSuppliers({entity: 'bank'});
   const [importSuspensionsErrors, setImportSuspensionsErrors] = useState<string[]>([]);
   const [importSalariesErrors, setImportSalariesErrors] = useState<string[]>([]);
   const [totalEmployees, setTotalEmployees] = useState(0);
@@ -483,7 +483,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                   );
                 }}
                 placeholder={'Odaberite subjekat'}
-                options={suppliersDropdownOptions}
+                options={row.type === 'banks' ? banks : suppliersDropdownOptions}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.subject?.message}
                 isDisabled={salary?.registred}
