@@ -1,10 +1,10 @@
 import styled, {css} from 'styled-components';
-import {Theme, Typography} from 'client-library';
+import {Theme, Typography, Input} from 'client-library';
 
 const resolveBackgroundColor = (level: number, lastLevel: boolean, rebalanceCol: boolean) => {
+  if (level === 1) return Theme.palette.gray100;
   if (rebalanceCol && level > 1) return Theme.palette.gray50;
   if (lastLevel) return Theme.palette.success50;
-  if (level === 1) return Theme.palette.gray100;
   return Theme.palette.white;
 };
 
@@ -42,7 +42,7 @@ export const FlexContainer = styled.div`
 const BudgetInputStyles = css`
   border: none;
   outline: none;
-  background-color: transparent;
+  background-color: transparent !important;
   text-align: center;
   font-size: 14px;
   width: 100%;
@@ -54,6 +54,22 @@ export const BudgetInput = styled.input<{isBold?: boolean; disabled?: boolean}>`
   font-weight: ${({isBold}) => (isBold ? '600' : '400')};
 
   &[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+
+  color: ${({disabled}) => (disabled ? Theme.palette.gray300 : Theme.palette.gray900)};
+`;
+
+export const ReallocationInput = styled(Input)<{isBold?: boolean; disabled?: boolean}>`
+  font-weight: ${({isBold}) => (isBold ? '600' : '400')};
+
+  input {
+    ${({disabled}) => disabled && BudgetInputStyles}
+  }
+
+  & [type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
     appearance: none;
     margin: 0;

@@ -1,52 +1,94 @@
 import {Button, Divider, Typography} from 'client-library';
 import useAppContext from '../../../context/useAppContext';
 import BudgetTable from '../../../shared/budgetTable/budgetTable';
-import {BudgetTableStep} from '../../../shared/budgetTable/types';
+import {BudgetTableMethods, BudgetTableStep} from '../../../shared/budgetTable/types';
 import Footer from '../../../shared/footer';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {BoldText, Box, MainTitle, SectionBox, TableGrid} from './styles';
+import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
+import {useRef} from 'react';
+import {calcReallocationSums, flattenReallocationBudgetData} from '../../../shared/budgetTable/utils.ts';
+import useInternalReallocationsInsert from '../../../services/graphQL/internalReallocations/useInternalReallocationsInsert.ts';
+import useInternalReallocationsOverview from '../../../services/graphQL/internalReallocations/useInternalReallocationsOverview.ts';
 
 const InternalReallocationBudget = () => {
   const {
-    contextMain,
-    navigation: {navigate},
+    contextMain: {organization_unit},
+    navigation: {
+      navigate,
+      location: {pathname},
+    },
+    alert,
   } = useAppContext();
+
+  const {currentBudget, budget_id} = useGetCurrentBudget({organization_unit_id: organization_unit.id});
+  const {insertInternalReallocations} = useInternalReallocationsInsert();
+  const reallocationID = pathname.split('/').at(-1);
+  const parsedReallocationID = reallocationID && !Number.isNaN(reallocationID) ? parseInt(reallocationID) : undefined;
+  const isNew = reallocationID === 'create';
+
+  const {internalReallocationsOverview} = useInternalReallocationsOverview({id: parsedReallocationID, skip: isNew});
+
+  const budgetTableRef = useRef<BudgetTableMethods>(null);
+
+  const handleSave = () => {
+    const internalState = budgetTableRef.current?.getInternalState();
+    const flattenedBudget = flattenReallocationBudgetData(internalState);
+    const reallocationSums = calcReallocationSums(internalState);
+
+    if (reallocationSums.diff) {
+      alert.error(
+        `Sume preusmjerenih sredstava se ne poklapaju. Lijeva kolona je ${
+          reallocationSums.diff > 0 ? 'veća' : 'manja'
+        } za ${reallocationSums.diff}!`,
+      );
+      return;
+    }
+
+    insertInternalReallocations(
+      {organization_unit_id: organization_unit?.id, budget_id, items: flattenedBudget},
+      () => {
+        navigate('/finance/budget/current/internal-reallocation');
+        alert.success('Preusmjerenje sredstava uspješno.');
+      },
+      () => {
+        alert.error('Došlo je do greške prilikom preusmjerenja sredstava!');
+      },
+    );
+  };
 
   return (
     <ScreenWrapper>
       <SectionBox>
         {/* Fixed until we have BE ready */}
-        <MainTitle variant="bodyMedium" content="INTERNO PREUSMJERENJE XXX - BUDŽET - XXXXXX" />
+        <MainTitle variant="bodyMedium" content="INTERNO PREUSMJERENJE" />
         <Divider color="#615959" height="1px" />
         <Box>
           <TableGrid>
             <BoldText variant="bodySmall" content="NAZIV PREDLAGAČA:" />
-            <Typography variant="bodySmall" content={contextMain.organization_unit.title} />
-          </TableGrid>
-        </Box>
-        <Box>
-          <TableGrid>
-            <BoldText variant="bodySmall" content="PROGRAM:" />
-            <Typography variant="bodySmall" content={contextMain.organization_unit.title} />
-            <BoldText variant="bodySmall" content="POTPROGRAM:" />
-            <Typography variant="bodySmall" content={contextMain.organization_unit.title} />
-            <BoldText variant="bodySmall" content="AKTIVNOSTI:" />
-            <Typography variant="bodySmall" content={contextMain.organization_unit.title} />
-            <BoldText variant="bodySmall" content="IZVOR:" />
-            <Typography variant="bodySmall" content={contextMain.organization_unit.title} />
+            <Typography variant="bodySmall" content={organization_unit.title} />
           </TableGrid>
         </Box>
         <div>
-          <BudgetTable step={BudgetTableStep.INTERNAL_REALLOCATION} organizationUnitId={0} year={0} />
+          <BudgetTable
+            step={isNew ? BudgetTableStep.INTERNAL_REALLOCATION : BudgetTableStep.INTERNAL_REALLOCATION_PREVIEW}
+            organizationUnitId={organization_unit?.id}
+            year={new Date().getFullYear()}
+            countsProps={currentBudget}
+            ref={budgetTableRef}
+            disabled={!isNew}
+            //data to fill + and - table columns when previewing existing reallocation
+            extraData={internalReallocationsOverview[0]?.items}
+          />
         </div>
 
         <Footer>
           <Button
-            content="Odustani"
+            content="Nazad"
             variant="secondary"
             onClick={() => navigate('/finance/budget/current/internal-reallocation')}
           />
-          <Button content="Sačuvaj" variant="primary" onClick={() => console.log('TO DO add logic')} />
+          {isNew && <Button content="Sačuvaj" variant="primary" onClick={handleSave} />}
         </Footer>
       </SectionBox>
     </ScreenWrapper>

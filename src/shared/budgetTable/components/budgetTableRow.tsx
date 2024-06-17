@@ -9,12 +9,13 @@ import {
   Checkbox,
 } from 'client-library';
 import {ReactNode, useState, useMemo} from 'react';
-import {Count} from '../../../types/graphQL/counts';
+import {Count, isFilledDataActual} from '../../../types/graphQL/counts';
 import {months, sourceOptions} from '../constants';
 import {BudgetText, CountTableCell, FlexContainer} from '../styles';
 import {BudgetTableStep} from '../types';
 import BudgetingForm from './budgetingForm';
 import {useFormContext, Controller} from 'react-hook-form';
+import BudgetReallocationForm from './budgetReallocationForm.tsx';
 
 type BudgetTableRowProps = {
   step: BudgetTableStep | `${BudgetTableStep}`;
@@ -134,13 +135,17 @@ const BudgetTableRow = ({
           </>
         );
       case BudgetTableStep.CURRENT_BUDGET:
+        if (!isFilledDataActual(count?.filled_data)) return;
         return (
           <>
-            <CountTableCell level={level}>
-              <BudgetText content="" variant="bodySmall" />
+            <CountTableCell level={level} lastLevel={!count.children?.length}>
+              <BudgetText content={count?.filled_data?.balance} variant="bodySmall" />
             </CountTableCell>
-            <CountTableCell level={level}>
-              <BudgetText content="" variant="bodySmall" />
+            <CountTableCell level={level} lastLevel={!count.children?.length}>
+              <BudgetText content={count.filled_data?.initial_actual} variant="bodySmall" />
+            </CountTableCell>
+            <CountTableCell level={level} lastLevel={!count.children?.length}>
+              <BudgetText content={count?.filled_data?.actual} variant="bodySmall" />
             </CountTableCell>
           </>
         );
@@ -167,18 +172,16 @@ const BudgetTableRow = ({
           </>
         );
       case BudgetTableStep.INTERNAL_REALLOCATION:
+      case BudgetTableStep.INTERNAL_REALLOCATION_PREVIEW:
         return (
-          <>
-            <CountTableCell level={level}>
-              <BudgetText content="0.00" variant="bodySmall" />
-            </CountTableCell>
-            <CountTableCell level={level}>
-              <Input />
-            </CountTableCell>
-            <CountTableCell level={level}>
-              <Input />
-            </CountTableCell>
-          </>
+          <BudgetReallocationForm
+            updateParentValues={updateParentValues}
+            level={level}
+            lastLevel={!count.children?.length}
+            fieldPath={fieldPath}
+            actual={false}
+            disabled={disabled}
+          />
         );
       case BudgetTableStep.REQUEST_FUND_RELEASE:
         return (
@@ -250,8 +253,10 @@ const BudgetTableRow = ({
         {step !== BudgetTableStep.VIEW_MONTHLY &&
           step !== BudgetTableStep.VIEW_MONTHLY_WITH_EDIT &&
           step !== BudgetTableStep.INTERNAL_REALLOCATION &&
+          step !== BudgetTableStep.INTERNAL_REALLOCATION_PREVIEW &&
           step !== BudgetTableStep.BUDGET_FINANCIAL &&
           step !== BudgetTableStep.BUDGETING_ACTUAL &&
+          step !== BudgetTableStep.CURRENT_BUDGET &&
           step !== BudgetTableStep.REQUEST_FUND_RELEASE && (
             <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
           )}

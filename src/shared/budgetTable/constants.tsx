@@ -72,6 +72,11 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
         {name: '-', width: 6},
         {name: '+', width: 6},
       ];
+    case BudgetTableStep.INTERNAL_REALLOCATION_PREVIEW:
+      return [
+        {name: '-', width: 6},
+        {name: '+', width: 6},
+      ];
     default:
       return [];
   }

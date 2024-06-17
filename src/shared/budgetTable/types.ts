@@ -1,3 +1,5 @@
+import {DropdownData} from '../../types/dropdownData.ts';
+
 export enum BudgetTableStep {
   /* 
   / 
@@ -54,6 +56,20 @@ export enum BudgetTableStep {
 
   INTERNAL_REALLOCATION = 'internalReallocation',
 
+  /*
+  /
+  / This state refers to when the organization unit Manager need to fill out the internal reallocation
+  /
+  */
+
+  INTERNAL_REALLOCATION_PREVIEW = 'internalReallocationPreview',
+
+  /*
+   /
+   / This state refers to when the organization unit Manager views already filled out internal reallocation
+   /
+   */
+
   REQUEST_FUND_RELEASE = 'requestFundRelease',
 
   BUDGET_FINANCIAL = 'budgetFinancial',
@@ -74,4 +90,11 @@ export type BudgetTableHead = {
 export interface BudgetTableMethods {
   getInternalState: () => any; // Define the return type more specifically if possible
   resetForm: () => void;
+}
+
+export interface InternalReallocationExtraData {
+  amount: string;
+  destination_account: DropdownData<string>;
+  id: number;
+  source_account: DropdownData<string>;
 }

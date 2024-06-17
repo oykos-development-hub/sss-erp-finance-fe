@@ -103,6 +103,10 @@ import deleteFundRelease from './fundRelease/deleteFundRelease.ts';
 import getOverviewBudgetRequestOfficial from './budgetRequestOfficial/getOverviewBudgetRequestOfficial.ts';
 import financialBudgetActualFill from './financialBudgetActualFill/financialBudgetActualFill.ts';
 import getFundReleaseDetails from './fundRelease/getFundReleaseDetails.ts';
+import internalReallocationOverview from './internalReallocations/internalReallocationsOverview.ts';
+import internalReallocationsInsert from './internalReallocations/internalReallocationsInsert.ts';
+import internalReallocationsDelete from './internalReallocations/internalReallocationsDelete.ts';
+import getCurrentBudget from './currentBudget/getCurrentBudget.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -225,4 +229,8 @@ export const GraphQL = {
   getOverviewBudgetRequestOfficial: getOverviewBudgetRequestOfficial,
   financialBudgetActualFill: financialBudgetActualFill,
   getFundReleaseDetails: getFundReleaseDetails,
+  internalReallocationOverview: internalReallocationOverview,
+  internalReallocationInsert: internalReallocationsInsert,
+  internalReallocationDelete: internalReallocationsDelete,
+  getCurrentBudget: getCurrentBudget,
 };

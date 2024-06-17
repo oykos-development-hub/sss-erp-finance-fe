@@ -12,6 +12,12 @@ interface ActualBudgetItem {
   actual: number;
 }
 
+interface ReallocationItem {
+  source_account_id?: number;
+  destination_account_id?: number;
+  amount: string;
+}
+
 export const flattenBudgetData = (data: any, parentId = 0) => {
   const result: BudgetItem[] = [];
   const traverse = (obj: any, id: number) => {
@@ -109,4 +115,59 @@ export const flattenActualBudgetData = (data: any, parentId = 0) => {
 
   traverse(data, parentId);
   return result;
+};
+
+export const flattenReallocationBudgetData = (data: any, result: ReallocationItem[] = []): ReallocationItem[] => {
+  Object.keys(data).forEach(key => {
+    const value = data[key];
+    if (typeof value === 'object' && value !== null) {
+      // Recursively process nested objects
+      flattenReallocationBudgetData(value, result);
+    } else if (typeof value === 'string') {
+      // Process only leaf nodes
+      const [accountId, transactionType] = key.split('-');
+      const amount = value;
+      if (value === '0') return; // Skip if amount is zero
+
+      if (transactionType === 'amountGiven') {
+        result.push({
+          destination_account_id: parseInt(accountId, 10),
+          amount: amount,
+        });
+      } else if (transactionType === 'amountTaken') {
+        result.push({
+          source_account_id: parseInt(accountId, 10),
+          amount: amount,
+        });
+      }
+    }
+  });
+
+  return result;
+};
+
+export const calcReallocationSums = (data: any): {destination: number; source: number; diff: number} => {
+  let sourceSum = 0;
+  let destinationSum = 0;
+
+  if (!data) return {destination: 0, source: 0, diff: 0};
+
+  const traverse = (obj: any) => {
+    Object.entries(obj).forEach(([key, value]: [string, any]) => {
+      const match = key.match(/^(\d+)-(amount(Taken|Given))$/);
+      if (match) {
+        const amount = parseFloat(value);
+        if (amount === 0) return; // Skip if amount is zero
+
+        if (match[2] === 'amountTaken') {
+          sourceSum += amount;
+        } else if (match[2] === 'amountGiven') {
+          destinationSum += amount;
+        }
+      }
+    });
+  };
+
+  traverse(data);
+  return {source: sourceSum, destination: destinationSum, diff: sourceSum - destinationSum};
 };

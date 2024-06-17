@@ -136,6 +136,7 @@ export const Router = () => {
       '^/finance/budget/planning/\\d+/requests/\\d+/(financial|non-financial|summary)$',
     );
     const fillActualBudgetRegex = new RegExp('^/finance/budget/planning/\\d+/requests/\\d+/actual$');
+    const budgetReallocationRegex = new RegExp('^/finance/budget/current/internal-reallocation/(create|\\d+)$');
 
     if (budgetRequestDetailsRegex.test(pathname)) return <BudgetRequestDetailsOfficial />;
 
@@ -217,7 +218,7 @@ export const Router = () => {
     if (currentBudgetDynamicDetails.test(pathname)) return <BudgetDynamicVersionPreview />;
 
     if (pathname === '/finance/budget/current/internal-reallocation') return <InternalReallocationOverview />;
-    if (pathname === '/finance/budget/current/internal-reallocation/create') return <InternalReallocationBudget />;
+    if (budgetReallocationRegex.test(pathname)) return <InternalReallocationBudget />;
 
     if (pathname === '/finance/budget/current/external-reallocation') return <ExternalReallocationOverview />;
 

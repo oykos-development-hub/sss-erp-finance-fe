@@ -3,7 +3,7 @@ import {Typography, Checkbox} from 'client-library';
 import {BudgetTableMethods, BudgetTableStep} from './types';
 import {baseTableHeads, getBudgetTableHeads, sourceOptions} from './constants';
 import {CustomTable, CustomTableHead} from './styles';
-import {Count} from '../../types/graphQL/counts';
+import {Count, isFilledData} from '../../types/graphQL/counts';
 import {FormProvider, useForm} from 'react-hook-form';
 import BudgetTableRow from './components/budgetTableRow';
 import useGetCountOverview from '../../services/graphQL/counts/useGetCountOverview.ts';
@@ -72,6 +72,8 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
     const setupBudgetingFormFields = useCallback(
       (item: Count, path = [] as string[]) => {
         const fieldPath = [...path, item.id.toString()]; // Keep track of the field's path
+
+        if (!isFilledData(item.filled_data)) return;
         // Add the field for the current item
         methods.setValue(
           `${fieldPath.join('.')}-currentYearBudget`,

@@ -309,3 +309,9 @@ export type FinancialBudgetActualFillResponse = {
     financialBudgetActual_Fill: GetResponse<any>;
   };
 };
+
+export type CurrentBudgetResponse = {
+  get: {
+    currentBudget_Overview: any;
+  };
+};
