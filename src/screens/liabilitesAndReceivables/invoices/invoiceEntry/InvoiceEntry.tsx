@@ -559,7 +559,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         invoice_type:
           type?.id === false
             ? {id: 'manual', title: 'Ručni unos'}
-            : invoice.order_id !== 0 && type?.id
+            : invoice.order_id !== 0 && type?.id && !invoice?.passed_to_accounting
             ? {id: 'accounting', title: 'Materijalno knjigovodstvo'}
             : {id: 'manual', title: 'Ručni unos'},
         supplier_id: {id: invoice.supplier.id, title: invoice.supplier.title},
@@ -673,12 +673,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           <Input
             {...register('pro_forma_invoice_number')}
             label="BROJ PREDRAČUNA:"
-            placeholder="Unesite broj računa"
+            placeholder="Unesite broj predračuna"
             error={errors?.invoice_number?.message}
             isRequired
             disabled={
               type?.id === true ||
-              Boolean(order_id) ||
+              (Boolean(order_id) && !invoice?.passed_to_accounting) ||
               invoice?.status === 'Na nalogu' ||
               invoice?.status === 'Djelimično na nalogu'
             }
@@ -695,7 +695,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 onChange={onChange}
                 disabled={
                   type?.id === true ||
-                  (Boolean(order_id) && pro_forma_invoice_date) ||
+                  (Boolean(order_id) && !invoice?.passed_to_accounting) ||
                   invoice?.status === 'Na nalogu' ||
                   invoice?.status === 'Djelimično na nalogu'
                 }
