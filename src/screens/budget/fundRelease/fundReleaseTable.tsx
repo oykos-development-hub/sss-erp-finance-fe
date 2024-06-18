@@ -167,8 +167,6 @@ const FundReleaseRow = ({
     );
   };
 
-  console.log(count);
-
   return (
     <>
       <tr>

@@ -56,7 +56,6 @@ const FundReleaseRequest = () => {
         setAllEnabled(false);
       } else {
         setAllEnabled(true);
-        console.log(allBottomCounts);
         setEnabledRows(allBottomCounts);
       }
     } else {
@@ -115,13 +114,9 @@ const FundReleaseRequest = () => {
   const onSubmit = async (data: any) => {
     let insertData = [];
 
-    if (allEnabled) {
-      insertData = data;
-    } else {
-      insertData = Object.keys(data)
-        .filter(key => enabledRows.includes(key))
-        .map(key => data[key]);
-    }
+    insertData = Object.keys(data)
+      .filter(key => enabledRows.includes(key))
+      .map(key => data[key]);
 
     validateRows(insertData);
 
@@ -135,7 +130,7 @@ const FundReleaseRequest = () => {
       });
 
       await insertFundRelease(
-        payload,
+        payload as any,
         () => {
           alert.success('Uspješno ste sačuvali podatke!');
           navigate('/finance/budget/current/fund-release');
