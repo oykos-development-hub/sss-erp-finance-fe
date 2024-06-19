@@ -24,6 +24,7 @@ export type GetOrganizationUnitsParams = {
   page?: number;
   size?: number;
   search?: string;
+  disable_filters?: boolean;
 };
 
 export type GetOrganizationUnitsOptions = {

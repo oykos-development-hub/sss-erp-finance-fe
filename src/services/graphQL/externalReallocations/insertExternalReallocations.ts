@@ -1,0 +1,63 @@
+const insertExternalReallocations = `mutation($data: ExternalReallocationMutation!) {
+    externalReallocations_Insert(data: $data) {
+        message
+        status
+        item {
+            id
+            title
+            status
+            source_organization_unit{
+                id
+                title
+            }   
+            destination_organization_unit{
+                id
+                title
+            }   
+            date_of_request
+            date_of_action_dest_org_unit
+            date_of_action_sss
+            requested_by{
+                id
+                title
+            }
+            accepted_by{
+                id
+                title
+            }
+            budget{
+                id
+                title
+            }
+            file{
+                id
+                name 
+                type
+            }
+            destination_org_unit_file{
+                id
+                name 
+                type
+            }
+            sss_file{
+                id
+                name 
+                type
+            }
+            items{
+                id
+                source_account{
+                    id
+                    title
+                }
+                destination_account{
+                    id
+                    title
+                }
+                amount
+            }
+        }
+    }
+}`;
+
+export default insertExternalReallocations;

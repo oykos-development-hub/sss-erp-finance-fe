@@ -48,7 +48,7 @@ const useGetOrganizationUnits = (data?: GetOrganizationUnitsParams, options?: Ge
 
   useEffect(() => {
     fetchOrganizationUnits();
-  }, [data?.page, data?.size, data?.search]);
+  }, [data?.page, data?.size, data?.search, data?.disable_filters]);
 
   return {
     organizationUnits,

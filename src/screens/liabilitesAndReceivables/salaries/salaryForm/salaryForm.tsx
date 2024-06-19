@@ -50,6 +50,7 @@ import {getSuppliersDropdown} from '../salaryUtils.ts';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas.ts';
+import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 
 const salaryAdditionalExpensesSchema = yup.object().shape({
   account: optionsNumberSchema.required(requiredError).default(null),
@@ -451,7 +452,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
 
         const currentSubject = watch(`salary_additional_expenses.${index}.subject`);
         const isBank = row.type === 'banks';
-        const dropdownOptions = isBank ? banks : suppliersDropdownOptions;
+        const dropdownOptions = isBank ? banks : (suppliersDropdownOptions as Supplier[]);
         const bankAccounts =
           dropdownOptions
             .find(option => option.id === currentSubject?.id)
@@ -485,7 +486,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                   );
                 }}
                 placeholder={'Odaberite subjekat'}
-                options={row.type === 'banks' ? banks : suppliersDropdownOptions}
+                options={row.type === 'banks' ? banks : (suppliersDropdownOptions as Supplier[])}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.subject?.message}
                 isDisabled={salary?.registred}
@@ -505,7 +506,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
         const currentSubject = watch(`salary_additional_expenses.${index}.subject`);
 
         const isBank = row.type === 'banks';
-        const dropdownOptions = isBank ? banks : suppliersDropdownOptions;
+        const dropdownOptions = isBank ? banks : (suppliersDropdownOptions as Supplier[]);
         const bankAccounts =
           dropdownOptions
             .find(option => option.id === currentSubject?.id)

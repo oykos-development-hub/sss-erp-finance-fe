@@ -17,6 +17,15 @@ export const PlusButtonWrapper = styled.div(({disabled}: {disabled?: boolean}) =
     cursor: ${disabled ? 'auto' : 'pointer'};
     background-color: ${white};
     align-self: flex-end;
+
+    &:hover {
+      background-color: ${Theme?.palette?.primary500};
+
+      > svg path {
+        transition: stroke 0.2s ease-in-out;
+        stroke: ${Theme?.palette?.white};
+      }
+    }
   `;
 });
 

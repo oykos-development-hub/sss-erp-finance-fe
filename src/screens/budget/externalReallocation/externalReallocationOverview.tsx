@@ -1,53 +1,113 @@
-import {Button, Divider, Dropdown, Table, TableHead} from 'client-library';
-import {useState} from 'react';
-import {Controller, useForm} from 'react-hook-form';
+import {Button, Divider, Dropdown, Table, TableHead, Pagination, Typography, TrashIcon, Theme} from 'client-library';
+import {useEffect, useState} from 'react';
 import {ExternalReallocationModal} from '../../../components/externalReallocationModal/externalReallocationModal';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
-import {getYearOptions} from '../../../utils/getYearOptions';
 import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
+import {defaultDropdownOption} from '../../finesAndTaxes/fines/constants.tsx';
+import {DropdownData} from '../../../types/dropdownData.ts';
+import {PAGE_SIZE} from '../../../constants.ts';
+import useGetExternalReallocations from '../../../services/graphQL/externalReallocations/useGetExternalReallocations.ts';
+import {parseDate} from '../../../utils/dateUtils.ts';
+import {useCreateBudgetYearFilter} from '../../../utils/useCreateBudgetYearFilter.ts';
+import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
+import useDeleteExternalReallocations from '../../../services/graphQL/externalReallocations/useDeleteExternalReallocations.ts';
+import useAppContext from '../../../context/useAppContext.ts';
+import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 
 const tableHeads: TableHead[] = [
   {
     title: 'ID',
-    accessor: '',
+    accessor: 'id',
     type: 'text',
   },
   {
     title: 'Datum zahtjeva',
-    accessor: '',
-    type: 'text',
+    accessor: 'date_of_request',
+    type: 'custom',
+    renderContents: (date: string) => <Typography content={parseDate(date)} variant="bodySmall" />,
   },
   {
     title: 'Podnosilac zahtjeva',
-    accessor: '',
-    type: 'text',
+    accessor: 'requested_by',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
   {
     title: 'Izvor',
-    accessor: '',
-    type: 'text',
+    accessor: 'source_organization_unit',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
   {
     title: 'Primalac',
-    accessor: '',
-    type: 'text',
+    accessor: 'destination_organization_unit',
+    type: 'custom',
+    renderContents: (value: DropdownData<number>) => <Typography variant="bodyMedium" content={value.title} />,
   },
   {
     title: 'Status',
     accessor: 'status',
     type: 'text',
   },
+  {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
 
+const initialValues = {
+  budget_id: undefined,
+  status: undefined,
+};
+
 const ExternalReallocationOverview = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const {alert} = useAppContext();
 
-  const {control} = useForm();
-
-  const toogleModal = () => {
-    setIsOpen(prev => !prev);
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState(initialValues);
+  const [isModalOpen, setIsModalOpen] = useState<number | undefined>(undefined);
+  const toggleModal = (id?: number) => {
+    setIsModalOpen(id ?? undefined);
   };
-  // TO DO add BE
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<number>(0);
+  const toggleDeleteModal = (id?: number) => setIsDeleteModalOpen(id ? id : 0);
+
+  const {externalReallocations, total, refetch} = useGetExternalReallocations({
+    page: page,
+    ...filters,
+  });
+  const {deleteExternalReallocations} = useDeleteExternalReallocations();
+
+  const yearOptions = useCreateBudgetYearFilter();
+  const statusOptions: DropdownData<string>[] = [];
+
+  const activeReallocation = externalReallocations.find(reallocation => reallocation.id === isModalOpen);
+
+  const onFilterChange = (value: any, name: string) => {
+    setFilters({...filters, [name]: value?.id});
+  };
+
+  const onPageChange = (page: number) => {
+    setPage(page + 1);
+  };
+
+  useEffect(() => {
+    if (page === 1) return;
+    setPage(1);
+  }, [filters]);
+
+  const onDelete = (id: number) => {
+    deleteExternalReallocations(
+      id,
+      () => {
+        alert.success('Brisanje eksternog preusmjerenja sredstava uspješno.');
+        refetch();
+        toggleDeleteModal();
+      },
+      () => {
+        alert.error('Došlo je do greške prilikom brisanja eksternog preusmjerenja sredstava!');
+      },
+    );
+    toggleModal();
+  };
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -56,27 +116,25 @@ const ExternalReallocationOverview = () => {
         <Wrapper>
           <HeaderWrapper>
             <DropdownWrapper>
-              <Controller
-                name="year"
-                control={control}
-                render={({field: {name, value, onChange}}) => (
-                  <Dropdown
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    options={getYearOptions(10, true, 5)}
-                    label="GODINA:"
-                  />
-                )}
+              <Dropdown
+                name={'budget_id'}
+                value={
+                  filters.budget_id ? yearOptions.find(year => year.id === filters.budget_id) : defaultDropdownOption
+                }
+                onChange={onFilterChange}
+                options={usePrependedDropdownOptions(yearOptions)}
+                label="GODINA:"
               />
             </DropdownWrapper>
             <DropdownWrapper>
-              <Controller
-                name="status"
-                control={control}
-                render={({field: {name, value, onChange}}) => (
-                  <Dropdown name={name} value={value} onChange={onChange} options={[]} label="STATUS:" />
-                )}
+              <Dropdown
+                name={'status'}
+                value={
+                  filters.status ? statusOptions.find(status => status.id === filters.status) : defaultDropdownOption
+                }
+                onChange={onFilterChange}
+                options={statusOptions}
+                label="STATUS:"
               />
             </DropdownWrapper>
           </HeaderWrapper>
@@ -85,13 +143,43 @@ const ExternalReallocationOverview = () => {
               content="Kreiraj eksterno preusmjerenje"
               style={{width: '200px'}}
               variant="secondary"
-              onClick={() => toogleModal()}
+              onClick={() => toggleModal(0)}
             />
           </ButtonWrapper>
         </Wrapper>
-        <Table data={[]} tableHeads={tableHeads} />
+        <Table
+          data={externalReallocations}
+          tableHeads={tableHeads}
+          onRowClick={row => setIsModalOpen(row.id)}
+          tableActions={[
+            {
+              name: 'Izbriši',
+              onClick: row => toggleDeleteModal(row.id),
+              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            },
+          ]}
+        />
+        <Pagination
+          pageCount={total ? Math.ceil(total / PAGE_SIZE) : 1}
+          onChange={onPageChange}
+          variant="filled"
+          itemsPerPage={PAGE_SIZE}
+          pageRangeDisplayed={3}
+          style={{marginTop: '20px'}}
+        />
 
-        {isOpen && <ExternalReallocationModal onClose={toogleModal} open={isOpen} />}
+        <ExternalReallocationModal
+          onClose={() => toggleModal()}
+          open={isModalOpen !== undefined}
+          activeReallocation={activeReallocation}
+          refetch={refetch}
+        />
+        <ConfirmationModal
+          open={!!isDeleteModalOpen}
+          onClose={() => toggleDeleteModal()}
+          onConfirm={() => onDelete(isDeleteModalOpen)}
+          subTitle={'Ovo preusmjerenje sredstava će biti trajno izbrisano iz sistema.'}
+        />
       </SectionBox>
     </ScreenWrapper>
   );

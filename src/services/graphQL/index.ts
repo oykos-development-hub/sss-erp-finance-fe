@@ -107,6 +107,14 @@ import internalReallocationOverview from './internalReallocations/internalReallo
 import internalReallocationsInsert from './internalReallocations/internalReallocationsInsert.ts';
 import internalReallocationsDelete from './internalReallocations/internalReallocationsDelete.ts';
 import getCurrentBudget from './currentBudget/getCurrentBudget.ts';
+import getExternalReallocations from './externalReallocations/getExternalReallocations.ts';
+import acceptOUExternalReallocations from './externalReallocations/acceptOUExternalReallocations.ts';
+import rejectOUExternalReallocations from './externalReallocations/rejectOUExternalReallocations.ts';
+import deleteExternalReallocations from './externalReallocations/deleteExternalReallocations.ts';
+import insertExternalReallocations from './externalReallocations/insertExternalReallocations.ts';
+import acceptSSSExternalReallocations from './externalReallocations/acceptSSSExternalReallocations.ts';
+import rejectSSSExternalReallocations from './externalReallocations/rejectSSSExternalReallocations.ts';
+import getCurrentBudgetID from './currentBudget/getCurrentBudgetID.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -233,4 +241,12 @@ export const GraphQL = {
   internalReallocationInsert: internalReallocationsInsert,
   internalReallocationDelete: internalReallocationsDelete,
   getCurrentBudget: getCurrentBudget,
+  getCurrentBudgetID: getCurrentBudgetID,
+  getExternalReallocations: getExternalReallocations,
+  acceptOUExternalReallocations: acceptOUExternalReallocations,
+  rejectOUExternalReallocations: rejectOUExternalReallocations,
+  deleteExternalReallocations: deleteExternalReallocations,
+  insertExternalReallocations: insertExternalReallocations,
+  acceptSSSExternalReallocations: acceptSSSExternalReallocations,
+  rejectSSSExternalReallocations: rejectSSSExternalReallocations,
 };

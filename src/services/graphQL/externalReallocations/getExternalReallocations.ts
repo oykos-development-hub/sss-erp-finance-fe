@@ -1,0 +1,63 @@
+const getExternalReallocations = `query externalReallocations_Overview($id: Int, $page: Int, $size: Int, $source_organization_unit_id:Int, $destination_organization_unit_id:Int, $status: String, $requested_by: Int, $budget_id: Int) {
+    externalReallocations_Overview(id: $id, page: $page, size: $size, source_organization_unit_id: $source_organization_unit_id, destination_organization_unit_id: $destination_organization_unit_id, status: $status, requested_by: $requested_by, budget_id: $budget_id) {
+        message
+        status
+        items {
+            id
+            title
+            status
+            source_organization_unit{
+                id
+                title
+            }   
+            destination_organization_unit{
+                id
+                title
+            }   
+            date_of_request
+            date_of_action_dest_org_unit
+            date_of_action_sss
+            requested_by{
+                id
+                title
+            }
+            accepted_by{
+                id
+                title
+            }
+            budget{
+                id
+                title
+            }
+            file{
+                id
+                name 
+                type
+            }
+            destination_org_unit_file{
+                id
+                name 
+                type
+            }
+            sss_file{
+                id
+                name 
+                type
+            }
+            items{
+                id
+                source_account{
+                    id
+                    title
+                }
+                destination_account{
+                    id
+                    title
+                }
+                amount
+            }
+        }
+    }
+}`;
+
+export default getExternalReallocations;
