@@ -316,7 +316,7 @@ const EnforcedPaymentsDetails = () => {
                 <Datepicker
                   name={name}
                   selected={value ? new Date(value) : ''}
-                  label="DATUM SAP-a:"
+                  label="SAP DATUM:"
                   onChange={onChange}
                   disabled={enforcedPaymentData?.status === 'Povraćaj'}
                   error={errors.date_of_sap?.message}

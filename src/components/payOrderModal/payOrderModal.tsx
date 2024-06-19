@@ -83,7 +83,7 @@ const PayOrderModal = ({onClose, open}: FundReleaseModalProps) => {
               <Datepicker
                 name={name}
                 selected={value ? new Date(value) : ''}
-                label="DATUM SAP:"
+                label="SAP DATUM:"
                 onChange={onChange}
                 isRequired
                 error={errors.date_of_sap?.message}

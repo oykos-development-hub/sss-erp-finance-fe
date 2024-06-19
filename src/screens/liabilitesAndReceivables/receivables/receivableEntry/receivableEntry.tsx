@@ -96,7 +96,7 @@ const ReceivableEntry = () => {
       renderContents: total_price => <Typography content={roundCurrency(total_price)} />,
     },
     {
-      title: 'Preostalo da se plati',
+      title: 'Preostalo za plaćanje',
       accessor: 'remain_price',
       type: 'custom',
       renderContents: remain_price => <Typography content={roundCurrency(remain_price)} />,
@@ -186,7 +186,7 @@ const ReceivableEntry = () => {
     insertPaymentOrder(
       payload as any,
       () => {
-        alert.success('Uspješno dodavanje naloga.');
+        alert.success('Uspješno ste kreirali nalog za plaćanje.');
         navigate('/finance/liabilities-receivables/receivables/payment-orders');
       },
       () => alert.error('Neuspješno dodavanje naloga.'),
@@ -434,7 +434,7 @@ const ReceivableEntry = () => {
                         name={name}
                         disabled
                         selected={value ? new Date(value) : ''}
-                        label="DATUM SAP:"
+                        label="SAP DATUM:"
                         onChange={onChange}
                         error={errors.date_of_sap?.message}
                       />

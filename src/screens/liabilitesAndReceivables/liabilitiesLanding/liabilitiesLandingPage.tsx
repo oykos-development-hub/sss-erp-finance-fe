@@ -16,7 +16,7 @@ export const LiabilitiesLandingPage: React.FC = () => {
     <ScreenWrapper showBreadcrumbs={false}>
       <div>
         <LandingPageTitle>
-          <Typography variant="bodyLarge" style={{fontWeight: 600}} content="Kreiranje obaveza" />
+          <Typography variant="bodyLarge" style={{fontWeight: 600}} content="Obaveze" />
         </LandingPageTitle>
         <Container>
           <LandingPageContentBox
@@ -41,7 +41,7 @@ export const LiabilitiesLandingPage: React.FC = () => {
           />
           <LandingPageContentBox
             title={'Vezani troškovi'}
-            path={'/finance/related-expenses'}
+            path={'/finance/liabilities-receivables/liabilities/related-expenses'}
             icon={<ConfiscationOfIllGottenGainsIcon />}
           />
         </Container>

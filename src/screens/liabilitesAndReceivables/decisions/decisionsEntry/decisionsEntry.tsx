@@ -65,6 +65,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   } = watch();
 
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
+  const ID = location.pathname.split('/').at(-1);
 
   const {suppliers} = useGetSuppliers({});
   const {data: typeOfDecision} = useGetSettings({entity: 'type_of_decision'});
@@ -227,10 +228,14 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         insertInvoice(
           payload as any,
           () => {
-            alert.success('Uspješno dodavanje rješenja.');
+            ID ? alert.success('Uspješno ste izmijenili rješenje.') : alert.success('Uspješno dodavanje rješenja.');
             navigate('/finance/liabilities-receivables/liabilities/decisions');
           },
-          () => alert.error('Neuspješno dodavanje rješenja.'),
+          () => {
+            ID
+              ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.')
+              : alert.error('Neuspješno dodavanje rješenja.');
+          },
         );
       });
 
@@ -265,10 +270,14 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       insertInvoice(
         payload as any,
         () => {
-          alert.success('Uspješno dodavanje rješenja.');
+          ID ? alert.success('Uspješno ste izmijenili rješenje.') : alert.success('Uspješno dodavanje rješenja.');
           navigate('/finance/liabilities-receivables/liabilities/decisions');
         },
-        () => alert.error('Neuspješno dodavanje rješenja.'),
+        () => {
+          ID
+            ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.')
+            : alert.error('Neuspješno dodavanje rješenja.');
+        },
       );
 
       return;

@@ -33,7 +33,7 @@ export const contractsOverviewTableHeads: TableHead[] = [
     renderContents: supplier => <Typography content={supplier?.title || ''} />,
   },
   {
-    title: 'Datum rješenja',
+    title: 'Datum ugovora',
     accessor: 'date_of_invoice',
     type: 'custom',
     renderContents: date_of_invoice => <Typography content={parseDate(date_of_invoice)} />,

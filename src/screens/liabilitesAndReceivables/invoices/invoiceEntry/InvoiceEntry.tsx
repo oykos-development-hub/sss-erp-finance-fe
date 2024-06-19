@@ -71,6 +71,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   const [showFileUploadError, setShowFileUploadError] = useState<boolean>(false);
   const [accountingInvoiceFile, setAccountingInvoiceFile] = useState<FileItem | null>(null);
   const [accountingProFormaInvoiceFile, setAccountingProFormaInvoiceFile] = useState<FileItem | null>(null);
+  const ID = location.pathname.split('/').at(-1);
 
   const {
     navigation: {navigate},
@@ -388,10 +389,24 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         insertInvoice(
           payload,
           () => {
-            alert.success('Uspješno dodavanje računa.');
+            ID && type.id
+              ? alert.success('Račun je uspješno izmijenjen')
+              : type.id
+              ? alert.success('Uspješno dodavanje računa.')
+              : ID && !type.id
+              ? alert.success('Predračun je uspješno izmijenjen')
+              : alert.success('Uspješno dodavanje predračuna.');
             navigate('/finance/liabilities-receivables/liabilities/invoices');
           },
-          () => alert.error('Neuspješno dodavanje računa.'),
+          () => {
+            ID && type.id
+              ? alert.error('Došlo je do greške prilikom izmjene računa.')
+              : type.id
+              ? alert.error('Neuspješno dodavanje računa.')
+              : ID && !type.id
+              ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
+              : alert.error('Došlo je do greške prilikom izmjene predračuna.');
+          },
         );
       });
 
@@ -437,10 +452,24 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         insertInvoice(
           payload,
           () => {
-            alert.success('Uspješno dodavanje računa.');
+            ID && type.id
+              ? alert.success('Račun je uspješno izmijenjen')
+              : type.id
+              ? alert.success('Uspješno dodavanje računa.')
+              : ID && !type.id
+              ? alert.success('Predračun je uspješno izmijenjen')
+              : alert.success('Uspješno dodavanje predračuna.');
             navigate('/finance/liabilities-receivables/liabilities/invoices');
           },
-          () => alert.error('Neuspješno dodavanje računa.'),
+          () => {
+            ID && type.id
+              ? alert.error('Došlo je do greške prilikom izmjene računa.')
+              : type.id
+              ? alert.error('Neuspješno dodavanje računa.')
+              : ID && !type.id
+              ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
+              : alert.error('Došlo je do greške prilikom izmjene predračuna.');
+          },
         );
       });
 
@@ -480,10 +509,24 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
       insertInvoice(
         payload,
         () => {
-          alert.success('Uspješno dodavanje računa.');
+          ID && type.id
+            ? alert.success('Račun je uspješno izmijenjen')
+            : type.id
+            ? alert.success('Uspješno dodavanje računa.')
+            : ID && !type.id
+            ? alert.success('Predračun je uspješno izmijenjen')
+            : alert.success('Uspješno dodavanje predračuna.');
           navigate('/finance/liabilities-receivables/liabilities/invoices');
         },
-        () => alert.error('Neuspješno dodavanje računa.'),
+        () => {
+          ID && type.id
+            ? alert.error('Došlo je do greške prilikom izmjene računa.')
+            : type.id
+            ? alert.error('Neuspješno dodavanje računa.')
+            : ID && !type.id
+            ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
+            : alert.error('Došlo je do greške prilikom izmjene predračuna.');
+        },
       );
     }
 
@@ -607,6 +650,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     }
   }, [type?.id]);
 
+  console.log(errors, 'aaa');
   return (
     <InvoiceEntryForm>
       <>
@@ -816,7 +860,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             <FileUpload
               icon={null}
               files={uploadedFile}
-              disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+              disabled={(invoice?.status === 'Na nalogu' && type?.id) || invoice?.status === 'Djelimično na nalogu'}
               variant="secondary"
               onUpload={handleUpload}
               note={<Typography variant="bodySmall" content="Račun" />}

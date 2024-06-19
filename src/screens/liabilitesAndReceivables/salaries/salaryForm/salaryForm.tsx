@@ -450,8 +450,10 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
         const index = findIndexInFieldsArray(row.id);
 
         const currentSubject = watch(`salary_additional_expenses.${index}.subject`);
+        const isBank = row.type === 'banks';
+        const dropdownOptions = isBank ? banks : suppliersDropdownOptions;
         const bankAccounts =
-          suppliersDropdownOptions
+          dropdownOptions
             .find(option => option.id === currentSubject?.id)
             ?.bank_accounts.map(bankAcc => {
               return {id: bankAcc, title: bankAcc};
@@ -501,8 +503,11 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
         const index = findIndexInFieldsArray(row.id);
 
         const currentSubject = watch(`salary_additional_expenses.${index}.subject`);
+
+        const isBank = row.type === 'banks';
+        const dropdownOptions = isBank ? banks : suppliersDropdownOptions;
         const bankAccounts =
-          suppliersDropdownOptions
+          dropdownOptions
             .find(option => option.id === currentSubject?.id)
             ?.bank_accounts.map(bankAcc => {
               return {id: bankAcc, title: bankAcc};
@@ -700,7 +705,11 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           tableActions={tableActions}
         />
         <Footer>
-          <Button content="Obriši" variant="secondary" onClick={() => reset()} disabled={salary?.registred} />
+          <Button
+            content="Odustani"
+            variant="secondary"
+            onClick={() => navigate('/finance/liabilities-receivables/liabilities/salaries')}
+          />
           <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} disabled={salary?.registred} />
         </Footer>
       </>

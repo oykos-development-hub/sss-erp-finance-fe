@@ -418,7 +418,7 @@ const EnforcedPaymentEntry = () => {
                         <Datepicker
                           name={name}
                           selected={value ? new Date(value) : ''}
-                          label="DATUM SAP-a:"
+                          label="SAP DATUM:"
                           isRequired
                           onChange={onChange}
                           error={errors.date_of_sap?.message}

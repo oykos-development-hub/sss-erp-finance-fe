@@ -34,7 +34,7 @@ const InvoicesOverview = () => {
     navigation: {navigate},
     contextMain,
   } = useAppContext();
-  const [showDeleteModalInvoiceId, setShowDeleteModalInvoiceId] = useState<number | undefined>(undefined);
+  const [showDeleteModalInvoiceId, setShowDeleteModalInvoiceId] = useState<number>(0);
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState<InvoiceOverviewFilters>(initialInvoiceFilterValues);
   const [search, setSearch] = useState('');
@@ -59,7 +59,7 @@ const InvoicesOverview = () => {
   };
 
   const handleCloseDeleteModal = () => {
-    setShowDeleteModalInvoiceId(undefined);
+    setShowDeleteModalInvoiceId(0);
   };
 
   const handleDelete = async () => {
@@ -75,7 +75,7 @@ const InvoicesOverview = () => {
         alert.error('Došlo je do greške prilikom brisanja računa.');
       },
     );
-    setShowDeleteModalInvoiceId(undefined);
+    setShowDeleteModalInvoiceId(0);
   };
 
   const onFilter = (value: DropdownData<string> | ChangeEvent<HTMLInputElement>, name: string) => {
@@ -102,6 +102,9 @@ const InvoicesOverview = () => {
     options.unshift({id: 0, title: 'Svi dobavljači'});
     return options;
   }, [suppliers]);
+
+  const foundItem = invoice.find(item => item?.id === showDeleteModalInvoiceId);
+  const isInvoice = foundItem ? foundItem.is_invoice : null;
 
   return (
     <>
@@ -160,7 +163,7 @@ const InvoicesOverview = () => {
           },
           {
             name: 'Izbriši',
-            onClick: onDelete,
+            onClick: row => onDelete(row),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
             shouldRender: row => !row.receipt_date && row.status === 'Kreiran' && !row.registred,
           },
@@ -169,7 +172,11 @@ const InvoicesOverview = () => {
 
       <ConfirmationModal
         open={!!showDeleteModalInvoiceId}
-        subTitle="Ovaj račun će biti trajno izbrisan iz sistema."
+        subTitle={
+          isInvoice
+            ? 'Ovaj račun će biti trajno izbrisan iz sistema.'
+            : 'Ovaj predračun će biti trajno izbrisan iz sistema.'
+        }
         onClose={() => handleCloseDeleteModal()}
         onConfirm={() => handleDelete()}
       />

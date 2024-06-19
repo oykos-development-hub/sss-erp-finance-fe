@@ -182,7 +182,7 @@ const ReceivablesOverview = () => {
             <FilterWrapper>
               <Dropdown
                 label="GODINA:"
-                options={getYearOptions(10, true, 1)}
+                options={getYearOptions(10, true, 0)}
                 value={filterValues.year}
                 name="year"
                 onChange={value => onFilter(value as DropdownData<string>, 'year')}

@@ -63,6 +63,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
   } = watch();
 
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
+  const ID = location.pathname.split('/').at(-1);
 
   const {suppliers} = useGetSuppliers({});
 
@@ -221,10 +222,14 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         insertInvoice(
           payload as any,
           () => {
-            alert.success('Uspješno dodavanje ugovora.');
+            ID ? alert.success('Uspješno ste izmijenili ugovor.') : alert.success('Uspješno dodavanje ugovora.');
             navigate('/finance/liabilities-receivables/liabilities/contracts');
           },
-          () => alert.error('Neuspješno dodavanje ugovora.'),
+          () => {
+            ID
+              ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.')
+              : alert.error('Neuspješno dodavanje ugovora.');
+          },
         );
       });
 
@@ -259,10 +264,12 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
       insertInvoice(
         payload as any,
         () => {
-          alert.success('Uspješno dodavanje ugovora.');
+          ID ? alert.success('Uspješno ste izmijenili ugovor.') : alert.success('Uspješno dodavanje ugovora.');
           navigate('/finance/liabilities-receivables/liabilities/contracts');
         },
-        () => alert.error('Neuspješno dodavanje ugovora.'),
+        () => {
+          ID ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.') : alert.error('Neuspješno dodavanje ugovora.');
+        },
       );
 
       return;

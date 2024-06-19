@@ -211,7 +211,7 @@ const ReceivableDetails = () => {
                   name={name}
                   disabled
                   selected={value ? new Date(value) : ''}
-                  label="DATUM SAP:"
+                  label="SAP DATUM:"
                   onChange={onChange}
                   error={errors.date_of_sap?.message}
                 />
