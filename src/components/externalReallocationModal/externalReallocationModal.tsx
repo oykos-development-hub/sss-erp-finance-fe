@@ -11,6 +11,8 @@ import PlusButton from '../../shared/plusButton.tsx';
 import useGetCurrentBudgetID from '../../services/graphQL/currentBudget/useGetCurrentBudgetID.ts';
 import useInsertExternalReallocations from '../../services/graphQL/externalReallocations/useInsertExternalReallocations.ts';
 import {ModalControlButtons} from '../../shared/confirmationModal/styles.ts';
+import * as yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
 
 interface ExternalReallocationProps {
   onClose: () => void;
@@ -31,6 +33,16 @@ const initialValues: InsertExternalReallocationsFormData = {
   ],
 };
 
+const externalReallocationSchema = yup.object().shape({
+  destination_organization_unit_id: yup.number().required('Ovo polje je obavezno').min(1, 'Ovo polje je obavezno'),
+  items: yup.array().of(
+    yup.object().shape({
+      source_account_id: yup.number().required('Ovo polje je obavezno').min(1, 'Ovo polje je obavezno'),
+      amount: yup.string().required('Ovo polje je obavezno'),
+    }),
+  ),
+});
+
 export const ExternalReallocationModal = ({open, onClose, activeReallocation, refetch}: ExternalReallocationProps) => {
   const {
     contextMain: {
@@ -47,7 +59,10 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
     watch,
     handleSubmit,
     reset,
-  } = useForm<InsertExternalReallocationsFormData>({defaultValues: initialValues});
+  } = useForm<InsertExternalReallocationsFormData>({
+    defaultValues: initialValues,
+    resolver: yupResolver(externalReallocationSchema),
+  });
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
   const {counts} = useGetCountOverview({level: 3});
@@ -157,7 +172,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
               />
             )}
           />
-          {items.map((_, index) => rowItem(index))}
+          {items?.map((_, index) => rowItem(index))}
           <PlusButton onClick={addRow} style={{marginLeft: 'auto'}} disabled={!!activeReallocation} />
         </div>
       }

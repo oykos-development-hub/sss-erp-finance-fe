@@ -60,15 +60,14 @@ const BudgetReallocationForm = ({
               value={value}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 const value = parseInt(e?.target?.value);
+                if (e?.target?.value !== '' && isNaN(value)) return;
                 // amountTaken cant be greater than actual
-                if (isNaN(value)) return;
-                if (value <= amountActual) {
-                  onChange(e);
-                  updateParentValues(name);
-                } else {
+                if (value > amountActual) {
                   onChange(amountActual);
-                  updateParentValues(name);
+                } else {
+                  onChange(e);
                 }
+                updateParentValues(name);
               }}
               type={'number'}
               disabled={disabled || !lastLevel || actual || level === 1 || amountGiven != 0}
@@ -86,6 +85,7 @@ const BudgetReallocationForm = ({
             <ReallocationInput
               value={value}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                if (e?.target?.value !== '' && isNaN(value)) return;
                 onChange(e);
                 updateParentValues(name);
               }}

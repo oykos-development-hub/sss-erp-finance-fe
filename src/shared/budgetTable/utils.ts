@@ -127,7 +127,7 @@ export const flattenReallocationBudgetData = (data: any, result: ReallocationIte
       // Process only leaf nodes
       const [accountId, transactionType] = key.split('-');
       const amount = value;
-      if (value === '0') return; // Skip if amount is zero
+      if (value === '0' || value === '') return; // Skip if amount is zero
 
       if (transactionType === 'amountGiven') {
         result.push({
