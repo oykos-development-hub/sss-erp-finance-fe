@@ -40,7 +40,7 @@ const InternalReallocationBudget = () => {
       alert.error(
         `Sume preusmjerenih sredstava se ne poklapaju. Lijeva kolona je ${
           reallocationSums.diff > 0 ? 'veća' : 'manja'
-        } za ${reallocationSums.diff}!`,
+        } za ${Math.abs(reallocationSums.diff)}!`,
       );
       return;
     }

@@ -10,15 +10,17 @@ const useGetCurrentBudgetID = (
 ) => {
   const [loading, setLoading] = useState(true);
   const [budget_id, setBudget_id] = useState<number>(0);
+  const [version, setVersion] = useState<number>(0);
 
   const {fetch} = useAppContext();
 
   const fetchCurrentBudgetID = async () => {
     setLoading(true);
-    const response: CurrentBudgetResponse['get'] = await fetch(GraphQL.getCurrentBudget, {organization_unit_id});
+    const response: CurrentBudgetResponse['get'] = await fetch(GraphQL.getCurrentBudgetID, {organization_unit_id});
 
     if (response.currentBudget_Overview.status === 'success') {
       setBudget_id(response?.currentBudget_Overview?.items?.budget_id);
+      setVersion(response?.currentBudget_Overview?.items?.version);
       onSuccess && onSuccess();
     } else {
       onError && onError();
@@ -30,7 +32,7 @@ const useGetCurrentBudgetID = (
     fetchCurrentBudgetID();
   }, [organization_unit_id]);
 
-  return {loading, refetch: fetchCurrentBudgetID, budget_id};
+  return {loading, refetch: fetchCurrentBudgetID, budget_id, version};
 };
 
 export default useGetCurrentBudgetID;

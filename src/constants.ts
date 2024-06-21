@@ -38,6 +38,14 @@ export enum ScreenTitlesEnum {
   'requests' = 'Zahtjevi',
 }
 
+export enum ReallocationStatusEnum {
+  created = 'Kreiran',
+  acceptedOJ = 'Prihvaćen OJ',
+  rejectedOJ = 'Odbijen OJ',
+  acceptedSSS = 'Prihvaćen SSS',
+  rejectedSSS = 'Odbijen SSS',
+}
+
 export const salariesTabs: ExtendedTab[] = [
   {id: 1, title: 'Pregled zarada', routeName: '', disabled: false},
   {id: 2, title: 'Unos zarada', routeName: 'entry', disabled: false},

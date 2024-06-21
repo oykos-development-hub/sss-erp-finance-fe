@@ -10,6 +10,7 @@ type BudgetReallocationFormProps = {
   updateParentValues: (fieldPath: string) => void;
   actual: boolean;
   disabled?: boolean;
+  isExternal?: boolean;
 };
 
 const BudgetReallocationForm = ({
@@ -19,6 +20,7 @@ const BudgetReallocationForm = ({
   updateParentValues,
   actual,
   disabled,
+  isExternal,
 }: BudgetReallocationFormProps) => {
   const {control, watch} = useFormContext();
 
@@ -70,33 +72,35 @@ const BudgetReallocationForm = ({
                 updateParentValues(name);
               }}
               type={'number'}
-              disabled={disabled || !lastLevel || actual || level === 1 || amountGiven != 0}
+              disabled={disabled || !lastLevel || actual || level === 1 || (amountGiven && amountGiven != 0)}
               isBold={!lastLevel}
               onFocus={handleFocus}
             />
           )}
         />
       </CountTableCell>
-      <CountTableCell level={level} lastLevel={lastLevel}>
-        <Controller
-          name={`${fieldPath.join('.')}-amountGiven`}
-          control={control}
-          render={({field: {onChange, name, value}}) => (
-            <ReallocationInput
-              value={value}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                if (e?.target?.value !== '' && isNaN(value)) return;
-                onChange(e);
-                updateParentValues(name);
-              }}
-              type={'number'}
-              disabled={disabled || !lastLevel || actual || level === 1 || amountTaken != 0}
-              isBold={!lastLevel}
-              onFocus={handleFocus}
-            />
-          )}
-        />
-      </CountTableCell>
+      {!isExternal && (
+        <CountTableCell level={level} lastLevel={lastLevel}>
+          <Controller
+            name={`${fieldPath.join('.')}-amountGiven`}
+            control={control}
+            render={({field: {onChange, name, value}}) => (
+              <ReallocationInput
+                value={value}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (e?.target?.value !== '' && isNaN(value)) return;
+                  onChange(e);
+                  updateParentValues(name);
+                }}
+                type={'number'}
+                disabled={disabled || !lastLevel || actual || level === 1 || amountTaken != 0}
+                isBold={!lastLevel}
+                onFocus={handleFocus}
+              />
+            )}
+          />
+        </CountTableCell>
+      )}
     </>
   );
 };

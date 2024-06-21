@@ -1,10 +1,12 @@
 import {DropdownData} from '../dropdownData.ts';
 import {FileItem} from '../fileUploadType.ts';
+import {ReallocationStatusEnum} from '../../constants.ts';
 
 export interface ExternalReallocationsOverviewParams {
   id?: number;
   page?: number;
   size?: number;
+  organization_unit_id?: number;
   source_organization_unit_id?: number;
   destination_organization_unit_id?: number;
   status?: string;
@@ -12,7 +14,7 @@ export interface ExternalReallocationsOverviewParams {
   budget_id?: number;
 }
 
-interface ItemDetail {
+export interface ReallocationItemDetail {
   id: number;
   source_account: DropdownData<number>;
   destination_account: DropdownData<number>;
@@ -22,7 +24,7 @@ interface ItemDetail {
 export interface ReallocationItem {
   id: number;
   title: string;
-  status: string;
+  status: ReallocationStatusEnum;
   source_organization_unit: DropdownData<number>;
   destination_organization_unit: DropdownData<number>;
   date_of_request: string;
@@ -34,7 +36,7 @@ export interface ReallocationItem {
   file: FileItem;
   destination_org_unit_file: FileItem;
   sss_file: FileItem;
-  items: ItemDetail[];
+  items: ReallocationItemDetail[];
 }
 
 export interface ReallocationItemForm {
@@ -46,7 +48,10 @@ export interface InsertExternalReallocationsFormData {
   source_organization_unit_id: number;
   destination_organization_unit_id: number;
   budget_id: number;
-  // requested_by: number;
-  // date_of_request: string;
+  items: ReallocationItemForm[];
+}
+
+export interface AcceptExternalReallocationsFormData {
+  id: number;
   items: ReallocationItemForm[];
 }

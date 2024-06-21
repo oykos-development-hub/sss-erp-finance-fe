@@ -65,8 +65,8 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
   });
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const {counts} = useGetCountOverview({level: 3});
-  const {budget_id} = useGetCurrentBudgetID({organization_unit_id});
+  const {budget_id, version} = useGetCurrentBudgetID({organization_unit_id});
+  const {counts} = useGetCountOverview({level: 3, version: version});
   const {insertExternalReallocations} = useInsertExternalReallocations();
 
   const items = watch('items');

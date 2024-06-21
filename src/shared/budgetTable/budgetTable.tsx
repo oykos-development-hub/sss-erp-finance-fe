@@ -100,6 +100,12 @@ const BudgetTable = forwardRef<BudgetTableMethods, BudgetTableProps>(
           }
         }
 
+        if (step === BudgetTableStep.EXTERNAL_REALLOCATION) {
+          methods.setValue(`${fieldPath.join('.')}-actual`, item.filled_data ? item?.filled_data?.actual : '0');
+          methods.setValue(`${fieldPath.join('.')}-amountTaken`, '0');
+          updateParentValues(`${fieldPath.join('.')}-actual`);
+        }
+
         // Add the field for the current item
         methods.setValue(`${fieldPath.join('.')}-currentYearBudget`, '0');
         methods.setValue(`${fieldPath.join('.')}-nextYearBudget`, '0');

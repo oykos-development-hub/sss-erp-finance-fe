@@ -1,5 +1,5 @@
-const getExternalReallocations = `query externalReallocations_Overview($id: Int, $page: Int, $size: Int, $source_organization_unit_id:Int, $destination_organization_unit_id:Int, $status: String, $requested_by: Int, $budget_id: Int) {
-    externalReallocations_Overview(id: $id, page: $page, size: $size, source_organization_unit_id: $source_organization_unit_id, destination_organization_unit_id: $destination_organization_unit_id, status: $status, requested_by: $requested_by, budget_id: $budget_id) {
+const getExternalReallocations = `query externalReallocations_Overview($id: Int, $page: Int, $size: Int, $source_organization_unit_id:Int, $destination_organization_unit_id:Int, $status: String, $requested_by: Int, $budget_id: Int, $organization_unit_id: Int) {
+    externalReallocations_Overview(id: $id, page: $page, size: $size, source_organization_unit_id: $source_organization_unit_id, destination_organization_unit_id: $destination_organization_unit_id, status: $status, requested_by: $requested_by, budget_id: $budget_id, organization_unit_id: $organization_unit_id) {
         message
         status
         items {

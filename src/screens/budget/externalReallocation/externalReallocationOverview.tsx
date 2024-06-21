@@ -5,7 +5,7 @@ import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
 import {defaultDropdownOption} from '../../finesAndTaxes/fines/constants.tsx';
 import {DropdownData} from '../../../types/dropdownData.ts';
-import {PAGE_SIZE} from '../../../constants.ts';
+import {PAGE_SIZE, ReallocationStatusEnum} from '../../../constants.ts';
 import useGetExternalReallocations from '../../../services/graphQL/externalReallocations/useGetExternalReallocations.ts';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {useCreateBudgetYearFilter} from '../../../utils/useCreateBudgetYearFilter.ts';
@@ -13,6 +13,9 @@ import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOpti
 import useDeleteExternalReallocations from '../../../services/graphQL/externalReallocations/useDeleteExternalReallocations.ts';
 import useAppContext from '../../../context/useAppContext.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
+import {ReallocationItem} from '../../../types/graphQL/externalReallocations.ts';
+import {ModalControlButtons} from '../../../shared/confirmationModal/styles.ts';
+import useRejectOUExternalReallocations from '../../../services/graphQL/externalReallocations/useRejectOUExternalReallocations.ts';
 
 const tableHeads: TableHead[] = [
   {
@@ -58,7 +61,13 @@ const initialValues = {
 };
 
 const ExternalReallocationOverview = () => {
-  const {alert} = useAppContext();
+  const {
+    alert,
+    contextMain: {
+      organization_unit: {id: organization_unit_id},
+    },
+    navigation: {navigate},
+  } = useAppContext();
 
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState(initialValues);
@@ -68,12 +77,19 @@ const ExternalReallocationOverview = () => {
   };
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<number>(0);
   const toggleDeleteModal = (id?: number) => setIsDeleteModalOpen(id ? id : 0);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState<ReallocationItem | undefined>(undefined);
+  const toggleRequestModal = (reallocation?: ReallocationItem) =>
+    setIsRequestModalOpen(reallocation ? reallocation : undefined);
+  const [rejectModal, setRejectModal] = useState<number>(0);
+  const toggleRejectModal = (id?: number) => setRejectModal(id ? id : 0);
 
   const {externalReallocations, total, refetch} = useGetExternalReallocations({
     page: page,
+    organization_unit_id: organization_unit_id,
     ...filters,
   });
   const {deleteExternalReallocations} = useDeleteExternalReallocations();
+  const {rejectOUExternalReallocations} = useRejectOUExternalReallocations();
 
   const yearOptions = useCreateBudgetYearFilter();
   const statusOptions: DropdownData<string>[] = [];
@@ -106,6 +122,22 @@ const ExternalReallocationOverview = () => {
       },
     );
     toggleModal();
+  };
+
+  const handleReject = () => {
+    if (!rejectModal) return;
+
+    rejectOUExternalReallocations(
+      rejectModal,
+      () => {
+        refetch();
+        toggleRejectModal(0);
+        alert.success('Zahtjev uspješno odbijen.');
+      },
+      () => {
+        alert.error('Došlo je do greške prilikom odbijanja zahtjeva!');
+      },
+    );
   };
 
   return (
@@ -150,12 +182,17 @@ const ExternalReallocationOverview = () => {
         <Table
           data={externalReallocations}
           tableHeads={tableHeads}
-          onRowClick={row => setIsModalOpen(row.id)}
+          onRowClick={(row: ReallocationItem) =>
+            row?.source_organization_unit?.id === organization_unit_id ? toggleModal(row.id) : toggleRequestModal(row)
+          }
           tableActions={[
             {
               name: 'Izbriši',
               onClick: row => toggleDeleteModal(row.id),
               icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+              shouldRender: row =>
+                row?.status === ReallocationStatusEnum.created &&
+                row?.source_organization_unit?.id === organization_unit_id,
             },
           ]}
         />
@@ -179,6 +216,61 @@ const ExternalReallocationOverview = () => {
           onClose={() => toggleDeleteModal()}
           onConfirm={() => onDelete(isDeleteModalOpen)}
           subTitle={'Ovo preusmjerenje sredstava će biti trajno izbrisano iz sistema.'}
+        />
+        <ConfirmationModal
+          open={!!isRequestModalOpen}
+          onClose={() => toggleRequestModal()}
+          onConfirm={() => undefined}
+          customContent={
+            <>
+              <Typography
+                content={`Organizaciona jedinica ${isRequestModalOpen?.source_organization_unit?.title} je uputila zahtjev za eskterno preusmjerenje.`}
+                variant="bodyMedium"
+                style={{fontWeight: 600, textAlign: 'center'}}
+              />
+              <Typography
+                content={'Da li želite pregledati zahtjev?.'}
+                variant="bodySmall"
+                style={{textAlign: 'center'}}
+              />
+            </>
+          }
+          customButtonsControls={
+            <ModalControlButtons>
+              <Button
+                content={'Pregledaj'}
+                onClick={() => navigate(`/finance/budget/current/external-reallocation/${isRequestModalOpen?.id}`)}
+                variant="primary"
+              />
+              <Button
+                content={'Odbij'}
+                onClick={() => {
+                  toggleRejectModal(isRequestModalOpen?.id ?? 0);
+                  toggleRequestModal();
+                }}
+                variant="secondary"
+              />
+            </ModalControlButtons>
+          }
+        />
+        <ConfirmationModal
+          open={!!rejectModal}
+          onClose={() => setRejectModal(0)}
+          onConfirm={handleReject}
+          customContent={
+            <>
+              <Typography
+                content={'Da li ste sigurni da želite da odbijete zahtjev? '}
+                variant="bodyMedium"
+                style={{fontWeight: 600, textAlign: 'center'}}
+              />
+              <Typography
+                content={'Naknadne izmjene neće biti moguće.'}
+                variant="bodySmall"
+                style={{textAlign: 'center'}}
+              />
+            </>
+          }
         />
       </SectionBox>
     </ScreenWrapper>

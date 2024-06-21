@@ -4,6 +4,8 @@ const getCurrentBudgetID = `query currentBudget_Overview($organization_unit_id: 
         message
         items {
             budget_id
+            version
+            }
         }
     }`;
 

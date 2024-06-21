@@ -12,7 +12,7 @@ interface ActualBudgetItem {
   actual: number;
 }
 
-interface ReallocationItem {
+interface ReallocationItemForm {
   source_account_id?: number;
   destination_account_id?: number;
   amount: string;
@@ -117,7 +117,10 @@ export const flattenActualBudgetData = (data: any, parentId = 0) => {
   return result;
 };
 
-export const flattenReallocationBudgetData = (data: any, result: ReallocationItem[] = []): ReallocationItem[] => {
+export const flattenReallocationBudgetData = (
+  data: any,
+  result: ReallocationItemForm[] = [],
+): ReallocationItemForm[] => {
   Object.keys(data).forEach(key => {
     const value = data[key];
     if (typeof value === 'object' && value !== null) {

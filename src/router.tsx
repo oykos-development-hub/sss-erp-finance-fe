@@ -70,6 +70,7 @@ import AddNewBudgetDynamic from './screens/budget/spendingDynamics/addNewDynamic
 import BudgetRequestDetailsOfficial from './screens/budget/budgetRequestDetailsOfficial/budgetRequestDetailsOfficial.tsx';
 import BudgetFillActual from './screens/budget/budgetFillActual/budgetFillActual.tsx';
 import {ReceivablesLandingPage} from './screens/liabilitesAndReceivables/receivablesLandingPage/receivablesLandingPage.tsx';
+import ExternalReallocationDetails from './screens/budget/externalReallocation/externalReallocationDetails.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -137,6 +138,8 @@ export const Router = () => {
     );
     const fillActualBudgetRegex = new RegExp('^/finance/budget/planning/\\d+/requests/\\d+/actual$');
     const budgetReallocationRegex = new RegExp('^/finance/budget/current/internal-reallocation/(create|\\d+)$');
+
+    const externalReallocationDetailsRegex = new RegExp('^/finance/budget/current/external-reallocation/\\d+$');
 
     if (budgetRequestDetailsRegex.test(pathname)) return <BudgetRequestDetailsOfficial />;
 
@@ -221,6 +224,7 @@ export const Router = () => {
     if (budgetReallocationRegex.test(pathname)) return <InternalReallocationBudget />;
 
     if (pathname === '/finance/budget/current/external-reallocation') return <ExternalReallocationOverview />;
+    if (externalReallocationDetailsRegex.test(pathname)) return <ExternalReallocationDetails />;
 
     if (pathname === '/finance/liabilities-receivables/liabilities/related-expenses')
       return <AdditionalExpensesOverview />;

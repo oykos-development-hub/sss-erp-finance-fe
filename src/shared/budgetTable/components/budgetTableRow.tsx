@@ -183,6 +183,18 @@ const BudgetTableRow = ({
             disabled={disabled}
           />
         );
+      case BudgetTableStep.EXTERNAL_REALLOCATION:
+        return (
+          <BudgetReallocationForm
+            updateParentValues={updateParentValues}
+            level={level}
+            lastLevel={!count.children?.length}
+            fieldPath={fieldPath}
+            actual={false}
+            disabled={disabled}
+            isExternal={true}
+          />
+        );
       case BudgetTableStep.REQUEST_FUND_RELEASE:
         return (
           <>
@@ -257,6 +269,7 @@ const BudgetTableRow = ({
           step !== BudgetTableStep.BUDGET_FINANCIAL &&
           step !== BudgetTableStep.BUDGETING_ACTUAL &&
           step !== BudgetTableStep.CURRENT_BUDGET &&
+          step !== BudgetTableStep.EXTERNAL_REALLOCATION &&
           step !== BudgetTableStep.REQUEST_FUND_RELEASE && (
             <CountTableCell level={level}>{sourceCellContent}</CountTableCell>
           )}

@@ -3,7 +3,14 @@ import React from 'react';
 import {ModalContent, ModalControlButtons, TriangleIcon} from './styles';
 import {ModalProps} from './types';
 
-export const ConfirmationModal: React.FC<ModalProps> = ({open, onClose, onConfirm, customContent, subTitle}) => {
+export const ConfirmationModal: React.FC<ModalProps> = ({
+  open,
+  onClose,
+  onConfirm,
+  customContent,
+  subTitle,
+  customButtonsControls,
+}) => {
   const buttonControls = (
     <ModalControlButtons>
       <Button content={'Potvrdi'} onClick={onConfirm} variant="primary" />
@@ -27,7 +34,7 @@ export const ConfirmationModal: React.FC<ModalProps> = ({open, onClose, onConfir
       }}
       width={450}
       content={customContent ? customContent : defaultContent}
-      customButtonsControls={buttonControls}
+      customButtonsControls={customButtonsControls ? customButtonsControls : buttonControls}
     />
   );
 };
