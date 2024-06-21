@@ -1,48 +1,80 @@
-import {Datepicker, Dropdown, Table} from 'client-library';
-import {useState} from 'react';
+import {Dropdown, Table, Pagination} from 'client-library';
+import {useEffect, useState} from 'react';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits';
 import {tableHeadsRequests} from './constants';
-import {Column, DropdownWrapperRequests, Price, SubTitle, Totals} from './styles';
+import {DropdownWrapperRequests} from './styles';
+import useGetExternalReallocations from '../../../services/graphQL/externalReallocations/useGetExternalReallocations.ts';
+import {PAGE_SIZE, ReallocationStatusEnum} from '../../../constants.ts';
+import {ReallocationItem} from '../../../types/graphQL/externalReallocations.ts';
+import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
+import {defaultDropdownOption} from '../../finesAndTaxes/fines/constants.tsx';
 
+const initialValues = {
+  destination_organization_unit_id: undefined,
+  source_organization_unit_id: undefined,
+};
 export const RequestsPage = () => {
-  const [organizationUnit, setOrganizationUnit] = useState({id: 0, title: 'Sve'});
-  const {organizationUnits} = useGetOrganizationUnits();
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
 
-  const handleOrganizationUnitChange = (value: any) => {
-    setOrganizationUnit(value);
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState(initialValues);
+
+  const {externalReallocations, total} = useGetExternalReallocations({
+    page: page,
+    status: ReallocationStatusEnum.acceptedOJ,
+    ...filters,
+  });
+
+  const onFilterChange = (value: any, name: string) => {
+    setFilters({...filters, [name]: value?.id});
   };
+
+  const onPageChange = (page: number) => {
+    setPage(page + 1);
+  };
+
+  useEffect(() => {
+    if (page === 1) return;
+    setPage(1);
+  }, [filters]);
 
   return (
     <div>
-      <DropdownWrapperRequests>
-        <Dropdown
-          name="organization_unit"
-          options={organizationUnits}
-          value={organizationUnit}
-          onChange={handleOrganizationUnitChange}
-          label="ORGANIZACIONA JEDINICA:"
-        />
-      </DropdownWrapperRequests>
-      <Table data={[]} tableHeads={tableHeadsRequests} />
-      <Totals>
-        <Column>
-          <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST:" />
-          <Price variant="bodySmall" content={'€ '} />
-        </Column>
-        <Column>
-          <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST:" />
-          <Price variant="bodySmall" content={'€ '} />
-        </Column>
-      </Totals>
-      <Column>
-        <Datepicker
-          name="date_of_closing"
-          onChange={() => {
-            console.log('');
-          }}
-          disabled
-        />
-      </Column>
+      <div style={{display: 'flex', flexDirection: 'row'}}>
+        <DropdownWrapperRequests>
+          <Dropdown
+            name="destination_organization_unit_id"
+            options={usePrependedDropdownOptions(organizationUnits)}
+            value={
+              organizationUnits.find(ou => ou.id === filters.destination_organization_unit_id) ?? defaultDropdownOption
+            }
+            onChange={onFilterChange}
+            label="PREDLAGAČ:"
+          />
+        </DropdownWrapperRequests>
+        <DropdownWrapperRequests>
+          <Dropdown
+            name="source_organization_unit_id"
+            options={usePrependedDropdownOptions(organizationUnits)}
+            value={organizationUnits.find(ou => ou.id === filters.source_organization_unit_id) ?? defaultDropdownOption}
+            onChange={onFilterChange}
+            label="POŠILJALAC:"
+          />
+        </DropdownWrapperRequests>
+      </div>
+      <Table
+        data={externalReallocations}
+        tableHeads={tableHeadsRequests}
+        onRowClick={(row: ReallocationItem) => console.log(row)}
+      />
+      <Pagination
+        pageCount={total ? Math.ceil(total / PAGE_SIZE) : 1}
+        onChange={onPageChange}
+        variant="filled"
+        itemsPerPage={PAGE_SIZE}
+        pageRangeDisplayed={3}
+        style={{marginTop: '20px'}}
+      />
     </div>
   );
 };

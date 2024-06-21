@@ -1,4 +1,7 @@
-import {TableHead} from 'client-library';
+import {TableHead, Typography} from 'client-library';
+import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
+import {parseDate} from '../../../utils/dateUtils.ts';
+import {ReallocationItemDetail} from '../../../types/graphQL/externalReallocations.ts';
 
 export enum Tabs {
   CurrentBudget = 1,
@@ -23,38 +26,36 @@ export const getRouteName = (tabName: string) => {
 
 export const tableHeadsRequests: TableHead[] = [
   {
-    title: 'Organizaciona jedinica',
-    accessor: 'organization_unit',
-    type: 'text',
+    title: 'Predlagač',
+    accessor: 'destination_organization_unit',
+    type: 'custom',
+    renderContents: ou => <Typography content={ou.title} variant="bodySmall" />,
   },
   {
-    title: 'Godina',
-    accessor: 'year',
-    type: 'text',
-  },
-  {
-    title: 'Naslov',
-    accessor: 'title',
-    type: 'text',
+    title: 'Pošiljalac',
+    accessor: 'source_organization_unit',
+    type: 'custom',
+    renderContents: ou => <Typography content={ou.title} variant="bodySmall" />,
   },
   {
     title: 'Datum kreiranja',
-    accessor: 'date_of_publishing',
-    type: 'text',
+    accessor: 'date_of_request',
+    type: 'custom',
+    renderContents: (date: string) => <Typography content={parseDate(date)} variant="bodySmall" />,
   },
   {
     title: 'Ukupna vrijednost',
-    accessor: 'amount',
-    type: 'text',
-  },
-  {
-    title: 'Posljednja izmjena',
-    accessor: 'updated_at',
-    type: 'text',
+    accessor: 'items',
+    type: 'custom',
+    renderContents: (items: ReallocationItemDetail[]) => {
+      const requestedAmountsSum = items.reduce((acc, item) => acc + parseInt(item.amount), 0);
+      return <Typography content={requestedAmountsSum} variant="bodySmall" />;
+    },
   },
   {
     title: 'Status',
     accessor: 'status',
-    type: 'text',
+    type: 'custom',
+    renderContents: (status: string) => <StatusTableCell status={status} />,
   },
 ];
