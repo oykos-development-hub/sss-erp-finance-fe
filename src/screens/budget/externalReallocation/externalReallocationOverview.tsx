@@ -16,6 +16,7 @@ import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationM
 import {ReallocationItem} from '../../../types/graphQL/externalReallocations.ts';
 import {ModalControlButtons} from '../../../shared/confirmationModal/styles.ts';
 import useRejectOUExternalReallocations from '../../../services/graphQL/externalReallocations/useRejectOUExternalReallocations.ts';
+import {createOptions} from '../../../utils/createOptions.ts';
 
 const tableHeads: TableHead[] = [
   {
@@ -83,17 +84,18 @@ const ExternalReallocationOverview = () => {
   const [rejectModal, setRejectModal] = useState<number>(0);
   const toggleRejectModal = (id?: number) => setRejectModal(id ? id : 0);
 
+  const statusOptions: DropdownData<string>[] = createOptions(ReallocationStatusEnum);
+
   const {externalReallocations, total, refetch} = useGetExternalReallocations({
     page: page,
     organization_unit_id: organization_unit_id,
-    ...filters,
+    budget_id: filters.budget_id,
+    status: statusOptions.find(status => status.id === filters.status)?.title,
   });
   const {deleteExternalReallocations} = useDeleteExternalReallocations();
-  const {rejectOUExternalReallocations} = useRejectOUExternalReallocations();
+  const {rejectOUExternalReallocations, loading: rejectLoading} = useRejectOUExternalReallocations();
 
   const yearOptions = useCreateBudgetYearFilter();
-  const statusOptions: DropdownData<string>[] = [];
-
   const activeReallocation = externalReallocations.find(reallocation => reallocation.id === isModalOpen);
 
   const onFilterChange = (value: any, name: string) => {
@@ -165,7 +167,7 @@ const ExternalReallocationOverview = () => {
                   filters.status ? statusOptions.find(status => status.id === filters.status) : defaultDropdownOption
                 }
                 onChange={onFilterChange}
-                options={statusOptions}
+                options={usePrependedDropdownOptions(statusOptions)}
                 label="STATUS:"
               />
             </DropdownWrapper>
@@ -249,6 +251,7 @@ const ExternalReallocationOverview = () => {
                   toggleRequestModal();
                 }}
                 variant="secondary"
+                loader={rejectLoading}
               />
             </ModalControlButtons>
           }

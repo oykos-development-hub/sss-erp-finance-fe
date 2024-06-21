@@ -67,7 +67,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
   const {budget_id, version} = useGetCurrentBudgetID({organization_unit_id});
   const {counts} = useGetCountOverview({level: 3, version: version});
-  const {insertExternalReallocations} = useInsertExternalReallocations();
+  const {insertExternalReallocations, loading} = useInsertExternalReallocations();
 
   const items = watch('items');
 
@@ -113,7 +113,9 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
   const buttonControls = (
     <ModalControlButtons>
       <Button content={'Otkaži'} onClick={onClose} variant="secondary" />
-      {!activeReallocation && <Button content={'Pošalji zahtjev'} onClick={handleSubmit(onSubmit)} variant="primary" />}
+      {!activeReallocation && (
+        <Button content={'Pošalji zahtjev'} onClick={handleSubmit(onSubmit)} variant="primary" loader={loading} />
+      )}
     </ModalControlButtons>
   );
 

@@ -1,10 +1,12 @@
 import {useMemo} from 'react';
 import {DropdownData} from '../types/dropdownData.ts';
 
-const usePrependedDropdownOptions = (options: DropdownData<number>[]): DropdownData<number>[] => {
-  // TODO rewrite this to handle all types of dropdown data when needed
+const usePrependedDropdownOptions = <T>(options: DropdownData<T>[]): DropdownData<T>[] => {
   return useMemo(() => {
-    const defaultOption: DropdownData<number> = {id: 0, title: 'Sve'};
+    const defaultOption: DropdownData<T> = {
+      id: null as unknown as T,
+      title: 'Sve',
+    };
     return [defaultOption, ...options];
   }, [options]);
 };
