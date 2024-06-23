@@ -2,6 +2,7 @@ import {FocusEvent} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 import {CountTableCell, ReallocationInput} from '../styles';
 import {Typography} from 'client-library';
+import {BudgetTableStep} from '../types.ts';
 
 type BudgetReallocationFormProps = {
   level: number;
@@ -9,6 +10,7 @@ type BudgetReallocationFormProps = {
   fieldPath: string[];
   updateParentValues: (fieldPath: string) => void;
   actual: boolean;
+  step: BudgetTableStep | `${BudgetTableStep}`;
   disabled?: boolean;
   isExternal?: boolean;
 };
@@ -21,6 +23,7 @@ const BudgetReallocationForm = ({
   actual,
   disabled,
   isExternal,
+  step,
 }: BudgetReallocationFormProps) => {
   const {control, watch} = useFormContext();
 
@@ -34,25 +37,26 @@ const BudgetReallocationForm = ({
 
   return (
     <>
-      {!disabled && (
-        <CountTableCell level={level} lastLevel={lastLevel}>
-          <Controller
-            name={`${fieldPath.join('.')}-actual`}
-            control={control}
-            render={({field: {value}}) => (
-              <Typography
-                content={value}
-                variant="bodySmall"
-                style={{
-                  marginLeft: 24,
-                  fontWeight: level < 4 ? 600 : 400,
-                  padding: `12px ${(level - 1) * 7}`,
-                }}
-              />
-            )}
-          />
-        </CountTableCell>
-      )}
+      {!disabled ||
+        (step === BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW && (
+          <CountTableCell level={level} lastLevel={lastLevel}>
+            <Controller
+              name={`${fieldPath.join('.')}-actual`}
+              control={control}
+              render={({field: {value}}) => (
+                <Typography
+                  content={value}
+                  variant="bodySmall"
+                  style={{
+                    marginLeft: 24,
+                    fontWeight: level < 4 ? 600 : 400,
+                    padding: `12px ${(level - 1) * 7}`,
+                  }}
+                />
+              )}
+            />
+          </CountTableCell>
+        ))}
       <CountTableCell level={level} lastLevel={lastLevel}>
         <Controller
           name={`${fieldPath.join('.')}-amountTaken`}

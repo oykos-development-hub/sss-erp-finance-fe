@@ -27,17 +27,17 @@ const initialValues: InsertExternalReallocationsFormData = {
   budget_id: 0,
   items: [
     {
-      source_account_id: 0,
+      destination_account_id: 0,
       amount: '',
     },
   ],
 };
 
 const externalReallocationSchema = yup.object().shape({
-  destination_organization_unit_id: yup.number().required('Ovo polje je obavezno').min(1, 'Ovo polje je obavezno'),
+  source_organization_unit_id: yup.number().required('Ovo polje je obavezno').min(1, 'Ovo polje je obavezno'),
   items: yup.array().of(
     yup.object().shape({
-      source_account_id: yup.number().required('Ovo polje je obavezno').min(1, 'Ovo polje je obavezno'),
+      destination_account_id: yup.number().required('Ovo polje je obavezno').min(1, 'Ovo polje je obavezno'),
       amount: yup.string().required('Ovo polje je obavezno'),
     }),
   ),
@@ -81,12 +81,15 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
     setValue('destination_organization_unit_id', activeReallocation.destination_organization_unit.id);
     setValue(
       'items',
-      activeReallocation.items.map(item => ({source_account_id: item.source_account.id, amount: item.amount})),
+      activeReallocation.items.map(item => ({
+        destination_account_id: item.destination_account.id,
+        amount: item.amount,
+      })),
     );
   }, [activeReallocation]);
 
   const onSubmit = (data: InsertExternalReallocationsFormData) => {
-    const payload = {...data, source_organization_unit_id: organization_unit_id, budget_id};
+    const payload = {...data, destination_organization_unit_id: organization_unit_id, budget_id};
     insertExternalReallocations(
       payload,
       () => {
@@ -101,8 +104,8 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
   };
 
   const addRow = () => {
-    if (items[items.length - 1].source_account_id === 0 || items[items.length - 1].amount === '') return;
-    setValue('items', [...items, {source_account_id: 0, amount: ''}]);
+    if (items[items.length - 1].destination_account_id === 0 || items[items.length - 1].amount === '') return;
+    setValue('items', [...items, {destination_account_id: 0, amount: ''}]);
   };
 
   const handleClose = () => {
@@ -123,7 +126,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
     return (
       <RowWrapper key={index} style={{marginBlock: '10px'}}>
         <Controller
-          name={`items.${index}.source_account_id`}
+          name={`items.${index}.destination_account_id`}
           control={control}
           rules={{required: 'Ovo polje je obavezno'}}
           render={({field: {name, value, onChange}}) => (
@@ -133,7 +136,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
               onChange={value => onChange(value.id)}
               options={dropdownCountsOptions}
               label="KONTO:"
-              error={errors.items?.[index]?.source_account_id?.message}
+              error={errors.items?.[index]?.destination_account_id?.message}
               isDisabled={!!activeReallocation}
             />
           )}
@@ -159,7 +162,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
       content={
         <div>
           <Controller
-            name="destination_organization_unit_id"
+            name="source_organization_unit_id"
             rules={{required: 'Ovo polje je obavezno'}}
             control={control}
             render={({field: {name, value, onChange}}) => (
@@ -169,7 +172,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
                 onChange={value => onChange(value.id)}
                 options={organizationUnits}
                 label="ORGANIZACIONA JEDINICA:"
-                error={errors.destination_organization_unit_id?.message as string}
+                error={errors.source_organization_unit_id?.message as string}
                 isDisabled={!!activeReallocation}
               />
             )}

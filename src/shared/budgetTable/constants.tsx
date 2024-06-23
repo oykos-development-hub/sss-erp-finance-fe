@@ -78,6 +78,7 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
         {name: '+', width: 6},
       ];
     case BudgetTableStep.EXTERNAL_REALLOCATION:
+    case BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW:
       return [
         {name: `Odobreni budžet za ${year}. godinu`, width: 10},
         {name: '-', width: 6},

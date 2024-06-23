@@ -1,25 +1,24 @@
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
+import {SectionBox} from './styles.tsx';
 import useAppContext from '../../../context/useAppContext.ts';
 import useGetExternalReallocations from '../../../services/graphQL/externalReallocations/useGetExternalReallocations.ts';
-import {LabeledDivider} from '../../finesAndTaxes/flatRate/paymentDetails/styles.ts';
-import {Typography, Button} from 'client-library';
-import {ReallocationItemDetail, ReallocationItemForm} from '../../../types/graphQL/externalReallocations.ts';
-import useGetCountOverview from '../../../services/graphQL/counts/useGetCountOverview.ts';
-import {Amount} from '../../finesAndTaxes/confiscation/paymentDetails/styles.ts';
-import {MainTitle} from '../budgetSendDetails/styles.tsx';
 import {TitleTabsWrapper} from '../../deposit/styles.ts';
-import {SectionBox} from './styles.tsx';
-import {BudgetTableMethods, BudgetTableStep} from '../../../shared/budgetTable/types.ts';
+import {MainTitle} from '../budgetSendDetails/styles.tsx';
+import {LabeledDivider} from '../../finesAndTaxes/flatRate/paymentDetails/styles.ts';
+import {ReallocationItemDetail} from '../../../types/graphQL/externalReallocations.ts';
+import {Amount} from '../../finesAndTaxes/confiscation/paymentDetails/styles.ts';
 import BudgetTable from '../../../shared/budgetTable/budgetTable.tsx';
-import {useRef, useState} from 'react';
-import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
+import {BudgetTableStep} from '../../../shared/budgetTable/types.ts';
 import Footer from '../../../shared/footer.ts';
-import useAcceptOUExternalReallocations from '../../../services/graphQL/externalReallocations/useAcceptOUExternalReallocations.ts';
-import {calcReallocationSums, flattenReallocationBudgetData} from '../../../shared/budgetTable/utils.ts';
+import {Typography, Button} from 'client-library';
+import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
+import useGetCountOverview from '../../../services/graphQL/counts/useGetCountOverview.ts';
+import {useState} from 'react';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
-import useRejectOUExternalReallocations from '../../../services/graphQL/externalReallocations/useRejectOUExternalReallocations.ts';
+import useAcceptSSSExternalReallocations from '../../../services/graphQL/externalReallocations/useAcceptSSSExternalReallocations.ts';
+import useRejectSSSExternalReallocations from '../../../services/graphQL/externalReallocations/useRejectSSSExternalReallocations.ts';
 
-const ExternalReallocationDetails = () => {
+const ExternalReallocationFinanceOfficialDetails = () => {
   const {
     navigation: {
       location: {pathname},
@@ -40,54 +39,33 @@ const ExternalReallocationDetails = () => {
   });
   const {version, currentBudget} = useGetCurrentBudget({organization_unit_id});
   const {counts} = useGetCountOverview({level: 3, version: version});
+  const {acceptSSSExternalReallocations} = useAcceptSSSExternalReallocations();
+  const {rejectSSSExternalReallocations} = useRejectSSSExternalReallocations();
+
   const [modal, setModal] = useState<'accept' | 'reject' | null>(null);
 
   const reallocation = externalReallocations?.[0];
-  const budgetTableRef = useRef<BudgetTableMethods>(null);
-
-  const {acceptOUExternalReallocations} = useAcceptOUExternalReallocations();
-  const {rejectOUExternalReallocations} = useRejectOUExternalReallocations();
-
-  const handleAccept = () => {
-    const internalState = budgetTableRef.current?.getInternalState();
-    const requestedAmountsSum = reallocation?.items.reduce((acc, item) => acc + parseInt(item.amount), 0);
-    const sourceAmountsSum = calcReallocationSums(internalState).source;
-    const diff = requestedAmountsSum - sourceAmountsSum;
-
-    if (diff) {
-      alert.error(
-        `Zbir traženih sredstava je ${diff > 0 ? 'veći' : 'manji'} za ${Math.abs(diff)} od zbira unešenih iznosa!`,
-      );
-      return;
-    }
-
-    setModal('accept');
-  };
+  let totalRequestedAmount = 0;
 
   const handleSubmit = () => {
-    const internalState = budgetTableRef.current?.getInternalState();
-    const flattenedBudget = flattenReallocationBudgetData(internalState);
+    acceptSSSExternalReallocations(
+      reallocation?.id,
 
-    acceptOUExternalReallocations(
-      {
-        id: reallocation?.id,
-        items: flattenedBudget as ReallocationItemForm[],
+      () => {
+        navigate('/finance/budget/requests');
+        alert.success('Zahtjev uspješno odobren.');
       },
       () => {
-        navigate('/finance/budget/current/external-reallocation');
-        alert.success('Preusmjerenje sredstava uspješno.');
-      },
-      () => {
-        alert.error('Došlo je do greške prilikom preusmjerenja sredstava!');
+        alert.error('Došlo je do greške prilikom odobravanja zahtjeva!');
       },
     );
   };
 
   const handleReject = () => {
-    rejectOUExternalReallocations(
+    rejectSSSExternalReallocations(
       reallocation?.id,
       () => {
-        navigate('/finance/budget/current/external-reallocation');
+        navigate('/finance/budget/requests');
         alert.success('Zahtjev uspješno odbijen.');
       },
       () => {
@@ -95,8 +73,6 @@ const ExternalReallocationDetails = () => {
       },
     );
   };
-
-  let totalRequestedAmount = 0;
 
   return (
     <ScreenWrapper>
@@ -107,6 +83,11 @@ const ExternalReallocationDetails = () => {
             content={`Naziv predlagača: ${reallocation?.destination_organization_unit.title}`}
             style={{marginBottom: 0}}
           />
+          <MainTitle
+            variant="bodyMedium"
+            content={`Naziv pošiljaoca: ${reallocation?.source_organization_unit.title}`}
+            style={{marginBottom: 0}}
+          />
         </TitleTabsWrapper>
         <div style={{marginBottom: 24}}>
           <LabeledDivider>
@@ -115,7 +96,7 @@ const ExternalReallocationDetails = () => {
 
           {!!reallocation &&
             reallocation.items.map((item: ReallocationItemDetail) => {
-              const tempCount = counts.find(count => count.id === item?.destination_account?.id);
+              const tempCount = counts.find(count => count.id === item?.source_account?.id);
 
               if (!tempCount) return <></>;
 
@@ -137,11 +118,12 @@ const ExternalReallocationDetails = () => {
           </Amount>
         </div>
         <BudgetTable
-          step={BudgetTableStep.EXTERNAL_REALLOCATION}
+          step={BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW}
           organizationUnitId={organization_unit_id}
           year={new Date().getFullYear()}
           countsProps={currentBudget}
-          ref={budgetTableRef}
+          extraData={reallocation?.items}
+          disabled={true}
         />
         <Footer>
           <Button
@@ -150,7 +132,7 @@ const ExternalReallocationDetails = () => {
             onClick={() => navigate('/finance/budget/current/external-reallocation')}
           />
           <Button content="Odbij" variant="primary" onClick={() => setModal('reject')} />
-          <Button content="Sačuvaj" variant="primary" onClick={handleAccept} />
+          <Button content="Odobri" variant="primary" onClick={() => setModal('accept')} />
         </Footer>
       </SectionBox>
       <ConfirmationModal
@@ -160,7 +142,7 @@ const ExternalReallocationDetails = () => {
         customContent={
           <>
             <Typography
-              content={`Da li ste sigurni da želite da ${modal === 'accept' ? 'prihvatite' : 'odbijete'} zahtjev? `}
+              content={`Da li ste sigurni da želite da ${modal === 'accept' ? 'odobrite' : 'odbijete'} zahtjev? `}
               variant="bodyMedium"
               style={{fontWeight: 600, textAlign: 'center'}}
             />
@@ -176,4 +158,4 @@ const ExternalReallocationDetails = () => {
   );
 };
 
-export default ExternalReallocationDetails;
+export default ExternalReallocationFinanceOfficialDetails;

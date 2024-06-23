@@ -48,7 +48,7 @@ export const tableHeadsRequests: TableHead[] = [
     accessor: 'items',
     type: 'custom',
     renderContents: (items: ReallocationItemDetail[]) => {
-      const requestedAmountsSum = items.reduce((acc, item) => acc + parseInt(item.amount), 0);
+      const requestedAmountsSum = items.reduce((acc, item) => acc + parseInt(item.amount), 0) / 2;
       return <Typography content={requestedAmountsSum} variant="bodySmall" />;
     },
   },

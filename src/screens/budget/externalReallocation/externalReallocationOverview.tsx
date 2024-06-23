@@ -185,7 +185,9 @@ const ExternalReallocationOverview = () => {
           data={externalReallocations}
           tableHeads={tableHeads}
           onRowClick={(row: ReallocationItem) =>
-            row?.source_organization_unit?.id === organization_unit_id ? toggleModal(row.id) : toggleRequestModal(row)
+            row?.destination_organization_unit?.id === organization_unit_id
+              ? toggleModal(row.id)
+              : toggleRequestModal(row)
           }
           tableActions={[
             {
@@ -194,7 +196,7 @@ const ExternalReallocationOverview = () => {
               icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
               shouldRender: row =>
                 row?.status === ReallocationStatusEnum.created &&
-                row?.source_organization_unit?.id === organization_unit_id,
+                row?.destination_organization_unit?.id === organization_unit_id,
             },
           ]}
         />
@@ -226,7 +228,7 @@ const ExternalReallocationOverview = () => {
           customContent={
             <>
               <Typography
-                content={`Organizaciona jedinica ${isRequestModalOpen?.source_organization_unit?.title} je uputila zahtjev za eskterno preusmjerenje.`}
+                content={`Organizaciona jedinica ${isRequestModalOpen?.destination_organization_unit?.title} je uputila zahtjev za eskterno preusmjerenje.`}
                 variant="bodyMedium"
                 style={{fontWeight: 600, textAlign: 'center'}}
               />

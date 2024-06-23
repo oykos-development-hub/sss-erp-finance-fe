@@ -106,6 +106,20 @@ const BudgetTable = forwardRef<BudgetTableMethods, BudgetTableProps>(
           updateParentValues(`${fieldPath.join('.')}-actual`);
         }
 
+        if (step === BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW) {
+          methods.setValue(`${fieldPath.join('.')}-actual`, item.filled_data ? item?.filled_data?.actual : '0');
+          updateParentValues(`${fieldPath.join('.')}-actual`);
+
+          const currentItemDestination: InternalReallocationExtraData = extraData?.find(
+            (item: InternalReallocationExtraData) => item?.destination_account?.id == fieldPath[fieldPath.length - 1],
+          );
+
+          if (currentItemDestination) {
+            methods.setValue(`${fieldPath.join('.')}-amountTaken`, currentItemDestination.amount);
+            updateParentValues(`${fieldPath.join('.')}-amountTaken`);
+          }
+        }
+
         // Add the field for the current item
         methods.setValue(`${fieldPath.join('.')}-currentYearBudget`, '0');
         methods.setValue(`${fieldPath.join('.')}-nextYearBudget`, '0');

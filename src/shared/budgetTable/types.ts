@@ -87,6 +87,14 @@ export enum BudgetTableStep {
   / This state refers to when the organization unit Manager need to fill out the external reallocation request from another organization unit
   /
   */
+
+  EXTERNAL_REALLOCATION_FO_PREVIEW = 'externalReallocationFOPreview',
+
+  /*
+  /
+  / This state refers to when the finance offical needs to accept or reject external reallocation between two organization units
+  /
+  */
 }
 
 export type BudgetTableHead = {

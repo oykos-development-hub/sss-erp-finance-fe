@@ -8,22 +8,31 @@ import {PAGE_SIZE, ReallocationStatusEnum} from '../../../constants.ts';
 import {ReallocationItem} from '../../../types/graphQL/externalReallocations.ts';
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import {defaultDropdownOption} from '../../finesAndTaxes/fines/constants.tsx';
+import useAppContext from '../../../context/useAppContext.ts';
 
 const initialValues = {
   destination_organization_unit_id: undefined,
   source_organization_unit_id: undefined,
 };
 export const RequestsPage = () => {
+  const {
+    navigation: {navigate},
+  } = useAppContext();
+
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
 
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState(initialValues);
 
-  const {externalReallocations, total} = useGetExternalReallocations({
+  const {externalReallocations, total, refetch} = useGetExternalReallocations({
     page: page,
     status: ReallocationStatusEnum.acceptedOJ,
     ...filters,
   });
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   const onFilterChange = (value: any, name: string) => {
     setFilters({...filters, [name]: value?.id});
@@ -65,7 +74,7 @@ export const RequestsPage = () => {
       <Table
         data={externalReallocations}
         tableHeads={tableHeadsRequests}
-        onRowClick={(row: ReallocationItem) => console.log(row)}
+        onRowClick={(row: ReallocationItem) => navigate(`/finance/budget/requests/${row.id}`)}
       />
       <Pagination
         pageCount={total ? Math.ceil(total / PAGE_SIZE) : 1}
