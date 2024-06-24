@@ -1,11 +1,11 @@
-import {Button, Divider, Dropdown, Table, TableHead, Pagination, Typography, TrashIcon, Theme} from 'client-library';
+import {Button, Divider, Dropdown, Pagination, Table, TableHead, Theme, TrashIcon, Typography} from 'client-library';
 import {useEffect, useState} from 'react';
 import {ExternalReallocationModal} from '../../../components/externalReallocationModal/externalReallocationModal';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
 import {defaultDropdownOption} from '../../finesAndTaxes/fines/constants.tsx';
 import {DropdownData} from '../../../types/dropdownData.ts';
-import {PAGE_SIZE, ReallocationStatusEnum} from '../../../constants.ts';
+import {PAGE_SIZE, ReallocationStatusEnum, UserRole} from '../../../constants.ts';
 import useGetExternalReallocations from '../../../services/graphQL/externalReallocations/useGetExternalReallocations.ts';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {useCreateBudgetYearFilter} from '../../../utils/useCreateBudgetYearFilter.ts';
@@ -17,6 +17,8 @@ import {ReallocationItem} from '../../../types/graphQL/externalReallocations.ts'
 import {ModalControlButtons} from '../../../shared/confirmationModal/styles.ts';
 import useRejectOUExternalReallocations from '../../../services/graphQL/externalReallocations/useRejectOUExternalReallocations.ts';
 import {createOptions} from '../../../utils/createOptions.ts';
+import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
+import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 
 const tableHeads: TableHead[] = [
   {
@@ -51,7 +53,8 @@ const tableHeads: TableHead[] = [
   {
     title: 'Status',
     accessor: 'status',
-    type: 'text',
+    type: 'custom',
+    renderContents: (status: string) => <StatusTableCell status={status} />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
@@ -66,6 +69,7 @@ const ExternalReallocationOverview = () => {
     alert,
     contextMain: {
       organization_unit: {id: organization_unit_id},
+      role_id,
     },
     navigation: {navigate},
   } = useAppContext();
@@ -88,7 +92,7 @@ const ExternalReallocationOverview = () => {
 
   const {externalReallocations, total, refetch} = useGetExternalReallocations({
     page: page,
-    organization_unit_id: organization_unit_id,
+    organization_unit_id: useRoleCheck(role_id, [UserRole.FINANCE_OFFICIAL]) ? undefined : organization_unit_id,
     budget_id: filters.budget_id,
     status: statusOptions.find(status => status.id === filters.status)?.title,
   });
