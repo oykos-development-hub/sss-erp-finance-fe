@@ -12,7 +12,6 @@ type BudgetReallocationFormProps = {
   actual: boolean;
   step: BudgetTableStep | `${BudgetTableStep}`;
   disabled?: boolean;
-  isExternal?: boolean;
 };
 
 const BudgetReallocationForm = ({
@@ -22,7 +21,6 @@ const BudgetReallocationForm = ({
   updateParentValues,
   actual,
   disabled,
-  isExternal,
   step,
 }: BudgetReallocationFormProps) => {
   const {control, watch} = useFormContext();
@@ -31,32 +29,34 @@ const BudgetReallocationForm = ({
   const amountTaken = watch(`${fieldPath.join('.')}-amountTaken`);
   const amountGiven = watch(`${fieldPath.join('.')}-amountGiven`);
 
+  const isExternal =
+    step === BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW || step === BudgetTableStep.EXTERNAL_REALLOCATION;
+
   const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
     e.target.select();
   };
 
   return (
     <>
-      {!disabled ||
-        (step === BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW && (
-          <CountTableCell level={level} lastLevel={lastLevel}>
-            <Controller
-              name={`${fieldPath.join('.')}-actual`}
-              control={control}
-              render={({field: {value}}) => (
-                <Typography
-                  content={value}
-                  variant="bodySmall"
-                  style={{
-                    marginLeft: 24,
-                    fontWeight: level < 4 ? 600 : 400,
-                    padding: `12px ${(level - 1) * 7}`,
-                  }}
-                />
-              )}
-            />
-          </CountTableCell>
-        ))}
+      {(!disabled || step === BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW) && (
+        <CountTableCell level={level} lastLevel={lastLevel}>
+          <Controller
+            name={`${fieldPath.join('.')}-actual`}
+            control={control}
+            render={({field: {value}}) => (
+              <Typography
+                content={value}
+                variant="bodySmall"
+                style={{
+                  marginLeft: 24,
+                  fontWeight: level < 4 ? 600 : 400,
+                  padding: `12px ${(level - 1) * 7}`,
+                }}
+              />
+            )}
+          />
+        </CountTableCell>
+      )}
       <CountTableCell level={level} lastLevel={lastLevel}>
         <Controller
           name={`${fieldPath.join('.')}-amountTaken`}

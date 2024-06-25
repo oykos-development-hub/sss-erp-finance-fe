@@ -156,7 +156,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
     <Modal
       open={open}
       onClose={handleClose}
-      title="KREIRAJ EKSTERNO PREUSMJERENJE"
+      title={activeReallocation ? 'EKSTERNO PREUSMJERENJE' : 'KREIRAJ EKSTERNO PREUSMJERENJE'}
       customButtonsControls={buttonControls}
       width={600}
       content={

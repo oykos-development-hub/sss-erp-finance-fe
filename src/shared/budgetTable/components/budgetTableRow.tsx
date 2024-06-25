@@ -194,7 +194,6 @@ const BudgetTableRow = ({
             fieldPath={fieldPath}
             actual={false}
             disabled={disabled}
-            isExternal={true}
             step={step}
           />
         );
