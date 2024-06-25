@@ -38,7 +38,9 @@ const BudgetReallocationForm = ({
 
   return (
     <>
-      {(!disabled || step === BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW) && (
+      {(!disabled ||
+        step === BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW ||
+        step === BudgetTableStep.EXTERNAL_REALLOCATION) && (
         <CountTableCell level={level} lastLevel={lastLevel}>
           <Controller
             name={`${fieldPath.join('.')}-actual`}

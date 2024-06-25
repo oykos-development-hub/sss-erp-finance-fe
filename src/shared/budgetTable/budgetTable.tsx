@@ -111,7 +111,7 @@ const BudgetTable = forwardRef<BudgetTableMethods, BudgetTableProps>(
           updateParentValues(`${fieldPath.join('.')}-actual`);
 
           const currentItemDestination: InternalReallocationExtraData = extraData?.find(
-            (item: InternalReallocationExtraData) => item?.destination_account?.id == fieldPath[fieldPath.length - 1],
+            (item: InternalReallocationExtraData) => item?.source_account?.id == fieldPath[fieldPath.length - 1],
           );
 
           if (currentItemDestination) {

@@ -17,6 +17,7 @@ import {useState} from 'react';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 import useAcceptSSSExternalReallocations from '../../../services/graphQL/externalReallocations/useAcceptSSSExternalReallocations.ts';
 import useRejectSSSExternalReallocations from '../../../services/graphQL/externalReallocations/useRejectSSSExternalReallocations.ts';
+import {ReallocationStatusEnum} from '../../../constants.ts';
 
 const ExternalReallocationFinanceOfficialDetails = () => {
   const {
@@ -45,6 +46,10 @@ const ExternalReallocationFinanceOfficialDetails = () => {
   const [modal, setModal] = useState<'accept' | 'reject' | null>(null);
 
   const reallocation = externalReallocations?.[0];
+  const disabled =
+    reallocation?.status === ReallocationStatusEnum.acceptedSSS ||
+    reallocation?.status === ReallocationStatusEnum.rejectedSSS;
+
   let totalRequestedAmount = 0;
 
   const handleSubmit = () => {
@@ -96,7 +101,7 @@ const ExternalReallocationFinanceOfficialDetails = () => {
 
           {!!reallocation &&
             reallocation.items.map((item: ReallocationItemDetail) => {
-              const tempCount = counts.find(count => count.id === item?.source_account?.id);
+              const tempCount = counts.find(count => count.id === item?.destination_account?.id);
 
               if (!tempCount) return <></>;
 
@@ -131,8 +136,12 @@ const ExternalReallocationFinanceOfficialDetails = () => {
             variant="secondary"
             onClick={() => navigate('/finance/budget/current/external-reallocation')}
           />
-          <Button content="Odbij" variant="primary" onClick={() => setModal('reject')} />
-          <Button content="Odobri" variant="primary" onClick={() => setModal('accept')} />
+          {!disabled && (
+            <>
+              <Button content="Odbij" variant="primary" onClick={() => setModal('reject')} />
+              <Button content="Odobri" variant="primary" onClick={() => setModal('accept')} />
+            </>
+          )}
         </Footer>
       </SectionBox>
       <ConfirmationModal
