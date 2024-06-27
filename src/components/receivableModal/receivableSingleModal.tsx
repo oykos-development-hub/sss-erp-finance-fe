@@ -59,7 +59,7 @@ const ReceivableSingleModal = ({onClose, open, data, selectedRow, onSubmit}: Fun
       title: 'Konto sa kojeg se plaća',
       accessor: 'source_account',
       type: 'custom',
-      width: '20%',
+      width: '200px',
       renderContents: (_item, row, index) => {
         return (
           <Controller

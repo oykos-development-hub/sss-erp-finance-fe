@@ -49,7 +49,7 @@ const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundRe
       title: 'Konto sa kojeg se plaća',
       accessor: 'source_account',
       type: 'custom',
-      width: '20%',
+      width: '200px',
       renderContents: (_item, _row, index) => {
         return (
           <Controller

@@ -178,14 +178,7 @@ const ReceivableEntry = () => {
       const payload = {
         organization_unit_id: organization_unit_id?.id,
         supplier_id: supplier_id?.id,
-        amount:
-          selectedRows.length > 1
-            ? Number(amountValue)
-            : manualAmount
-            ? manualAmount.replace(',', '.')
-            : totalAmount
-            ? parseFloat(totalAmount)
-            : null,
+        amount: amount,
         date_of_payment: parseDateForBackend(data?.date_of_payment),
         description: data?.description,
         source_of_funding: data?.source_of_funding?.id,
@@ -336,6 +329,7 @@ const ReceivableEntry = () => {
     calculateTotalRemainingPrice();
   }, [selectedRows]);
 
+  const selectedItem = fields?.filter(field => selectedRows.includes(field?.id));
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -511,7 +505,7 @@ const ReceivableEntry = () => {
               </>
             )}
 
-            {showModal && selectedRows.length === 1 && selectedRows[0]?.type === 'invoices' && (
+            {showModal && selectedRows.length === 1 && selectedItem[0]?.type === 'invoices' && (
               <ReceivableSingleModal
                 onClose={() => setShowModal(false)}
                 open={showModal}
@@ -522,7 +516,7 @@ const ReceivableEntry = () => {
             )}
 
             {((showModal && selectedRows.length >= 2) ||
-              (selectedRows.length === 1 && selectedRows[0]?.type !== 'invoices') ||
+              (selectedRows.length === 1 && selectedItem[0]?.type !== 'invoices') ||
               selectedRows[0]?.status === 'Djelimično na nalogu') && (
               <ReceivablesModal
                 onClose={() => setShowModal(false)}
