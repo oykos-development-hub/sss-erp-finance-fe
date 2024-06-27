@@ -37,6 +37,7 @@ import {
   contributionsTitleOptions,
   generateUsersDropdownOptions,
   mockedActivitiesDropdownOption,
+  tableHeads,
 } from '../constants.tsx';
 import {Salary, SalaryAdditionalExpense, SalaryAdditionalExpenseParams} from '../../../../types/graphQL/salaries.ts';
 import useGetUserProfiles from '../../../../services/graphQL/userProfiles/useGetUserProfiles.ts';
@@ -705,6 +706,12 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           data={suspensionsFields}
           tableActions={tableActions}
         />
+
+        {salary?.account_amounts[0].account && salary?.account_amounts[0]?.amount && (
+          <>
+            <Table tableHeads={tableHeads} data={salary.account_amounts} />
+          </>
+        )}
         <Footer>
           <Button
             content="Odustani"

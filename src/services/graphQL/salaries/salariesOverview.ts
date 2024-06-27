@@ -28,6 +28,11 @@ const salariesOverview = `query salary_Overview($id: Int, $month: String, $organ
                 id
                 title
             }
+            account_amounts{
+                id
+                account
+                amount
+            }
             salary_additional_expenses{
                 id
                 title

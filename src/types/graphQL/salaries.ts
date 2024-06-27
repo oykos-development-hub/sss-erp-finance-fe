@@ -34,6 +34,13 @@ export type Salary = {
   is_deletable: boolean;
   created_at: string;
   updated_at: string;
+  account_amounts: [
+    {
+      account: string;
+      amount: number;
+      id: number;
+    },
+  ];
 };
 
 export interface SalariesOverviewParams {

@@ -63,3 +63,22 @@ export function generateUsersDropdownOptions(users: UserProfile[]) {
 }
 
 export const mockedActivitiesDropdownOption: DropdownData<number>[] = [{id: 0, title: 'Aktivnost'}];
+
+export const tableHeads: TableHead[] = [
+  {
+    title: 'Konto troška',
+    width: '200px',
+    accessor: 'account_amounts',
+    type: 'custom',
+    renderContents: (_, row) => {
+      return <Typography content={row?.account} />;
+    },
+  },
+  {
+    title: 'Ukupan iznos',
+    width: '200px',
+    accessor: 'account_amounts',
+    type: 'custom',
+    renderContents: (_, row) => <Typography content={roundCurrency(row?.amount)} />,
+  },
+];
