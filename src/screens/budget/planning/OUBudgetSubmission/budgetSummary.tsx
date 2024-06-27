@@ -89,7 +89,6 @@ const BudgetSummary = ({
 
   return (
     <>
-      asdasddd
       <Table
         tableHeads={budgetSummaryTableHeads}
         data={tableData}

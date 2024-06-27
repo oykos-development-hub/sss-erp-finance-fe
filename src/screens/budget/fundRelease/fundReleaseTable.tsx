@@ -82,13 +82,13 @@ const FundReleaseTable = ({counts, invalidRows, onEnableRow, enabledRows, allEna
     details.length > 0
       ? [
           {name: 'Ekonomska klasifikacija', width: 10},
-          {name: 'Iznos iz plana potrošnje', width: 4},
+          {name: 'Tekući budžet', width: 4},
           {name: 'Iznos', width: 10},
         ]
       : [
           {name: '', width: 2},
           {name: 'Ekonomska klasifikacija', width: 10},
-          {name: 'Iznos iz plana potrošnje', width: 4},
+          {name: 'Tekući budžet', width: 4},
           {name: 'Iznos', width: 10},
         ];
 
