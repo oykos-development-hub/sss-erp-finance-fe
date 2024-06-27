@@ -25,7 +25,7 @@ type FinancialDetails = {
   status: DropdownData<number>;
 };
 
-type NonFinancialDetails = {
+export type NonFinancialDetails = {
   activity: Activity;
   contact_email: string;
   contact_fullname: string;
@@ -41,6 +41,7 @@ type NonFinancialDetails = {
   status: DropdownData<number>;
   statement: string;
   goals?: Goal[];
+  year?: string;
 };
 
 export type Activity = {

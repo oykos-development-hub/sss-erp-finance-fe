@@ -1,120 +1,123 @@
-import {MouseEvent} from 'react';
-import {useForm} from 'react-hook-form';
-import {
-  Container,
-  CustomDivider,
-  InputWrapper,
-  MainTitle,
-  SectionWrapper,
-  InputComponent,
-  ButtonWrapper,
-  AddProgramWrapper,
-  AccordionMainWrapper,
-} from './styles.ts';
-import {Input, Button, PlusIcon, Theme} from 'client-library';
-import {NonFinanceAccordion} from '../../../components/nonFinanceAccordion/nonFinanceAccordion.tsx';
-import {useState} from 'react';
-import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
-import useInsertNonFinancial from '../../../services/graphQL/insertNonFinancial/useInsertNonFinancial.ts';
+import {FormProvider, useForm} from 'react-hook-form';
+import {Container, InputWrapper, MainTitle, SectionWrapper, InputComponent} from './styles.ts';
+import {Input, Button} from 'client-library';
+import {useEffect} from 'react';
 import useAppContext from '../../../context/useAppContext.ts';
+import {NonFinancialActivitySection} from '../planning/OUBudgetSubmission/budgetNonFinancial/nonFinancialActivitySection.tsx';
+import {NonFinancialForm} from '../../../types/nonFinance.ts';
+import Footer from '../../../shared/footer.ts';
+import useGetNonFinancialBudgetOverview from '../../../services/graphQL/budget/useGetNonFinancialBudgetOverview.ts';
+import useUpdateNonFinancial from '../../../services/graphQL/insertNonFinancial/useUpdateNonFinancial.ts';
 
-export const NonFinance = () => {
-  const [programs, setPrograms] = useState<number[]>([]);
-  const {alert} = useAppContext();
+export const NonFinance = ({isPreview, refetch}: {isPreview?: boolean; refetch?: () => void}) => {
+  const {
+    alert,
+    contextMain: {organization_unit},
+    navigation: {
+      navigate,
+      location: {pathname},
+    },
+  } = useAppContext();
 
+  const year = parseInt(pathname.split('/').pop());
+
+  const {nonFinancialBudgets} = useGetNonFinancialBudgetOverview(year);
+  const {updateNonFinancial} = useUpdateNonFinancial();
+
+  const nonFinancialBudgetDetails = nonFinancialBudgets[0];
+  //TODO unify all statuses in one enum - {id: 3, title: "Na čekanju"}
+  const editingDisabled = nonFinancialBudgetDetails?.status?.id === 3;
+
+  const methods = useForm<NonFinancialForm>({disabled: editingDisabled});
   const {
     register,
-    formState: {errors, isValid},
+    formState: {isValid, errors},
+    setValue,
     handleSubmit,
-  } = useForm<any>();
+  } = methods;
 
-  const handleAddProgram = (e: MouseEvent<HTMLElement> | undefined) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    setPrograms(prevPrograms => {
-      if (prevPrograms.length) {
-        return [...prevPrograms, prevPrograms[prevPrograms.length - 1] + 1];
-      } else {
-        return [1];
-      }
-    });
-  };
+  useEffect(() => {
+    if (nonFinancialBudgetDetails) {
+      setValue('statement', nonFinancialBudgetDetails.statement);
+      setValue('contact_email', nonFinancialBudgetDetails.contact_email);
+      setValue('contact_phone', nonFinancialBudgetDetails.contact_phone);
+      setValue('contact_fullname', nonFinancialBudgetDetails.contact_fullname);
+      setValue('contact_working_place', nonFinancialBudgetDetails.contact_working_place);
+      setValue('impl_contact_email', nonFinancialBudgetDetails.impl_contact_email);
+      setValue('impl_contact_fullname', nonFinancialBudgetDetails.impl_contact_fullname);
+      setValue('impl_contact_phone', nonFinancialBudgetDetails.impl_contact_phone);
+      setValue('impl_contact_working_place', nonFinancialBudgetDetails.impl_contact_working_place);
+      setValue('goals', nonFinancialBudgetDetails.activity.goals ?? []);
+    }
+  }, [nonFinancialBudgetDetails]);
 
-  const handleDeleteProgram = (id: number) => {
-    setPrograms(prevPrograms => prevPrograms.filter(program => program !== id));
-  };
-
-  const {insertNonFinancial} = useInsertNonFinancial();
-  const onSubmit = async (data: any) => {
-    if (isValid) {
-      await insertNonFinancial(
-        data,
+  const handleSubmitNonFinancial = async (data: NonFinancialForm) => {
+    if (isValid && nonFinancialBudgetDetails.request_id) {
+      await updateNonFinancial(
+        {...data, request_id: nonFinancialBudgetDetails.request_id},
         () => {
-          alert.success('Nefinansijski dio budžeta uspješno dodat');
+          refetch && refetch();
+          navigate('/finance/budget/current/non-financial');
+          alert.success('Nefinansijski dio budžeta uspješno izmijenjen');
         },
         () => {
-          alert.error('Greška prilikom dodavanja nefinansijskog dijela budžeta');
+          alert.error('Greška prilikom izmjene nefinansijskog dijela budžeta');
         },
       );
     }
   };
 
   return (
-    <ScreenWrapper>
-      <Container>
-        <MainTitle content="BUDŽET 2022 - XXXXXXXX " variant="bodyMedium" />
-        <CustomDivider />
+    //   TODO check breadcrumbs and add screen wrapper
+    <Container>
+      <FormProvider {...methods}>
         <SectionWrapper>
+          {/*/!*TODO check if comment goes here*!/*/}
+          {/*<BorderBox>*/}
+          {/*  <BorderBoxItem>*/}
+          {/*    <Typography content={'Komentar OJ:'} variant={'bodySmall'} style={{fontWeight: 600, marginRight: 10}} />*/}
+          {/*    <Typography content={nonFinancialBudgetDetails?.official_comment ?? ''} variant={'bodySmall'} />*/}
+          {/*  </BorderBoxItem>*/}
+          {/*</BorderBox>*/}
           <MainTitle content="OSNOVNE INFORMACIJE" variant="bodyMedium" />
           <InputWrapper>
-            <Input
-              label="Naziv organizacione jedinice:"
-              //TODO check if this should just display data or be editable
-              //{...register('name_of_organization_unit')}
-              //error={errors.name_of_organization_unit?.message as string}
-            />
+            <Input label="Naziv organizacione jedinice:" value={organization_unit?.title ?? ''} disabled />
           </InputWrapper>
           <InputWrapper>
             <Input
               label="Kod:"
-              //TODO check if this should just display data or be editable
-              //{...register('organization_code')}
-              //error={errors.organization_code?.message as string}
+              disabled
+              //TODO send empty string for now
             />
           </InputWrapper>
           <InputWrapper>
-            <Input
-              label="Izjava:"
-              //TODO check if this should just display data or be editable
-              //{...register('mission_statement')}
-              //error={errors.mission_statement?.message as string}
-            />
+            <Input label="Izjava:" {...register('statement')} error={errors.statement?.message as string} />
           </InputWrapper>
         </SectionWrapper>
         <SectionWrapper>
           <MainTitle content="ODGOVORNO LICE ZA SPROVOĐENJE PROGRAMA" variant="bodyMedium" />
           <InputWrapper>
             <InputComponent
-              {...register('person_responsible_name_surname')}
+              {...register('impl_contact_fullname')}
               label="Ime i prezime:"
-              error={errors.person_responsible_name_surname?.message as string}
+              error={errors.impl_contact_fullname?.message as string}
             />
             <Input
-              {...register('person_responsible_working_place')}
+              {...register('impl_contact_working_place')}
               label="Radno mjesto:"
-              error={errors.person_responsible_working_place?.message as string}
+              error={errors.impl_contact_working_place?.message as string}
             />
           </InputWrapper>
           <InputWrapper>
             <InputComponent
-              {...register('person_responsible_telephone_number')}
+              {...register('impl_contact_phone')}
               label="Broj telefona:"
-              error={errors.person_responsible_telephone_number?.message as string}
+              error={errors.impl_contact_phone?.message as string}
             />
             <Input
-              {...register('person_responsible_email')}
+              {...register('impl_contact_email')}
               label="Email adresa:"
-              error={errors.person_responsible_email?.message as string}
+              error={errors.impl_contact_email?.message as string}
             />
           </InputWrapper>
         </SectionWrapper>
@@ -122,49 +125,46 @@ export const NonFinance = () => {
           <MainTitle content="KONTAKT OSOBA" variant="bodyMedium" />
           <InputWrapper>
             <InputComponent
-              {...register('contact_person_name_surname')}
+              {...register('contact_fullname')}
               label="Ime i prezime:"
-              error={errors.contact_person_name_surname?.message as string}
+              error={errors.contact_fullname?.message as string}
             />
             <Input
-              {...register('contact_person_working_place')}
+              {...register('contact_working_place')}
               label="Radno mjesto:"
-              error={errors.contact_person_working_place?.message as string}
+              error={errors.contact_working_place?.message as string}
             />
           </InputWrapper>
           <InputWrapper>
             <InputComponent
-              {...register('contact_person_telephone_number')}
+              {...register('contact_phone')}
               label="Broj telefona:"
-              error={errors.contact_person_telephone_number?.message as string}
+              error={errors.contact_phone?.message as string}
             />
             <Input
-              {...register('contact_person_email')}
+              {...register('contact_email')}
               label="Email adresa:"
-              error={errors.contact_person_email?.message as string}
+              error={errors.contact_email?.message as string}
             />
           </InputWrapper>
         </SectionWrapper>
 
-        <ButtonWrapper>
-          <Button content="Završi" variant="primary" onClick={handleSubmit(onSubmit)} />
-        </ButtonWrapper>
-
-        <AddProgramWrapper>
-          <MainTitle content="DODAJTE PROGRAM" variant="bodyMedium" />
-          <PlusIcon stroke={Theme?.palette?.gray800} onClick={handleAddProgram} />
-        </AddProgramWrapper>
-
-        {programs.map(programNo => (
-          <AccordionMainWrapper key={`acc-wrap-${programNo}`}>
-            <NonFinanceAccordion
-              programNo={programNo}
-              key={`acc-${programNo}`}
-              handleDeleteProgram={handleDeleteProgram}
+        <NonFinancialActivitySection
+          activity={nonFinancialBudgetDetails?.activity}
+          disabled={editingDisabled || isPreview}
+        />
+        {!isPreview && (
+          <Footer>
+            {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
+            <Button
+              content="Sačuvaj"
+              variant="secondary"
+              onClick={handleSubmit(handleSubmitNonFinancial)}
+              disabled={editingDisabled}
             />
-          </AccordionMainWrapper>
-        ))}
-      </Container>
-    </ScreenWrapper>
+          </Footer>
+        )}
+      </FormProvider>
+    </Container>
   );
 };

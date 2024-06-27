@@ -12,7 +12,7 @@ import {FlatRateOverviewItem} from './flatRate.ts';
 import {ObligationsItem, PaymentOrderItem} from './receivablesTypes.ts';
 import {Salary} from './salaries.ts';
 import {EnforcedPaymentItem} from './enforcedPaymentTypes.ts';
-import {BudgetRequestItem} from './budgetRequestDetails.ts';
+import {BudgetRequestItem, NonFinancialDetails} from './budgetRequestDetails.ts';
 import {AccountingOrderItem, ObligationsItemForAccounting, PaymentOrderItemForAccounting} from './accountingTypes.ts';
 
 export type PageParams = {
@@ -66,10 +66,13 @@ export type BudgetResponse = {
 };
 
 export type NonFinancialResponse = {
-  // get: {};
+  get: {nonFinancialBudget_Overview: GetResponse<NonFinancialDetails>};
   insert: {
     // TODO add correct type
     requestNotFinancially_Insert: InsertResponse<any>;
+  };
+  update: {
+    nonFinancialBudget_Update: InsertResponse<any>;
   };
   // delete: {};
 };

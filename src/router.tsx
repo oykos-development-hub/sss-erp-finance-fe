@@ -72,6 +72,7 @@ import BudgetFillActual from './screens/budget/budgetFillActual/budgetFillActual
 import {ReceivablesLandingPage} from './screens/liabilitesAndReceivables/receivablesLandingPage/receivablesLandingPage.tsx';
 import ExternalReallocationDetails from './screens/budget/externalReallocation/externalReallocationDetails.tsx';
 import ExternalReallocationFinanceOfficialDetails from './screens/budget/externalReallocation/externalReallocationFinanceOfficialDetails.tsx';
+import {NonFinance} from './screens/budget/nonFinance/nonFinance.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -134,6 +135,7 @@ export const Router = () => {
     const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');
     const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
     const currentBudgetDynamicDetails = new RegExp('/finance/budget/current/requests/\\d+$');
+    const nonFinanceDetails = new RegExp('/finance/budget/current/non-financial/\\d+$');
     const budgetRequestDetailsRegex = new RegExp(
       '^/finance/budget/planning/\\d+/requests/\\d+/(financial|non-financial|summary)$',
     );
@@ -216,6 +218,7 @@ export const Router = () => {
     if (pathname === '/finance/deposit/transit/tax-contribution-calculation') return <DepositTaxesOverview />;
 
     if (pathname === '/finance/budget/current/non-financial') return <NonFinancialOverview />;
+    if (nonFinanceDetails.test(pathname)) return <NonFinance />;
 
     if (pathname === '/finance/budget/current/spending-dynamics') return <SpendingDynamicsTabs />;
     if (pathname === '/finance/budget/current/requests') return <SpendingDynamicsTabs />;

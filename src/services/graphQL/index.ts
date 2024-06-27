@@ -115,6 +115,8 @@ import insertExternalReallocations from './externalReallocations/insertExternalR
 import acceptSSSExternalReallocations from './externalReallocations/acceptSSSExternalReallocations.ts';
 import rejectSSSExternalReallocations from './externalReallocations/rejectSSSExternalReallocations.ts';
 import getCurrentBudgetID from './currentBudget/getCurrentBudgetID.ts';
+import nonFinancialBudgetOverview from './budget/nonFinancialBudgetOverview.ts';
+import updateNonFinancial from './insertNonFinancial/updateNonFinancial.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -249,4 +251,6 @@ export const GraphQL = {
   insertExternalReallocations: insertExternalReallocations,
   acceptSSSExternalReallocations: acceptSSSExternalReallocations,
   rejectSSSExternalReallocations: rejectSSSExternalReallocations,
+  nonFinancialBudgetOverview: nonFinancialBudgetOverview,
+  updateNonFinancial: updateNonFinancial,
 };

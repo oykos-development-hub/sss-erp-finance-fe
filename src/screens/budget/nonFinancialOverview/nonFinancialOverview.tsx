@@ -4,12 +4,22 @@ import {getYearOptions} from '../../../utils/getYearOptions';
 import {DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import useAppContext from '../../../context/useAppContext';
+import useGetNonFinancialBudgetOverview from '../../../services/graphQL/budget/useGetNonFinancialBudgetOverview.ts';
+import {DropdownData} from '../../../types/dropdownData.ts';
+import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
+import {NonFinancialDetails} from '../../../types/graphQL/budgetRequestDetails.ts';
 
 const tableHeads: TableHead[] = [
   {
     title: 'Godina',
-    accessor: '',
+    accessor: 'year',
     type: 'text',
+  },
+  {
+    title: 'Status',
+    accessor: 'status',
+    type: 'custom',
+    renderContents: (status: DropdownData<number>) => <StatusTableCell status={status.title} />,
   },
 ];
 
@@ -18,7 +28,10 @@ const NonFinancialOverview = () => {
     navigation: {navigate},
   } = useAppContext();
 
-  const {control} = useForm();
+  const {control, watch} = useForm();
+  const {year} = watch();
+
+  const {nonFinancialBudgets} = useGetNonFinancialBudgetOverview(year ? year?.id : null);
 
   return (
     <ScreenWrapper>
@@ -44,8 +57,11 @@ const NonFinancialOverview = () => {
             </DropdownWrapper>
           </HeaderWrapper>
         </Wrapper>
-        {/*TO DO finish this whan BE is ready */}
-        <Table data={[]} tableHeads={tableHeads} onRowClick={() => navigate('/finance/budget/nonFinance')} />
+        <Table
+          data={nonFinancialBudgets}
+          tableHeads={tableHeads}
+          onRowClick={(row: NonFinancialDetails) => navigate(`/finance/budget/current/non-financial/${row.year}`)}
+        />
       </SectionBox>
     </ScreenWrapper>
   );
