@@ -126,7 +126,7 @@ const BudgetDynamicFormRow = ({count, level, children, invalid}: BudgetTableRowP
                 type={'number'}
                 invalid={invalid}
               />
-              <BudgetText content="0.00" variant="bodySmall" />
+              <BudgetText content={count[value].savings} variant="bodySmall" />
             </div>
           </DynamicTableCell>
         ))}

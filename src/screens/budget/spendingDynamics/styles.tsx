@@ -124,3 +124,8 @@ export const DynamicTableInput = styled(Input)<{invalid?: boolean}>`
     border-color: ${({invalid}) => (invalid ? Theme.palette.error500 : Theme.palette.gray300)};
   }
 `;
+
+export const StickyTHead = styled.thead`
+  position: sticky;
+  top: 0;
+`;

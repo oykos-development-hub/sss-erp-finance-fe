@@ -17,7 +17,7 @@ const BudgetDynamicHistory = () => {
   } = useAppContext();
   const {organizationUnits} = useGetOrganizationUnits();
 
-  const {budgetDynamicHistory} = useGetBudgetDynamicHistory({budget_id: 88, unit_id: organizationUnit?.id});
+  const {budgetDynamicHistory} = useGetBudgetDynamicHistory({});
 
   const dynamicHistory = budgetDynamicHistory?.map(item => ({id: uuidv4(), ...item}));
 

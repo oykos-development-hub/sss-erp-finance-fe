@@ -10,6 +10,7 @@ import {fundReleaseTableHeads} from './constants';
 import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
 import useDeleteFundRelease from '../../../services/graphQL/fundRelease/useDeleteFundRelease';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal';
+import {FundReleaseItem} from '../../../types/graphQL/fundRelease';
 
 type FundReleaseFilters = {
   year: DropdownData<number>;
@@ -30,7 +31,13 @@ const FundReleaseOverview = () => {
   });
 
   const {fundRelease, refetch} = useGetFundRelease({year: filters.year?.id, month: filters.month?.id});
+  const {fundRelease: allReleases} = useGetFundRelease({year: filters.year?.id});
   const {deleteFundRelease} = useDeleteFundRelease();
+
+  const currentMonthReleaseExists = useMemo(() => {
+    const currentMonth = new Date().getMonth() + 1;
+    return allReleases && allReleases.find((item: FundReleaseItem) => item.month === currentMonth);
+  }, [allReleases]);
 
   const fundReleaseList = useMemo(() => {
     return fundRelease
@@ -99,12 +106,14 @@ const FundReleaseOverview = () => {
             </DropdownWrapper>
           </HeaderWrapper>
           <ButtonWrapper>
-            <Button
-              content="Kreiraj zahtjev za otpuštanje sredstava"
-              style={{width: '200px'}}
-              variant="secondary"
-              onClick={navigateToCreateFundRelease}
-            />
+            {!currentMonthReleaseExists && (
+              <Button
+                content="Kreiraj zahtjev za otpuštanje sredstava"
+                style={{width: '200px'}}
+                variant="secondary"
+                onClick={navigateToCreateFundRelease}
+              />
+            )}
           </ButtonWrapper>
         </Wrapper>
         <Table

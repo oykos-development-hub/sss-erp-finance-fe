@@ -102,7 +102,11 @@ const BudgetDynamicTemplate = () => {
       const initialTotalSaving = totalSavingsList.find(
         totalItem => totalItem.serialNumber === item.account_serial_number,
       )!;
-      if (totalAmount !== parseInt(item.actual) || item.totalSavings > initialTotalSaving?.value) {
+
+      if (
+        totalAmount !== parseInt(item.actual) + initialTotalSaving?.value ||
+        item.totalSavings > initialTotalSaving?.value
+      ) {
         invalidCounts.push(item.account_serial_number);
       }
     });
