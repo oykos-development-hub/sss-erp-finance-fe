@@ -51,7 +51,11 @@ const PayOrderModal = ({onClose, open}: FundReleaseModalProps) => {
         alert.success('Uspješno plaćanje naloga.');
         navigate('/finance/liabilities-receivables/receivables');
       },
-      () => alert.error('Neuspješno plaćanje naloga.'),
+      message =>
+        message ===
+        'make api request: backend error: API error: 500 - upper tx: repo current budget update balance: insufficient funds'
+          ? alert.error('Nemate dovoljno novca za plaćanje.')
+          : alert.error('Neuspješno plaćanje naloga.'),
     );
 
     return;

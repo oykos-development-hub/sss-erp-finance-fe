@@ -62,6 +62,7 @@ export interface ObligationsParams {
 }
 
 export interface ObligationsItem {
+  account: any;
   id: number;
   supplier: any;
   invoice_id: number;
@@ -72,6 +73,14 @@ export interface ObligationsItem {
   remain_price: number;
   title: string;
   type: string;
+  invoice_items: {
+    account: {
+      id: number;
+      title: string;
+    };
+    total_price: string;
+    remain_price: string;
+  };
 }
 
 export interface PayPaymentOrderParams {

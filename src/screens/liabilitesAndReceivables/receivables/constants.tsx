@@ -79,6 +79,9 @@ export const receivableSchema = yup.object().shape({
   description: yup.string().nullable(),
   type: optionsStringSchema.default(null),
   source_of_funding: optionsStringSchema.required(requiredError),
+  account_amounts: yup.object().shape({
+    account: yup.string(),
+  }),
   amount: yup
     .number()
     .transform(value => (Number.isNaN(value) ? null : value))
@@ -96,7 +99,6 @@ export const receivableSchema = yup.object().shape({
         remain_price: yup.number(),
         title: yup.string().default(null),
         type: yup.string(),
-        account: optionsNumberSchema,
       }),
     )
     .nullable(),

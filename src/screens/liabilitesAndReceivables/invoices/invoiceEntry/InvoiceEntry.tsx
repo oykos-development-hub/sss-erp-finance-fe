@@ -251,7 +251,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         },
       },
       {
-        title: 'Konto',
+        title: 'Konto troška',
         accessor: 'account',
         type: 'custom',
         renderContents: (_item, _row, index) => (

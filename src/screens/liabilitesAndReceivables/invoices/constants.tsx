@@ -57,7 +57,7 @@ export const invoicesOverviewTableHeads: TableHead[] = [
 
 export const invoiceAmountTableHeads: TableHead[] = [
   {
-    title: 'Konto',
+    title: 'Konto troška',
     width: '200px',
     accessor: 'account_amounts',
     type: 'custom',

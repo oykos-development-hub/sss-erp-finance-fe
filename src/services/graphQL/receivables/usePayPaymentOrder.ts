@@ -8,14 +8,18 @@ const usePayPaymentOrder = () => {
   const [loading, setLoading] = useState(false);
   const {fetch} = useAppContext();
 
-  const payPaymentOrder = async (data: PayPaymentOrderParams, onSuccess?: () => void, onError?: () => void) => {
+  const payPaymentOrder = async (
+    data: PayPaymentOrderParams,
+    onSuccess?: () => void,
+    onError?: (message: string) => void,
+  ) => {
     if (loading) return;
     setLoading(true);
     const response: ReceivablesResponse['pay'] = await fetch(GraphQL.payPaymentOrder, data);
     if (response.payPaymentOrder.status === 'success') {
       onSuccess && onSuccess();
     } else {
-      onError && onError();
+      onError && onError(response.payPaymentOrder.message);
     }
 
     setLoading(false);

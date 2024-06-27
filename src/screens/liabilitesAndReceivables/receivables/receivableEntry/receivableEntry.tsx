@@ -1,11 +1,10 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {Button, Datepicker, Dropdown, Input, Table, TableHead, Typography} from 'client-library';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
-import {StatusOptions, generateDropdownOptions} from '../../../../constants.ts';
+import {StatusOptions} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
-import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useGetObligations from '../../../../services/graphQL/receivables/useGetObligations.ts';
 import useInsertPaymentOrder from '../../../../services/graphQL/receivables/useInsertPaymentOrder.ts';
@@ -14,11 +13,13 @@ import Footer from '../../../../shared/footer.ts';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import SectionBox from '../../../../shared/sectionBox.ts';
 import StatusTableCell from '../../../../shared/statusTableCell/statusTableCell.tsx';
+import {Items} from '../../../../types/graphQL/receivablesTypes.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {roundCurrency} from '../../../../utils/roundCurrency.ts';
 import {TypesForReceivables, receivableSchema, sourceOfFunding} from '../constants.tsx';
 import {ReceivableFormContainer, Row} from '../styles.ts';
-import {Items} from '../../../../types/graphQL/receivablesTypes.ts';
+import ReceivableSingleModal from '../../../../components/receivableModal/receivableSingleModal.tsx';
+import ReceivablesModal from '../../../../components/receivableModal/receivablesModal.tsx';
 
 type ReceivableEntryForm = yup.InferType<typeof receivableSchema>;
 
@@ -45,10 +46,10 @@ const ReceivableEntry = () => {
   const [amountValue, setAmountValue] = useState<number>();
   const [totalAmount, setTotalAmount] = useState<string>();
   const [manualAmount, setManualAmount] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const {organization_unit_id, supplier_id, type, amount} = watch();
 
-  const {counts} = useGetCountOverview({level: 3});
   const {suppliers} = useGetSuppliers({});
   const {organizationUnits} = useGetOrganizationUnits();
   const {obligations, fetchObligations} = useGetObligations({
@@ -68,10 +69,6 @@ const ReceivableEntry = () => {
     name: 'items',
     keyName: 'key',
   });
-
-  const dropdowncountsOptions = useMemo(() => {
-    return generateDropdownOptions(counts);
-  }, [counts]);
 
   const receivableTableHeads: TableHead[] = [
     {
@@ -102,29 +99,6 @@ const ReceivableEntry = () => {
       renderContents: remain_price => <Typography content={roundCurrency(remain_price)} />,
     },
     {
-      title: 'Konto',
-      accessor: 'account',
-      type: 'custom',
-      renderContents: (_item, row, index) => (
-        <Controller
-          name={`items.${index}.account`}
-          control={control}
-          render={({field: {onChange, name, value}}) => (
-            <div style={{minWidth: '200px'}}>
-              <Dropdown
-                options={dropdowncountsOptions}
-                name={name}
-                value={value}
-                onChange={onChange}
-                error={errors?.items?.[index]?.account?.message}
-                isDisabled={selectedRows && selectedRows.every(option => option !== row.id)}
-              />
-            </div>
-          )}
-        />
-      ),
-    },
-    {
       title: 'Status',
       accessor: 'status',
       type: 'custom',
@@ -151,6 +125,13 @@ const ReceivableEntry = () => {
 
     return true;
   };
+
+  const [updatedItems, setUpdatedItems] = useState<any[]>([]);
+
+  const handleModalSubmit = (formData: any) => {
+    setUpdatedItems(formData?.items);
+  };
+
   const onSubmit = async (data: any) => {
     if (loading) return;
 
@@ -159,38 +140,73 @@ const ReceivableEntry = () => {
       return;
     }
 
-    const payload = {
-      organization_unit_id: organization_unit_id?.id,
-      supplier_id: supplier_id?.id,
-      amount:
-        selectedRows.length > 1
-          ? Number(amountValue)
-          : manualAmount
-          ? manualAmount.replace(',', '.')
-          : totalAmount
-          ? parseFloat(totalAmount)
-          : null,
-      date_of_payment: parseDateForBackend(data?.date_of_payment),
-      description: data?.description,
-      source_of_funding: data?.source_of_funding?.id,
-      items: fields
-        .filter(field => selectedRows.includes(field.id))
-        .map(item => ({
+    if (selectedRows.length === 1) {
+      const field = fields.filter(field => selectedRows.includes(field.id));
+
+      const payload = {
+        organization_unit_id: organization_unit_id?.id,
+        supplier_id: supplier_id?.id,
+        amount:
+          selectedRows.length > 1
+            ? Number(amountValue)
+            : manualAmount
+            ? manualAmount.replace(',', '.')
+            : totalAmount
+            ? parseFloat(totalAmount)
+            : null,
+        date_of_payment: parseDateForBackend(data?.date_of_payment),
+        description: data?.description,
+        source_of_funding: data?.source_of_funding?.id,
+        items: updatedItems.map(item => ({
+          invoice_id: field[0]?.invoice_id || null,
+          additional_expense_id: field[0]?.additional_expense_id || null,
+          salary_additional_expense_id: field[0]?.salary_additional_expense_id || null,
+          source_account_id: item?.account?.id || null,
+          account_id: item?.source_account?.id,
+          amount: item?.remain_price,
+        })),
+      };
+      insertPaymentOrder(
+        payload as any,
+        () => {
+          alert.success('Uspješno ste kreirali nalog za plaćanje.');
+          navigate('/finance/liabilities-receivables/receivables/payment-orders');
+        },
+        () => alert.error('Neuspješno dodavanje naloga.'),
+      );
+    } else {
+      const payload = {
+        organization_unit_id: organization_unit_id?.id,
+        supplier_id: supplier_id?.id,
+        amount:
+          selectedRows.length > 1
+            ? Number(amountValue)
+            : manualAmount
+            ? manualAmount.replace(',', '.')
+            : totalAmount
+            ? parseFloat(totalAmount)
+            : null,
+        date_of_payment: parseDateForBackend(data?.date_of_payment),
+        description: data?.description,
+        source_of_funding: data?.source_of_funding?.id,
+        items: updatedItems.map(item => ({
           invoice_id: item?.invoice_id || null,
           additional_expense_id: item?.additional_expense_id || null,
           salary_additional_expense_id: item?.salary_additional_expense_id || null,
-          account_id: item?.account?.id || null,
+          account_id: item?.source_account?.id,
+          amount: item?.remain_price,
         })),
-    };
+      };
 
-    insertPaymentOrder(
-      payload as any,
-      () => {
-        alert.success('Uspješno ste kreirali nalog za plaćanje.');
-        navigate('/finance/liabilities-receivables/receivables/payment-orders');
-      },
-      () => alert.error('Neuspješno dodavanje naloga.'),
-    );
+      insertPaymentOrder(
+        payload as any,
+        () => {
+          alert.success('Uspješno ste kreirali nalog za plaćanje.');
+          navigate('/finance/liabilities-receivables/receivables/payment-orders');
+        },
+        () => alert.error('Neuspješno dodavanje naloga.'),
+      );
+    }
 
     return;
   };
@@ -301,23 +317,15 @@ const ReceivableEntry = () => {
 
   useEffect(() => {
     if (obligations) {
-      if (obligations && obligations.length) {
-        for (let i = fields.length - 1; i >= 0; i--) {
+      if (obligations.length) {
+        for (let i = obligations.length - 1; i >= 0; i--) {
           remove(i);
         }
 
-        obligations.forEach((article, index) => {
+        obligations.forEach((obligation, index) => {
           insert(index, {
+            ...obligation,
             id: Math.random(),
-            additional_expense_id: article.additional_expense_id,
-            salary_additional_expense_id: article.salary_additional_expense_id,
-            invoice_id: article.invoice_id,
-            title: article.title,
-            total_price: article.total_price,
-            remain_price: article.remain_price,
-            account: null,
-            status: article.status,
-            type: article.type,
           });
         });
       }
@@ -483,6 +491,15 @@ const ReceivableEntry = () => {
                     />
                   )}
                 </Row>
+                <Row>
+                  <Button
+                    content="Izlistaj"
+                    variant="secondary"
+                    style={{width: 130}}
+                    onClick={() => setShowModal(prevState => !prevState)}
+                    disabled={!selectedRows.length}
+                  />
+                </Row>
                 <Table
                   tableHeads={receivableTableHeads}
                   data={fields}
@@ -492,6 +509,28 @@ const ReceivableEntry = () => {
                   disabledCheckbox={areItemsDisabled()}
                 />
               </>
+            )}
+
+            {showModal && selectedRows.length === 1 && selectedRows[0]?.type === 'invoices' && (
+              <ReceivableSingleModal
+                onClose={() => setShowModal(false)}
+                open={showModal}
+                data={fields}
+                selectedRow={selectedRows}
+                onSubmit={handleModalSubmit}
+              />
+            )}
+
+            {((showModal && selectedRows.length >= 2) ||
+              (selectedRows.length === 1 && selectedRows[0]?.type !== 'invoices') ||
+              selectedRows[0]?.status === 'Djelimično na nalogu') && (
+              <ReceivablesModal
+                onClose={() => setShowModal(false)}
+                open={showModal}
+                data={fields}
+                selectedRow={selectedRows}
+                onSubmit={handleModalSubmit}
+              />
             )}
 
             <Footer>
@@ -507,7 +546,7 @@ const ReceivableEntry = () => {
                   content="Sačuvaj"
                   variant="primary"
                   onClick={handleSubmit(onSubmit)}
-                  disabled={!fields.length}
+                  disabled={!updatedItems.length}
                 />
               )}
             </Footer>
