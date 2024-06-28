@@ -21,6 +21,7 @@ import {roundCurrency} from '../../../../utils/roundCurrency.ts';
 import {StatusOptionsInvoice} from '../../invoices/constants.tsx';
 import {TypesTitles, enforcedPaymentSchema} from '../constants.tsx';
 import {FileUploadWrapper, FormContainer, Row} from '../styles.ts';
+import useGetCurrentBudget from '../../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
 
 type EnforcedPaymentEntryForm = yup.InferType<typeof enforcedPaymentSchema>;
 
@@ -29,6 +30,7 @@ const EnforcedPaymentEntry = () => {
     alert,
     navigation: {navigate, location},
     fileService: {uploadFile},
+    contextMain,
   } = useAppContext();
 
   const {
@@ -52,8 +54,10 @@ const EnforcedPaymentEntry = () => {
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
 
   const {organization_unit_id, supplier_id, amount_for_agent, amount_for_lawyer, agent_id, amount_for_bank} = watch();
+  const organizationUnitID = contextMain.organization_unit.id;
 
-  const {counts} = useGetCountOverview({level: 3});
+  const {version} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
+  const {counts} = useGetCountOverview({level: 3, version: version});
   const {suppliers} = useGetSuppliers({});
   const {suppliers: executor} = useGetSuppliers({entity: 'executor'});
 
@@ -72,7 +76,7 @@ const EnforcedPaymentEntry = () => {
     fetchInvoice(() => alert.error('Za izabranu opciju nema rezultata.'));
   };
 
-  const {fields, remove, insert} = useFieldArray({
+  const {fields, remove, insert, update} = useFieldArray({
     control,
     name: 'items',
     keyName: 'key',
@@ -118,7 +122,12 @@ const EnforcedPaymentEntry = () => {
                 options={dropdowncountsOptions}
                 name={name}
                 value={value}
-                onChange={onChange}
+                onChange={val => {
+                  const selectedOption = dropdowncountsOptions.find(option => option.id === val.id);
+                  const updatedAccount = selectedOption ? {id: selectedOption.id, title: selectedOption.title} : null;
+                  onChange(updatedAccount);
+                  update(index, {...fields[index], account: updatedAccount});
+                }}
                 error={errors.items?.[index]?.account?.message}
                 isDisabled={selectedRows && selectedRows.every(option => option !== row.id)}
               />
@@ -160,6 +169,7 @@ const EnforcedPaymentEntry = () => {
           agent_id: agent_id?.id,
           execution_number: data?.execution_number,
           file_id: files[0].id,
+          account_id_for_expenses: data?.account_id_for_expenses?.id,
           amount_for_bank: parseFloat(data?.amount_for_bank),
           items: fields
             .filter(field => selectedRows.includes(field.id))
@@ -193,6 +203,7 @@ const EnforcedPaymentEntry = () => {
         amount_for_agent: data?.amount_for_agent,
         date_of_sap: parseDateForBackend(data?.date_of_sap),
         amount_for_bank: parseFloat(data?.amount_for_bank),
+        account_id_for_expenses: data?.account_id_for_expenses?.id,
         sap_id: data?.sap_id,
         items: fields
           .filter(field => selectedRows.includes(field.id))
@@ -335,7 +346,7 @@ const EnforcedPaymentEntry = () => {
                     onChange={onChange}
                     label="ORGANIZACIONA JEDINICA:"
                     options={organizationUnits}
-                    error={errors.supplier_id?.message}
+                    error={errors.organization_unit_id?.message}
                     isSearchable
                     isRequired
                   />
@@ -470,7 +481,9 @@ const EnforcedPaymentEntry = () => {
                             style={{width: '250px'}}
                             onChange={handleAmountChange}
                           />
+                        </Row>
 
+                        <Row>
                           <Input
                             {...register('amount_for_lawyer')}
                             label="Troškovi advokata:"
@@ -478,9 +491,6 @@ const EnforcedPaymentEntry = () => {
                             style={{width: '250px'}}
                             isRequired
                           />
-                        </Row>
-
-                        <Row>
                           <Input
                             {...register('amount_for_agent')}
                             label="Troškovi izvršitelja:"
@@ -494,6 +504,23 @@ const EnforcedPaymentEntry = () => {
                             error={errors.amount_for_agent?.message}
                             style={{width: '250px'}}
                             isRequired
+                          />
+                          <Controller
+                            name="account_id_for_expenses"
+                            control={control}
+                            render={({field: {name, value, onChange}}) => (
+                              <Dropdown
+                                name={name}
+                                value={value}
+                                onChange={onChange}
+                                label="Konto:"
+                                options={dropdowncountsOptions}
+                                error={errors.account_id_for_expenses?.message}
+                                style={{width: '250px'}}
+                                isSearchable
+                                isRequired
+                              />
+                            )}
                           />
                         </Row>
 

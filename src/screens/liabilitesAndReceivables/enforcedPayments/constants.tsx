@@ -96,6 +96,7 @@ export const enforcedPaymentSchema = yup.object().shape({
     .string()
     .transform(value => (Number.isNaN(value) ? null : value))
     .nullable(),
+  account_id_for_expenses: optionsNumberSchema.default(null),
   items: yup
     .array()
     .of(

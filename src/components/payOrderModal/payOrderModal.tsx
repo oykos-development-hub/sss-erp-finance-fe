@@ -49,7 +49,7 @@ const PayOrderModal = ({onClose, open}: FundReleaseModalProps) => {
       payload,
       () => {
         alert.success('Uspješno plaćanje naloga.');
-        navigate('/finance/liabilities-receivables/receivables');
+        navigate('/finance/liabilities-receivables/receivables/payment-orders');
       },
       message =>
         message ===

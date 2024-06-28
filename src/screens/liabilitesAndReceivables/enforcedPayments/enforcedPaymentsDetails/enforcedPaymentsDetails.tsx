@@ -84,7 +84,7 @@ const EnforcedPaymentsDetails = () => {
       title: 'Konto',
       accessor: 'account',
       type: 'custom',
-      renderContents: account => <Typography content={account.title} />,
+      renderContents: account => <Typography content={`${account.id} - ${account.title}`} />,
     },
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
@@ -431,14 +431,14 @@ const EnforcedPaymentsDetails = () => {
                 style={{width: '250px'}}
                 disabled
               />
+            </Row>
+            <Row>
               <Input
                 label="Troškovi advokata:"
                 value={roundCurrency(enforcedPaymentData?.amount_for_lawyer)}
                 style={{width: '250px'}}
                 disabled
               />
-            </Row>
-            <Row>
               <Input
                 label="Troškovi izvršitelja:"
                 value={roundCurrency(enforcedPaymentData?.amount_for_agent)}
@@ -448,6 +448,12 @@ const EnforcedPaymentsDetails = () => {
               <Input
                 label="Naknada Centralne banke:"
                 value={roundCurrency(enforcedPaymentData?.amount_for_bank)}
+                style={{width: '250px'}}
+                disabled
+              />
+              <Input
+                label="Konto:"
+                value={`${enforcedPaymentData?.account_for_expenses?.id} - ${enforcedPaymentData?.account_for_expenses?.title}`}
                 style={{width: '250px'}}
                 disabled
               />

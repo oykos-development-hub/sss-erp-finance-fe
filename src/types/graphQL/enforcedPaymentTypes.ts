@@ -61,6 +61,10 @@ export interface EnforcedPaymentItem {
   created_at: string;
   updated_at: string;
   description: string;
+  account_for_expenses: {
+    id: number;
+    title: string;
+  };
 }
 
 export interface EnforcedPaymentInsertParams {

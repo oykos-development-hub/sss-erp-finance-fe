@@ -22,6 +22,10 @@ const enforcedPaymentOverview = `query enforcedPayment_Overview($id: Int,$status
             amount_for_lawyer
 		    amount_for_agent
             amount_for_bank
+            account_for_expenses{
+                id
+                title
+            }
             execution_number
             bank_account
             date_of_payment
