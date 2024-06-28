@@ -1,5 +1,5 @@
-import {Dropdown, Modal, Table, TableHead, Typography} from 'client-library';
-import {useEffect, useMemo} from 'react';
+import {Dropdown, Modal, Table, TableHead, Typography, Input} from 'client-library';
+import {useEffect, useMemo, useState} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import {generateDropdownOptions} from '../../constants.ts';
 import useAppContext from '../../context/useAppContext.ts';
@@ -7,6 +7,7 @@ import useGetCountOverview from '../../services/graphQL/counts/useGetCountOvervi
 import useGetCurrentBudget from '../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
 import {roundCurrency} from '../../utils/roundCurrency.ts';
 import {ObligationsItem} from '../../types/graphQL/receivablesTypes.ts';
+import {Row} from '../../screens/liabilitesAndReceivables/receivables/styles.ts';
 
 interface FundReleaseModalProps {
   onClose: () => void;
@@ -14,16 +15,22 @@ interface FundReleaseModalProps {
   data: any;
   selectedRow: ObligationsItem[];
   id?: number;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: any, additionalData?: {amountValue?: number}) => void;
 }
 
 const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundReleaseModalProps) => {
   const {contextMain} = useAppContext();
-  const {control, handleSubmit} = useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm();
 
   const organizationUnitID = contextMain.organization_unit.id;
   const {version} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
   const {counts} = useGetCountOverview({level: 3, version: version});
+
+  const [amountValue, setAmountValue] = useState<number>();
 
   const {fields, append, update} = useFieldArray({
     control,
@@ -84,6 +91,15 @@ const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundRe
 
   const tableData = data.filter((field: any) => selectedRow.includes(field.id));
 
+  const calculateTotalRemainingPrice = () => {
+    const relevantFields = tableData.filter((field: any) => selectedRow.includes(field.id));
+    let totalRemainingPrice = 0;
+    relevantFields.forEach((field: any) => {
+      totalRemainingPrice += field.remain_price;
+    });
+    return setAmountValue(totalRemainingPrice);
+  };
+
   useEffect(() => {
     if (tableData.length > 0) {
       tableData.forEach((item: any) => {
@@ -95,6 +111,10 @@ const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundRe
     }
   }, [append]);
 
+  useEffect(() => {
+    calculateTotalRemainingPrice();
+  }, [tableData]);
+
   return (
     <Modal
       open={open}
@@ -102,13 +122,25 @@ const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundRe
       title="OBAVEZE"
       leftButtonOnClick={onClose}
       rightButtonOnClick={handleSubmit(formData => {
-        onSubmit(formData);
+        const additionalData = {
+          amountValue,
+        };
+        onSubmit(formData, additionalData);
         onClose();
       })}
       rightButtonText="Sačuvaj"
       leftButtonText="Otkaži"
       content={
         <div>
+          <Row>
+            <Input
+              label="Iznos za plaćanje:"
+              disabled
+              value={roundCurrency(amountValue)}
+              error={errors.amount?.message as string}
+              style={{width: '250px'}}
+            />
+          </Row>
           <Table tableHeads={invoicesTableHead} data={tableData} />
         </div>
       }

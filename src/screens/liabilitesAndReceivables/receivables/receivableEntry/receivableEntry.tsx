@@ -128,8 +128,11 @@ const ReceivableEntry = () => {
 
   const [updatedItems, setUpdatedItems] = useState<any[]>([]);
 
-  const handleModalSubmit = (formData: any) => {
+  const handleModalSubmit = (formData?: any, additionalData?: any) => {
     setUpdatedItems(formData?.items);
+    setManualAmount(additionalData?.manualAmount);
+    setTotalAmount(additionalData?.totalAmount);
+    setAmountValue(additionalData?.amountValue);
   };
 
   const onSubmit = async (data: any) => {
@@ -142,18 +145,24 @@ const ReceivableEntry = () => {
 
     if (selectedRows.length === 1) {
       const field = fields.filter(field => selectedRows.includes(field.id));
+      let amount;
+
+      if (selectedRows.length > 1) {
+        amount = Number(amountValue);
+      } else if (manualAmount) {
+        amount = manualAmount.replace(',', '.');
+      } else if (totalAmount) {
+        amount = parseFloat(totalAmount);
+      } else if (selectedRows[0]?.status === 'Djelimično na nalogu') {
+        amount = amountValue;
+      } else {
+        amount = null;
+      }
 
       const payload = {
         organization_unit_id: organization_unit_id?.id,
         supplier_id: supplier_id?.id,
-        amount:
-          selectedRows.length > 1
-            ? Number(amountValue)
-            : manualAmount
-            ? manualAmount.replace(',', '.')
-            : totalAmount
-            ? parseFloat(totalAmount)
-            : null,
+        amount: amount,
         date_of_payment: parseDateForBackend(data?.date_of_payment),
         description: data?.description,
         source_of_funding: data?.source_of_funding?.id,
@@ -247,67 +256,6 @@ const ReceivableEntry = () => {
     return () => false;
   };
 
-  const calculateTotalPrice = () => {
-    if (manualAmount !== null) {
-      setManualAmount(manualAmount);
-    } else {
-      const relevantFields = fields.filter(field => selectedRows.includes(field.id));
-
-      let totalRemainingPrice = 0;
-      relevantFields.forEach(field => {
-        totalRemainingPrice += field.remain_price || 0;
-      });
-
-      setTotalAmount(totalRemainingPrice?.toFixed(2));
-    }
-  };
-
-  const calculateTotalRemainingPrice = () => {
-    const relevantFields = fields.filter(field => selectedRows.includes(field.id));
-
-    let totalRemainingPrice = 0;
-    relevantFields.forEach(field => {
-      totalRemainingPrice += field.remain_price || 0;
-    });
-
-    return setAmountValue(totalRemainingPrice);
-  };
-
-  const handleAmountChange = (e: any) => {
-    const value = e.target.value.trim();
-
-    if (!value) {
-      setManualAmount('');
-      setError('amount', {
-        type: 'manual',
-        message: 'Polje iznos je obavezno.',
-      });
-      return;
-    }
-    const numericValue = parseFloat(value);
-
-    if (isNaN(numericValue)) {
-      setManualAmount('');
-      clearErrors('amount');
-    } else {
-      if (totalAmount) {
-        if (numericValue > parseFloat(totalAmount)) {
-          setError('amount', {
-            type: 'manual',
-            message: 'Iznos za plaćanje ne može biti veći od ukupnog iznosa.',
-          });
-        } else {
-          clearErrors('amount');
-        }
-      }
-      setManualAmount(value);
-    }
-  };
-
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [selectedRows]);
-
   useEffect(() => {
     if (obligations) {
       if (obligations.length) {
@@ -324,10 +272,6 @@ const ReceivableEntry = () => {
       }
     }
   }, [obligations]);
-
-  useEffect(() => {
-    calculateTotalRemainingPrice();
-  }, [selectedRows]);
 
   const selectedItem = fields?.filter(field => selectedRows.includes(field?.id));
   return (
@@ -465,27 +409,6 @@ const ReceivableEntry = () => {
             {!!fields.length && (
               <>
                 <Row>
-                  {selectedRows.length === 1 && (
-                    <Input
-                      {...register('amount')}
-                      label="Iznos za plaćanje:"
-                      error={errors.amount?.message}
-                      value={manualAmount !== null ? manualAmount : totalAmount ? totalAmount : ''}
-                      style={{width: '250px'}}
-                      onChange={handleAmountChange}
-                    />
-                  )}
-                  {selectedRows.length > 1 && (
-                    <Input
-                      label="Iznos za plaćanje:"
-                      disabled
-                      value={roundCurrency(amountValue)}
-                      error={errors.amount?.message}
-                      style={{width: '250px'}}
-                    />
-                  )}
-                </Row>
-                <Row>
                   <Button
                     content="Izlistaj"
                     variant="secondary"
@@ -540,7 +463,7 @@ const ReceivableEntry = () => {
                   content="Sačuvaj"
                   variant="primary"
                   onClick={handleSubmit(onSubmit)}
-                  disabled={!updatedItems.length}
+                  disabled={!updatedItems?.length}
                 />
               )}
             </Footer>
