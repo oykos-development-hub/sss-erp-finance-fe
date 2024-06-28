@@ -89,13 +89,13 @@ const BudgetTable = forwardRef<BudgetTableMethods, BudgetTableProps>(
             (item: InternalReallocationExtraData) => item?.source_account?.id == fieldPath[fieldPath.length - 1],
           );
 
-          if (currentItemDestination) {
-            methods.setValue(`${fieldPath.join('.')}-amountTaken`, currentItemDestination.amount);
+          if (currentItemSource) {
+            methods.setValue(`${fieldPath.join('.')}-amountTaken`, currentItemSource.amount);
             updateParentValues(`${fieldPath.join('.')}-amountTaken`);
           }
 
-          if (currentItemSource) {
-            methods.setValue(`${fieldPath.join('.')}-amountGiven`, currentItemSource.amount);
+          if (currentItemDestination) {
+            methods.setValue(`${fieldPath.join('.')}-amountGiven`, currentItemDestination.amount);
             updateParentValues(`${fieldPath.join('.')}-amountGiven`);
           }
         }
