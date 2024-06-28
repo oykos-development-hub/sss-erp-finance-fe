@@ -139,13 +139,13 @@ const BudgetTableRow = ({
         return (
           <>
             <CountTableCell level={level} lastLevel={!count.children?.length}>
-              <BudgetText content={count?.filled_data?.balance} variant="bodySmall" />
-            </CountTableCell>
-            <CountTableCell level={level} lastLevel={!count.children?.length}>
               <BudgetText content={count.filled_data?.initial_actual} variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level} lastLevel={!count.children?.length}>
               <BudgetText content={count?.filled_data?.actual} variant="bodySmall" />
+            </CountTableCell>
+            <CountTableCell level={level} lastLevel={!count.children?.length}>
+              <BudgetText content={count?.filled_data?.balance} variant="bodySmall" />
             </CountTableCell>
           </>
         );
