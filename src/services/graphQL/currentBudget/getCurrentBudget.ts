@@ -33,11 +33,11 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                         title
                         serial_number
                         filled_data {
-                        budget_id
-                        actual
-                        balance
-                        initial_actual
-                        }
+                            budget_id
+                            actual
+                            balance
+                            initial_actual
+                            }
                         }
                         children {
                             id
@@ -46,9 +46,9 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                             serial_number
                             filled_data {
                                 budget_id
-                        actual
-                        balance
-                        initial_actual
+                            actual
+                            balance
+                            initial_actual
                             }
                             children {
                                 id
@@ -57,9 +57,9 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                                 serial_number
                                 filled_data {
                                     budget_id
-                        actual
-                        balance
-                        initial_actual
+                            actual
+                            balance
+                            initial_actual
                                 }
                                 children {
                                     id
@@ -68,9 +68,9 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                                     serial_number
                                     filled_data {
                                         budget_id
-                        actual
-                        balance
-                        initial_actual
+                            actual
+                            balance
+                            initial_actual
                                     }
                                     children {
                                         id
@@ -79,9 +79,9 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                                         serial_number
                                         filled_data {
                                             budget_id
-                        actual
-                        balance
-                        initial_actual
+                            actual
+                            balance
+                            initial_actual
                                         }
                                     }
                                 }
@@ -90,7 +90,7 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                     }
                 }
             }
-        }
-    }`;
+            }
+            }`;
 
 export default getCurrentBudget;

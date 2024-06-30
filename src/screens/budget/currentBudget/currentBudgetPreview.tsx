@@ -9,17 +9,24 @@ import {OrganizationUnit} from '../../../types/graphQL/organizationUnits.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
 import {calculateSums} from '../../../utils/sumActualBudgetFilledData.ts';
+import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
+import {UserRole} from '../../../constants.ts';
 
 const CurrentBudget = () => {
   const {
     contextMain: {
       organization_unit: {id: organization_unit_id},
+      role_id,
     },
   } = useAppContext();
 
-  const {organizationUnits} = useGetOrganizationUnits(undefined, {allOption: true});
   const [organizationUnit, setOrganizationUnit] = useState<OrganizationUnit | undefined>(undefined);
-  const {currentBudget} = useGetCurrentBudget({organization_unit_id});
+  const {organizationUnits} = useGetOrganizationUnits(organizationUnit ? {id: organizationUnit?.id} : undefined, {
+    allOption: true,
+  });
+
+  const filterId = organizationUnit ? organizationUnit.id : organization_unit_id;
+  const {currentBudget} = useGetCurrentBudget({organization_unit_id: filterId});
 
   useEffect(() => {
     setOrganizationUnit(
@@ -37,15 +44,17 @@ const CurrentBudget = () => {
   return (
     <>
       <Header>
-        <Filters>
-          <FilterDropdown
-            label="ORGANIZACIONA JEDINICA:"
-            options={organizationUnits}
-            name="organization_unit"
-            value={organizationUnit}
-            onChange={value => onFilter(value as DropdownData<string>)}
-          />
-        </Filters>
+        {!useRoleCheck(role_id, [UserRole.MANAGER_OJ]) && (
+          <Filters>
+            <FilterDropdown
+              label="ORGANIZACIONA JEDINICA:"
+              options={organizationUnits}
+              name="organization_unit"
+              value={organizationUnit}
+              onChange={value => onFilter(value as DropdownData<string>)}
+            />
+          </Filters>
+        )}
       </Header>
       <BudgetTable
         step={BudgetTableStep.CURRENT_BUDGET}
