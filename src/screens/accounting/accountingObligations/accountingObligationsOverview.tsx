@@ -1,4 +1,4 @@
-import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {Pagination, PrinterIcon, SearchIcon, Table, Theme, TrashIcon, Datepicker, Button} from 'client-library';
 import {useEffect, useState} from 'react';
 import {PAGE_SIZE} from '../../../constants.ts';
 import useAppContext from '../../../context/useAppContext.ts';
@@ -11,13 +11,24 @@ import {Filters} from '../../budget/planning/budgetList/styles.ts';
 import {tableHeadsAccountingOverview} from '../constants.tsx';
 import {FilterInput, Header} from '../styles.tsx';
 import {AccountingModal} from '../../../components/accountingModal/accountingModal.tsx';
+import {parseDateForBackend} from '../../../utils/dateUtils.ts';
+import useAccountingEntryReport from '../../../services/graphQL/accounting/useAccountingEntryReport.ts';
+import {Controller, useForm} from 'react-hook-form';
 
 const AccountingObligationsOverview = () => {
   const {
     contextMain,
     alert,
-    reportService: {generatePdf},
+    reportService: {generatePdf, loading: loadingPDF},
   } = useAppContext();
+
+  const {
+    control,
+    watch,
+    formState: {errors},
+    handleSubmit,
+  } = useForm();
+
   const [showDeleteModalAccountingId, setShowDeleteModalAccountingId] = useState<number | undefined>(undefined);
   const [dataForModal, setDataForModal] = useState();
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -31,7 +42,11 @@ const AccountingObligationsOverview = () => {
     debouncedSearch,
     page,
     PAGE_SIZE,
+    true,
   );
+  const {fetchAccountingOverview} = useAccountingEntryReport();
+  const date_of_start = watch('date_of_start');
+  const date_of_end = watch('date_of_end');
 
   const {deleteAccountingEntry} = useDeleteAccountingEntry();
 
@@ -83,6 +98,21 @@ const AccountingObligationsOverview = () => {
     setPage(1);
   }, [debouncedSearch]);
 
+  const generateReportPostingJournal = async () => {
+    const dataForReport = await fetchAccountingOverview(
+      contextMain?.organization_unit?.id,
+      'obligations',
+      parseDateForBackend(date_of_start),
+      parseDateForBackend(date_of_end),
+      true,
+    );
+    if (dataForReport?.items) {
+      generatePdf('ALL_ACCOUNTING', dataForReport);
+    } else {
+      alert.info('Ne postoje podaci za ovaj izvještaj.');
+    }
+  };
+
   return (
     <>
       <Header>
@@ -94,6 +124,59 @@ const AccountingObligationsOverview = () => {
             value={search}
             rightContent={<SearchIcon style={{marginLeft: 10, marginRight: 10}} stroke={Theme.palette.gray500} />}
           />
+
+          <Controller
+            control={control}
+            name="date_of_start"
+            rules={{
+              validate: value => {
+                if (!!date_of_end && !value) {
+                  return 'Ovo polje je obavezno.';
+                }
+                return true;
+              },
+            }}
+            render={({field: {onChange, value}}) => (
+              <Datepicker
+                label={'DATUM KNJIŽENJA OD:'}
+                selected={value ? new Date(value) : ''}
+                onChange={onChange}
+                isRequired={!!date_of_end}
+                error={errors.date_of_start?.message as string}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="date_of_end"
+            rules={{
+              validate: value => {
+                if (!!date_of_start && !value) {
+                  return 'Ovo polje je obavezno.';
+                }
+                return true;
+              },
+            }}
+            render={({field: {onChange, value}}) => (
+              <Datepicker
+                label={'DATUM KNJIŽENJA DO:'}
+                value={value}
+                selected={value ? new Date(value) : ''}
+                onChange={onChange}
+                isRequired={!!date_of_start}
+                error={errors.date_of_end?.message as string}
+              />
+            )}
+          />
+          <div style={{display: 'flex', alignItems: 'flex-end'}}>
+            <Button
+              content="Generiši izvještaj"
+              type="submit"
+              isLoading={loadingPDF}
+              onClick={handleSubmit(generateReportPostingJournal)}
+            />
+          </div>
         </Filters>
       </Header>
       <Table

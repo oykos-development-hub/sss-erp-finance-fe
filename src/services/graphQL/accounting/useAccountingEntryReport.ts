@@ -12,6 +12,7 @@ const useAccountingEntryReport = () => {
     type?: string,
     date_of_start?: string | null,
     date_of_end?: string | null,
+    group?: boolean,
   ) => {
     setLoading(true);
 
@@ -21,12 +22,13 @@ const useAccountingEntryReport = () => {
         type,
         date_of_start,
         date_of_end,
+        group,
       });
 
       setLoading(false);
       setTotal(response?.accountingEntry_Overview.total);
 
-      return response?.accountingEntry_Overview.items;
+      return response?.accountingEntry_Overview;
     } catch (err) {
       console.log(err);
     }

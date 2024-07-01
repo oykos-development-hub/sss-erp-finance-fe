@@ -9,7 +9,7 @@ import ReturnedEnforcedPaymentsForAccountingOverview from './returnedEnforcedPay
 
 const accountingPaymentOrderTabs = [
   {id: Tabs.CurrentAccounting, title: 'Knjiženje povraćaja prinudnih naplata', routeName: 'returned-enforced-payments'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Glavna knjiga', routeName: 'returned-enforced-payments-overview'},
+  {id: Tabs.CurrentAccountingOverview, title: 'Dnevnik knjiženja', routeName: 'returned-enforced-payments-overview'},
 ];
 
 const getCurrentTab = (pathname: string) => {
@@ -55,7 +55,7 @@ export const CurrentReturnedEnforcedPaymentsForAccountingTabs = () => {
   const getTitle = () => {
     switch (activeTab) {
       case Tabs.CurrentAccountingOverview:
-        return 'GLAVNA KNJIGA - NALOZI ZA POVRAĆAJ PRINUDNIH NAPLATA';
+        return 'DNEVNIK KNJIŽENJA - NALOZI ZA POVRAĆAJ PRINUDNIH NAPLATA';
 
       default:
         return 'KNJIŽENJE POVRAĆAJA PRINUDNIH NAPLATA';

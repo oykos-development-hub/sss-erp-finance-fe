@@ -9,7 +9,7 @@ import AddAccountingEnforcedPaymentOrdes from './addAccountingEnforcedPaymentOrd
 
 const accountingPaymentOrderTabs = [
   {id: Tabs.CurrentAccounting, title: 'Knjiženje naloga', routeName: 'enforced-payments'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Glavna knjiga', routeName: 'enforced-payments-overview'},
+  {id: Tabs.CurrentAccountingOverview, title: 'Dnevnik knjiženja', routeName: 'enforced-payments-overview'},
 ];
 
 const getCurrentTab = (pathname: string) => {
@@ -55,12 +55,13 @@ export const CurrentAccountingEnforcedPaymentOrderTabs = () => {
   const getTitle = () => {
     switch (activeTab) {
       case Tabs.CurrentAccountingOverview:
-        return 'GLAVNA KNJIGA - NALOZI ZA PRINUDNU NAPLATU';
+        return 'DNEVNIK KNJIŽENJA - NALOZI ZA PRINUDNU NAPLATU';
 
       default:
         return 'KNJIŽENJE NALOGA ZA PRINUDNU NAPLATU';
     }
   };
+
   useEffect(() => {
     setActiveTab(getCurrentTab(location.pathname) || 1);
   }, [location.pathname]);

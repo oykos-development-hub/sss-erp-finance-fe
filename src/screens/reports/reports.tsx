@@ -55,8 +55,9 @@ export const AccountingReports = () => {
       type,
       parseDateForBackend(date_of_start),
       parseDateForBackend(date_of_end),
+      true,
     );
-    if (dataForReport.length > 0) {
+    if (dataForReport.items) {
       generatePdf('ALL_ACCOUNTING', dataForReport);
     } else {
       alert.info('Ne postoje podaci za ovaj izvještaj.');
@@ -173,7 +174,9 @@ export const AccountingReports = () => {
               }}
               render={({field: {onChange, value}}) => (
                 <Datepicker
-                  label="DATUM DOKUMENTA OD:"
+                  label={
+                    reportType === AccountingReportType.AnalyticalCard ? 'DATUM DOKUMENTA OD:' : 'DATUM KNJIŽENJA OD:'
+                  }
                   selected={value ? new Date(value) : ''}
                   onChange={onChange}
                   disabled={!!date_of_start_booking || !!date_of_end_booking}
@@ -204,7 +207,9 @@ export const AccountingReports = () => {
               }}
               render={({field: {onChange, value}}) => (
                 <Datepicker
-                  label="DATUM DOKUMENTA DO:"
+                  label={
+                    reportType === AccountingReportType.AnalyticalCard ? 'DATUM DOKUMENTA DO:' : 'DATUM KNJIŽENJA DO:'
+                  }
                   value={value}
                   selected={value ? new Date(value) : ''}
                   onChange={onChange}

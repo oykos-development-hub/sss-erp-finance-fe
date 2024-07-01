@@ -9,7 +9,7 @@ import AccountingPaymentOrdersOverview from './accountingPaymentOrdersOverview';
 
 const accountingPaymentOrderTabs = [
   {id: Tabs.CurrentAccounting, title: 'Knjiženje naloga', routeName: 'payment-orders'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Glavna knjiga', routeName: 'payment-orders-overview'},
+  {id: Tabs.CurrentAccountingOverview, title: 'Dnevnik knjiženja', routeName: 'payment-orders-overview'},
 ];
 
 const getCurrentTab = (pathname: string) => {
@@ -55,7 +55,7 @@ export const CurrentAccountingPaymentOrderTabs = () => {
   const getTitle = () => {
     switch (activeTab) {
       case Tabs.CurrentAccountingOverview:
-        return 'GLAVNA KNJIGA - NALOZI';
+        return 'DNEVNIK KNJIŽENJA - NALOZI';
 
       default:
         return 'KNJIŽENJE NALOGA ZA PLAĆANJE';

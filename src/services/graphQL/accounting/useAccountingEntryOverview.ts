@@ -10,6 +10,7 @@ const useAccountingEntryOverview = (
   search?: string,
   page?: number,
   size?: number,
+  group?: boolean,
 ) => {
   const [data, setData] = useState<AccountingOrderItem[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -23,6 +24,7 @@ const useAccountingEntryOverview = (
       search,
       page,
       size,
+      group,
     });
     const totalNum = response?.accountingEntry_Overview?.total;
     const items = response?.accountingEntry_Overview?.items;
@@ -34,7 +36,7 @@ const useAccountingEntryOverview = (
 
   useEffect(() => {
     accountingEntryOverview();
-  }, [organization_unit_id, type, search, page, size]);
+  }, [organization_unit_id, type, search, page, size, group]);
 
   return {data, loading, total, fetch: accountingEntryOverview};
 };

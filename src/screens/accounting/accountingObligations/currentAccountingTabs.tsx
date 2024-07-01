@@ -9,7 +9,7 @@ import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from
 
 const accountingTabs = [
   {id: Tabs.CurrentAccounting, title: 'Knjiženje obaveza', routeName: 'obligations'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Glavna knjiga', routeName: 'obligations-overview'},
+  {id: Tabs.CurrentAccountingOverview, title: 'Dnevnik knjiženja', routeName: 'obligations-overview'},
 ];
 
 const getCurrentTab = (pathname: string) => {
@@ -55,7 +55,7 @@ export const CurrentAccountingTabs = () => {
   const getTitle = () => {
     switch (activeTab) {
       case Tabs.CurrentAccountingOverview:
-        return 'GLAVNA KNJIGA';
+        return 'DNEVNIK KNJIŽENJA';
 
       default:
         return 'KNJIŽENJE OBAVEZA';
