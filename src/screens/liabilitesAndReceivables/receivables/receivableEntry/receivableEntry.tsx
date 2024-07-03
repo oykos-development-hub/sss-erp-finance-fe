@@ -27,6 +27,7 @@ const ReceivableEntry = () => {
   const {
     alert,
     navigation: {navigate, location},
+    contextMain: {organization_unit},
   } = useAppContext();
 
   const {
@@ -36,6 +37,7 @@ const ReceivableEntry = () => {
     watch,
     formState: {errors},
     setError,
+    setValue,
     clearErrors,
   } = useForm<ReceivableEntryForm>({
     resolver: yupResolver(receivableSchema),
@@ -57,6 +59,11 @@ const ReceivableEntry = () => {
     organization_unit_id: organization_unit_id?.id ? organization_unit_id.id : null,
     type: type?.id ? type?.id : null,
   });
+
+  useEffect(() => {
+    if (!organization_unit) return;
+    setValue('organization_unit_id', organization_unit);
+  }, [organization_unit]);
 
   const {insertPaymentOrder, loading} = useInsertPaymentOrder();
 
@@ -145,12 +152,12 @@ const ReceivableEntry = () => {
 
     if (selectedRows.length === 1) {
       const field = fields.filter(field => selectedRows.includes(field.id));
-      let amount;
+      let amount: number | null | undefined;
 
       if (selectedRows.length > 1) {
         amount = Number(amountValue);
       } else if (manualAmount) {
-        amount = manualAmount.replace(',', '.');
+        amount = parseFloat(manualAmount.replace(',', '.'));
       } else if (totalAmount) {
         amount = parseFloat(totalAmount);
       } else if (selectedRows[0]?.status === 'Djelimično na nalogu') {
@@ -172,9 +179,10 @@ const ReceivableEntry = () => {
           salary_additional_expense_id: field[0]?.salary_additional_expense_id || null,
           source_account_id: item?.account?.id || null,
           account_id: item?.source_account?.id,
-          amount: item?.remain_price,
+          amount: updatedItems.length === 1 && amount !== null && amount !== undefined ? amount : item?.remain_price,
         })),
       };
+
       insertPaymentOrder(
         payload as any,
         () => {
