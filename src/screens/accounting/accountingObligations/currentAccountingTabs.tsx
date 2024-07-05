@@ -9,7 +9,7 @@ import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from
 
 const accountingTabs = [
   {id: Tabs.CurrentAccounting, title: 'Knjiženje obaveza', routeName: 'obligations'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Dnevnik knjiženja', routeName: 'obligations-overview'},
+  {id: Tabs.CurrentAccountingOverview, title: 'Proknjiženi nalozi', routeName: 'obligations-overview'},
 ];
 
 const getCurrentTab = (pathname: string) => {

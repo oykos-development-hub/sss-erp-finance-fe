@@ -8,8 +8,8 @@ import AccountingEnforcedPaymentOrdersOverview from './accountingEnforcedPayment
 import AddAccountingEnforcedPaymentOrdes from './addAccountingEnforcedPaymentOrdes';
 
 const accountingPaymentOrderTabs = [
-  {id: Tabs.CurrentAccounting, title: 'Knjiženje naloga', routeName: 'enforced-payments'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Dnevnik knjiženja', routeName: 'enforced-payments-overview'},
+  {id: Tabs.CurrentAccounting, title: 'Knjiženje prinudnih naplata', routeName: 'enforced-payments'},
+  {id: Tabs.CurrentAccountingOverview, title: 'Proknjiženi nalozi', routeName: 'enforced-payments-overview'},
 ];
 
 const getCurrentTab = (pathname: string) => {

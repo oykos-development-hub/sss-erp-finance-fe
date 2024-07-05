@@ -8,8 +8,8 @@ import AddAccountingPaymentOrder from './addAccountingPaymentOrder';
 import AccountingPaymentOrdersOverview from './accountingPaymentOrdersOverview';
 
 const accountingPaymentOrderTabs = [
-  {id: Tabs.CurrentAccounting, title: 'Knjiženje naloga', routeName: 'payment-orders'},
-  {id: Tabs.CurrentAccountingOverview, title: 'Dnevnik knjiženja', routeName: 'payment-orders-overview'},
+  {id: Tabs.CurrentAccounting, title: 'Knjiženje naloga za plaćanje', routeName: 'payment-orders'},
+  {id: Tabs.CurrentAccountingOverview, title: 'Proknjiženi nalozi', routeName: 'payment-orders-overview'},
 ];
 
 const getCurrentTab = (pathname: string) => {
