@@ -5,7 +5,6 @@ import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {generateDropdownOptions} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
-import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 import useInsertEnforcedPayment from '../../../../services/graphQL/enforcedPayments/useInsertEnforcedPayment.ts';
 import useGetInvoice from '../../../../services/graphQL/invoice/useGetInvoice.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
@@ -22,6 +21,7 @@ import {StatusOptionsInvoice} from '../../invoices/constants.tsx';
 import {TypesTitles, enforcedPaymentSchema} from '../constants.tsx';
 import {FileUploadWrapper, FormContainer, Row} from '../styles.ts';
 import useGetCurrentBudget from '../../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
+import {flattenAccounts} from '../../../../shared/budgetTable/utils.ts';
 
 type EnforcedPaymentEntryForm = yup.InferType<typeof enforcedPaymentSchema>;
 
@@ -56,8 +56,8 @@ const EnforcedPaymentEntry = () => {
   const {organization_unit_id, supplier_id, amount_for_agent, amount_for_lawyer, agent_id, amount_for_bank} = watch();
   const organizationUnitID = contextMain.organization_unit.id;
 
-  const {version} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
-  const {counts} = useGetCountOverview({level: 3, version: version});
+  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
+  const counts = flattenAccounts(currentBudgetAccounts);
   const {suppliers} = useGetSuppliers({});
   const {suppliers: executor} = useGetSuppliers({entity: 'executor'});
 

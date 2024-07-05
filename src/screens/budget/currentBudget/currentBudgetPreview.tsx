@@ -26,7 +26,7 @@ const CurrentBudget = () => {
   });
 
   const filterId = organizationUnit ? organizationUnit.id : organization_unit_id;
-  const {currentBudget} = useGetCurrentBudget({organization_unit_id: filterId});
+  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id: filterId});
 
   useEffect(() => {
     setOrganizationUnit(
@@ -39,7 +39,7 @@ const CurrentBudget = () => {
     setOrganizationUnit(organizationUnits.find(unit => unit.id === +value.id));
   };
 
-  const summedCurrentBudget = calculateSums(currentBudget);
+  const summedCurrentBudget = calculateSums(currentBudgetAccounts);
 
   return (
     <>

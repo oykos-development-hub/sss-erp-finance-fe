@@ -1,3 +1,5 @@
+import {Count} from '../../types/graphQL/counts.ts';
+
 interface BudgetItem {
   id: number;
   account_id: number;
@@ -173,4 +175,18 @@ export const calcReallocationSums = (data: any): {destination: number; source: n
 
   traverse(data);
   return {source: sourceSum, destination: destinationSum, diff: sourceSum - destinationSum};
+};
+
+export const flattenAccounts = (data: Count[]): Count[] => {
+  const flatList: Count[] = [];
+
+  const flattenNode = (node: Count): void => {
+    flatList.push(node);
+
+    node.children?.forEach(flattenNode);
+  };
+
+  data.forEach(flattenNode);
+
+  return flatList;
 };

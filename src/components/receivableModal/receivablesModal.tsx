@@ -3,11 +3,11 @@ import {useEffect, useMemo, useState} from 'react';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import {generateDropdownOptions} from '../../constants.ts';
 import useAppContext from '../../context/useAppContext.ts';
-import useGetCountOverview from '../../services/graphQL/counts/useGetCountOverview.ts';
 import useGetCurrentBudget from '../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
 import {roundCurrency} from '../../utils/roundCurrency.ts';
 import {ObligationsItem} from '../../types/graphQL/receivablesTypes.ts';
 import {Row} from '../../screens/liabilitesAndReceivables/receivables/styles.ts';
+import {flattenAccounts} from '../../shared/budgetTable/utils.ts';
 
 interface FundReleaseModalProps {
   onClose: () => void;
@@ -27,8 +27,8 @@ const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundRe
   } = useForm();
 
   const organizationUnitID = contextMain.organization_unit.id;
-  const {version} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
-  const {counts} = useGetCountOverview({level: 3, version: version});
+  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
+  const counts = flattenAccounts(currentBudgetAccounts);
 
   const [amountValue, setAmountValue] = useState<number>();
 

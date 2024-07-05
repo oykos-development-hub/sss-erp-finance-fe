@@ -4,7 +4,6 @@ import useGetExternalReallocations from '../../../services/graphQL/externalReall
 import {LabeledDivider} from '../../finesAndTaxes/flatRate/paymentDetails/styles.ts';
 import {Typography, Button} from 'client-library';
 import {ReallocationItemDetail, ReallocationItemForm} from '../../../types/graphQL/externalReallocations.ts';
-import useGetCountOverview from '../../../services/graphQL/counts/useGetCountOverview.ts';
 import {Amount} from '../../finesAndTaxes/confiscation/paymentDetails/styles.ts';
 import {MainTitle} from '../budgetSendDetails/styles.tsx';
 import {TitleTabsWrapper} from '../../deposit/styles.ts';
@@ -15,7 +14,11 @@ import {useRef, useState} from 'react';
 import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
 import Footer from '../../../shared/footer.ts';
 import useAcceptOUExternalReallocations from '../../../services/graphQL/externalReallocations/useAcceptOUExternalReallocations.ts';
-import {calcReallocationSums, flattenReallocationBudgetData} from '../../../shared/budgetTable/utils.ts';
+import {
+  calcReallocationSums,
+  flattenAccounts,
+  flattenReallocationBudgetData,
+} from '../../../shared/budgetTable/utils.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 import useRejectOUExternalReallocations from '../../../services/graphQL/externalReallocations/useRejectOUExternalReallocations.ts';
 
@@ -38,8 +41,7 @@ const ExternalReallocationDetails = () => {
     organization_unit_id: organization_unit_id,
     id,
   });
-  const {version, currentBudget} = useGetCurrentBudget({organization_unit_id});
-  const {counts} = useGetCountOverview({level: 3, version: version});
+  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id});
   const [modal, setModal] = useState<'accept' | 'reject' | null>(null);
 
   const reallocation = externalReallocations?.[0];
@@ -115,7 +117,9 @@ const ExternalReallocationDetails = () => {
 
           {!!reallocation &&
             reallocation.items.map((item: ReallocationItemDetail) => {
-              const tempCount = counts.find(count => count.id === item?.destination_account?.id);
+              const tempCount = flattenAccounts(currentBudgetAccounts).find(
+                count => count.id === item?.destination_account?.id,
+              );
 
               if (!tempCount) return <></>;
 
@@ -140,7 +144,7 @@ const ExternalReallocationDetails = () => {
           step={BudgetTableStep.EXTERNAL_REALLOCATION}
           organizationUnitId={organization_unit_id}
           year={new Date().getFullYear()}
-          countsProps={currentBudget}
+          countsProps={currentBudgetAccounts}
           ref={budgetTableRef}
         />
         <Footer>

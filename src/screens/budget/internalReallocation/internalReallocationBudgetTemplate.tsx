@@ -21,7 +21,7 @@ const InternalReallocationBudget = () => {
     alert,
   } = useAppContext();
 
-  const {currentBudget, budget_id} = useGetCurrentBudget({organization_unit_id: organization_unit.id});
+  const {currentBudgetAccounts, budget_id} = useGetCurrentBudget({organization_unit_id: organization_unit.id});
   const {insertInternalReallocations} = useInternalReallocationsInsert();
   const reallocationID = pathname.split('/').at(-1);
   const parsedReallocationID = reallocationID && !Number.isNaN(reallocationID) ? parseInt(reallocationID) : undefined;
@@ -74,7 +74,7 @@ const InternalReallocationBudget = () => {
             step={isNew ? BudgetTableStep.INTERNAL_REALLOCATION : BudgetTableStep.INTERNAL_REALLOCATION_PREVIEW}
             organizationUnitId={organization_unit?.id}
             year={new Date().getFullYear()}
-            countsProps={currentBudget}
+            countsProps={currentBudgetAccounts}
             ref={budgetTableRef}
             disabled={!isNew}
             //data to fill + and - table columns when previewing existing reallocation

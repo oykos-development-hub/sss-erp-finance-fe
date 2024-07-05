@@ -1,18 +1,18 @@
 import {useEffect, useMemo} from 'react';
 import {Dropdown, Input, Modal, Button} from 'client-library';
 import {Controller, useForm} from 'react-hook-form';
-import useGetCountOverview from '../../services/graphQL/counts/useGetCountOverview';
 import useGetOrganizationUnits from '../../services/graphQL/organizationUnits/useGetOrganizationUnits';
 import {generateDropdownOptions} from '../../constants';
 import {InsertExternalReallocationsFormData, ReallocationItem} from '../../types/graphQL/externalReallocations.ts';
 import {RowWrapper} from './styles.ts';
 import useAppContext from '../../context/useAppContext.ts';
 import PlusButton from '../../shared/plusButton.tsx';
-import useGetCurrentBudgetID from '../../services/graphQL/currentBudget/useGetCurrentBudgetID.ts';
 import useInsertExternalReallocations from '../../services/graphQL/externalReallocations/useInsertExternalReallocations.ts';
 import {ModalControlButtons} from '../../shared/confirmationModal/styles.ts';
 import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
+import useGetCurrentBudget from '../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
+import {flattenAccounts} from '../../shared/budgetTable/utils.ts';
 
 interface ExternalReallocationProps {
   onClose: () => void;
@@ -65,10 +65,9 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
   });
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const {budget_id, version} = useGetCurrentBudgetID({organization_unit_id});
-  const {counts} = useGetCountOverview({level: 3, version: version});
+  const {currentBudgetAccounts, budget_id} = useGetCurrentBudget({organization_unit_id});
   const {insertExternalReallocations, loading} = useInsertExternalReallocations();
-
+  const counts = flattenAccounts(currentBudgetAccounts);
   const items = watch('items');
 
   const dropdownCountsOptions = useMemo(() => {

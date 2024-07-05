@@ -12,12 +12,12 @@ import {BudgetTableStep} from '../../../shared/budgetTable/types.ts';
 import Footer from '../../../shared/footer.ts';
 import {Typography, Button} from 'client-library';
 import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
-import useGetCountOverview from '../../../services/graphQL/counts/useGetCountOverview.ts';
 import {useState} from 'react';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 import useAcceptSSSExternalReallocations from '../../../services/graphQL/externalReallocations/useAcceptSSSExternalReallocations.ts';
 import useRejectSSSExternalReallocations from '../../../services/graphQL/externalReallocations/useRejectSSSExternalReallocations.ts';
 import {ReallocationStatusEnum} from '../../../constants.ts';
+import {flattenAccounts} from '../../../shared/budgetTable/utils.ts';
 
 const ExternalReallocationFinanceOfficialDetails = () => {
   const {
@@ -38,8 +38,9 @@ const ExternalReallocationFinanceOfficialDetails = () => {
     organization_unit_id: organization_unit_id,
     id,
   });
-  const {version, currentBudget} = useGetCurrentBudget({organization_unit_id});
-  const {counts} = useGetCountOverview({level: 3, version: version});
+  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id});
+  const counts = flattenAccounts(currentBudgetAccounts);
+
   const {acceptSSSExternalReallocations} = useAcceptSSSExternalReallocations();
   const {rejectSSSExternalReallocations} = useRejectSSSExternalReallocations();
 
@@ -126,7 +127,7 @@ const ExternalReallocationFinanceOfficialDetails = () => {
           step={BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW}
           organizationUnitId={organization_unit_id}
           year={new Date().getFullYear()}
-          countsProps={currentBudget}
+          countsProps={currentBudgetAccounts}
           extraData={reallocation?.items}
           disabled={true}
         />
