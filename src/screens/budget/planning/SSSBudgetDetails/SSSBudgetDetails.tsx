@@ -68,6 +68,8 @@ const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
   const {budgets} = useGetBudgets({id: isNew ? null : parseInt(budgetID)}, undefined, undefined, isNew);
   const currentBudget = budgets[0] ?? undefined;
 
+  const limits = watch('limits');
+
   //todo check if the same api endpoint is used when the OJ manager is filling the budget
   const onSubmit = async (data: AddBudgetFormType) => {
     if (isSaving) return;
@@ -197,7 +199,7 @@ const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
             variant="primary"
             style={{width: 130}}
             onClick={handleSubmit(onSubmit)}
-            disabled={!!currentBudget?.number_of_requests}
+            disabled={!!currentBudget?.number_of_requests || !limits?.length}
           />
         </Footer>
       </OverviewBox>

@@ -1,5 +1,5 @@
 import {Button} from 'client-library';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import useAppContext from '../../../../context/useAppContext';
@@ -29,8 +29,6 @@ const dynamicCountSchema = yup.object().shape({
   bottomLevel: yup.boolean().required(),
 }) as any;
 
-const nonMonthKeys = ['account_id', 'actual', 'totalSavings', 'bottomLevel', 'account_serial_number'];
-
 const mapRules = (map: any, rule: any) => Object.keys(map).reduce((newMap, key) => ({...newMap, [key]: rule}), {});
 
 const dynamicSchema = yup.lazy(map => yup.object(mapRules(map, yup.object(dynamicCountSchema))));
@@ -39,9 +37,6 @@ export type DynamicCountSchemaType = yup.InferType<typeof dynamicCountSchema>;
 export type DynamicSchemaType = yup.InferType<typeof dynamicSchema>;
 
 const BudgetDynamicTemplate = () => {
-  const [invalidRows, setInvalidRows] = useState<string[]>([]);
-  const [totalSavingsList, setTotalSavingsList] = useState<{value: number; serialNumber: string}[]>([]);
-
   const {alert} = useAppContext();
 
   const methods = useForm<any>();
@@ -59,8 +54,6 @@ const BudgetDynamicTemplate = () => {
         months[month] = parseInt(item[month].value);
         totalSavings += parseInt(item[month].savings);
       });
-
-      setTotalSavingsList(prev => [...prev, {value: totalSavings, serialNumber: item.account_serial_number}]);
 
       const data: any = {
         account_id: item.account_id,
@@ -88,67 +81,33 @@ const BudgetDynamicTemplate = () => {
     }
   }, [budgetDynamic, setupBudgetingFormFieldsRecursively]);
 
-  const validateAmounts = (data: DynamicSchemaType) => {
-    const invalidCounts: string[] = [];
-
-    Object.values(data).forEach((item: DynamicCountSchemaType) => {
-      const total = Object.keys(item).reduce((acc: number, key) => {
-        const monthKey = key as keyof DynamicCountSchemaType;
-
-        return nonMonthKeys.indexOf(monthKey as string) === -1 ? acc + parseInt(item[monthKey]) : acc;
-      }, 0);
-
-      const totalAmount = total + parseInt(item.totalSavings);
-      const initialTotalSaving = totalSavingsList.find(
-        totalItem => totalItem.serialNumber === item.account_serial_number,
-      )!;
-
-      if (
-        totalAmount !== parseInt(item.actual) + initialTotalSaving?.value ||
-        item.totalSavings > initialTotalSaving?.value
-      ) {
-        invalidCounts.push(item.account_serial_number);
-      }
-    });
-
-    return invalidCounts;
-  };
-
   const onSubmit = async (data: DynamicSchemaType) => {
-    const invalidCounts = validateAmounts(data);
-    if (invalidCounts.length) {
-      setInvalidRows(invalidCounts);
-      alert.error('Uneseni iznosi nisu ispravni!');
-      return;
-    } else {
-      setInvalidRows([]);
-      const insertData = Object.values(data)
-        .filter((item: DynamicCountSchemaType) => !!item.bottomLevel)
-        .map((item: DynamicCountSchemaType) => {
-          const {account_id, actual, totalSavings, bottomLevel, account_serial_number, ...months} = item;
+    const insertData = Object.values(data)
+      .filter((item: DynamicCountSchemaType) => !!item.bottomLevel)
+      .map((item: DynamicCountSchemaType) => {
+        const {account_id, actual, totalSavings, bottomLevel, account_serial_number, ...months} = item;
 
-          return {
-            account_id,
-            ...months,
-          };
-        });
+        return {
+          account_id,
+          ...months,
+        };
+      });
 
-      await insertBudgetDynamic(
-        insertData,
-        () => {
-          alert.success('Uspešno ste sačuvali podatke!');
-          refetch();
-        },
-        () => alert.error('Došlo je do greške prilikom čuvanja podataka!'),
-      );
-    }
+    await insertBudgetDynamic(
+      insertData,
+      () => {
+        alert.success('Uspešno ste sačuvali podatke!');
+        refetch();
+      },
+      () => alert.error('Došlo je do greške prilikom čuvanja podataka!'),
+    );
   };
 
   return (
     <div>
       <FormProvider {...methods}>
         <TableWrapper>
-          <BudgetDynamicTable invalidRows={invalidRows} counts={budgetDynamic} loading={loading} />
+          <BudgetDynamicTable invalidRows={[]} counts={budgetDynamic} loading={loading} />
         </TableWrapper>
       </FormProvider>
 
