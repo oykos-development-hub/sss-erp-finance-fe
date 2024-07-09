@@ -104,7 +104,7 @@ const ReturnedEnforcedPaymentsForAccountingOverview = () => {
       true,
     );
     if (dataForReport?.items) {
-      generatePdf('ALL_ACCOUNTING', dataForReport);
+      generatePdf('ACCOUNTING_MULTIPLE', dataForReport?.items?.reverse());
     } else {
       alert.info('Ne postoje podaci za ovaj izvještaj.');
     }
@@ -173,7 +173,7 @@ const ReturnedEnforcedPaymentsForAccountingOverview = () => {
           />
           <div style={{display: 'flex', alignItems: 'flex-end'}}>
             <Button
-              content="Generiši izvještaj"
+              content="Eksportuj odabrane naloge"
               type="submit"
               isLoading={loadingPDF}
               onClick={handleSubmit(generateReportPostingJournal)}

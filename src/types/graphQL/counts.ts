@@ -14,6 +14,7 @@ export interface FilledDataActual {
   balance: number;
   budget_id: number;
   initial_actual: number;
+  current_amount: number;
 }
 
 export interface Count {

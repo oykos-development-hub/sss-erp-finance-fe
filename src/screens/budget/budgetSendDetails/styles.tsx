@@ -73,4 +73,9 @@ export const StyledTable = styled(Table)`
   tr {
     background-color: unset;
   }
+
+  //  Bold totals row
+  tbody tr:last-of-type td p {
+    font-weight: bold !important;
+  }
 `;

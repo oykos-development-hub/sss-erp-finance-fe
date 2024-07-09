@@ -9,6 +9,8 @@ type statusTextWrapperProps = {
 const StatusTableCell = (props: statusTextWrapperProps) => {
   const {status} = props;
 
+  if (!status) return null;
+
   let variant: BadgeVariants = BadgeVariants.primary;
   switch (status) {
     case 'Odobren':

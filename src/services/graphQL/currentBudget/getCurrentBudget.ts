@@ -15,6 +15,7 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                     actual
                     balance
                     initial_actual
+                    current_amount
                 }
                 children {
                     id
@@ -26,6 +27,7 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                         actual
                         balance
                         initial_actual
+                        current_amount
                     }
                     children {
                         id
@@ -37,6 +39,7 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                             actual
                             balance
                             initial_actual
+                            current_amount
                             }
                         }
                         children {
@@ -49,6 +52,7 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                             actual
                             balance
                             initial_actual
+                            current_amount
                             }
                             children {
                                 id
@@ -60,6 +64,7 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                             actual
                             balance
                             initial_actual
+                            current_amount
                                 }
                                 children {
                                     id
@@ -71,6 +76,7 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                             actual
                             balance
                             initial_actual
+                            current_amount
                                     }
                                     children {
                                         id
@@ -82,6 +88,7 @@ const getCurrentBudget = `query currentBudget_Overview($organization_unit_id: In
                             actual
                             balance
                             initial_actual
+                            current_amount
                                         }
                                     }
                                 }

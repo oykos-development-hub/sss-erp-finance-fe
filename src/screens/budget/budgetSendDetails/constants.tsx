@@ -42,8 +42,16 @@ export const tableHeadsRequests: TableHead[] = [
     title: 'Ukupan iznos',
     accessor: 'total',
     type: 'custom',
-    renderContents: (ammount: string) => (
-      <Typography content={ammount !== '0' ? formatCurrency(ammount) : ''} variant="bodySmall" />
+    renderContents: (amount: string) => (
+      <Typography content={amount !== '0' ? formatCurrency(amount) : ''} variant="bodySmall" />
+    ),
+  },
+  {
+    title: 'Limit',
+    accessor: 'limit',
+    type: 'custom',
+    renderContents: (amount: string) => (
+      <Typography content={amount !== '0' ? formatCurrency(amount) : ''} variant="bodySmall" />
     ),
   },
   {

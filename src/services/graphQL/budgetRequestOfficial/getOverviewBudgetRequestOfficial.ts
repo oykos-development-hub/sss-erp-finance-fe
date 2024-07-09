@@ -11,6 +11,7 @@ const getOverviewBudgetRequestOfficial = `query OfficialBudgetRequestOverview($b
             status
             receive_date
             total
+            limit
         }
     }
 }`;

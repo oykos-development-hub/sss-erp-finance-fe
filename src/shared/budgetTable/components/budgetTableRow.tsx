@@ -142,6 +142,9 @@ const BudgetTableRow = ({
               <BudgetText content={count.filled_data?.initial_actual} variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level} lastLevel={!count.children?.length}>
+              <BudgetText content={count?.filled_data?.current_amount} variant="bodySmall" />
+            </CountTableCell>
+            <CountTableCell level={level} lastLevel={!count.children?.length}>
               <BudgetText content={count?.filled_data?.actual} variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level} lastLevel={!count.children?.length}>

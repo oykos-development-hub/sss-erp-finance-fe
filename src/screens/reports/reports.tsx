@@ -41,15 +41,31 @@ export const AccountingReports = () => {
   const getReportData = () => {
     switch (reportType) {
       case AccountingReportType.PostingJournal:
-        generateReportPostingJournal();
+        generateReportPostingJournalOrLedger();
         break;
       case AccountingReportType.AnalyticalCard:
         generateReportAnalyticalCard();
         break;
+      case AccountingReportType.Ledger:
+        generateReportPostingJournalOrLedger(true);
+        break;
     }
   };
 
-  const generateReportPostingJournal = async () => {
+  const sortItemsByType = (input: any) => {
+    const typeOrder = ['invoices', 'payment_orders', 'return_enforced_payment', 'enforced_payments'];
+
+    const sortedItems = input.sorted_items.sort(
+      (a: any, b: any) => typeOrder.indexOf(a?.type) - typeOrder.indexOf(b?.type),
+    );
+
+    return {
+      ...input,
+      sorted_items: sortedItems,
+    };
+  };
+
+  const generateReportPostingJournalOrLedger = async (isLedger?: boolean) => {
     const dataForReport = await fetchAccountingOverview(
       organizationUnit,
       type,
@@ -57,10 +73,15 @@ export const AccountingReports = () => {
       parseDateForBackend(date_of_end),
       true,
     );
-    if (dataForReport.items) {
-      generatePdf('ALL_ACCOUNTING', dataForReport);
+
+    if (dataForReport.items.length) {
+      if (isLedger) {
+        generatePdf('LEDGER', dataForReport);
+        return;
+      }
+      generatePdf('ALL_ACCOUNTING', sortItemsByType(dataForReport));
     } else {
-      alert.info('Ne postoje podaci za ovaj izvještaj.');
+      alert.info('Ne postoje podaci za odabrane filtere.');
     }
   };
 
@@ -120,7 +141,7 @@ export const AccountingReports = () => {
               )}
             />
 
-            {reportType === AccountingReportType.PostingJournal && (
+            {(reportType === AccountingReportType.PostingJournal || reportType === AccountingReportType.Ledger) && (
               <Controller
                 control={control}
                 name="type"

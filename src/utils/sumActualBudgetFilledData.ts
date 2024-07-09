@@ -5,7 +5,7 @@ const calculateSumsForNode = (node: Count): FilledDataActual => {
     return node.filled_data as FilledDataActual;
   }
 
-  const initialSum: FilledDataActual = {actual: 0, balance: 0, budget_id: 0, initial_actual: 0};
+  const initialSum: FilledDataActual = {actual: 0, balance: 0, budget_id: 0, initial_actual: 0, current_amount: 0};
 
   const summedData = node.children.reduce<FilledDataActual>((acc, child) => {
     const childData = calculateSumsForNode(child);
@@ -14,6 +14,7 @@ const calculateSumsForNode = (node: Count): FilledDataActual => {
       balance: acc.balance + childData.balance,
       budget_id: acc.budget_id + childData.budget_id,
       initial_actual: acc.initial_actual + childData.initial_actual,
+      current_amount: acc.current_amount + childData.current_amount,
     };
   }, initialSum);
 

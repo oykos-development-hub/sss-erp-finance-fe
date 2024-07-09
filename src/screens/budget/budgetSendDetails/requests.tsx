@@ -28,6 +28,21 @@ export const RequestsPage = () => {
   const {requests, refetch} = useGetOverviewBudgetRequestOfficial({budget_id});
   const [filteredRequests, setFilteredRequests] = useState<any[]>(requests);
 
+  const [totalsRow, setTotalsRow] = useState({unit: {title: '', id: 0}, date: null, total: 0, limit: 0, status: ''});
+
+  useEffect(() => {
+    if (requests.length === 0) return;
+    let total = 0;
+    let limit = 0;
+
+    requests.forEach(request => {
+      total += parseInt(request.total);
+      limit += parseInt(request.limit);
+    });
+
+    setTotalsRow({...totalsRow, total, limit});
+  }, [requests]);
+
   const handleOrganizationUnitChange = (value: any) => {
     setOrganizationUnit(value);
     setFilteredRequests([requests.find(request => request?.unit?.id === value?.id)]);
@@ -50,7 +65,7 @@ export const RequestsPage = () => {
       </DropdownWrapperRequests>
       <StyledTable
         tableHeads={tableHeadsRequests}
-        data={organizationUnit.id ? filteredRequests : requests}
+        data={organizationUnit.id ? [...filteredRequests, totalsRow] : [...requests, totalsRow]}
         onRowClick={row => {
           if (!row?.unit?.id) return;
           breadcrumbs.add({name: 'Detalji zahtjeva', to: `${pathname}/${row?.unit?.id}/summary`});

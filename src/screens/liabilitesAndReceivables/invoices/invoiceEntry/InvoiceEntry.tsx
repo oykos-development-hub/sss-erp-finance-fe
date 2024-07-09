@@ -71,7 +71,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   const [showFileUploadError, setShowFileUploadError] = useState<boolean>(false);
   const [accountingInvoiceFile, setAccountingInvoiceFile] = useState<FileItem | null>(null);
   const [accountingProFormaInvoiceFile, setAccountingProFormaInvoiceFile] = useState<FileItem | null>(null);
-  const ID = location.pathname.split('/').at(-1);
+  const isNew = location.pathname.split('/').at(-1);
 
   const {
     navigation: {navigate},
@@ -389,21 +389,21 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         insertInvoice(
           payload,
           () => {
-            ID && type.id
+            !isNew && type.id
               ? alert.success('Račun je uspješno izmijenjen')
               : type.id
               ? alert.success('Uspješno dodavanje računa.')
-              : ID && !type.id
+              : !isNew && !type.id
               ? alert.success('Predračun je uspješno izmijenjen')
               : alert.success('Uspješno dodavanje predračuna.');
             navigate('/finance/liabilities-receivables/liabilities/invoices');
           },
           () => {
-            ID && type.id
+            !isNew && type.id
               ? alert.error('Došlo je do greške prilikom izmjene računa.')
               : type.id
               ? alert.error('Neuspješno dodavanje računa.')
-              : ID && !type.id
+              : !isNew && !type.id
               ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
               : alert.error('Došlo je do greške prilikom izmjene predračuna.');
           },
@@ -452,21 +452,21 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         insertInvoice(
           payload,
           () => {
-            ID && type.id
+            !isNew && type.id
               ? alert.success('Račun je uspješno izmijenjen')
               : type.id
               ? alert.success('Uspješno dodavanje računa.')
-              : ID && !type.id
+              : !isNew && !type.id
               ? alert.success('Predračun je uspješno izmijenjen')
               : alert.success('Uspješno dodavanje predračuna.');
             navigate('/finance/liabilities-receivables/liabilities/invoices');
           },
           () => {
-            ID && type.id
+            !isNew && type.id
               ? alert.error('Došlo je do greške prilikom izmjene računa.')
               : type.id
               ? alert.error('Neuspješno dodavanje računa.')
-              : ID && !type.id
+              : !isNew && !type.id
               ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
               : alert.error('Došlo je do greške prilikom izmjene predračuna.');
           },
@@ -509,21 +509,21 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
       insertInvoice(
         payload,
         () => {
-          ID && type.id
+          !isNew && type.id
             ? alert.success('Račun je uspješno izmijenjen')
             : type.id
             ? alert.success('Uspješno dodavanje računa.')
-            : ID && !type.id
+            : !isNew && !type.id
             ? alert.success('Predračun je uspješno izmijenjen')
             : alert.success('Uspješno dodavanje predračuna.');
           navigate('/finance/liabilities-receivables/liabilities/invoices');
         },
         () => {
-          ID && type.id
+          !isNew && type.id
             ? alert.error('Došlo je do greške prilikom izmjene računa.')
             : type.id
             ? alert.error('Neuspješno dodavanje računa.')
-            : ID && !type.id
+            : !isNew && !type.id
             ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
             : alert.error('Došlo je do greške prilikom izmjene predračuna.');
         },
@@ -650,7 +650,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     }
   }, [type?.id]);
 
-  console.log(errors, 'aaa');
   return (
     <InvoiceEntryForm>
       <>
@@ -991,7 +990,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             },
           ]}
         />
-        {invoice?.account_amounts[0].account && invoice?.account_amounts[0]?.amount && (
+        {invoice?.account_amounts[0]?.account && invoice?.account_amounts[0]?.amount && (
           <>
             <Table tableHeads={invoiceAmountTableHeads} data={invoice.account_amounts} />
           </>
