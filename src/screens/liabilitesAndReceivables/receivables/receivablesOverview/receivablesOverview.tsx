@@ -31,6 +31,8 @@ import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {Row} from '../../decisions/decisionsOverview/styles.ts';
 import {receivablesStatusOptions, tableHeads} from '../constants.tsx';
 import {ButtonOverviewWrapper, FilterWrapper, RowWrapper} from '../styles.ts';
+import {REQUEST_STATUSES} from '../../../../services/constants.ts';
+import {importSapIds} from '../../../../services/importExcel/importSapIds.ts';
 
 export interface OverviewFilters {
   year?: DropdownData<string> | null;
@@ -52,7 +54,10 @@ const ReceivablesOverview = () => {
   const {
     alert,
     navigation: {navigate},
+    spreadsheetService: {openImportModal, closeImportModal},
+    contextMain: {token},
   } = useAppContext();
+
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState<OverviewFilters>(initialFilterValues);
   const [showDeleteModalId, setShowDeleteModalId] = useState<number | undefined>(undefined);
@@ -154,6 +159,40 @@ const ReceivablesOverview = () => {
     return options;
   }, [suppliers]);
 
+  const handleUploadSapIdsTable = async (files: FileList) => {
+    const response = await importSapIds(files[0], token);
+    if (response?.status !== REQUEST_STATUSES.success) alert.error('Došlo je do greške prilikom učitavanja fajla!');
+
+    if (response?.validation?.length) {
+      return {
+        // TODO change this in client container and all modules
+        // currently it accepts just data but better option would be
+        // {data: any[], errors: string[]} or
+        // {data: any[], errors: {column: number; message: string; row: number}[]}
+        // so that it can correctly handle the errors
+        errors: response?.validation?.map(
+          (error: {column: number; message: string; row: number}) =>
+            `Red ${error.row}, Kolona ${error.column}: ${error.message}`,
+        ),
+      };
+    }
+
+    if (response?.data?.length) {
+      alert.success('Uspješno ste uvezli podatke.');
+      fetch();
+      closeImportModal();
+    }
+  };
+
+  const handleImportSapIds = () => {
+    const modalProps = {
+      handleUpload: handleUploadSapIdsTable,
+      content: 'Tabela sa SAP ID-evima',
+      noTemplate: true,
+    };
+    openImportModal(modalProps);
+  };
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -212,6 +251,7 @@ const ReceivablesOverview = () => {
           </Row>
         </RowWrapper>
         <ButtonOverviewWrapper>
+          <Button content="Uvezi podatke iz SAP-a" size="md" onClick={handleImportSapIds} />
           <Button
             content="Kreirajte nalog za plaćanje"
             size="md"

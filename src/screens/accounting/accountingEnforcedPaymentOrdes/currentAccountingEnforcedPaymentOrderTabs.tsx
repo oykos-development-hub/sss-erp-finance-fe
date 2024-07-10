@@ -55,10 +55,10 @@ export const CurrentAccountingEnforcedPaymentOrderTabs = () => {
   const getTitle = () => {
     switch (activeTab) {
       case Tabs.CurrentAccountingOverview:
-        return 'DNEVNIK KNJIŽENJA - NALOZI ZA PRINUDNU NAPLATU';
+        return 'PROKNJIŽENI NALOZI';
 
       default:
-        return 'KNJIŽENJE NALOGA ZA PRINUDNU NAPLATU';
+        return 'KNJIŽENJE PRINUDNIH NAPLATA';
     }
   };
 

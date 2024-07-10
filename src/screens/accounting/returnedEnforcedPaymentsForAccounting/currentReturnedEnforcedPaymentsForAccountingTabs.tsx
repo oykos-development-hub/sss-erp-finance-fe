@@ -55,7 +55,7 @@ export const CurrentReturnedEnforcedPaymentsForAccountingTabs = () => {
   const getTitle = () => {
     switch (activeTab) {
       case Tabs.CurrentAccountingOverview:
-        return 'DNEVNIK KNJIŽENJA - NALOZI ZA POVRAĆAJ PRINUDNIH NAPLATA';
+        return 'PROKNJIŽENI NALOZI';
 
       default:
         return 'KNJIŽENJE POVRAĆAJA PRINUDNIH NAPLATA';

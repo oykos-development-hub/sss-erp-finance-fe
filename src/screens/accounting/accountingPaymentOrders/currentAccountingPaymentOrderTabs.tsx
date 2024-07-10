@@ -55,7 +55,7 @@ export const CurrentAccountingPaymentOrderTabs = () => {
   const getTitle = () => {
     switch (activeTab) {
       case Tabs.CurrentAccountingOverview:
-        return 'DNEVNIK KNJIŽENJA - NALOZI';
+        return 'PROKNJIŽENI NALOZI';
 
       default:
         return 'KNJIŽENJE NALOGA ZA PLAĆANJE';

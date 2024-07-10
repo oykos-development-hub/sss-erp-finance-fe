@@ -55,7 +55,7 @@ export const CurrentAccountingTabs = () => {
   const getTitle = () => {
     switch (activeTab) {
       case Tabs.CurrentAccountingOverview:
-        return 'DNEVNIK KNJIŽENJA';
+        return 'PROKNJIŽENI NALOZI';
 
       default:
         return 'KNJIŽENJE OBAVEZA';

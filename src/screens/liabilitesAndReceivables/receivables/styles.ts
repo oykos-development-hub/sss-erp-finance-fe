@@ -12,6 +12,7 @@ export const ButtonOverviewWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-bottom: 20px;
+  gap: 22px;
 `;
 
 export const Row = styled.div`

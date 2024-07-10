@@ -387,12 +387,7 @@ const EnforcedPaymentsDetails = () => {
                   />
                 )}
               />
-              <Input
-                {...register('return_amount')}
-                label="IZNOS:"
-                disabled={enforcedPaymentData?.status === 'Povraćaj'}
-                style={{width: '250px'}}
-              />
+              <Input {...register('return_amount')} label="IZNOS:" disabled style={{width: '250px'}} />
             </Row>
 
             {enforcedPaymentData?.status !== 'Povraćaj' && (
