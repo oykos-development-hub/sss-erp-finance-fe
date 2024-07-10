@@ -141,7 +141,7 @@ export const AccountingReports = () => {
               )}
             />
 
-            {(reportType === AccountingReportType.PostingJournal || reportType === AccountingReportType.Ledger) && (
+            {reportType === AccountingReportType.PostingJournal && (
               <Controller
                 control={control}
                 name="type"
