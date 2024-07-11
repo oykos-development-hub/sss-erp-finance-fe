@@ -67,7 +67,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
   const {currentBudgetAccounts, budget_id} = useGetCurrentBudget({organization_unit_id});
   const {insertExternalReallocations, loading} = useInsertExternalReallocations();
-  const counts = flattenAccounts(currentBudgetAccounts);
+  const counts = flattenAccounts(currentBudgetAccounts, true);
   const items = watch('items');
 
   const dropdownCountsOptions = useMemo(() => {

@@ -12,6 +12,7 @@ interface BudgetItem {
 interface ActualBudgetItem {
   id: number;
   actual: number;
+  type?: number;
 }
 
 interface ReallocationItemForm {
@@ -76,7 +77,7 @@ export const flattenBudgetData = (data: any, parentId = 0) => {
   return result;
 };
 
-export const flattenActualBudgetData = (data: any, parentId = 0) => {
+export const flattenActualBudgetData = (data: any, parentId = 0, type?: string) => {
   const result: ActualBudgetItem[] = [];
   const traverse = (obj: any, id: number) => {
     Object.entries(obj).forEach(([key, value]) => {
@@ -93,6 +94,7 @@ export const flattenActualBudgetData = (data: any, parentId = 0) => {
             entry = {
               id: parseInt(match[1], 10),
               actual: 0,
+              type: type === 'donation' ? 2 : 1,
             };
             result.push(entry);
           }
@@ -101,7 +103,7 @@ export const flattenActualBudgetData = (data: any, parentId = 0) => {
             if (typeof value === 'string' && suffix !== 'description') {
               return parseInt(value, 10); // Parse to integer for budget fields
             }
-            return value; // Use the value directly for 'description' or if it's already a number
+            return value ?? 0; // Use the value directly for 'description' or if it's already a number
           };
 
           // Fill the entry based on the suffix
@@ -177,11 +179,14 @@ export const calcReallocationSums = (data: any): {destination: number; source: n
   return {source: sourceSum, destination: destinationSum, diff: sourceSum - destinationSum};
 };
 
-export const flattenAccounts = (data: Count[]): Count[] => {
+export const flattenAccounts = (data: Count[], leaf?: boolean): Count[] => {
   const flatList: Count[] = [];
 
   const flattenNode = (node: Count): void => {
-    flatList.push(node);
+    // Leaf is a count that has serial number with 4 characters
+    if (!leaf || (leaf && node.serial_number?.length === 4)) {
+      flatList.push(node);
+    }
 
     node.children?.forEach(flattenNode);
   };

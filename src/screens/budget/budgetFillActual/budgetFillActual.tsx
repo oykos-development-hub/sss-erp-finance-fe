@@ -33,12 +33,20 @@ const BudgetFillActual = () => {
 
   const year = budgetRequestDetails?.budget?.title ? parseInt(budgetRequestDetails.budget.title) : 0;
   const budgetTableActualRef = useRef<BudgetTableMethods>(null);
+  const budgetTableActualDonationsRef = useRef<BudgetTableMethods>(null);
 
   const handleSubmitActualBudget = () => {
     const data = flattenActualBudgetData(budgetTableActualRef.current?.getInternalState());
+    const donationData = flattenActualBudgetData(
+      budgetTableActualDonationsRef.current?.getInternalState(),
+      undefined,
+      'donation',
+    );
+
     const redirectPath = pathname.split('/').slice(0, -2).join('/');
+
     financialBudgetActualFill(
-      {data, request_id: budgetRequestDetails?.financial.current_request_id ?? 0},
+      {data: [...data, ...donationData], request_id: budgetRequestDetails?.financial.current_request_id ?? 0},
       () => {
         navigate(redirectPath);
         breadcrumbs.remove();
@@ -58,13 +66,29 @@ const BudgetFillActual = () => {
         variant={'bodyMedium'}
         style={{fontWeight: 600, marginRight: 10, marginTop: 24}}
       />
-      <BudgetTableFinanceManager
-        step={BudgetTableStep.BUDGETING_ACTUAL}
-        organizationUnitId={ids.organizationUnitId}
-        year={year}
-        ref={budgetTableActualRef}
-        countsProps={budgetRequestDetails?.financial.current_accounts}
+      {!!budgetRequestDetails && (
+        <BudgetTableFinanceManager
+          step={BudgetTableStep.BUDGETING_ACTUAL}
+          organizationUnitId={ids.organizationUnitId}
+          year={year}
+          ref={budgetTableActualRef}
+          countsProps={budgetRequestDetails?.financial.current_accounts}
+        />
+      )}
+      <Typography
+        content={'Donacije:'}
+        variant={'bodyMedium'}
+        style={{fontWeight: 600, marginRight: 10, marginTop: 24}}
       />
+      {!!budgetRequestDetails && (
+        <BudgetTableFinanceManager
+          step={BudgetTableStep.BUDGETING_ACTUAL}
+          organizationUnitId={ids.organizationUnitId}
+          year={year}
+          ref={budgetTableActualDonationsRef}
+          countsProps={budgetRequestDetails?.financial.donation_accounts}
+        />
+      )}
       <Footer>
         <Button content="Sačuvaj" variant="secondary" onClick={toggleModal} />
       </Footer>

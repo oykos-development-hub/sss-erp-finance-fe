@@ -12,7 +12,6 @@ import useUpdateNonFinancial from '../../../services/graphQL/insertNonFinancial/
 export const NonFinance = ({isPreview, refetch}: {isPreview?: boolean; refetch?: () => void}) => {
   const {
     alert,
-    contextMain: {organization_unit},
     navigation: {
       navigate,
       location: {pathname},
@@ -72,22 +71,19 @@ export const NonFinance = ({isPreview, refetch}: {isPreview?: boolean; refetch?:
     <Container>
       <FormProvider {...methods}>
         <SectionWrapper>
-          {/*/!*TODO check if comment goes here*!/*/}
-          {/*<BorderBox>*/}
-          {/*  <BorderBoxItem>*/}
-          {/*    <Typography content={'Komentar OJ:'} variant={'bodySmall'} style={{fontWeight: 600, marginRight: 10}} />*/}
-          {/*    <Typography content={nonFinancialBudgetDetails?.official_comment ?? ''} variant={'bodySmall'} />*/}
-          {/*  </BorderBoxItem>*/}
-          {/*</BorderBox>*/}
           <MainTitle content="OSNOVNE INFORMACIJE" variant="bodyMedium" />
           <InputWrapper>
-            <Input label="Naziv organizacione jedinice:" value={organization_unit?.title ?? ''} disabled />
+            <Input
+              label="Naziv organizacione jedinice:"
+              value={nonFinancialBudgetDetails?.activity?.organization_unit?.title ?? ''}
+              disabled
+            />
           </InputWrapper>
           <InputWrapper>
             <Input
               label="Kod:"
               disabled
-              //TODO send empty string for now
+              value={nonFinancialBudgetDetails?.activity?.organization_unit?.code?.toString() ?? ''}
             />
           </InputWrapper>
           <InputWrapper>

@@ -39,7 +39,7 @@ const ExternalReallocationFinanceOfficialDetails = () => {
     id,
   });
   const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id});
-  const counts = flattenAccounts(currentBudgetAccounts);
+  const counts = flattenAccounts(currentBudgetAccounts, true);
 
   const {acceptSSSExternalReallocations} = useAcceptSSSExternalReallocations();
   const {rejectSSSExternalReallocations} = useRejectSSSExternalReallocations();

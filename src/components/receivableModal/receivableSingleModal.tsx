@@ -38,7 +38,7 @@ const ReceivableSingleModal = ({onClose, open, data, selectedRow, onSubmit}: Fun
 
   const organizationUnitID = contextMain.organization_unit.id;
   const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
-  const counts = flattenAccounts(currentBudgetAccounts);
+  const counts = flattenAccounts(currentBudgetAccounts, true);
   const [amountValue, setAmountValue] = useState<number>();
   const [totalAmount, setTotalAmount] = useState<string>();
   const [manualAmount, setManualAmount] = useState<string | null>(null);

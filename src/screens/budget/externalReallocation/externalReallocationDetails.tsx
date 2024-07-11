@@ -117,7 +117,7 @@ const ExternalReallocationDetails = () => {
 
           {!!reallocation &&
             reallocation.items.map((item: ReallocationItemDetail) => {
-              const tempCount = flattenAccounts(currentBudgetAccounts).find(
+              const tempCount = flattenAccounts(currentBudgetAccounts, true).find(
                 count => count.id === item?.destination_account?.id,
               );
 

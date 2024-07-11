@@ -24,8 +24,11 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
     const methods = useForm();
     const allData = methods.watch();
 
+    useEffect(() => {
+      console.log(countsProps?.length, 'coiuuuuuuunts props');
+    }, [countsProps]);
     // If counts are passed through props, don't fetch them from the BE
-    const {counts: countsFromBE} = useGetCountOverview({id: 0, tree: true});
+    const {counts: countsFromBE} = useGetCountOverview({id: 0, tree: true, skip: !!countsProps});
     const counts = countsProps ?? countsFromBE;
     const updateParentValues = (field: string) => {
       // Number of iterations - remove one because the last level contains the last level id and the fieldName

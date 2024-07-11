@@ -10,6 +10,7 @@ const useGetCurrentBudget = (
   onError?: () => void,
 ) => {
   const [currentBudgetAccounts, setCurrentBudgetAccounts] = useState<Count[]>([]);
+  const [currentBudgetDonations, setCurrentBudgetDonations] = useState<Count[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [version, setVersion] = useState<number>(0);
   const [budget_id, setBudget_id] = useState<number>(0);
@@ -22,6 +23,7 @@ const useGetCurrentBudget = (
 
     if (response.currentBudget_Overview.status === 'success') {
       setCurrentBudgetAccounts(response?.currentBudget_Overview?.items?.current_accounts);
+      setCurrentBudgetDonations(response?.currentBudget_Overview?.items?.donation_accounts);
       setVersion(response?.currentBudget_Overview?.items?.version);
       setBudget_id(response?.currentBudget_Overview?.items?.budget_id);
       onSuccess && onSuccess();
@@ -35,7 +37,7 @@ const useGetCurrentBudget = (
     fetchCurrentBudget();
   }, [organization_unit_id]);
 
-  return {currentBudgetAccounts, loading, refetch: fetchCurrentBudget, version, budget_id};
+  return {currentBudgetAccounts, currentBudgetDonations, loading, refetch: fetchCurrentBudget, version, budget_id};
 };
 
 export default useGetCurrentBudget;

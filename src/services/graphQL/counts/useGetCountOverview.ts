@@ -12,9 +12,10 @@ interface ICountParams {
   search?: string;
   version?: number;
   leaf?: boolean;
+  skip?: boolean;
 }
 
-const useGetCountOverview = ({level, page, search, size, tree, version, leaf}: ICountParams) => {
+const useGetCountOverview = ({level, page, search, size, tree, version, leaf, skip}: ICountParams) => {
   const [counts, setCounts] = useState<Count[]>([]);
   const [total, setTotal] = useState<number>(0);
 
@@ -37,6 +38,8 @@ const useGetCountOverview = ({level, page, search, size, tree, version, leaf}: I
     if (totalCounts) setTotal(totalCounts);
   };
   useEffect(() => {
+    if (skip) return;
+
     fetchCounts();
   }, [level, page, search, size, tree, version, leaf]);
   return {counts, total};

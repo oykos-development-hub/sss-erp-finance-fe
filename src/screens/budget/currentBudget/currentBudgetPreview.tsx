@@ -1,16 +1,17 @@
+import {useEffect, useState} from 'react';
 import useAppContext from '../../../context/useAppContext.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import BudgetTable from '../../../shared/budgetTable/budgetTable.tsx';
 import {BudgetTableStep} from '../../../shared/budgetTable/types.ts';
 import {FilterDropdown, Filters} from '../planning/budgetList/styles.ts';
 import {Header} from './styles.tsx';
-import {useEffect, useState} from 'react';
 import {OrganizationUnit} from '../../../types/graphQL/organizationUnits.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
 import {calculateSums} from '../../../utils/sumActualBudgetFilledData.ts';
 import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
 import {UserRole} from '../../../constants.ts';
+import {Typography} from 'client-library';
 
 const CurrentBudget = () => {
   const {
@@ -25,8 +26,12 @@ const CurrentBudget = () => {
     allOption: true,
   });
 
+  useEffect(() => {
+    console.log(organization_unit_id, 'organization_unit_id');
+  }, [organization_unit_id]);
+
   const filterId = organizationUnit ? organizationUnit.id : organization_unit_id;
-  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id: filterId});
+  const {currentBudgetAccounts, currentBudgetDonations} = useGetCurrentBudget({organization_unit_id: filterId});
 
   useEffect(() => {
     setOrganizationUnit(
@@ -40,6 +45,7 @@ const CurrentBudget = () => {
   };
 
   const summedCurrentBudget = calculateSums(currentBudgetAccounts);
+  const summedCurrentBudgetDonations = calculateSums(currentBudgetDonations);
 
   return (
     <>
@@ -56,11 +62,21 @@ const CurrentBudget = () => {
           </Filters>
         )}
       </Header>
+      <Typography content="Tekući budžet" variant="bodyMedium" style={{marginTop: '26px', fontWeight: 600}} />
+
       <BudgetTable
         step={BudgetTableStep.CURRENT_BUDGET}
         year={new Date().getFullYear()}
         organizationUnitId={organization_unit_id}
         countsProps={summedCurrentBudget}
+      />
+
+      <Typography content="Donacije" variant="bodyMedium" style={{marginTop: '26px', fontWeight: 600}} />
+      <BudgetTable
+        step={BudgetTableStep.CURRENT_BUDGET}
+        year={new Date().getFullYear()}
+        organizationUnitId={organization_unit_id}
+        countsProps={summedCurrentBudgetDonations}
       />
     </>
   );

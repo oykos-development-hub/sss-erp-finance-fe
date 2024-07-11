@@ -21,7 +21,6 @@ export const NonFinanceOfficial = ({
   // const [programs, setPrograms] = useState<number[]>([]);
   const {
     alert,
-    contextMain: {organization_unit},
     navigation: {navigate},
   } = useAppContext();
 
@@ -83,13 +82,17 @@ export const NonFinanceOfficial = ({
           {/*</BorderBox>*/}
           <MainTitle content="OSNOVNE INFORMACIJE" variant="bodyMedium" />
           <InputWrapper>
-            <Input label="Naziv organizacione jedinice:" value={organization_unit?.title ?? ''} disabled />
+            <Input
+              label="Naziv organizacione jedinice:"
+              value={budgetRequestDetails?.non_financial?.activity?.organization_unit?.title ?? ''}
+              disabled
+            />
           </InputWrapper>
           <InputWrapper>
             <Input
               label="Kod:"
               disabled
-              //TODO send empty string for now
+              value={budgetRequestDetails?.non_financial?.activity?.organization_unit?.code?.toString() ?? ''}
             />
           </InputWrapper>
           <InputWrapper>

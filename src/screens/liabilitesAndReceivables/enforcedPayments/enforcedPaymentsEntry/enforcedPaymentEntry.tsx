@@ -57,7 +57,7 @@ const EnforcedPaymentEntry = () => {
   const organizationUnitID = contextMain.organization_unit.id;
 
   const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
-  const counts = flattenAccounts(currentBudgetAccounts);
+  const counts = flattenAccounts(currentBudgetAccounts, true);
   const {suppliers} = useGetSuppliers({});
   const {suppliers: executor} = useGetSuppliers({entity: 'executor'});
 
