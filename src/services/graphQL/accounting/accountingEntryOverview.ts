@@ -1,5 +1,5 @@
-const accountingEntryOverview = `query accountingEntry_Overview($id: Int, $organization_unit_id: Int, $page:Int, $size:Int, $type: String, $date_of_start: String, $date_of_end: String, $group: Boolean) {
-    accountingEntry_Overview(id: $id organization_unit_id: $organization_unit_id, page:$page, size:$size, type: $type, date_of_start: $date_of_start, date_of_end: $date_of_end, group: $group) {
+const accountingEntryOverview = `query accountingEntry_Overview($id: Int, $organization_unit_id: Int, $page:Int, $size:Int, $type: String, $date_of_start: String, $date_of_end: String, $group: Boolean, $sort_for_report: Boolean) {
+    accountingEntry_Overview(id: $id organization_unit_id: $organization_unit_id, page:$page, size:$size, type: $type, date_of_start: $date_of_start, date_of_end: $date_of_end, group: $group, sort_for_report: $sort_for_report) {
         status 
         message 
         data

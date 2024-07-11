@@ -52,19 +52,6 @@ export const AccountingReports = () => {
     }
   };
 
-  const sortItemsByType = (input: any) => {
-    const typeOrder = ['invoices', 'payment_orders', 'return_enforced_payment', 'enforced_payments'];
-
-    const sortedItems = input.sorted_items.sort(
-      (a: any, b: any) => typeOrder.indexOf(a?.type) - typeOrder.indexOf(b?.type),
-    );
-
-    return {
-      ...input,
-      sorted_items: sortedItems,
-    };
-  };
-
   const generateReportPostingJournalOrLedger = async (isLedger?: boolean) => {
     const dataForReport = await fetchAccountingOverview(
       organizationUnit,
@@ -72,14 +59,17 @@ export const AccountingReports = () => {
       parseDateForBackend(date_of_start),
       parseDateForBackend(date_of_end),
       true,
+      isLedger ? false : true,
     );
 
-    if (dataForReport.items.length) {
+    if (dataForReport?.sorted_items?.length) {
       if (isLedger) {
+        // GLAVNA KNJIGA - sorted by date and then by type
         generatePdf('LEDGER', dataForReport);
         return;
       }
-      generatePdf('ALL_ACCOUNTING', sortItemsByType(dataForReport));
+      // DNEVNIK KNJIŽENJA - sorted by type and then by date
+      generatePdf('ALL_ACCOUNTING', dataForReport);
     } else {
       alert.info('Ne postoje podaci za odabrane filtere.');
     }

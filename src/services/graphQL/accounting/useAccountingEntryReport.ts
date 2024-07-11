@@ -13,6 +13,7 @@ const useAccountingEntryReport = () => {
     date_of_start?: string | null,
     date_of_end?: string | null,
     group?: boolean,
+    sort_for_report?: boolean,
   ) => {
     setLoading(true);
 
@@ -23,6 +24,7 @@ const useAccountingEntryReport = () => {
         date_of_start,
         date_of_end,
         group,
+        sort_for_report,
       });
 
       setLoading(false);
