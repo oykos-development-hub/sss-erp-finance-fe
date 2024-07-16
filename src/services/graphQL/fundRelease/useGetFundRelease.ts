@@ -23,7 +23,7 @@ const useGetFundRelease = (params: GetFundReleaseParams) => {
 
   useEffect(() => {
     fetchFundRelease();
-  }, [params.year, params.month]);
+  }, [params.year, params.month, params.hide, params.unit_id, params.budget_id, params.status]);
 
   return {fundRelease, loading, total, refetch: fetchFundRelease};
 };

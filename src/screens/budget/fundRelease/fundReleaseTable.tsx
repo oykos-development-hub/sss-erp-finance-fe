@@ -6,20 +6,17 @@ import {BudgetText, CustomTable, CustomTableHead, FlexContainer} from '../../../
 import {FlexRow} from '../../../shared/flex.ts';
 import {BudgetDynamicCount} from '../../../types/graphQL/budgetDynamic';
 import {DynamicTableCell} from '../spendingDynamics/styles.tsx';
-import {FundReleaseCheckbox, FundReleaseInput} from './styles.ts';
+import {FundReleaseInput} from './styles.ts';
 import {FundReleaseDetailsItem} from '../../../types/graphQL/fundRelease.ts';
 
 type BudgetTableProps = {
   counts: BudgetDynamicCount[];
   invalidRows: string[];
   loading?: boolean;
-  onEnableRow: (row: string) => void;
-  enabledRows: string[];
-  allEnabled: boolean;
   details: any;
 };
 
-const FundReleaseTable = ({counts, invalidRows, onEnableRow, enabledRows, allEnabled, details}: BudgetTableProps) => {
+const FundReleaseTable = ({counts, invalidRows, details}: BudgetTableProps) => {
   const methods = useFormContext<any>();
 
   const currentMonth = new Date().toLocaleString('default', {month: 'long'}).toLowerCase();
@@ -30,7 +27,6 @@ const FundReleaseTable = ({counts, invalidRows, onEnableRow, enabledRows, allEna
     return items.map((item: BudgetDynamicCount) => {
       const fieldPath = [...path, item.id.toString()];
       const rowInvalid = invalidRows.includes(item.account_serial_number);
-      const disabled = !enabledRows.includes(item.account_serial_number) && !allEnabled;
       const maxValue = item[currentMonth as keyof BudgetDynamicCount].value;
       return (
         <FundReleaseRow
@@ -38,9 +34,8 @@ const FundReleaseTable = ({counts, invalidRows, onEnableRow, enabledRows, allEna
           level={level}
           count={item}
           invalid={rowInvalid}
-          disabled={disabled}
+          disabled={false}
           maxValue={maxValue}
-          onEnableRow={onEnableRow}
           isDetails={false}>
           {recursiveRowRendering(item.children ?? [], item.children ? level + 1 : level - 1, fieldPath)}
         </FundReleaseRow>
@@ -60,7 +55,6 @@ const FundReleaseTable = ({counts, invalidRows, onEnableRow, enabledRows, allEna
           count={item}
           disabled={true}
           maxValue={maxValue}
-          onEnableRow={onEnableRow}
           isDetails={true}>
           {detailsRowRendering(item.children ?? [], item.children ? level + 1 : level - 1)}
         </FundReleaseRow>
@@ -76,37 +70,23 @@ const FundReleaseTable = ({counts, invalidRows, onEnableRow, enabledRows, allEna
         return recursiveRowRendering(counts);
       }
     }
-  }, [counts, invalidRows, enabledRows, allEnabled]);
+  }, [counts, invalidRows]);
 
-  const fundReleaseTemplateHeads =
-    details.length > 0
-      ? [
-          {name: 'Ekonomska klasifikacija', width: 10},
-          {name: 'Tekući budžet', width: 4},
-          {name: 'Iznos', width: 10},
-        ]
-      : [
-          {name: '', width: 2},
-          {name: 'Ekonomska klasifikacija', width: 10},
-          {name: 'Tekući budžet', width: 4},
-          {name: 'Iznos', width: 10},
-        ];
+  const fundReleaseTemplateHeads = [
+    {name: 'Ekonomska klasifikacija', width: 10},
+    {name: 'Tekući budžet', width: 4},
+    {name: 'Iznos', width: 10},
+  ];
 
   return (
     <CustomTable disabled={false}>
       <thead>
         <tr>
-          {fundReleaseTemplateHeads.map((head, index) => (
+          {fundReleaseTemplateHeads.map(head => (
             <CustomTableHead key={head.name} style={{width: `${head.width}%`}}>
-              {index === 0 && !details.length ? (
-                <FlexRow align="center" justify="center" style={{width: '100%'}}>
-                  <FundReleaseCheckbox name="selectAll" onChange={() => onEnableRow('all')} checked={allEnabled} />
-                </FlexRow>
-              ) : (
-                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                  <Typography content={head.name} variant="bodySmall" />
-                </div>
-              )}
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <Typography content={head.name} variant="bodySmall" />
+              </div>
             </CustomTableHead>
           ))}
         </tr>
@@ -129,20 +109,10 @@ type BudgetTableRowProps = {
   invalid?: boolean;
   disabled: boolean;
   maxValue: number;
-  onEnableRow: (row: string) => void;
   isDetails?: boolean;
 };
 
-const FundReleaseRow = ({
-  count,
-  level,
-  children,
-  invalid,
-  disabled,
-  maxValue,
-  onEnableRow,
-  isDetails,
-}: BudgetTableRowProps) => {
+const FundReleaseRow = ({count, level, children, invalid, disabled, maxValue, isDetails}: BudgetTableRowProps) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   const methods = useFormContext<any>();
@@ -170,18 +140,6 @@ const FundReleaseRow = ({
   return (
     <>
       <tr>
-        {!isDetails && (
-          <DynamicTableCell level={level}>
-            {!count.children?.length && (
-              <FundReleaseCheckbox
-                name={count.account_serial_number}
-                onChange={() => onEnableRow(count.account_serial_number)}
-                checked={!disabled}
-              />
-            )}
-          </DynamicTableCell>
-        )}
-
         <DynamicTableCell
           level={level}
           onClick={count.children?.length ? onCollapse : undefined}

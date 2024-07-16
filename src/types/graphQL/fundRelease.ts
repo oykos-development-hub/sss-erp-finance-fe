@@ -1,10 +1,14 @@
 import {GetResponse, InsertResponse} from './response';
+import {DropdownData} from '../dropdownData.ts';
+import {FileItem} from '../fileUploadType.ts';
 
 export type GetFundReleaseParams = {
   year: number;
   month?: number;
   budget_id?: number;
   unit_id?: number;
+  status?: string;
+  hide?: boolean;
 };
 
 export type GetFundReleaseDetailsParams = {
@@ -12,11 +16,17 @@ export type GetFundReleaseDetailsParams = {
   year?: number;
 };
 
-export type FundReleaseItem = {
+export interface FundReleaseItem {
+  created_at: string;
+  id: number;
   month: number;
+  organization_unit: DropdownData<string>;
+  organization_unit_file: FileItem;
+  sss_file: FileItem;
+  status: string;
+  value: string;
   year: number;
-  value: number;
-};
+}
 
 export type GetFundReleaseResponse = {spendingRelease_Overview: GetResponse<FundReleaseItem>};
 

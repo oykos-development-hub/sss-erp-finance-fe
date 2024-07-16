@@ -1,16 +1,17 @@
-import {Button, Divider, Dropdown, Table, TrashIcon, Theme} from 'client-library';
+import {Button, Dropdown, Table} from 'client-library';
 import {useMemo, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
 import useGetFundRelease from '../../../services/graphQL/fundRelease/useGetFundRelease';
-import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import {DropdownData} from '../../../types/dropdownData';
 import {getYearOptions} from '../../../utils/getYearOptions';
-import {MonthType, monthVars, monthVarsSr} from '../spendingDynamics/constants';
-import {fundReleaseTableHeads} from './constants';
-import {ButtonWrapper, DropdownWrapper, HeaderWrapper, MainTitle, SectionBox, Wrapper} from './styles';
+import {monthVarsSr} from '../spendingDynamics/constants';
+import {FundReleaseStatus, fundReleaseTableHeads} from './constants';
+import {ButtonWrapper, DropdownWrapper, HeaderWrapper, SectionBox, Wrapper} from './styles';
 import useDeleteFundRelease from '../../../services/graphQL/fundRelease/useDeleteFundRelease';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal';
 import {FundReleaseItem} from '../../../types/graphQL/fundRelease';
+import FundReleaseModal from '../../../components/fundReleaseModal/fundReleaseModal.tsx';
+import FundReleaseModalAcceptBySSS from '../../../components/fundReleaseModal/fundReleaseModalAcceptBySSS.tsx';
 
 type FundReleaseFilters = {
   year: DropdownData<number>;
@@ -19,10 +20,18 @@ type FundReleaseFilters = {
 
 const FundReleaseOverview = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCreateFundReleaseModal, setShowCreateFundReleaseModal] = useState(false);
+  const [showAcceptBySSSModal, setShowAcceptBySSSModal] = useState<FundReleaseItem | null>(null);
 
   const {
-    navigation: {navigate},
+    navigation: {
+      navigate,
+      location: {pathname},
+    },
     alert,
+    contextMain: {
+      organization_unit: {id: organization_unit_id},
+    },
   } = useAppContext();
 
   const [filters, setFilters] = useState<FundReleaseFilters>({
@@ -30,8 +39,21 @@ const FundReleaseOverview = () => {
     month: null,
   });
 
-  const {fundRelease, refetch} = useGetFundRelease({year: filters.year?.id, month: filters.month?.id});
-  const {fundRelease: allReleases} = useGetFundRelease({year: filters.year?.id});
+  const isRequests = pathname.split('/').pop() === 'requests';
+
+  const {fundRelease, refetch} = useGetFundRelease({
+    year: filters.year?.id,
+    month: filters.month?.id,
+    hide: isRequests ? true : undefined,
+    unit_id: isRequests ? undefined : organization_unit_id,
+    status: isRequests ? FundReleaseStatus.Created : undefined,
+  });
+
+  // used to check if current month release exists
+  const {fundRelease: allReleases, refetch: refetchAll} = useGetFundRelease({
+    year: filters.year?.id,
+    unit_id: organization_unit_id,
+  });
   const {deleteFundRelease} = useDeleteFundRelease();
 
   const currentMonthReleaseExists = useMemo(() => {
@@ -39,27 +61,13 @@ const FundReleaseOverview = () => {
     return allReleases && allReleases.find((item: FundReleaseItem) => item.month === currentMonth);
   }, [allReleases]);
 
-  const fundReleaseList = useMemo(() => {
-    return fundRelease
-      ? fundRelease.map(item => ({
-          ...item,
-          id: `${item.year}-${item.month}`,
-        }))
-      : [];
-  }, [fundRelease]);
-
   const onChange = (value: any, name: string) => {
-    console.log(value);
     setFilters(prev => ({...prev, [name]: value}));
   };
 
-  const navigateToCreateFundRelease = () => {
-    navigate('/finance/budget/current/fund-release/new-request');
-  };
-
-  const onDeleteClick = () => {
-    setShowDeleteModal(true);
-  };
+  // const onDeleteClick = () => {
+  //   setShowDeleteModal(true);
+  // };
 
   const handleDelete = async () => {
     if (!showDeleteModal) return;
@@ -68,6 +76,7 @@ const FundReleaseOverview = () => {
       () => {
         alert.success('Uspješno obrisano.');
         refetch();
+        refetchAll();
       },
       () => {
         alert.error('Došlo je do greške prilikom brisanja.');
@@ -79,11 +88,16 @@ const FundReleaseOverview = () => {
   const monthOptions = monthVarsSr.map((month, index) => ({id: index + 1, title: month}));
   const yearOptions = getYearOptions(10, true, 5);
 
+  const handleRowClick = (row: any) => {
+    isRequests
+      ? setShowAcceptBySSSModal(row)
+      : row?.status === FundReleaseStatus.Accepted
+      ? navigate('/finance/budget/current/fund-release/new-request')
+      : navigate(`/finance/budget/current/fund-release/${row.month}_${row.year}`);
+  };
   return (
-    <ScreenWrapper>
+    <>
       <SectionBox>
-        <MainTitle variant="bodyMedium" content="OTPUŠTANJE SREDSTAVA" />
-        <Divider color="#615959" height="1px" />
         <Wrapper>
           <HeaderWrapper>
             <DropdownWrapper>
@@ -106,35 +120,37 @@ const FundReleaseOverview = () => {
             </DropdownWrapper>
           </HeaderWrapper>
           <ButtonWrapper>
-            {!currentMonthReleaseExists && (
+            {!currentMonthReleaseExists && !isRequests && (
               <Button
                 content="Kreiraj zahtjev za otpuštanje sredstava"
                 style={{width: '200px'}}
                 variant="secondary"
-                onClick={navigateToCreateFundRelease}
+                // onClick={navigateToCreateFundRelease}
+                onClick={() => setShowCreateFundReleaseModal(true)}
               />
             )}
           </ButtonWrapper>
         </Wrapper>
         <Table
-          data={fundReleaseList as any}
+          data={fundRelease}
           tableHeads={fundReleaseTableHeads}
-          tableActions={[
-            {
-              name: 'Izbriši',
-              onClick: () => {
-                onDeleteClick();
-              },
-              icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: (row: any) => {
-                const currentMonth = new Date().toLocaleString('default', {month: 'long'}).toLowerCase() as MonthType;
-                const monthNumber = monthVars.indexOf(currentMonth) + 1;
-                console.log(row.month, monthNumber);
-                return row.month === monthNumber;
-              },
-            },
-          ]}
-          onRowClick={(row: any) => navigate(`/finance/budget/current/fund-release/${row.month}_${row.year}`)}
+          // TODO: Delete temporarily removed
+          // tableActions={[
+          //   {
+          //     name: 'Izbriši',
+          //     onClick: () => {
+          //       onDeleteClick();
+          //     },
+          //     icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+          //     shouldRender: (row: any) => {
+          //       const currentMonth = new Date().toLocaleString('default', {month: 'long'}).toLowerCase() as MonthType;
+          //       const monthNumber = monthVars.indexOf(currentMonth) + 1;
+          //       console.log(row.month, monthNumber);
+          //       return row.month === monthNumber;
+          //     },
+          //   },
+          // ]}
+          onRowClick={handleRowClick}
         />
       </SectionBox>
 
@@ -144,7 +160,21 @@ const FundReleaseOverview = () => {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={() => handleDelete()}
       />
-    </ScreenWrapper>
+      <FundReleaseModal
+        open={showCreateFundReleaseModal}
+        onClose={() => setShowCreateFundReleaseModal(false)}
+        refetch={() => {
+          refetch();
+          refetchAll();
+        }}
+      />
+      <FundReleaseModalAcceptBySSS
+        onClose={() => setShowAcceptBySSSModal(null)}
+        refetch={refetch}
+        open={!!showAcceptBySSSModal}
+        item={showAcceptBySSSModal}
+      />
+    </>
   );
 };
 

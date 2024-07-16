@@ -11,7 +11,6 @@ import {BudgetSendTabs} from './screens/budget/budgetSendDetails/budgetSendTabs.
 import BudgetTemplate from './screens/budget/budgetTemplate/budgetTemplate.tsx';
 import {CurrentBudgetTabs} from './screens/budget/currentBudget/currentBudgetTabs.tsx';
 import ExternalReallocationOverview from './screens/budget/externalReallocation/externalReallocationOverview.tsx';
-import FundReleaseOverview from './screens/budget/fundRelease/fundReleaseOverview.tsx';
 import FundReleaseRequest from './screens/budget/fundRelease/fundReleaseRequest.tsx';
 import InternalReallocationBudget from './screens/budget/internalReallocation/internalReallocationBudgetTemplate.tsx';
 import InternalReallocationOverview from './screens/budget/internalReallocation/internalReallocationOverview.tsx';
@@ -73,6 +72,7 @@ import {ReceivablesLandingPage} from './screens/liabilitesAndReceivables/receiva
 import ExternalReallocationDetails from './screens/budget/externalReallocation/externalReallocationDetails.tsx';
 import ExternalReallocationFinanceOfficialDetails from './screens/budget/externalReallocation/externalReallocationFinanceOfficialDetails.tsx';
 import {NonFinance} from './screens/budget/nonFinance/nonFinance.tsx';
+import FundRelease from './screens/budget/fundRelease/fundRelease.tsx';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -130,6 +130,7 @@ export const Router = () => {
     const confiscationRegex = new RegExp('^/finance/fines-taxes/confiscation(?:/add-confiscation)?$');
     const flatRateRegex = new RegExp('^/finance/fines-taxes/flat-rate(?:/add-flat-rate)?$');
     const proceduralCostRegex = new RegExp('^/finance/fines-taxes/procedural-costs(?:/add-procedural-costs)?$');
+    const fundReleaseRegex = new RegExp('^/finance/budget/current/fund-release(?:/requests)?$');
     const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
     const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
     const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');
@@ -280,7 +281,7 @@ export const Router = () => {
     if (proceduralCostDetailsRegex.test(pathname)) return <ProceduralCostDetails />;
 
     // if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
-    if (pathname === '/finance/budget/current/fund-release') return <FundReleaseOverview />;
+    if (fundReleaseRegex.test(pathname)) return <FundRelease />;
     if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
     if (fundReleaseDetailsRegex.test(pathname)) return <FundReleaseRequest />;
     if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.MANAGER_OJ])) {

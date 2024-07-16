@@ -15,9 +15,7 @@ import {fundReleaseDetailsRegex} from '../../../router';
 
 const FundReleaseRequest = () => {
   const [invalidRows, setInvalidRows] = useState<string[]>([]);
-  const [enabledRows, setEnabledRows] = useState<string[]>([]);
-  const [allEnabled, setAllEnabled] = useState<boolean>(false);
-  const [allBottomCounts, setAllBottomCounts] = useState<string[]>([]);
+
   const {
     navigation: {
       navigate,
@@ -49,38 +47,15 @@ const FundReleaseRequest = () => {
 
   const isDetails = fundReleaseDetailsRegex.test(pathname);
 
-  const onEnabledRowsChange = (row: string) => {
-    if (row === 'all') {
-      if (allEnabled) {
-        setEnabledRows([]);
-        setAllEnabled(false);
-      } else {
-        setAllEnabled(true);
-        setEnabledRows(allBottomCounts);
-      }
-    } else {
-      if (enabledRows.includes(row)) {
-        setEnabledRows(enabledRows.filter(item => item !== row));
-        setAllEnabled(false);
-      } else {
-        setEnabledRows([...enabledRows, row]);
-      }
-    }
-  };
-
   const setupFundReleaseFieldsRecursively = useCallback(
     (item: BudgetDynamicCount) => {
       const data = {
         month: monthVars.findIndex(month => month === currentMonth) + 1,
         value: item[currentMonth as keyof BudgetDynamicCount].value,
         account_id: item.account_id,
-        maxValue: parseInt(item[currentMonth as keyof BudgetDynamicCount].value),
+        maxValue: parseFloat(item[currentMonth as keyof BudgetDynamicCount].value),
         account_serial_number: item.account_serial_number,
       };
-
-      if (item.children.length === 0) {
-        setAllBottomCounts(prev => [...prev, item.account_serial_number]);
-      }
 
       methods.setValue(item.account_serial_number, data);
 
@@ -92,13 +67,15 @@ const FundReleaseRequest = () => {
   );
 
   const validateRows = (data: any[]) => {
-    setInvalidRows([]);
+    const invalidRows: string[] = [];
 
     data.forEach((item: any) => {
-      if (item.value > item.maxValue) {
-        setInvalidRows(prev => [...prev, item.account_serial_number]);
+      if (item.value > item.maxValue || item.value < 0) {
+        invalidRows.push(item.account_serial_number);
       }
     });
+    setInvalidRows(invalidRows);
+    return invalidRows;
   };
 
   useEffect(() => {
@@ -114,13 +91,9 @@ const FundReleaseRequest = () => {
   const onSubmit = async (data: any) => {
     let insertData = [];
 
-    insertData = Object.keys(data)
-      .filter(key => enabledRows.includes(key))
-      .map(key => data[key]);
+    insertData = Object.keys(data).map(key => data[key]);
 
-    validateRows(insertData);
-
-    if (invalidRows.length > 0) {
+    if (validateRows(insertData).length > 0) {
       alert.error('Neispravni podaci!');
       return;
     } else {
@@ -149,9 +122,6 @@ const FundReleaseRequest = () => {
         <FormProvider {...methods}>
           <TableWrapper style={{marginTop: 22}}>
             <FundReleaseTable
-              onEnableRow={onEnabledRowsChange}
-              enabledRows={enabledRows}
-              allEnabled={allEnabled}
               invalidRows={invalidRows}
               counts={budgetDynamic}
               loading={loading}
@@ -160,17 +130,15 @@ const FundReleaseRequest = () => {
           </TableWrapper>
         </FormProvider>
 
-        {!isDetails && (
-          <div style={{marginTop: 22, display: 'flex'}}>
-            <Button
-              variant="secondary"
-              content="Otkaži"
-              style={{marginLeft: 'auto', marginRight: 15}}
-              onClick={() => window.history.back()}
-            />
-            <Button variant="primary" onClick={methods.handleSubmit(onSubmit)} content="Sačuvaj" />
-          </div>
-        )}
+        <div style={{marginTop: 22, display: 'flex'}}>
+          <Button
+            variant="secondary"
+            content="Otkaži"
+            style={{marginLeft: 'auto', marginRight: 15}}
+            onClick={() => window.history.back()}
+          />
+          {!isDetails && <Button variant="primary" onClick={methods.handleSubmit(onSubmit)} content="Sačuvaj" />}
+        </div>
       </SectionBox>
     </ScreenWrapper>
   );

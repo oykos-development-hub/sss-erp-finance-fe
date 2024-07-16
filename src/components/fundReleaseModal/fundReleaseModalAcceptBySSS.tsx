@@ -1,15 +1,18 @@
 import {FileUpload, Typography, Modal} from 'client-library';
 import useAppContext from '../../context/useAppContext.ts';
 import {useState} from 'react';
-import useCreateByOUFundRelease from '../../services/graphQL/fundRelease/useCreateByOUFundRelease.ts';
+import useAcceptBySSSFundRelease from '../../services/graphQL/fundRelease/useAcceptBySSSFundRelease.ts';
+import {FundReleaseItem} from '../../types/graphQL/fundRelease.ts';
+import FileList from '../fileList/fileList.tsx';
 
-interface FundReleaseModalProps {
+interface fundReleaseModalAcceptBySSSProps {
   onClose: () => void;
   refetch: () => void;
   open: boolean;
+  item: FundReleaseItem | null;
 }
 
-const FundReleaseModal = ({onClose, open, refetch}: FundReleaseModalProps) => {
+const fundReleaseModalAcceptBySSS = ({onClose, open, refetch, item}: fundReleaseModalAcceptBySSSProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<FileList>();
 
   const {
@@ -21,7 +24,7 @@ const FundReleaseModal = ({onClose, open, refetch}: FundReleaseModalProps) => {
     setUploadedFiles(files);
   };
 
-  const {createByOUFundRelease} = useCreateByOUFundRelease();
+  const {acceptBySSSFundRelease} = useAcceptBySSSFundRelease();
 
   const handleSubmit = async () => {
     let file_id;
@@ -45,17 +48,18 @@ const FundReleaseModal = ({onClose, open, refetch}: FundReleaseModalProps) => {
       );
     }
 
-    if (!file_id) return;
+    if (!file_id || !item) return;
 
-    await createByOUFundRelease(
+    await acceptBySSSFundRelease(
       file_id,
+      item?.id,
       () => {
-        alert.success('Zahtjev za otpuštanje sredstava uspješno kreiran!');
+        alert.success('Zahtjev za otpuštanje sredstava uspješno odobren!');
         refetch();
         onClose();
       },
       () => {
-        alert.error('Greška pri kreiranju zahtjeva za otpuštanje sredstava!');
+        alert.error('Greška pri odobravanju zahtjeva za otpuštanje sredstava!');
       },
     );
   };
@@ -64,13 +68,15 @@ const FundReleaseModal = ({onClose, open, refetch}: FundReleaseModalProps) => {
     <Modal
       open={open}
       onClose={onClose}
-      title="NOVI ZAHTJEV ZA OTPUŠTANJE SREDSTAVA"
+      title="ODOBRI ZAHTJEV ZA OTPUŠTANJE SREDSTAVA"
       leftButtonOnClick={onClose}
       rightButtonOnClick={handleSubmit}
-      rightButtonText="Kreiraj zahtjev"
+      rightButtonText="Odobri zahtjev"
       leftButtonText="Otkaži"
       content={
-        <div style={{marginTop: 25}}>
+        <div style={{marginTop: 25, display: 'flex', flexDirection: 'column', gap: '20px'}}>
+          <FileList files={item?.organization_unit_file?.id ? [item?.organization_unit_file] : null} />
+
           <FileUpload
             icon={null}
             files={uploadedFiles}
@@ -85,4 +91,4 @@ const FundReleaseModal = ({onClose, open, refetch}: FundReleaseModalProps) => {
   );
 };
 
-export default FundReleaseModal;
+export default fundReleaseModalAcceptBySSS;
