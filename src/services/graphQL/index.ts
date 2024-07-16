@@ -128,6 +128,7 @@ export const BFF_URL = {
 };
 
 export const GraphQL = {
+  // TODO check if this fetch is used anywhere and remove if not
   fetch: (query: string, variables?: any): Promise<any> => {
     return fetch(BFF_URL[getEnvironment()], {
       method: 'POST',
