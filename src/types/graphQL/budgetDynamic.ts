@@ -38,8 +38,9 @@ export type BudgetDynamicCount = {
   october: BudgetDynamicMonth;
   november: BudgetDynamicMonth;
   december: BudgetDynamicMonth;
-  total_savings: number;
+  total_savings: string;
   children: BudgetDynamicCount[];
+  is_current_month_editable: boolean;
 };
 
 export type BudgetDynamicHistoryItem = {

@@ -52,20 +52,21 @@ const BudgetDynamicTemplate = () => {
   const setupBudgetingFormFieldsRecursively = useCallback(
     (item: BudgetDynamicCount) => {
       const months: {[key: string]: number} = {};
-      let totalSavings = 0;
       const bottomLevel = item.children.length === 0;
 
       monthVars.forEach((month: MonthType) => {
         months[month] = parseFloat(item[month].value);
-        totalSavings += parseFloat(item[month].savings);
       });
 
-      setTotalSavingsList(prev => [...prev, {value: totalSavings, serialNumber: item.account_serial_number}]);
+      setTotalSavingsList(prev => [
+        ...prev,
+        {value: parseFloat(item.total_savings), serialNumber: item.account_serial_number},
+      ]);
 
       const data: any = {
         account_id: item.account_id,
         actual: parseFloat(item.actual),
-        totalSavings,
+        totalSavings: parseFloat(item.total_savings),
         bottomLevel,
         account_serial_number: item.account_serial_number,
         ...months,
@@ -92,21 +93,31 @@ const BudgetDynamicTemplate = () => {
     const invalidCounts: string[] = [];
 
     Object.values(data).forEach((item: DynamicCountSchemaType) => {
-      const total = Object.keys(item).reduce((acc: number, key) => {
+      const totalMonthsAmount = Object.keys(item).reduce((acc: number, key) => {
         const monthKey = key as keyof DynamicCountSchemaType;
+        const isMonth = nonMonthKeys.indexOf(monthKey as string) === -1;
 
-        return nonMonthKeys.indexOf(monthKey as string) === -1 ? acc + parseFloat(item[monthKey]) : acc;
+        return isMonth ? acc + parseFloat(item[monthKey]) : acc;
       }, 0);
 
-      const totalAmount = total + parseFloat(item.totalSavings);
       const initialTotalSaving = totalSavingsList.find(
         totalItem => totalItem.serialNumber === item.account_serial_number,
       )!;
+      const totalMonthsWithSavings = totalMonthsAmount + parseFloat(item.totalSavings) - initialTotalSaving?.value;
 
-      if (
-        totalAmount !== parseFloat(item.actual) + initialTotalSaving?.value ||
-        item.totalSavings > initialTotalSaving?.value
-      ) {
+      const totalInitial = parseFloat(item.actual);
+
+      // console.log(
+      //   parseFloat(totalMonthsWithSavings.toFixed(2)),
+      //   totalInitial,
+      //   item.totalSavings,
+      //   initialTotalSaving?.value,
+      // );
+
+      const isTotalEqual = parseFloat(totalMonthsWithSavings.toFixed(2)) !== parseFloat(totalInitial.toFixed(2));
+      const isSavingsHigher = item.totalSavings > initialTotalSaving?.value;
+
+      if (isTotalEqual || isSavingsHigher) {
         invalidCounts.push(item.account_serial_number);
       }
     });

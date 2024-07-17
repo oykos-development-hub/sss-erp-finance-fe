@@ -122,8 +122,12 @@ const BudgetDynamicFormRow = ({count, level, children, invalid}: BudgetTableRowP
             <div style={{width: 100}}>
               <DynamicTableInput
                 {...methods.register(`${count.account_serial_number}.${value}` as any, {valueAsNumber: true})}
-                disabled={currentMonth > index || count.children?.length > 0}
-                type={'number'}
+                disabled={
+                  (currentMonth === index && !count.is_current_month_editable) ||
+                  currentMonth > index ||
+                  count.children?.length > 0
+                }
+                // type={'number'}
                 invalid={invalid}
               />
               <BudgetText content={count[value].savings} variant="bodySmall" />
@@ -136,7 +140,7 @@ const BudgetDynamicFormRow = ({count, level, children, invalid}: BudgetTableRowP
               {...methods.register(`${count.account_serial_number}.totalSavings` as any, {
                 valueAsNumber: true,
               })}
-              type={'number'}
+              // type={'number'}
               disabled={count.children?.length > 0}
               invalid={invalid}
             />

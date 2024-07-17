@@ -84,6 +84,7 @@ fragment SpendingDynamicFields on SpendingDynamicType {
   }
   total_savings
   created_at
+  is_current_month_editable  
 }`;
 
 export default getBudgetDynamic;
