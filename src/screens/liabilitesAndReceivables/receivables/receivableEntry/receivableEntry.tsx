@@ -191,7 +191,11 @@ const ReceivableEntry = () => {
           alert.success('Uspješno ste kreirali nalog za plaćanje.');
           navigate('/finance/liabilities-receivables/receivables/payment-orders');
         },
-        () => alert.error('Neuspješno dodavanje naloga.'),
+        message =>
+          message ===
+          'make api request: backend error: API error: 500 - upper tx: repo current budget update balance: insufficient funds'
+            ? alert.error('Nemate dovoljno novca na ovom kontu.')
+            : alert.error('Neuspješno dodavanje naloga.'),
       );
     } else {
       const payload = {

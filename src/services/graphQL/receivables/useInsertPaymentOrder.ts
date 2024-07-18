@@ -8,13 +8,17 @@ const useInsertPaymentOrder = () => {
   const [loading, setLoading] = useState(false);
   const {fetch} = useAppContext();
 
-  const insertPaymentOrder = async (data: InsertPaymentOrderParams, onSuccess?: () => void, onError?: () => void) => {
+  const insertPaymentOrder = async (
+    data: InsertPaymentOrderParams,
+    onSuccess?: () => void,
+    onError?: (message: string) => void,
+  ) => {
     setLoading(true);
     const response: ReceivablesResponse['insert'] = await fetch(GraphQL.insertPaymentOrder, {data});
     if (response?.paymentOrder_Insert?.status === 'success') {
       onSuccess && onSuccess();
     } else {
-      onError && onError();
+      onError && onError(response?.paymentOrder_Insert?.message);
     }
 
     setLoading(false);
