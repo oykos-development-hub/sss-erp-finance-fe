@@ -68,6 +68,8 @@ const ReceivableEntry = () => {
   const {insertPaymentOrder, loading} = useInsertPaymentOrder();
 
   const getObligations = () => {
+    setSelectedRows([]);
+    setValue('items', []);
     fetchObligations(() => alert.error('Za izabranu opciju nema rezultata.'));
   };
 
@@ -281,7 +283,6 @@ const ReceivableEntry = () => {
     }
   }, [obligations]);
 
-  const selectedItem = fields?.filter(field => selectedRows.includes(field?.id));
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -436,7 +437,7 @@ const ReceivableEntry = () => {
               </>
             )}
 
-            {showModal && selectedRows.length === 1 && selectedItem[0]?.type === 'invoices' && (
+            {showModal && selectedRows.length === 1 && (
               <ReceivableSingleModal
                 onClose={() => setShowModal(false)}
                 open={showModal}
@@ -446,9 +447,7 @@ const ReceivableEntry = () => {
               />
             )}
 
-            {((showModal && selectedRows.length >= 2) ||
-              (selectedRows.length === 1 && selectedItem[0]?.type !== 'invoices') ||
-              selectedRows[0]?.status === 'Djelimično na nalogu') && (
+            {((showModal && selectedRows.length >= 2) || selectedRows[0]?.status === 'Djelimično na nalogu') && (
               <ReceivablesModal
                 onClose={() => setShowModal(false)}
                 open={showModal}

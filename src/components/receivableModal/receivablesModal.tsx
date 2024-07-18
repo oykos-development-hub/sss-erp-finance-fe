@@ -53,6 +53,13 @@ const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundRe
       },
     },
     {
+      title: 'Konto troška',
+      width: '200px',
+      accessor: 'invoice_items',
+      type: 'custom',
+      renderContents: items => <Typography content={items[0]?.account?.title} />,
+    },
+    {
       title: 'Konto sa kojeg se plaća',
       accessor: 'source_account',
       type: 'custom',

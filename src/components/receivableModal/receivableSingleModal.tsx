@@ -169,9 +169,6 @@ const ReceivableSingleModal = ({onClose, open, data, selectedRow, onSubmit}: Fun
 
   useEffect(() => {
     calculateTotalPrice();
-  }, [selectedRows]);
-
-  useEffect(() => {
     calculateTotalRemainingPrice();
   }, [selectedRows]);
 
