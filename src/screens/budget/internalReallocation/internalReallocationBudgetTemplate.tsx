@@ -4,12 +4,13 @@ import BudgetTable from '../../../shared/budgetTable/budgetTable';
 import {BudgetTableMethods, BudgetTableStep} from '../../../shared/budgetTable/types';
 import Footer from '../../../shared/footer';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
-import {BoldText, Box, MainTitle, SectionBox, TableGrid} from './styles';
+import {BoldText, Box, MainTitle, SectionBox, Header, TitleWrapper} from './styles';
 import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
 import {useRef} from 'react';
 import {calcReallocationSums, flattenReallocationBudgetData} from '../../../shared/budgetTable/utils.ts';
 import useInternalReallocationsInsert from '../../../services/graphQL/internalReallocations/useInternalReallocationsInsert.ts';
 import useInternalReallocationsOverview from '../../../services/graphQL/internalReallocations/useInternalReallocationsOverview.ts';
+import {generateInternalReallocationPdfData} from '../../../utils/internalReallocationPdfUtils.ts';
 
 const InternalReallocationBudget = () => {
   const {
@@ -19,6 +20,7 @@ const InternalReallocationBudget = () => {
       location: {pathname},
     },
     alert,
+    reportService: {generatePdf, loadingPDF},
   } = useAppContext();
 
   const {currentBudgetAccounts, budget_id} = useGetCurrentBudget({organization_unit_id: organization_unit.id});
@@ -57,6 +59,16 @@ const InternalReallocationBudget = () => {
     );
   };
 
+  const handlePDFExport = () => {
+    if (!currentBudgetAccounts.length || !internalReallocationsOverview[0]?.items?.length)
+      return alert.error('Nema podataka za izvoz PDF-a');
+
+    generatePdf(
+      'INTERNAL_REALLOCATIONS',
+      generateInternalReallocationPdfData(currentBudgetAccounts, internalReallocationsOverview[0]?.items),
+    );
+  };
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -64,10 +76,19 @@ const InternalReallocationBudget = () => {
         <MainTitle variant="bodyMedium" content="INTERNO PREUSMJERENJE" />
         <Divider color="#615959" height="1px" />
         <Box>
-          <TableGrid>
-            <BoldText variant="bodySmall" content="NAZIV PREDLAGAČA:" />
-            <Typography variant="bodySmall" content={organization_unit.title} />
-          </TableGrid>
+          <Header>
+            <TitleWrapper>
+              <BoldText variant="bodySmall" content="NAZIV PREDLAGAČA:" />
+              <Typography variant="bodySmall" content={organization_unit.title} />
+            </TitleWrapper>
+            <Button
+              content="Eksportuj PDF"
+              variant="secondary"
+              size={'sm'}
+              onClick={handlePDFExport}
+              loader={loadingPDF}
+            />
+          </Header>
         </Box>
         <div>
           <BudgetTable

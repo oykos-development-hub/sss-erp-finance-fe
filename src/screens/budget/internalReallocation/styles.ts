@@ -49,11 +49,17 @@ export const Box = styled.div`
   margin-bottom: 10px;
 `;
 
-export const TableGrid = styled.div`
-  display: grid;
-  grid-template-columns: max-content auto;
-  grid-gap: 10px;
+export const Header = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
+`;
+
+export const TitleWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 `;
 
 export const BoldText = styled(Typography)`

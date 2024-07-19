@@ -77,7 +77,7 @@ export const TypeOfFines: DropdownData<number>[] = [
 
 export const FinePaymentMethods: DropdownData<number>[] = [
   {id: 1, title: 'Uplata'},
-  {id: 2, title: 'Prinudna naplata'},
+  {id: 2, title: 'Prinudne naplate'},
   {id: 3, title: 'Sudski troškovi'},
 ];
 

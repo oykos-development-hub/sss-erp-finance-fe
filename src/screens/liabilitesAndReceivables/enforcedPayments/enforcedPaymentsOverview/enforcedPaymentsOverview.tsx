@@ -68,7 +68,7 @@ const EnforcedPaymentsOverview = () => {
   return (
     <ScreenWrapper>
       <SectionBox>
-        <MainTitle variant="bodyMedium" content="PRINUDNA NAPLATA" />
+        <MainTitle variant="bodyMedium" content="PRINUDNE NAPLATE" />
         <Divider color="#615959" height="1px" />
         <RowWrapper>
           <Row>
