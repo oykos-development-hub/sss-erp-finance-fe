@@ -26,10 +26,18 @@ const dynamicCountSchema = yup.object().shape({
   account_id: yup.number().required(),
   actual: yup.number().required(),
   totalSavings: yup.number().required(),
+  totalSavingsInit: yup.number().required(),
   bottomLevel: yup.boolean().required(),
 }) as any;
 
-const nonMonthKeys = ['account_id', 'actual', 'totalSavings', 'bottomLevel', 'account_serial_number'];
+const nonMonthKeys = [
+  'account_id',
+  'actual',
+  'totalSavings',
+  'totalSavingsInit',
+  'bottomLevel',
+  'account_serial_number',
+];
 
 const mapRules = (map: any, rule: any) => Object.keys(map).reduce((newMap, key) => ({...newMap, [key]: rule}), {});
 
@@ -53,20 +61,20 @@ const BudgetDynamicTemplate = () => {
     (item: BudgetDynamicCount) => {
       const months: {[key: string]: number} = {};
       const bottomLevel = item.children.length === 0;
+      let totalSavingsBottom = 0;
 
       monthVars.forEach((month: MonthType) => {
         months[month] = parseFloat(item[month].value);
+        totalSavingsBottom += parseFloat(item[month].savings);
       });
 
-      setTotalSavingsList(prev => [
-        ...prev,
-        {value: parseFloat(item.total_savings), serialNumber: item.account_serial_number},
-      ]);
+      setTotalSavingsList(prev => [...prev, {value: totalSavingsBottom, serialNumber: item.account_serial_number}]);
 
       const data: any = {
         account_id: item.account_id,
         actual: parseFloat(item.actual),
         totalSavings: parseFloat(item.total_savings),
+        totalSavingsInit: parseFloat(item.total_savings),
         bottomLevel,
         account_serial_number: item.account_serial_number,
         ...months,
@@ -93,6 +101,8 @@ const BudgetDynamicTemplate = () => {
     const invalidCounts: string[] = [];
 
     Object.values(data).forEach((item: DynamicCountSchemaType) => {
+      if (!item.bottomLevel) return;
+
       const totalMonthsAmount = Object.keys(item).reduce((acc: number, key) => {
         const monthKey = key as keyof DynamicCountSchemaType;
         const isMonth = nonMonthKeys.indexOf(monthKey as string) === -1;
@@ -103,19 +113,13 @@ const BudgetDynamicTemplate = () => {
       const initialTotalSaving = totalSavingsList.find(
         totalItem => totalItem.serialNumber === item.account_serial_number,
       )!;
+
       const totalMonthsWithSavings = totalMonthsAmount + parseFloat(item.totalSavings) - initialTotalSaving?.value;
 
       const totalInitial = parseFloat(item.actual);
 
-      // console.log(
-      //   parseFloat(totalMonthsWithSavings.toFixed(2)),
-      //   totalInitial,
-      //   item.totalSavings,
-      //   initialTotalSaving?.value,
-      // );
-
       const isTotalEqual = parseFloat(totalMonthsWithSavings.toFixed(2)) !== parseFloat(totalInitial.toFixed(2));
-      const isSavingsHigher = item.totalSavings > initialTotalSaving?.value;
+      const isSavingsHigher = item.totalSavings > item.totalSavingsInit;
 
       if (isTotalEqual || isSavingsHigher) {
         invalidCounts.push(item.account_serial_number);
@@ -127,6 +131,7 @@ const BudgetDynamicTemplate = () => {
 
   const onSubmit = async (data: DynamicSchemaType) => {
     const invalidCounts = validateAmounts(data);
+
     if (invalidCounts.length) {
       setInvalidRows(invalidCounts);
       alert.error('Uneseni iznosi nisu ispravni!');
@@ -136,7 +141,8 @@ const BudgetDynamicTemplate = () => {
       const insertData = Object.values(data)
         .filter((item: DynamicCountSchemaType) => !!item.bottomLevel)
         .map((item: DynamicCountSchemaType) => {
-          const {account_id, actual, totalSavings, bottomLevel, account_serial_number, ...months} = item;
+          const {account_id, actual, totalSavings, bottomLevel, account_serial_number, totalSavingsInit, ...months} =
+            item;
 
           return {
             account_id,
