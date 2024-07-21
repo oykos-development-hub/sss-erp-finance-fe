@@ -16,7 +16,7 @@ const useReturnEnforcedPayment = () => {
     if (loading) return;
     setLoading(true);
     const response: EnforcedPaymentResponse['return'] = await fetch(GraphQL.returnEnforcedPayment, data);
-    if (response.returnEnforcedPayment.status === 'success') {
+    if (response?.returnEnforcedPayment?.status === 'success') {
       onSuccess && onSuccess();
     } else {
       onError && onError();

@@ -32,7 +32,7 @@ const useCalculateAdditionalExpenses = (
       previous_income_net,
       previous_income_gross,
     });
-    const data = response?.calculateAdditionalExpenses.items;
+    const data = response?.calculateAdditionalExpenses?.items;
 
     if (data) setData(data);
 

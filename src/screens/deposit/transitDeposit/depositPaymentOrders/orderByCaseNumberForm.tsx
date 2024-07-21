@@ -51,7 +51,6 @@ const orderByCaseNumberSchema = yup.object().shape(
     //* Unfortunate naming. This is to be sent with the insertDepositPaymentOrder mutation.
     net_amount: yup.number().required(requiredError),
     id: yup.number().nullable().default(null),
-    subject_type: optionsNumberSchema.required(requiredError),
     //* Unfortunate naming of the field. Should be subject_id.
     supplier_id: optionsNumberSchema.required(requiredError),
     bank_account: optionsStringSchema.required(requiredError),
@@ -111,7 +110,6 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
     resolver: yupResolver(orderByCaseNumberSchema),
   });
 
-  const subjectType = watch('subject_type');
   const subject = watch('supplier_id');
 
   const {
@@ -140,12 +138,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
     },
   );
 
-  const {suppliers: subjectTypes} = useGetSuppliers({entity: SUBJECT_ENTITY, parent_id: null});
-
-  const {suppliers: subjects} = useGetSuppliers({
-    entity: SUBJECT_ENTITY,
-    parent_id: subjectType ? subjectType.id : null,
-  });
+  const {suppliers: subjects} = useGetSuppliers({entity: SUBJECT_ENTITY, parent_id: null});
 
   const {suppliers: municipalities} = useGetSuppliers({entity: MUNICIPALITY_ENTITY});
   const {data: taxAuthorityCodebook} = useGetTaxAuthorityCodebook();
@@ -204,8 +197,6 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
       source_bank_account: source_bank_account?.id,
       municipality_id: municipality_id?.id,
       tax_authority_codebook_id: tax_authority_codebook_id?.id,
-      subject_type_id: subjectType.id,
-      //* This is actually the subject to whom we are paying.
       supplier_id: subject.id,
       bank_account: data.bank_account.id,
       date_of_payment: parseDateForBackend(data.date_of_payment) as string,
@@ -286,7 +277,6 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
         net_amount_to_pay: netAmountToPay.toString(),
         gross_amount_to_pay: data.additional_expenses.reduce((acc, item) => acc + item.price, 0).toString(),
         source_bank_account: {id: data.source_bank_account, title: data.source_bank_account},
-        subject_type: data.subject_type,
         additional_expenses: data.additional_expenses.map((item: PaymentOrderAdditionalExpense) => ({
           price: item.price,
           title: item.title,
@@ -379,21 +369,6 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
       </FlexRow>
       <FlexRow gap={8}>
         <Controller
-          name="subject_type"
-          control={control}
-          render={({field: {name, value, onChange}}) => (
-            <Dropdown
-              label="TIP SUBJEKTA:"
-              name={name}
-              value={value}
-              onChange={onChange}
-              options={subjectTypes}
-              error={errors.subject_type?.message}
-              isDisabled={isDisabled || !isNew}
-            />
-          )}
-        />
-        <Controller
           name="supplier_id"
           control={control}
           render={({field: {name, value, onChange}}) => (
@@ -404,12 +379,10 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
               onChange={onChange}
               options={subjects}
               error={errors.supplier_id?.message}
-              isDisabled={!subjectType || isDisabled || !isNew}
+              isDisabled={isDisabled || !isNew}
             />
           )}
         />
-      </FlexRow>
-      <FlexRow gap={8}>
         <Controller
           name="bank_account"
           control={control}
@@ -425,22 +398,6 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
             />
           )}
         />
-        <div style={{width: '100%'}}>
-          <Controller
-            name="date_of_payment"
-            control={control}
-            render={({field: {name, value, onChange}}) => (
-              <Datepicker
-                name={name}
-                selected={value ? new Date(value) : null}
-                onChange={onChange}
-                label="DATUM NALOGA"
-                error={errors.date_of_payment?.message}
-                disabled={isDisabled}
-              />
-            )}
-          />
-        </div>
       </FlexRow>
       <FlexRow gap={8}>
         <Controller
@@ -473,6 +430,22 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
             />
           )}
         />
+        <div style={{width: '100%'}}>
+          <Controller
+            name="date_of_payment"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Datepicker
+                name={name}
+                selected={value ? new Date(value) : null}
+                onChange={onChange}
+                label="DATUM NALOGA"
+                error={errors.date_of_payment?.message}
+                disabled={isDisabled}
+              />
+            )}
+          />
+        </div>
       </FlexRow>
       <FlexRow gap={8}>
         <Input
