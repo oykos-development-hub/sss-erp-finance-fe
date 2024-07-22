@@ -69,7 +69,7 @@ export const getBudgetTableHeads = (year: number, state: BudgetTableStep | `${Bu
       ];
     case BudgetTableStep.INTERNAL_REALLOCATION:
       return [
-        {name: `Odobreni budžet za ${year}. godinu`, width: 10},
+        {name: `Tekući budžet za ${year}. godinu`, width: 10},
         {name: '-', width: 6},
         {name: '+', width: 6},
       ];

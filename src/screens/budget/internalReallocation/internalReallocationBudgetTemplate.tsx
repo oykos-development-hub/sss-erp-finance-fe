@@ -11,10 +11,12 @@ import {calcReallocationSums, flattenReallocationBudgetData} from '../../../shar
 import useInternalReallocationsInsert from '../../../services/graphQL/internalReallocations/useInternalReallocationsInsert.ts';
 import useInternalReallocationsOverview from '../../../services/graphQL/internalReallocations/useInternalReallocationsOverview.ts';
 import {generateInternalReallocationPdfData} from '../../../utils/internalReallocationPdfUtils.ts';
+import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
+import {UserRole} from '../../../constants.ts';
 
 const InternalReallocationBudget = () => {
   const {
-    contextMain: {organization_unit},
+    contextMain: {organization_unit, role_id},
     navigation: {
       navigate,
       location: {pathname},
@@ -81,13 +83,15 @@ const InternalReallocationBudget = () => {
               <BoldText variant="bodySmall" content="NAZIV PREDLAGAČA:" />
               <Typography variant="bodySmall" content={organization_unit.title} />
             </TitleWrapper>
-            <Button
-              content="Eksportuj PDF"
-              variant="secondary"
-              size={'sm'}
-              onClick={handlePDFExport}
-              loader={loadingPDF}
-            />
+            {useRoleCheck(role_id, [UserRole.ADMIN]) && (
+              <Button
+                content="Eksportuj PDF"
+                variant="secondary"
+                size={'sm'}
+                onClick={handlePDFExport}
+                loader={loadingPDF}
+              />
+            )}
           </Header>
         </Box>
         <div>

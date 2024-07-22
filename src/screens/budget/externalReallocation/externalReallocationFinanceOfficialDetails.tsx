@@ -25,9 +25,6 @@ const ExternalReallocationFinanceOfficialDetails = () => {
       location: {pathname},
       navigate,
     },
-    contextMain: {
-      organization_unit: {id: organization_unit_id},
-    },
     alert,
   } = useAppContext();
 
@@ -35,10 +32,12 @@ const ExternalReallocationFinanceOfficialDetails = () => {
 
   const {externalReallocations} = useGetExternalReallocations({
     page: 1,
-    organization_unit_id: organization_unit_id,
     id,
   });
-  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id});
+  const reallocation = externalReallocations?.[0];
+  const {currentBudgetAccounts} = useGetCurrentBudget({
+    organization_unit_id: reallocation?.source_organization_unit?.id,
+  });
   const counts = flattenAccounts(currentBudgetAccounts, true);
 
   const {acceptSSSExternalReallocations} = useAcceptSSSExternalReallocations();
@@ -46,7 +45,6 @@ const ExternalReallocationFinanceOfficialDetails = () => {
 
   const [modal, setModal] = useState<'accept' | 'reject' | null>(null);
 
-  const reallocation = externalReallocations?.[0];
   const disabled =
     reallocation?.status === ReallocationStatusEnum.acceptedSSS ||
     reallocation?.status === ReallocationStatusEnum.rejectedSSS;
@@ -125,7 +123,7 @@ const ExternalReallocationFinanceOfficialDetails = () => {
         </div>
         <BudgetTable
           step={BudgetTableStep.EXTERNAL_REALLOCATION_FO_PREVIEW}
-          organizationUnitId={organization_unit_id}
+          organizationUnitId={reallocation?.source_organization_unit?.id}
           year={new Date().getFullYear()}
           countsProps={currentBudgetAccounts}
           extraData={reallocation?.items}
