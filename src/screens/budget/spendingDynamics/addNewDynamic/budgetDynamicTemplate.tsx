@@ -119,9 +119,8 @@ const BudgetDynamicTemplate = () => {
       const totalInitial = parseFloat(item.actual);
 
       const isTotalEqual = parseFloat(totalMonthsWithSavings.toFixed(2)) !== parseFloat(totalInitial.toFixed(2));
-      const isSavingsHigher = item.totalSavings > item.totalSavingsInit;
 
-      if (isTotalEqual || isSavingsHigher) {
+      if (isTotalEqual) {
         invalidCounts.push(item.account_serial_number);
       }
     });
