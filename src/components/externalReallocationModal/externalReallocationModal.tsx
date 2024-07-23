@@ -122,6 +122,8 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
   );
 
   const rowItem = (index: number) => {
+    if (!!activeReallocation && items[index]?.destination_account_id === 0) return null;
+
     return (
       <RowWrapper key={index} style={{marginBlock: '10px'}}>
         <Controller

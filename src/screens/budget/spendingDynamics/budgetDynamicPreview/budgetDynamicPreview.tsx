@@ -67,6 +67,7 @@ type BudgetTableRowProps = {
   count: BudgetDynamicCount;
   level: number;
   children: ReactNode;
+  total_savings?: string;
 };
 
 const BudgetDynamicTableRow = ({count, level, children}: BudgetTableRowProps) => {
@@ -91,15 +92,6 @@ const BudgetDynamicTableRow = ({count, level, children}: BudgetTableRowProps) =>
       </div>
     );
   };
-
-  const totalSavings = useMemo(() => {
-    if (count) {
-      return monthVars.reduce((acc: number, month: string) => {
-        const currSavings = parseInt(count[month as keyof BudgetDynamicCount].savings);
-        return acc + currSavings;
-      }, 0);
-    }
-  }, [count]);
 
   return (
     <>
@@ -137,7 +129,7 @@ const BudgetDynamicTableRow = ({count, level, children}: BudgetTableRowProps) =>
         })}
         <DynamicTableCell level={level}>
           <div style={{width: 100}}>
-            <Input disabled={true} value={totalSavings?.toString()} />
+            <Input disabled={true} value={count.total_savings} />
           </div>
         </DynamicTableCell>
         <DynamicTableCell level={level}>
