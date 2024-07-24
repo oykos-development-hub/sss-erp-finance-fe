@@ -3,6 +3,7 @@ import {Controller, useFormContext} from 'react-hook-form';
 import {CountTableCell, ReallocationInput} from '../styles';
 import {Typography} from 'client-library';
 import {BudgetTableStep} from '../types.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 type BudgetReallocationFormProps = {
   level: number;
@@ -47,7 +48,7 @@ const BudgetReallocationForm = ({
             control={control}
             render={({field: {value}}) => (
               <Typography
-                content={value}
+                content={formatCurrency(value, true)}
                 variant="bodySmall"
                 style={{
                   marginLeft: 24,
@@ -77,7 +78,7 @@ const BudgetReallocationForm = ({
                 }
                 updateParentValues(name);
               }}
-              type={'number'}
+              type={'currency'}
               disabled={disabled || !lastLevel || actual || level === 1 || (amountGiven && amountGiven != 0)}
               isBold={!lastLevel}
               onFocus={handleFocus}
@@ -98,7 +99,7 @@ const BudgetReallocationForm = ({
                   onChange(e);
                   updateParentValues(name);
                 }}
-                type={'number'}
+                type={'currency'}
                 disabled={disabled || !lastLevel || actual || level === 1 || amountTaken != 0}
                 isBold={!lastLevel}
                 onFocus={handleFocus}

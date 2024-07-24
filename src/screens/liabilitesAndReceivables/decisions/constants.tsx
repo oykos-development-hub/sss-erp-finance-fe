@@ -2,7 +2,7 @@ import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {StatusOptions} from '../../../constants.ts';
-import {roundCurrency} from '../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export enum Tabs {
   DecisionOverview = 1,
@@ -49,7 +49,7 @@ export const decisionsOverviewTableHeads: TableHead[] = [
     title: 'Neto iznos',
     accessor: 'net_price',
     type: 'custom',
-    renderContents: net_price => <Typography content={roundCurrency(net_price)} />,
+    renderContents: net_price => <Typography content={formatCurrency(net_price)} />,
   },
   {
     title: 'Bruto iznos',
@@ -57,7 +57,7 @@ export const decisionsOverviewTableHeads: TableHead[] = [
     type: 'custom',
     renderContents: (_, row) => {
       const brutoPrice = row?.net_price + row?.vat_price;
-      return <Typography content={roundCurrency(brutoPrice)} />;
+      return <Typography content={formatCurrency(brutoPrice)} />;
     },
   },
   {

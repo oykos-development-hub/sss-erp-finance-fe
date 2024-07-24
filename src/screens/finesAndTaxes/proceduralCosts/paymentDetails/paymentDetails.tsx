@@ -16,7 +16,7 @@ import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {useEffect, useState} from 'react';
 import {requiredError} from '../../../../constants.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
@@ -74,6 +74,7 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
     handleSubmit,
     formState: {errors},
     setError,
+    watch,
   } = useForm<PaymentEntryForm>({});
 
   const {fields, append, remove} = useFieldArray({name: 'payments', control});
@@ -217,7 +218,8 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
         return (
           <Input
             {...register(`payments.${index}.amount`)}
-            type="number"
+            value={watch(`payments.${index}.amount`).toString()}
+            type="currency"
             leftContent={
               <div style={{color: isRowDisabled(row) ? Theme.palette.gray300 : Theme.palette.gray800}}>€</div>
             }
@@ -344,25 +346,23 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UKUPNO:" />
           <Typography
             variant="bodySmall"
-            content={`${proceduralCostDetails?.all_payments_amount + proceduralCostDetails?.court_costs_paid} €`}
+            content={formatCurrency(
+              proceduralCostDetails?.all_payments_amount + proceduralCostDetails?.court_costs_paid,
+            )}
           />
         </Amount>
       </FinePaymentDetailsWrapper>
-      {/*<Amount>*/}
-      {/*  <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREMAŠEN IZNOS:" />*/}
-      {/*  <Typography variant="bodySmall" content={`${fine?.amount} €`} />*/}
-      {/*</Amount>*/}
       <LabeledDivider>
         <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREGLED PLAĆANJA:" />
       </LabeledDivider>
       <FinePaymentDetailsWrapper>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENA KAZNA:" />
-          <Typography variant="bodySmall" content={`${procedural_cost?.amount} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(procedural_cost?.amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENA KAZNA:" />
-          <Typography variant="bodySmall" content={`${proceduralCostDetails?.all_payments_amount} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(proceduralCostDetails?.all_payments_amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UMANJENJE KAZNE:" />
@@ -370,28 +370,28 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
             variant="bodySmall"
             content={
               proceduralCostDetails?.amount_grace_period_available
-                ? roundCurrency(procedural_cost?.amount - proceduralCostDetails?.amount_grace_period)
+                ? formatCurrency(procedural_cost?.amount - proceduralCostDetails?.amount_grace_period)
                 : '0.00 €'
             }
           />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
-          <Typography variant="bodySmall" content={roundCurrency(proceduralCostDetails?.left_to_pay_amount)} />
+          <Typography variant="bodySmall" content={formatCurrency(proceduralCostDetails?.left_to_pay_amount)} />
         </Amount>
         <Amount style={{marginTop: 20}}>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENI SUDSKI TROŠKOVI:" />
-          <Typography variant="bodySmall" content={`${procedural_cost?.court_costs} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(procedural_cost?.court_costs)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENI SUDSKI TROŠKOVI:" />
-          <Typography variant="bodySmall" content={`${proceduralCostDetails?.court_costs_paid} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(proceduralCostDetails?.court_costs_paid)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
           <Typography
             variant="bodySmall"
-            content={roundCurrency(proceduralCostDetails?.court_costs_left_to_pay_amount)}
+            content={formatCurrency(proceduralCostDetails?.court_costs_left_to_pay_amount)}
           />
         </Amount>
       </FinePaymentDetailsWrapper>

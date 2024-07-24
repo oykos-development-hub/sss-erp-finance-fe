@@ -39,16 +39,32 @@ export const FlexContainer = styled.div`
   align-items: center;
 `;
 
-const BudgetInputStyles = css`
+export const BudgetInputStyles = css`
   border: none;
   outline: none;
   background-color: transparent !important;
   text-align: center;
   font-size: 14px;
   width: 100%;
+
+  & div {
+    background-color: transparent !important;
+
+    & input {
+      background-color: transparent !important;
+      border: none !important;
+      outline: none !important;
+
+      &:focus {
+        border: none;
+        outline: none;
+        box-shadow: none;
+      }
+    }
+  }
 `;
 
-export const BudgetInput = styled.input<{isBold?: boolean; disabled?: boolean}>`
+export const BudgetInput = styled(Input)<{isBold?: boolean; disabled?: boolean}>`
   ${BudgetInputStyles};
 
   font-weight: ${({isBold}) => (isBold ? '600' : '400')};

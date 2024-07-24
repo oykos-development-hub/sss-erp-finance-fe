@@ -17,7 +17,7 @@ import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {contractsSchema} from './constants.tsx';
 import {ContractsFormContainer, HalfWidthContainer, Row} from './styles.ts';
 import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
@@ -126,7 +126,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
       title: 'Iznos',
       accessor: 'price',
       type: 'custom',
-      renderContents: price => <Typography content={roundCurrency(price)} />,
+      renderContents: price => <Typography content={formatCurrency(price)} />,
     },
     {
       title: 'Subjekat',
@@ -621,7 +621,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             {!!contract && contract?.net_price && contract?.vat_price && (
               <Row>
                 <MainTitle
-                  content={`Ukupno: ${roundCurrency(contract?.net_price + contract?.vat_price)}`}
+                  content={`Ukupno: ${formatCurrency(contract?.net_price + contract?.vat_price)}`}
                   style={{marginTop: 20, marginLeft: 10}}
                 />
               </Row>

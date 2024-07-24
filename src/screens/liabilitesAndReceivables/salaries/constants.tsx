@@ -2,7 +2,7 @@ import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import {UserProfile} from '../../../types/graphQL/userProfiles.ts';
-import {roundCurrency} from '../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export const salariesOverviewTableHeads: TableHead[] = [
   // TODO change accessors to correct ones
@@ -24,13 +24,13 @@ export const salariesOverviewTableHeads: TableHead[] = [
     title: 'Neto iznos',
     accessor: 'net_price',
     type: 'custom',
-    renderContents: (net_price: number) => <Typography content={roundCurrency(net_price)} variant="bodySmall" />,
+    renderContents: (net_price: number) => <Typography content={formatCurrency(net_price)} variant="bodySmall" />,
   },
   {
     title: 'Ukupni bruto',
     accessor: 'gross_price',
     type: 'custom',
-    renderContents: (gross_price: number) => <Typography content={roundCurrency(gross_price)} variant="bodySmall" />,
+    renderContents: (gross_price: number) => <Typography content={formatCurrency(gross_price)} variant="bodySmall" />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
@@ -79,6 +79,6 @@ export const tableHeads: TableHead[] = [
     width: '200px',
     accessor: 'account_amounts',
     type: 'custom',
-    renderContents: (_, row) => <Typography content={roundCurrency(row?.amount)} />,
+    renderContents: (_, row) => <Typography content={formatCurrency(row?.amount)} />,
   },
 ];

@@ -226,21 +226,29 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
         />
       </Row>
       <Row>
-        <Input
-          {...register('amount')}
-          label="VISINA PAUŠALA:"
-          type={'number'}
-          inputMode={'decimal'}
-          leftContent={<div>€</div>}
-          isRequired
-          error={errors.amount?.message}
+        <Controller
+          name={'amount'}
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Input
+              value={value.toString()}
+              onChange={onChange}
+              label="VISINA PAUŠALA:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              isRequired
+              error={errors.amount?.message}
+            />
+          )}
         />
+
         <Input
           value={flat_rate?.flat_rate_details.amount_grace_period.toFixed(2)}
           label={`2/3 PAUŠALA - UKOLIKO UPLATITE DO ${parseDate(
             flat_rate?.flat_rate_details.amount_grace_period_due_date ?? null,
           )}`}
-          type={'number'}
+          type={'currency'}
           inputMode={'decimal'}
           leftContent={<div style={{color: Theme.palette.gray300}}>€</div>}
           disabled
@@ -263,14 +271,22 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
             />
           )}
         />
-        <Input
-          {...register('court_costs')}
-          label="SUDSKI TROŠKOVI:"
-          type={'number'}
-          inputMode={'decimal'}
-          leftContent={<div>€</div>}
-          style={{flexGrow: 1 / 2}}
+        <Controller
+          name={'court_costs'}
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Input
+              value={value?.toString()}
+              onChange={onChange}
+              label="SUDSKI TROŠKOVI:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              style={{flexGrow: 1 / 2}}
+            />
+          )}
         />
+
         <Controller
           name="court_account_id"
           control={control}

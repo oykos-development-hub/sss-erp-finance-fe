@@ -48,7 +48,7 @@ export const flattenBudgetData = (data: any, parentId = 0) => {
           // Determine the appropriate value based on the type and suffix
           const setValue = (value: any, suffix: string) => {
             if (typeof value === 'string' && suffix !== 'description') {
-              return parseInt(value, 10); // Parse to integer for budget fields
+              return parseFloat(value); // Parse to integer for budget fields
             }
             return value; // Use the value directly for 'description' or if it's already a number
           };

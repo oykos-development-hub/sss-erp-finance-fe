@@ -1,7 +1,7 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {Input, Modal, Typography} from 'client-library';
 import {useEffect} from 'react';
-import {useFieldArray, useForm} from 'react-hook-form';
+import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import useAppContext from '../../context/useAppContext.ts';
 import useGetBudgets from '../../services/graphQL/getBudgets/useGetBudgets.ts';
@@ -47,7 +47,6 @@ const BudgetLimitModal = ({onClose, open, onSubmit}: BudgetLimitModalProps) => {
   const isNew = pathnameSplit.includes('add-new');
 
   const {
-    register,
     control,
     formState: {errors},
     resetField,
@@ -62,7 +61,7 @@ const BudgetLimitModal = ({onClose, open, onSubmit}: BudgetLimitModalProps) => {
   const handleSave = async (data: LimitFormType) => {
     const limits = data.limits.map(item => ({
       organization_unit_id: item.organization_unit_id,
-      limit: parseInt(item.limit),
+      limit: parseFloat(item.limit),
     }));
 
     if (limits.length) {
@@ -94,7 +93,7 @@ const BudgetLimitModal = ({onClose, open, onSubmit}: BudgetLimitModalProps) => {
 
       replace(items);
     }
-  }, [budgets, organizationUnits]);
+  }, [budgets, organizationUnits, open]);
 
   const onModalClose = () => {
     resetField('limits');
@@ -117,11 +116,18 @@ const BudgetLimitModal = ({onClose, open, onSubmit}: BudgetLimitModalProps) => {
               <LabelWrapper>
                 <Typography variant="bodySmall" content={item.title} />
               </LabelWrapper>
-              <Input
-                {...register(`limits.${index}.limit`)}
-                placeholder="Unesite limit..."
-                type="number"
-                error={errors.limits?.[index]?.limit?.message}
+              <Controller
+                name={`limits.${index}.limit`}
+                control={control}
+                render={({field: {onChange, value}}) => (
+                  <Input
+                    value={value}
+                    onChange={onChange}
+                    placeholder="Unesite limit..."
+                    type={'currency'}
+                    error={errors.limits?.[index]?.limit?.message}
+                  />
+                )}
               />
             </Row>
           ))}

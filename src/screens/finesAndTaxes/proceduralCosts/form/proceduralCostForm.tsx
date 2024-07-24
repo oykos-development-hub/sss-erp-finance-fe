@@ -226,21 +226,29 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
         />
       </Row>
       <Row>
-        <Input
-          {...register('amount')}
-          label="VISINA TROŠKA POSTUPKA:"
-          type={'number'}
-          inputMode={'decimal'}
-          leftContent={<div>€</div>}
-          isRequired
-          error={errors.amount?.message}
+        <Controller
+          name={'amount'}
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Input
+              value={value.toString()}
+              onChange={onChange}
+              label="VISINA TROŠKA POSTUPKA:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              isRequired
+              error={errors.amount?.message}
+            />
+          )}
         />
+
         <Input
           value={procedural_cost?.procedure_cost_details.amount_grace_period.toFixed(2)}
           label={`2/3 TROŠKA POSTUPKA - UKOLIKO UPLATITE DO ${parseDate(
             procedural_cost?.procedure_cost_details.amount_grace_period_due_date ?? null,
           )}`}
-          type={'number'}
+          type={'currency'}
           inputMode={'decimal'}
           leftContent={<div style={{color: Theme.palette.gray300}}>€</div>}
           disabled
@@ -263,14 +271,22 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
             />
           )}
         />
-        <Input
-          {...register('court_costs')}
-          label="SUDSKI TROŠKOVI:"
-          type={'number'}
-          inputMode={'decimal'}
-          leftContent={<div>€</div>}
-          style={{flexGrow: 1 / 2}}
+        <Controller
+          name={'court_costs'}
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Input
+              value={value?.toString()}
+              onChange={onChange}
+              label="SUDSKI TROŠKOVI:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              style={{flexGrow: 1 / 2}}
+            />
+          )}
         />
+
         <Controller
           name="court_account_id"
           control={control}

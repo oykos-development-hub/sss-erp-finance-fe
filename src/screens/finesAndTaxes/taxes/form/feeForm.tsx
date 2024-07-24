@@ -241,15 +241,23 @@ const FeeForm = ({fee}: FeeFormProps) => {
         />
       </Row>
       <Row>
-        <Input
-          {...register('amount')}
-          label="VISINA TAKSE:"
-          type={'number'}
-          inputMode={'decimal'}
-          leftContent={<div>€</div>}
-          isRequired
-          error={errors.amount?.message}
+        <Controller
+          name={'amount'}
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Input
+              value={value.toString()}
+              onChange={onChange}
+              label="VISINA TAKSE:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              isRequired
+              error={errors.amount?.message}
+            />
+          )}
         />
+
         <Controller
           name="court_account"
           control={control}

@@ -4,7 +4,7 @@ import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import {generateDropdownOptions} from '../../constants.ts';
 import useAppContext from '../../context/useAppContext.ts';
 import useGetCurrentBudget from '../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
-import {roundCurrency} from '../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../utils/currencyUtils.ts';
 import {ObligationsItem} from '../../types/graphQL/receivablesTypes.ts';
 import {Row} from '../../screens/liabilitesAndReceivables/receivables/styles.ts';
 import {flattenAccounts} from '../../shared/budgetTable/utils.ts';
@@ -91,7 +91,7 @@ const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundRe
       accessor: 'remain_price',
       type: 'custom',
       renderContents: remain_price => {
-        return <Typography content={roundCurrency(remain_price)} />;
+        return <Typography content={formatCurrency(remain_price)} />;
       },
     },
   ];
@@ -143,7 +143,7 @@ const ReceivablesleModal = ({onClose, open, data, selectedRow, onSubmit}: FundRe
             <Input
               label="Iznos za plaćanje:"
               disabled
-              value={roundCurrency(amountValue)}
+              value={formatCurrency(amountValue)}
               error={errors.amount?.message as string}
               style={{width: '250px'}}
             />

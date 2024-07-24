@@ -1,5 +1,6 @@
 import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../../utils/dateUtils.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export enum Tabs {
   OverviewScreen = 1,
@@ -41,19 +42,25 @@ export const tableHeadsConfiscationOverview: TableHead[] = [
   {
     title: 'Visina kazne',
     accessor: 'amount',
-    type: 'text',
+    type: 'custom',
+    renderContents: value => {
+      return <Typography content={formatCurrency(value)} />;
+    },
   },
   {
     title: 'Sudski troškovi',
     accessor: 'court_costs',
-    type: 'text',
+    type: 'custom',
+    renderContents: value => {
+      return <Typography content={formatCurrency(value)} />;
+    },
   },
   {
     title: 'Naplaćeno',
     accessor: 'property_benefits_confiscation_details',
     type: 'custom',
     renderContents: property_benefits_confiscation_details => {
-      return <Typography content={property_benefits_confiscation_details?.all_payments_amount} />;
+      return <Typography content={formatCurrency(property_benefits_confiscation_details?.all_payments_amount)} />;
     },
   },
   {

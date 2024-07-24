@@ -1,7 +1,7 @@
 import {TableHead, Typography} from 'client-library';
 import {DropdownData} from '../../../../types/dropdownData';
 import {parseDate} from '../../../../utils/dateUtils';
-import {formatCurrency} from '../../../../utils/roundCurrency';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 
 export const fixedFinancialDepositItemTableHeads: TableHead[] = [
   {

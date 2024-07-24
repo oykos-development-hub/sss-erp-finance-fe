@@ -16,7 +16,7 @@ import SectionBox from '../../../../shared/sectionBox.ts';
 import StatusTableCell from '../../../../shared/statusTableCell/statusTableCell.tsx';
 import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import {StatusOptionsInvoice} from '../../invoices/constants.tsx';
 import {TypesTitles, enforcedPaymentSchema} from '../constants.tsx';
 import {FileUploadWrapper, FormContainer, Row} from '../styles.ts';
@@ -42,7 +42,7 @@ const EnforcedPaymentEntry = () => {
     setError,
     clearErrors,
   } = useForm<EnforcedPaymentEntryForm>({
-    defaultValues: {amount_for_bank: roundCurrency(15)},
+    defaultValues: {amount_for_bank: formatCurrency(15, true)},
     resolver: yupResolver(enforcedPaymentSchema),
   });
   const enforcedPaymentID = location.pathname.split('/').at(-1);
@@ -106,7 +106,7 @@ const EnforcedPaymentEntry = () => {
       title: 'Ukupni iznos',
       accessor: 'total_price',
       type: 'custom',
-      renderContents: total_price => <Typography content={total_price ? roundCurrency(total_price) : ''} />,
+      renderContents: total_price => <Typography content={total_price ? formatCurrency(total_price) : ''} />,
     },
     {
       title: 'Konto',
@@ -249,7 +249,7 @@ const EnforcedPaymentEntry = () => {
         totalRemainingPrice += field.total_price || 0;
       });
 
-      setTotalAmount(roundCurrency(totalRemainingPrice));
+      setTotalAmount(formatCurrency(totalRemainingPrice));
     }
   };
 
@@ -527,9 +527,10 @@ const EnforcedPaymentEntry = () => {
                         <Row>
                           <Input
                             label="Ukupno za plaćanje:"
-                            value={totalForPayment ? roundCurrency(totalForPayment) : ''}
+                            value={totalForPayment ? formatCurrency(totalForPayment) : ''}
                             style={{width: '250px'}}
                             disabled
+                            type={'currency'}
                           />
                         </Row>
                       </>

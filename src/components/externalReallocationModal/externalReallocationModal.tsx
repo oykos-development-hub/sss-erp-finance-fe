@@ -148,6 +148,7 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
           label="NEDOSTAJUĆI IZNOS:"
           error={errors.items?.[index]?.amount?.message}
           disabled={!!activeReallocation}
+          type="currency"
         />
       </RowWrapper>
     );

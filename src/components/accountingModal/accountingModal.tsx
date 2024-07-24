@@ -1,6 +1,6 @@
 import {Modal, Table, TableHead, Typography, Theme, Button} from 'client-library';
 import {AccountingModalProps} from './types';
-import {roundCurrency} from '../../utils/roundCurrency';
+import {formatCurrency} from '../../utils/currencyUtils.ts';
 import {TypesForReceivables} from '../../screens/liabilitesAndReceivables/receivables/constants';
 import useAccountingEntryInsert from '../../services/graphQL/accounting/useAccountingEntryInsert';
 import useAppContext from '../../context/useAppContext';
@@ -64,7 +64,7 @@ const tableHeads: TableHead[] = [
     type: 'custom',
     renderContents: (debit_amount, row) => (
       <Typography
-        content={roundCurrency(debit_amount)}
+        content={formatCurrency(debit_amount)}
         variant="bodySmall"
         style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
       />
@@ -76,7 +76,7 @@ const tableHeads: TableHead[] = [
     type: 'custom',
     renderContents: (credit_amount, row) => (
       <Typography
-        content={roundCurrency(credit_amount)}
+        content={formatCurrency(credit_amount)}
         variant="bodySmall"
         style={{color: row.debit_amount > 0 && row.debit_amount !== '' ? Theme.palette.black : Theme.palette.gray500}}
       />

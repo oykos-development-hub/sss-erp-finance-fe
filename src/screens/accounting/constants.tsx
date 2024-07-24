@@ -1,7 +1,7 @@
 import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../utils/dateUtils';
 import {TypesForReceivables} from '../liabilitesAndReceivables/receivables/constants';
-import {roundCurrency} from '../../utils/roundCurrency';
+import {formatCurrency} from '../../utils/currencyUtils.ts';
 
 export enum Tabs {
   CurrentAccounting = 1,
@@ -39,7 +39,7 @@ export const tableHeads: TableHead[] = [
     title: 'Za plaćanje',
     accessor: 'price',
     type: 'custom',
-    renderContents: price => <Typography content={roundCurrency(price)} variant="bodySmall" />,
+    renderContents: price => <Typography content={formatCurrency(price)} variant="bodySmall" />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
@@ -63,13 +63,13 @@ export const tableHeadsAccountingOverview: TableHead[] = [
     title: 'Duguje',
     accessor: 'debit_amount',
     type: 'custom',
-    renderContents: debit_amount => <Typography content={roundCurrency(debit_amount)} variant="bodySmall" />,
+    renderContents: debit_amount => <Typography content={formatCurrency(debit_amount)} variant="bodySmall" />,
   },
   {
     title: 'Potražuje',
     accessor: 'credit_amount',
     type: 'custom',
-    renderContents: credit_amount => <Typography content={roundCurrency(credit_amount)} variant="bodySmall" />,
+    renderContents: credit_amount => <Typography content={formatCurrency(credit_amount)} variant="bodySmall" />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
@@ -96,7 +96,7 @@ export const tableHeadsForAccountingPaymentOrders: TableHead[] = [
     title: 'Za plaćanje',
     accessor: 'price',
     type: 'custom',
-    renderContents: price => <Typography content={roundCurrency(price)} variant="bodySmall" />,
+    renderContents: price => <Typography content={formatCurrency(price)} variant="bodySmall" />,
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];

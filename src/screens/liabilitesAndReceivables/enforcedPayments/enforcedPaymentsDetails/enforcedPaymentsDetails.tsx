@@ -16,7 +16,7 @@ import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper.tsx';
 import SectionBox from '../../../../shared/sectionBox.ts';
 import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import {enforcedPaymentSchema} from '../constants.tsx';
 import {CaptionWrapper, FileUploadWrapper, FormContainer, ReturnWrapper, Row} from '../styles.ts';
@@ -78,7 +78,7 @@ const EnforcedPaymentsDetails = () => {
       title: 'Plaćeno',
       accessor: 'amount',
       type: 'custom',
-      renderContents: amount => <Typography content={amount ? roundCurrency(amount) : ''} />,
+      renderContents: amount => <Typography content={amount ? formatCurrency(amount) : ''} />,
     },
     {
       title: 'Konto',
@@ -422,7 +422,7 @@ const EnforcedPaymentsDetails = () => {
             <Row>
               <Input
                 label="Iznos za plaćanje:"
-                value={roundCurrency(enforcedPaymentData?.amount)}
+                value={formatCurrency(enforcedPaymentData?.amount)}
                 style={{width: '250px'}}
                 disabled
               />
@@ -430,19 +430,19 @@ const EnforcedPaymentsDetails = () => {
             <Row>
               <Input
                 label="Troškovi advokata:"
-                value={roundCurrency(enforcedPaymentData?.amount_for_lawyer)}
+                value={formatCurrency(enforcedPaymentData?.amount_for_lawyer)}
                 style={{width: '250px'}}
                 disabled
               />
               <Input
                 label="Troškovi izvršitelja:"
-                value={roundCurrency(enforcedPaymentData?.amount_for_agent)}
+                value={formatCurrency(enforcedPaymentData?.amount_for_agent)}
                 style={{width: '250px'}}
                 disabled
               />
               <Input
                 label="Naknada Centralne banke:"
-                value={roundCurrency(enforcedPaymentData?.amount_for_bank)}
+                value={formatCurrency(enforcedPaymentData?.amount_for_bank)}
                 style={{width: '250px'}}
                 disabled
               />
@@ -456,7 +456,7 @@ const EnforcedPaymentsDetails = () => {
             <Row>
               <Input
                 label="Ukupno za plaćanje:"
-                value={roundCurrency(totalForPayment)}
+                value={formatCurrency(totalForPayment)}
                 style={{width: '250px'}}
                 disabled
               />

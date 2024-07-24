@@ -4,7 +4,7 @@ import {requiredError} from '../../../constants.ts';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {optionsNumberSchema} from '../../../utils/formSchemas.ts';
-import {roundCurrency} from '../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export const enforcedPaymentsStatusOptions = [
   {id: '', title: 'Svi statusi'},
@@ -41,7 +41,7 @@ export const tableHeads: TableHead[] = [
     title: 'Iznos',
     accessor: 'amount',
     type: 'custom',
-    renderContents: amount => <Typography content={amount ? roundCurrency(amount) : ''} />,
+    renderContents: amount => <Typography content={amount ? formatCurrency(amount) : ''} />,
   },
   {
     title: 'SAP ID',

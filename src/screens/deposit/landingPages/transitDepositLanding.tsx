@@ -10,7 +10,7 @@ import {InitialState} from '../../../types/graphQL/initialState.ts';
 import {parseDateForBackend} from '../../../utils/dateUtils.ts';
 import {SectionBox} from '../../accounting/styles.tsx';
 import {Container, InitialStateItem, LandingPageTitle} from './styles.ts';
-import {formatCurrency} from '../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 type InitialStateFilterType = {
   date: Date | null;

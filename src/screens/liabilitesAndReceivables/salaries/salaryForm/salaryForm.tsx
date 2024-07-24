@@ -29,7 +29,7 @@ import {FileUploadWrapper} from '../../../../shared/FileUploadWrapper.ts';
 import {generateDropdownOptions, requiredError} from '../../../../constants.ts';
 import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import {getMonthOptions} from '../../../../utils/getMonthOptions.ts';
-import {formatCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 import {useEffect, useMemo, useState} from 'react';
 import {
@@ -543,7 +543,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
   const renderInfoBox = (label: string, value: number, isCurrency = false) => {
     return (
       <InfoBox>
-        <InfoBoxText variant="bodySmall" content={isCurrency ? formatCurrency(value, 'left') : value} />
+        <InfoBoxText variant="bodySmall" content={isCurrency ? formatCurrency(value, false, true) : value} />
         <InfoBoxText variant="bodySmall" content={label} />
       </InfoBox>
     );

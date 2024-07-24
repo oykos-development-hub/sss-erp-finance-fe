@@ -16,7 +16,7 @@ import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {useEffect, useState} from 'react';
 import {requiredError} from '../../../../constants.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
@@ -74,6 +74,7 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
     handleSubmit,
     formState: {errors},
     setError,
+    watch,
   } = useForm<PaymentEntryForm>({});
 
   const {fields, append, remove} = useFieldArray({name: 'payments', control});
@@ -217,7 +218,8 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
         return (
           <Input
             {...register(`payments.${index}.amount`)}
-            type="number"
+            value={watch(`payments.${index}.amount`).toString()}
+            type="currency"
             leftContent={
               <div style={{color: isRowDisabled(row) ? Theme.palette.gray300 : Theme.palette.gray800}}>€</div>
             }
@@ -342,11 +344,11 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
       <FinePaymentDetailsWrapper>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UKUPNO:" />
-          <Typography variant="bodySmall" content={roundCurrency(fineFeeDetails?.fee_all_payments_amount)} />
+          <Typography variant="bodySmall" content={formatCurrency(fineFeeDetails?.fee_all_payments_amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
-          <Typography variant="bodySmall" content={roundCurrency(fineFeeDetails?.fee_left_to_pay_amount)} />
+          <Typography variant="bodySmall" content={formatCurrency(fineFeeDetails?.fee_left_to_pay_amount)} />
         </Amount>
       </FinePaymentDetailsWrapper>
       <ConfirmationModal

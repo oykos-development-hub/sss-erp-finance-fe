@@ -1,3 +1,4 @@
+import React from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 import {CountTableCell, BudgetInput, DescriptionTextarea} from '../styles';
 
@@ -22,11 +23,11 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual,
           render={({field: {onChange, name, value}}) => (
             <BudgetInput
               value={value}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={e => {
                 onChange(e);
                 updateParentValues(name);
               }}
-              type={'number'}
+              type={'currency'}
               disabled={disabled || !lastLevel || actual}
               isBold={!lastLevel}
             />
@@ -61,7 +62,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual,
                   onChange(e);
                   updateParentValues(name);
                 }}
-                type={'number'}
+                type={'currency'}
                 disabled={disabled || !lastLevel}
                 isBold={!lastLevel}
               />
@@ -80,7 +81,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual,
                 onChange(e);
                 updateParentValues(name);
               }}
-              type={'number'}
+              type={'currency'}
               disabled={disabled || !lastLevel || actual}
               isBold={!lastLevel}
             />
@@ -98,7 +99,7 @@ const BudgetingForm = ({level, lastLevel, fieldPath, updateParentValues, actual,
                 onChange(e);
                 updateParentValues(name);
               }}
-              type={'number'}
+              type={'currency'}
               disabled={disabled || !lastLevel || actual}
               isBold={!lastLevel}
             />

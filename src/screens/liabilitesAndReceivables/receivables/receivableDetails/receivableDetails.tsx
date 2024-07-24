@@ -15,7 +15,7 @@ import SectionBox from '../../../../shared/sectionBox.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {TypesForReceivables, receivableSchema, sourceOfFunding} from '../constants.tsx';
 import {ButtonWrapper, ReceivableFormContainer, Row} from '../styles.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 
 type ReceivableEntryForm = yup.InferType<typeof receivableSchema>;
 
@@ -78,7 +78,7 @@ const ReceivableDetails = () => {
       title: 'Plaćeno',
       accessor: 'amount',
       type: 'custom',
-      renderContents: amount => <Typography content={roundCurrency(amount) || ''} />,
+      renderContents: amount => <Typography content={formatCurrency(amount)} />,
     },
     {
       title: 'Konto',
@@ -252,7 +252,7 @@ const ReceivableDetails = () => {
           <Row>
             <Input
               label="Iznos za placanje:"
-              value={roundCurrency(paymentData?.amount)}
+              value={formatCurrency(paymentData?.amount)}
               error={errors.amount?.message}
               style={{width: '250px'}}
               disabled

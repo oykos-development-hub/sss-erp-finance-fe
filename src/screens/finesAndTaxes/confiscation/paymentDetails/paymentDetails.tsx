@@ -16,7 +16,7 @@ import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {useEffect, useState} from 'react';
 import {requiredError} from '../../../../constants.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
@@ -78,6 +78,7 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
     handleSubmit,
     formState: {errors},
     setError,
+    watch,
   } = useForm<PaymentEntryForm>({});
 
   const {fields, append, remove} = useFieldArray({name: 'payments', control});
@@ -221,7 +222,8 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
         return (
           <Input
             {...register(`payments.${index}.amount`)}
-            type="number"
+            value={watch(`payments.${index}.amount`).toString()}
+            type="currency"
             leftContent={
               <div style={{color: isRowDisabled(row) ? Theme.palette.gray300 : Theme.palette.gray800}}>€</div>
             }
@@ -348,25 +350,21 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UKUPNO:" />
           <Typography
             variant="bodySmall"
-            content={`${propBenConfDetails?.all_payments_amount + propBenConfDetails?.court_costs_paid} €`}
+            content={formatCurrency(propBenConfDetails?.all_payments_amount + propBenConfDetails?.court_costs_paid)}
           />
         </Amount>
       </FinePaymentDetailsWrapper>
-      {/*<Amount>*/}
-      {/*  <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREMAŠEN IZNOS:" />*/}
-      {/*  <Typography variant="bodySmall" content={`${fine?.amount} €`} />*/}
-      {/*</Amount>*/}
       <LabeledDivider>
         <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREGLED PLAĆANJA:" />
       </LabeledDivider>
       <FinePaymentDetailsWrapper>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENA KAZNA:" />
-          <Typography variant="bodySmall" content={`${property_benefits_confiscation?.amount} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(property_benefits_confiscation?.amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENA KAZNA:" />
-          <Typography variant="bodySmall" content={`${propBenConfDetails?.all_payments_amount} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(propBenConfDetails?.all_payments_amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UMANJENJE KAZNE:" />
@@ -374,26 +372,29 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
             variant="bodySmall"
             content={
               propBenConfDetails?.amount_grace_period_available
-                ? roundCurrency(property_benefits_confiscation?.amount - propBenConfDetails?.amount_grace_period)
+                ? formatCurrency(property_benefits_confiscation?.amount - propBenConfDetails?.amount_grace_period)
                 : '0.00 €'
             }
           />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
-          <Typography variant="bodySmall" content={roundCurrency(propBenConfDetails?.left_to_pay_amount)} />
+          <Typography variant="bodySmall" content={formatCurrency(propBenConfDetails?.left_to_pay_amount)} />
         </Amount>
         <Amount style={{marginTop: 20}}>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENI SUDSKI TROŠKOVI:" />
-          <Typography variant="bodySmall" content={`${property_benefits_confiscation?.court_costs} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(property_benefits_confiscation?.court_costs)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENI SUDSKI TROŠKOVI:" />
-          <Typography variant="bodySmall" content={`${propBenConfDetails?.court_costs_paid} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(propBenConfDetails?.court_costs_paid)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
-          <Typography variant="bodySmall" content={roundCurrency(propBenConfDetails?.court_costs_left_to_pay_amount)} />
+          <Typography
+            variant="bodySmall"
+            content={formatCurrency(propBenConfDetails?.court_costs_left_to_pay_amount)}
+          />
         </Amount>
       </FinePaymentDetailsWrapper>
       <ConfirmationModal

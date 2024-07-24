@@ -1,6 +1,7 @@
 import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export enum Tabs {
   FinesOverview = 1,
@@ -43,19 +44,25 @@ export const tableHeadsFinesOverview: TableHead[] = [
   {
     title: 'Visina kazne',
     accessor: 'amount',
-    type: 'text',
+    type: 'custom',
+    renderContents: value => {
+      return <Typography content={formatCurrency(value)} />;
+    },
   },
   {
     title: 'Sudski troškovi',
     accessor: 'court_costs',
-    type: 'text',
+    type: 'custom',
+    renderContents: value => {
+      return <Typography content={formatCurrency(value)} />;
+    },
   },
   {
     title: 'Naplaćeno',
     accessor: 'fine_fee_details',
     type: 'custom',
     renderContents: fine_fee_details => {
-      return <Typography content={fine_fee_details?.fee_all_payments_amount} />;
+      return <Typography content={formatCurrency(fine_fee_details?.fee_all_payments_amount)} />;
     },
   },
   {

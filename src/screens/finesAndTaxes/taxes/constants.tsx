@@ -2,6 +2,7 @@ import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import {FileItem} from '../../../types/fileUploadType.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export enum Tabs {
   TaxesOverview = 1,
@@ -59,7 +60,10 @@ export const tableHeadsTaxesOverview: TableHead[] = [
   {
     title: 'Visina takse',
     accessor: 'amount',
-    type: 'text',
+    type: 'custom',
+    renderContents: value => {
+      return <Typography content={formatCurrency(value)} />;
+    },
   },
   {
     title: 'Status',

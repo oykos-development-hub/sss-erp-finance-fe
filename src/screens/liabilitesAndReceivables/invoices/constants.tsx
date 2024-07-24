@@ -2,7 +2,7 @@ import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import {parseDate} from '../../../utils/dateUtils.ts';
-import {roundCurrency} from '../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export const invoicesOverviewTableHeads: TableHead[] = [
   {
@@ -70,7 +70,7 @@ export const invoiceAmountTableHeads: TableHead[] = [
     width: '200px',
     accessor: 'account_amounts',
     type: 'custom',
-    renderContents: (_, row) => <Typography content={roundCurrency(row?.amount)} />,
+    renderContents: (_, row) => <Typography content={formatCurrency(row?.amount)} />,
   },
 ];
 

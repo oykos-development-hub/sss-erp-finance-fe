@@ -15,7 +15,7 @@ import SectionBox from '../../../../shared/sectionBox.ts';
 import StatusTableCell from '../../../../shared/statusTableCell/statusTableCell.tsx';
 import {Items} from '../../../../types/graphQL/receivablesTypes.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import {TypesForReceivables, receivableSchema, sourceOfFunding} from '../constants.tsx';
 import {ReceivableFormContainer, Row} from '../styles.ts';
 import ReceivableSingleModal from '../../../../components/receivableModal/receivableSingleModal.tsx';
@@ -99,13 +99,13 @@ const ReceivableEntry = () => {
       title: 'Ukupni iznos',
       accessor: 'total_price',
       type: 'custom',
-      renderContents: total_price => <Typography content={roundCurrency(total_price)} />,
+      renderContents: total_price => <Typography content={formatCurrency(total_price)} />,
     },
     {
       title: 'Preostalo za plaćanje',
       accessor: 'remain_price',
       type: 'custom',
-      renderContents: remain_price => <Typography content={roundCurrency(remain_price)} />,
+      renderContents: remain_price => <Typography content={formatCurrency(remain_price)} />,
     },
     {
       title: 'Status',

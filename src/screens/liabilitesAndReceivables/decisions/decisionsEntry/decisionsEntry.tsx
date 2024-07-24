@@ -19,7 +19,7 @@ import {FileResponseItem} from '../../../../types/fileUploadType.ts';
 import {DecisionItem} from '../../../../types/graphQL/invoice.ts';
 import {createDropdownOptions} from '../../../../utils/createOptions.ts';
 import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
 import {SourceOfFunding} from '../constants.tsx';
@@ -135,7 +135,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       title: 'Iznos',
       accessor: 'price',
       type: 'custom',
-      renderContents: price => <Typography content={roundCurrency(price)} />,
+      renderContents: price => <Typography content={formatCurrency(price)} />,
     },
     {
       title: 'Subjekat',
@@ -625,7 +625,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             {!!decision && decision?.net_price && decision?.vat_price && (
               <Row>
                 <MainTitle
-                  content={`Ukupno: ${roundCurrency(decision?.net_price + decision?.vat_price)}`}
+                  content={`Ukupno: ${formatCurrency(decision?.net_price + decision?.vat_price)}`}
                   style={{marginTop: 20, marginLeft: 10}}
                 />
               </Row>

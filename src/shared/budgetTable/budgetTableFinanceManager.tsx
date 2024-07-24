@@ -24,9 +24,6 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
     const methods = useForm();
     const allData = methods.watch();
 
-    useEffect(() => {
-      console.log(countsProps?.length, 'coiuuuuuuunts props');
-    }, [countsProps]);
     // If counts are passed through props, don't fetch them from the BE
     const {counts: countsFromBE} = useGetCountOverview({id: 0, tree: true, skip: !!countsProps});
     const counts = countsProps ?? countsFromBE;
@@ -43,7 +40,6 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
 
       for (let i = 0; i < numberOfLevels; i++) {
         const parentValue = calculateParentValues(currentFieldPath.split('.'), fieldName);
-
         methods.setValue(`${currentFieldPath}-${fieldName}`, parentValue);
 
         currentFieldPath = currentFieldPath
@@ -58,6 +54,7 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
 
       const parentValue = childFieldNames.reduce((sum, childField) => {
         const currentChildVal = methods.getValues(childField);
+
         return sum + (currentChildVal ? Number(currentChildVal) : 0);
       }, 0);
 
@@ -153,7 +150,6 @@ const BudgetTableFinanceManager = forwardRef<BudgetTableMethods, BudgetTableProp
       },
       resetForm: () => {
         methods.reset();
-        console.log('reset form');
       },
     }));
 

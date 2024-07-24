@@ -19,7 +19,7 @@ import useGetFinePayments from '../../../../services/graphQL/fines/finePayments/
 import {useEffect, useState} from 'react';
 import {requiredError} from '../../../../constants.ts';
 import {FinePaymentMethods} from '../constants.tsx';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import useInsertFinePayment from '../../../../services/graphQL/fines/finePayments/useInsertFinePayment.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
@@ -74,6 +74,7 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
     handleSubmit,
     formState: {errors},
     setError,
+    watch,
   } = useForm<PaymentEntryForm>({});
 
   const {fields, append, remove} = useFieldArray({name: 'payments', control});
@@ -217,7 +218,8 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
         return (
           <Input
             {...register(`payments.${index}.amount`)}
-            type="number"
+            value={watch(`payments.${index}.amount`).toString()}
+            type="currency"
             leftContent={
               <div style={{color: isRowDisabled(row) ? Theme.palette.gray300 : Theme.palette.gray800}}>€</div>
             }
@@ -344,25 +346,21 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UKUPNO:" />
           <Typography
             variant="bodySmall"
-            content={`${fineFeeDetails?.fee_all_payments_amount + fineFeeDetails?.fee_court_costs_paid} €`}
+            content={formatCurrency(fineFeeDetails?.fee_all_payments_amount + fineFeeDetails?.fee_court_costs_paid)}
           />
         </Amount>
       </FinePaymentDetailsWrapper>
-      {/*<Amount>*/}
-      {/*  <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREMAŠEN IZNOS:" />*/}
-      {/*  <Typography variant="bodySmall" content={`${fine?.amount} €`} />*/}
-      {/*</Amount>*/}
       <LabeledDivider>
         <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREGLED PLAĆANJA:" />
       </LabeledDivider>
       <FinePaymentDetailsWrapper>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENA KAZNA:" />
-          <Typography variant="bodySmall" content={`${fine?.amount} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(fine.amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENA KAZNA:" />
-          <Typography variant="bodySmall" content={`${fineFeeDetails?.fee_all_payments_amount} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(fineFeeDetails?.fee_all_payments_amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UMANJENJE KAZNE:" />
@@ -370,26 +368,29 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
             variant="bodySmall"
             content={
               fineFeeDetails?.fee_amount_grace_period_available
-                ? roundCurrency(fine?.amount - fineFeeDetails?.fee_amount_grace_period)
-                : '0.00 €'
+                ? formatCurrency(fine?.amount - fineFeeDetails?.fee_amount_grace_period)
+                : '0,00 €'
             }
           />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
-          <Typography variant="bodySmall" content={roundCurrency(fineFeeDetails?.fee_left_to_pay_amount)} />
+          <Typography variant="bodySmall" content={formatCurrency(fineFeeDetails?.fee_left_to_pay_amount)} />
         </Amount>
         <Amount style={{marginTop: 20}}>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENI SUDSKI TROŠKOVI:" />
-          <Typography variant="bodySmall" content={`${fine?.court_costs} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(fine?.court_costs)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENI SUDSKI TROŠKOVI:" />
-          <Typography variant="bodySmall" content={`${fineFeeDetails?.fee_court_costs_paid} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(fineFeeDetails?.fee_court_costs_paid)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
-          <Typography variant="bodySmall" content={roundCurrency(fineFeeDetails?.fee_court_costs_left_to_pay_amount)} />
+          <Typography
+            variant="bodySmall"
+            content={formatCurrency(fineFeeDetails?.fee_court_costs_left_to_pay_amount)}
+          />
         </Amount>
       </FinePaymentDetailsWrapper>
       <ConfirmationModal

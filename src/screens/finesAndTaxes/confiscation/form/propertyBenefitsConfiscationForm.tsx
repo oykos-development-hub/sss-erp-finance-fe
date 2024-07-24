@@ -245,21 +245,29 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
         />
       </Row>
       <Row>
-        <Input
-          {...register('amount')}
-          label="VISINA KAZNE:"
-          type={'number'}
-          inputMode={'decimal'}
-          leftContent={<div>€</div>}
-          isRequired
-          error={errors.amount?.message}
+        <Controller
+          name={'amount'}
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Input
+              value={value.toString()}
+              onChange={onChange}
+              label="VISINA KAZNE:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              isRequired
+              error={errors.amount?.message}
+            />
+          )}
         />
+
         <Input
           value={property_benefits_confiscation?.property_benefits_confiscation_details.amount_grace_period.toFixed(2)}
           label={`2/3 KAZNE - UKOLIKO UPLATITE DO ${parseDate(
             property_benefits_confiscation?.property_benefits_confiscation_details.amount_grace_period_due_date ?? null,
           )}`}
-          type={'number'}
+          type={'currency'}
           inputMode={'decimal'}
           leftContent={<div style={{color: Theme.palette.gray300}}>€</div>}
           disabled
@@ -282,14 +290,22 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
             />
           )}
         />
-        <Input
-          {...register('court_costs')}
-          label="SUDSKI TROŠKOVI:"
-          type={'number'}
-          inputMode={'decimal'}
-          leftContent={<div>€</div>}
-          style={{flexGrow: 1 / 2}}
+        <Controller
+          control={control}
+          name={'court_costs'}
+          render={({field: {onChange, value}}) => (
+            <Input
+              onChange={onChange}
+              value={value?.toString()}
+              label="SUDSKI TROŠKOVI:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              style={{flexGrow: 1 / 2}}
+            />
+          )}
         />
+
         <Controller
           name="court_account_id"
           control={control}

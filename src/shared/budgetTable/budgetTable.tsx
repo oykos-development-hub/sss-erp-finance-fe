@@ -29,6 +29,7 @@ const BudgetTable = forwardRef<BudgetTableMethods, BudgetTableProps>(
     const {counts: countsFromBE} = useGetCountOverview({id: 0, tree: true});
     const counts = countsProps ?? countsFromBE;
     const updateParentValues = (field: string) => {
+      console.log(field, 'update parent values field');
       // Number of iterations - remove one because the last level contains the last level id and the fieldName
       const numberOfLevels = field.split('.').length - 1;
 

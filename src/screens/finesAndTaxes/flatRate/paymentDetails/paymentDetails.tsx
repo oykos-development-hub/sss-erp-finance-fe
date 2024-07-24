@@ -16,7 +16,7 @@ import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {useEffect, useState} from 'react';
 import {requiredError} from '../../../../constants.ts';
-import {roundCurrency} from '../../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
@@ -344,25 +344,21 @@ const PaymentDetails = ({flat_rate, refetchFlatRate}: PaymentFormProps) => {
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UKUPNO:" />
           <Typography
             variant="bodySmall"
-            content={`${flatRateDetails?.all_payments_amount + flatRateDetails?.court_costs_paid} €`}
+            content={formatCurrency(flatRateDetails?.all_payments_amount + flatRateDetails?.court_costs_paid)}
           />
         </Amount>
       </FinePaymentDetailsWrapper>
-      {/*<Amount>*/}
-      {/*  <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREMAŠEN IZNOS:" />*/}
-      {/*  <Typography variant="bodySmall" content={`${fine?.amount} €`} />*/}
-      {/*</Amount>*/}
       <LabeledDivider>
         <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREGLED PLAĆANJA:" />
       </LabeledDivider>
       <FinePaymentDetailsWrapper>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENA KAZNA:" />
-          <Typography variant="bodySmall" content={`${flat_rate?.amount} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(flat_rate?.amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENA KAZNA:" />
-          <Typography variant="bodySmall" content={`${flatRateDetails?.all_payments_amount} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(flatRateDetails?.all_payments_amount)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UMANJENJE KAZNE:" />
@@ -370,26 +366,26 @@ const PaymentDetails = ({flat_rate, refetchFlatRate}: PaymentFormProps) => {
             variant="bodySmall"
             content={
               flatRateDetails?.amount_grace_period_available
-                ? roundCurrency(flat_rate?.amount - flatRateDetails?.amount_grace_period)
+                ? formatCurrency(flat_rate?.amount - flatRateDetails?.amount_grace_period)
                 : '0.00 €'
             }
           />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
-          <Typography variant="bodySmall" content={roundCurrency(flatRateDetails?.left_to_pay_amount)} />
+          <Typography variant="bodySmall" content={formatCurrency(flatRateDetails?.left_to_pay_amount)} />
         </Amount>
         <Amount style={{marginTop: 20}}>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENI SUDSKI TROŠKOVI:" />
-          <Typography variant="bodySmall" content={`${flat_rate?.court_costs} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(flat_rate?.court_costs)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENI SUDSKI TROŠKOVI:" />
-          <Typography variant="bodySmall" content={`${flatRateDetails?.court_costs_paid} €`} />
+          <Typography variant="bodySmall" content={formatCurrency(flatRateDetails?.court_costs_paid)} />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />
-          <Typography variant="bodySmall" content={roundCurrency(flatRateDetails?.court_costs_left_to_pay_amount)} />
+          <Typography variant="bodySmall" content={formatCurrency(flatRateDetails?.court_costs_left_to_pay_amount)} />
         </Amount>
       </FinePaymentDetailsWrapper>
       <ConfirmationModal

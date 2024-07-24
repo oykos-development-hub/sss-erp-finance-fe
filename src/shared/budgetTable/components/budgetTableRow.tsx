@@ -16,6 +16,7 @@ import {BudgetTableStep} from '../types';
 import BudgetingForm from './budgetingForm';
 import {useFormContext, Controller} from 'react-hook-form';
 import BudgetReallocationForm from './budgetReallocationForm.tsx';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 type BudgetTableRowProps = {
   step: BudgetTableStep | `${BudgetTableStep}`;
@@ -139,16 +140,16 @@ const BudgetTableRow = ({
         return (
           <>
             <CountTableCell level={level} lastLevel={!count.children?.length}>
-              <BudgetText content={count.filled_data?.initial_actual} variant="bodySmall" />
+              <BudgetText content={formatCurrency(count.filled_data?.initial_actual, true)} variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level} lastLevel={!count.children?.length}>
-              <BudgetText content={count?.filled_data?.current_amount} variant="bodySmall" />
+              <BudgetText content={formatCurrency(count?.filled_data?.current_amount, true)} variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level} lastLevel={!count.children?.length}>
-              <BudgetText content={count?.filled_data?.actual} variant="bodySmall" />
+              <BudgetText content={formatCurrency(count?.filled_data?.actual, true)} variant="bodySmall" />
             </CountTableCell>
             <CountTableCell level={level} lastLevel={!count.children?.length}>
-              <BudgetText content={count?.filled_data?.balance} variant="bodySmall" />
+              <BudgetText content={formatCurrency(count?.filled_data?.balance, true)} variant="bodySmall" />
             </CountTableCell>
           </>
         );

@@ -2,7 +2,7 @@ import {TableHead, Typography} from 'client-library';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
-import {formatCurrency} from '../../../utils/roundCurrency.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export enum Tabs {
   SentBudget = 1,
