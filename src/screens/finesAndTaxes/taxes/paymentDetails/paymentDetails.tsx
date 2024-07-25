@@ -74,7 +74,6 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
     handleSubmit,
     formState: {errors},
     setError,
-    watch,
   } = useForm<PaymentEntryForm>({});
 
   const {fields, append, remove} = useFieldArray({name: 'payments', control});
@@ -216,15 +215,22 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
       type: 'custom',
       renderContents: (_item, row, index) => {
         return (
-          <Input
-            {...register(`payments.${index}.amount`)}
-            value={watch(`payments.${index}.amount`).toString()}
-            type="currency"
-            leftContent={
-              <div style={{color: isRowDisabled(row) ? Theme.palette.gray300 : Theme.palette.gray800}}>€</div>
-            }
-            disabled={isRowDisabled(row)}
-            error={errors?.payments?.[index]?.amount?.message}
+          <Controller
+            name={`payments.${index}.amount`}
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Input
+                value={value.toString()}
+                name={name}
+                onChange={onChange}
+                type="currency"
+                leftContent={
+                  <div style={{color: isRowDisabled(row) ? Theme.palette.gray300 : Theme.palette.gray800}}>€</div>
+                }
+                disabled={isRowDisabled(row)}
+                error={errors?.payments?.[index]?.amount?.message}
+              />
+            )}
           />
         );
       },

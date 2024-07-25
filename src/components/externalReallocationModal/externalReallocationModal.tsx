@@ -53,7 +53,6 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
 
   const {
     formState: {errors},
-    register,
     setValue,
     control,
     watch,
@@ -142,13 +141,21 @@ export const ExternalReallocationModal = ({open, onClose, activeReallocation, re
             />
           )}
         />
-
-        <Input
-          {...register(`items.${index}.amount`, {required: 'Ovo polje je obavezno'})}
-          label="NEDOSTAJUĆI IZNOS:"
-          error={errors.items?.[index]?.amount?.message}
-          disabled={!!activeReallocation}
-          type="currency"
+        <Controller
+          name={`items.${index}.amount`}
+          rules={{required: 'Ovo polje je obavezno'}}
+          control={control}
+          render={({field: {name, value, onChange}}) => (
+            <Input
+              name={name}
+              value={value}
+              onChange={onChange}
+              label="NEDOSTAJUĆI IZNOS:"
+              error={errors.items?.[index]?.amount?.message}
+              disabled={!!activeReallocation}
+              type="currency"
+            />
+          )}
         />
       </RowWrapper>
     );
