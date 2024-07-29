@@ -82,7 +82,6 @@ const salarySchema = yup.object().shape({
       const uniqueContributions = new Set(contributions);
       return contributions?.length === uniqueContributions.size;
     }),
-  // salary_additional_expenses: yup.array().of(salaryAdditionalExpensesSchema),
 });
 
 const initialValues = {
@@ -131,6 +130,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
     navigation: {navigate},
     alert,
   } = useAppContext();
+
   const monthOptions = getMonthOptions(false);
 
   const {counts} = useGetCountOverview({});
@@ -434,12 +434,20 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
         const index = findIndexInFieldsArray(row.id);
 
         return (
-          <Input
-            {...register(`salary_additional_expenses.${index}.amount`)}
-            type="number"
-            leftContent={<div>€</div>}
-            error={errors.salary_additional_expenses?.[index]?.amount?.message}
-            disabled={salary?.registred}
+          <Controller
+            render={({field: {name, value, onChange}}) => (
+              <Input
+                value={value.toString()}
+                name={name}
+                onChange={onChange}
+                type="currency"
+                rightContent={<div>€</div>}
+                error={errors.salary_additional_expenses?.[index]?.amount?.message}
+                disabled={salary?.registred}
+              />
+            )}
+            name={`salary_additional_expenses.${index}.amount`}
+            control={control}
           />
         );
       },
@@ -463,6 +471,9 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
 
         useEffect(() => {
           if (!bankAccounts.length) return;
+          const currentBankAccount = watch(`salary_additional_expenses.${index}.bank_account`);
+          // if bank account is already selected, do nothing
+          if (currentBankAccount?.id) return;
           // automatically select first bank account for the subject
           setValue(`salary_additional_expenses.${index}.bank_account`, bankAccounts[0]);
           // clear bank account error if subject is changed and account is selected
@@ -707,9 +718,9 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           tableActions={tableActions}
         />
 
-        {salary?.account_amounts[0].account && salary?.account_amounts[0]?.amount && (
+        {salary?.account_amounts[0]?.account && salary?.account_amounts[0]?.amount && (
           <>
-            <Table tableHeads={tableHeads} data={salary.account_amounts} />
+            <Table tableHeads={tableHeads} data={salary?.account_amounts} />
           </>
         )}
         <Footer>
