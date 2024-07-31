@@ -114,8 +114,8 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
   const {
     control,
     register,
-    handleSubmit,
     reset,
+    handleSubmit,
     formState: {errors},
     watch,
     setValue,
