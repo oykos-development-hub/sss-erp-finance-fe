@@ -62,8 +62,6 @@ export function generateUsersDropdownOptions(users: UserProfile[]) {
   });
 }
 
-export const mockedActivitiesDropdownOption: DropdownData<number>[] = [{id: 0, title: 'Aktivnost'}];
-
 export const tableHeads: TableHead[] = [
   {
     title: 'Konto troška',

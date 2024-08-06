@@ -25,6 +25,8 @@ import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
 import {SourceOfFunding} from '../constants.tsx';
 import {decisionsSchema} from './constants.tsx';
 import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
+import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
 
 type DecisionEntryForm = yup.InferType<typeof decisionsSchema>;
 interface DecisionFormProps {
@@ -38,6 +40,9 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     contextMain,
     fileService: {uploadFile},
   } = useAppContext();
+
+  // TODO replace with logic from permissions
+  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
 
   const {
     control,
@@ -53,6 +58,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     },
     resolver: yupResolver(decisionsSchema),
   });
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+
   const {
     net_price,
     gross_price,
@@ -62,10 +69,17 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     municipality_id,
     supplier_id,
     type_of_decision,
+    organization_unit_id,
   } = watch();
 
-  const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
   const ID = location.pathname.split('/').at(-1);
+
+  useEffect(() => {
+    if (!contextMain.organization_unit?.id || ID) return;
+    setValue('organization_unit_id', contextMain.organization_unit);
+  }, [contextMain.organization_unit?.id]);
+
+  const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
 
   const {suppliers} = useGetSuppliers({});
   const {data: typeOfDecision} = useGetSettings({entity: 'type_of_decision'});
@@ -73,6 +87,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   const {data: taxAuthorityCodebook} = useGetTaxAuthorityCodebook();
   const {counts} = useGetCountOverview({level: 3});
   const {insertInvoice, loading} = useInsertInvoice();
+  const {activities} = useGetActivities(undefined, isUserSSS ? undefined : contextMain.organization_unit?.id);
 
   const optionsForTaxAuthorityCodebook = createDropdownOptions(taxAuthorityCodebook || []);
 
@@ -214,11 +229,13 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
           source_of_funding: data?.source_of_funding?.id,
           date_of_payment: parseDateForBackend(data?.date_of_payment),
           description: data?.description,
+          organization_unit_id: organization_unit_id,
           file_id: files[0]?.id,
           additional_expenses: fields.map((_, index) => ({
             title: data.additionalExpenses[index]?.title,
             price: data.additionalExpenses[index]?.price,
             account_id: data.additionalExpenses[index]?.account?.id,
+            id: data.additionalExpenses[index]?.id,
             bank_account: data.additionalExpenses[index]?.bank_account?.id,
             subject_id:
               index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
@@ -257,8 +274,10 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         activity_id: data?.activity_id?.id,
         source_of_funding: data?.source_of_funding?.id,
         date_of_payment: parseDateForBackend(data?.date_of_payment),
+        organization_unit_id: organization_unit_id,
         description: data?.description,
         additional_expenses: fields.map((_, index) => ({
+          id: data.additionalExpenses[index]?.id,
           title: data.additionalExpenses[index]?.title,
           price: data.additionalExpenses[index]?.price,
           account_id: data.additionalExpenses[index]?.account?.id,
@@ -328,7 +347,9 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
           id: decision.tax_authority_codebook.id,
           title: decision.tax_authority_codebook.title,
         },
+        activity_id: decision?.activity,
         net_price: decision?.net_price,
+        organization_unit_id: {id: decision?.organization_unit?.id, title: decision?.organization_unit?.title},
         vat_price: decision?.vat_price,
         additionalExpenses: decision.additional_expenses.map((_, index) => ({
           id: decision.additional_expenses[index]?.id,
@@ -395,14 +416,29 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
           />
           <Input
             {...register('issuer')}
-            label="ORGANIZACIONA JEDINICA:"
+            label="IZDAVALAC:"
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
             disabled={decision?.status === 'Na nalogu'}
           />
         </Row>
         <Row>
-          {/*Treba da se prikazu opcije iz sifarnika kad se zavrsi budzet*/}
+          <Controller
+            name="organization_unit_id"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={organizationUnits.find(ou => ou.id === value?.id)}
+                onChange={value => onChange(value.id)}
+                label="ORGANIZACIONA JEDINICA:"
+                placeholder="Odaberi organizacionu jedinicu"
+                options={organizationUnits}
+                isDisabled={!isUserSSS}
+                error={errors?.organization_unit_id?.message}
+              />
+            )}
+          />
           <Controller
             name={'activity_id'}
             control={control}
@@ -413,7 +449,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 onChange={onChange}
                 label="AKTIVNOST:"
                 placeholder={'Odaberite aktivnost'}
-                options={[]}
+                options={activities}
                 isDisabled={decision?.status === 'Na nalogu'}
               />
             )}
@@ -434,6 +470,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               />
             )}
           />
+        </Row>
+        <Row>
           <Controller
             name="date_of_invoice"
             control={control}
@@ -448,8 +486,6 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               />
             )}
           />
-        </Row>
-        <Row>
           <Controller
             name="date_of_payment"
             control={control}
@@ -622,7 +658,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         {!!fields.length && (
           <>
             <Table tableHeads={additionalExpensesTableHeads} data={fields} />
-            {!!decision && decision?.net_price && decision?.vat_price && (
+            {!!decision && !!decision?.net_price && !!decision?.vat_price && (
               <Row>
                 <MainTitle
                   content={`Ukupno: ${formatCurrency(decision?.net_price + decision?.vat_price)}`}

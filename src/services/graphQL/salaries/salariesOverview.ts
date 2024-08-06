@@ -28,7 +28,7 @@ const salariesOverview = `query salary_Overview($id: Int, $month: String, $organ
                 id
                 title
             }
-            account_amounts{
+            account_amounts{ 
                 id
                 account
                 amount

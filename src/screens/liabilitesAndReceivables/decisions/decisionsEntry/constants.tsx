@@ -34,6 +34,7 @@ export const decisionsSchema = yup.object().shape({
   date_of_payment: yup.date().required(requiredError),
   sss_invoice_receipt_date: yup.date().nullable(),
   date_of_invoice: yup.date().required(requiredError),
+  organization_unit_id: optionsNumberSchema.default(null),
   receipt_date: yup.date().nullable(),
   description: yup.string().nullable(),
   vat_price: yup.number().nullable(),

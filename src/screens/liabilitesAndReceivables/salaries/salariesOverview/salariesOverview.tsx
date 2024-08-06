@@ -11,7 +11,16 @@ import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmati
 import useDeleteSalary from '../../../../services/graphQL/salaries/useDeleteSalary.ts';
 import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {getMonthOptions} from '../../../../utils/getMonthOptions.ts';
+import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import {DropdownData} from '../../../../types/dropdownData.ts';
 
+export interface SalariesOverviewFilters {
+  organization_unit_id?: DropdownData<number> | null;
+  activity_id?: DropdownData<number> | null;
+  id?: DropdownData<number> | null;
+  year?: DropdownData<string> | null;
+  month?: DropdownData<string> | null;
+}
 // check if filters are correct
 const initialValues = {
   organization_unit_id: undefined,
@@ -29,12 +38,24 @@ const SalariesOverview = () => {
   const {
     navigation: {navigate},
     alert,
+    contextMain,
   } = useAppContext();
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+  // TODO replace with logic from permissions
+  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const organizationUnitsFilter = (): number | undefined => {
+    if (isUserSSS) {
+      return filters.organization_unit_id ? filters.organization_unit_id : undefined;
+    }
+    return contextMain?.organization_unit?.id;
+  };
 
   const {salaries, total, loading, refetch} = useGetSalaries({
     page: page,
     size: PAGE_SIZE,
     ...filters,
+    organization_unit_id: organizationUnitsFilter(),
   });
 
   const {deleteSalary} = useDeleteSalary();
@@ -46,8 +67,6 @@ const SalariesOverview = () => {
   const onPageChange = (page: number) => {
     setPage(page + 1);
   };
-
-  // TODO Reset page to 1 on filter/search change, check other screens where this might be missing
 
   useEffect(() => {
     if (page === 1) return;
@@ -72,10 +91,20 @@ const SalariesOverview = () => {
   return (
     <>
       <Row>
+        {isUserSSS && (
+          <Dropdown
+            name="organization_unit_id"
+            label="ORGANIZACIONA JEDINICA:"
+            placeholder="Odaberi organizacionu jedinicu"
+            options={usePrependedDropdownOptions(organizationUnits, 'organizacione jedinice')}
+            value={organizationUnits.find(unit => unit.id === filters.organization_unit_id)}
+            onChange={value => onFilterChange(value as DropdownData<string>, 'organization_unit_id')}
+          />
+        )}
         <Dropdown
           label={'AKTIVNOST:'}
           placeholder={'Odaberi aktivnost'}
-          options={usePrependedDropdownOptions(mockDropdownOptions)}
+          options={usePrependedDropdownOptions(mockDropdownOptions, 'aktivnosti')}
           value={filters.activity_id}
           onChange={(value: any) => onFilterChange(value, 'activity_id')}
         />

@@ -303,7 +303,7 @@ const ReceivableEntry = () => {
                     onChange={onChange}
                     label="ORGANIZACIONA JEDINICA:"
                     options={organizationUnits}
-                    error={errors.supplier_id?.message}
+                    error={errors.organization_unit_id?.message}
                     isSearchable
                     isRequired
                   />

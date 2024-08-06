@@ -1,5 +1,5 @@
 import {Dropdown, Input, Pagination, SearchIcon, Table, Theme, Divider} from 'client-library';
-import {ChangeEvent, useMemo, useState} from 'react';
+import {ChangeEvent, useEffect, useMemo, useState} from 'react';
 import {PAGE_SIZE, StatusOptions} from '../../../constants';
 import useAppContext from '../../../context/useAppContext';
 import useAdditionalExpensesOverview from '../../../services/graphQL/additionalExpensesOverview/useAdditionalExpensesOverview';
@@ -13,12 +13,15 @@ import {tableHeads} from './constants';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import SectionBox from '../../../shared/sectionBox';
 import {MainTitle} from '../../accounting/styles';
+import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 
 export interface AdditionalExpensesOverviewFilters {
   year?: DropdownData<number> | null;
   status?: DropdownData<string> | null;
   search?: string;
   subject_id?: DropdownData<string> | null;
+  organization_unit_id?: DropdownData<number> | null;
 }
 
 const initialAdditionalExpensesFilterValues = {
@@ -26,6 +29,7 @@ const initialAdditionalExpensesFilterValues = {
   status: null,
   search: '',
   subject_id: null,
+  organization_unit_id: null,
 };
 
 const AdditionalExpensesOverview = () => {
@@ -38,14 +42,24 @@ const AdditionalExpensesOverview = () => {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+  // TODO replace with logic from permissions
+  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const organizationUnitsFilter = (): number | undefined => {
+    if (isUserSSS) {
+      return filterValues.organization_unit_id ? filterValues.organization_unit_id.id : undefined;
+    }
+    return contextMain?.organization_unit?.id;
+  };
+
   const {additionalExpenses, total} = useAdditionalExpensesOverview({
     page: page,
     size: PAGE_SIZE,
-    organization_unit_id: contextMain.organization_unit.id,
     status: filterValues.status ? filterValues.status.id : '',
     year: filterValues.year ? Number(filterValues.year.id) : null,
     subject_id: filterValues.subject_id ? filterValues.subject_id.id : null,
     search: debouncedSearch,
+    organization_unit_id: organizationUnitsFilter(),
   });
 
   const onFilter = (value: DropdownData<string> | ChangeEvent<HTMLInputElement>, name: string) => {
@@ -64,6 +78,11 @@ const AdditionalExpensesOverview = () => {
     setPage(page + 1);
   };
 
+  useEffect(() => {
+    if (page === 1) return;
+    setPage(1);
+  }, [debouncedSearch, filterValues]);
+
   const {suppliers} = useGetSuppliers({});
 
   const suppliersOptions = useMemo(() => {
@@ -81,6 +100,16 @@ const AdditionalExpensesOverview = () => {
         <MainTitle variant="bodyMedium" content="VEZANI TROŠKOVI" />
         <Divider color="#615959" height="1px" />
         <Row>
+          {isUserSSS && (
+            <Dropdown
+              name="organization_unit_id"
+              label="ORGANIZACIONA JEDINICA:"
+              placeholder="Odaberi organizacionu jedinicu"
+              options={usePrependedDropdownOptions(organizationUnits, 'organizacione jedinice')}
+              value={filterValues.organization_unit_id}
+              onChange={value => onFilter(value as DropdownData<string>, 'organization_unit_id')}
+            />
+          )}
           <Dropdown
             label="SUBJEKT:"
             placeholder={'Odaberi subjekt'}

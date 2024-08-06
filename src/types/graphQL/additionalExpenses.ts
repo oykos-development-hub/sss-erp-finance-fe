@@ -20,7 +20,7 @@ export type GetAdditionalExpensesParams = {
   year: number | null;
   status: string;
   search: string;
-  organization_unit_id: number;
+  organization_unit_id?: number;
   page: number;
   size: number;
   subject_id: string | null;

@@ -24,6 +24,8 @@ import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import FileListComponent from '../../../../components/fileList/fileList.tsx';
 import {MainTitle} from '../../../../shared/pageElements.ts';
 import {SourceOfFunding} from '../../decisions/constants.tsx';
+import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
 
 type ContractEntryForm = yup.InferType<typeof contractsSchema>;
 interface ContractFormProps {
@@ -37,6 +39,9 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     contextMain,
     fileService: {uploadFile},
   } = useAppContext();
+
+  // TODO replace with logic from permissions
+  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
 
   const {
     control,
@@ -52,6 +57,9 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     },
     resolver: yupResolver(contractsSchema),
   });
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+
   const {
     net_price,
     gross_price,
@@ -60,10 +68,21 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     tax_authority_codebook_id,
     municipality_id,
     supplier_id,
+    organization_unit_id,
   } = watch();
+
+  useEffect(() => {
+    if (!contextMain.organization_unit?.id) return;
+    setValue('organization_unit_id', contextMain.organization_unit?.id);
+  }, [contextMain.organization_unit?.id]);
 
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
   const ID = location.pathname.split('/').at(-1);
+
+  useEffect(() => {
+    if (!contextMain.organization_unit?.id || ID) return;
+    setValue('organization_unit_id', contextMain.organization_unit);
+  }, [contextMain.organization_unit?.id]);
 
   const {suppliers} = useGetSuppliers({});
 
@@ -71,6 +90,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
   const {suppliers: municipalities} = useGetSuppliers({entity: 'municipalities'});
   const {counts} = useGetCountOverview({level: 3});
   const {insertInvoice, loading} = useInsertInvoice();
+  const {activities} = useGetActivities(undefined, isUserSSS ? undefined : contextMain.organization_unit?.id);
 
   const {data: additionalExpenses, calculateAdditionalExpenses} = useCalculateAdditionalExpenses({
     tax_authority_codebook_id: tax_authority_codebook_id?.id ? tax_authority_codebook_id?.id : null,
@@ -208,8 +228,10 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
           source_of_funding: data?.source_of_funding?.id,
           date_of_payment: parseDateForBackend(data?.date_of_payment),
           description: data?.description,
+          organization_unit_id: organization_unit_id,
           file_id: files[0]?.id,
           additional_expenses: fields.map((_, index) => ({
+            id: data.additionalExpenses[index]?.id,
             title: data.additionalExpenses[index]?.title,
             price: data.additionalExpenses[index]?.price,
             account_id: data.additionalExpenses[index]?.account?.id,
@@ -251,8 +273,10 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         activity_id: data?.activity_id?.id,
         source_of_funding: data?.source_of_funding?.id,
         date_of_payment: parseDateForBackend(data?.date_of_payment),
+        organization_unit_id: organization_unit_id,
         description: data?.description,
         additional_expenses: fields.map((_, index) => ({
+          id: data.additionalExpenses[index]?.id,
           title: data.additionalExpenses[index]?.title,
           price: data.additionalExpenses[index]?.price,
           account_id: data.additionalExpenses[index]?.account?.id,
@@ -315,6 +339,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         receipt_date: contract.receipt_date !== null ? new Date(contract.receipt_date) : undefined,
         date_of_payment: contract.date_of_payment !== null ? new Date(contract.date_of_payment) : undefined,
         description: contract?.description,
+        organization_unit_id: contract?.organization_unit_id,
         source_of_funding: {id: contract.source_of_funding, title: contract.source_of_funding},
         issuer: contract?.issuer,
         municipality_id: {id: contract.municipality.id, title: contract.municipality.title},
@@ -322,6 +347,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
           id: contract.tax_authority_codebook.id,
           title: contract.tax_authority_codebook.title,
         },
+        activity_id: contract.activity,
         additionalExpenses: contract.additional_expenses.map((_, index) => ({
           id: contract.additional_expenses[index]?.id,
           title: contract.additional_expenses[index]?.title,
@@ -373,12 +399,11 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
 
           <Input
             {...register('issuer')}
-            label="ORGANIZACIONA JEDINICA:"
+            label="IZDAVALAC:"
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
             disabled={contract?.status === 'Na nalogu'}
           />
-          {/*Treba da se prikazu opcije iz sifarnika kad se zavrsi budzet*/}
           <Controller
             name={'activity_id'}
             control={control}
@@ -389,7 +414,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 onChange={onChange}
                 label="AKTIVNOST:"
                 placeholder={'Odaberite aktivnost'}
-                options={[]}
+                options={activities}
                 isDisabled={contract?.status === 'Na nalogu'}
               />
             )}
@@ -397,6 +422,22 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         </Row>
 
         <Row>
+          <Controller
+            name="organization_unit_id"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={organizationUnits.find(ou => ou.id === value)}
+                onChange={value => onChange(value.id)}
+                label="ORGANIZACIONA JEDINICA:"
+                placeholder="Odaberi organizacionu jedinicu"
+                options={organizationUnits}
+                isDisabled={!isUserSSS}
+                error={errors?.organization_unit_id?.message}
+              />
+            )}
+          />
           <Controller
             name="source_of_funding"
             control={control}

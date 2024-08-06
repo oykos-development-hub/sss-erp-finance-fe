@@ -1,5 +1,5 @@
 import {Dropdown, EditIconTwo, Input, Pagination, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
-import {ChangeEvent, useMemo, useState} from 'react';
+import {ChangeEvent, useEffect, useMemo, useState} from 'react';
 import {PAGE_SIZE, StatusOptions} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useDeleteInvoice from '../../../../services/graphQL/invoice/useDeleteInvoice.ts';
@@ -13,10 +13,12 @@ import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {contractsOverviewTableHeads} from '../constants.tsx';
 import {Row} from './styles.ts';
+import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 
 export interface ContractsOverviewFilters {
   year?: DropdownData<string> | null;
   supplier_id?: DropdownData<number> | null;
+  organization_unit_id?: DropdownData<number> | null;
   status?: DropdownData<string> | null;
   search?: string;
 }
@@ -26,6 +28,7 @@ const initialContractsFilterValues = {
   supplier_id: null,
   status: null,
   search: '',
+  organization_unit_id: null,
 };
 
 const ContractsOverview = () => {
@@ -40,6 +43,16 @@ const ContractsOverview = () => {
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+  // TODO replace with logic from permissions
+  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const organizationUnitsFilter = (): number | undefined => {
+    if (isUserSSS) {
+      return filterValues.organization_unit_id ? filterValues.organization_unit_id.id : undefined;
+    }
+    return contextMain?.organization_unit?.id;
+  };
 
   const onFilter = (value: DropdownData<string> | ChangeEvent<HTMLInputElement>, name: string) => {
     if ('target' in value) {
@@ -57,6 +70,11 @@ const ContractsOverview = () => {
     setPage(page + 1);
   };
 
+  useEffect(() => {
+    if (page === 1) return;
+    setPage(1);
+  }, [debouncedSearch, filterValues]);
+
   const {invoice, total, fetch} = useGetInvoice({
     page: page,
     size: PAGE_SIZE,
@@ -65,7 +83,7 @@ const ContractsOverview = () => {
     year: filterValues.year ? filterValues.year.id : null,
     search: debouncedSearch,
     supplier_id: filterValues.supplier_id ? filterValues.supplier_id.id : null,
-    organization_unit_id: contextMain?.organization_unit?.id,
+    organization_unit_id: organizationUnitsFilter(),
   });
 
   const {suppliers} = useGetSuppliers({});
@@ -108,6 +126,16 @@ const ContractsOverview = () => {
   return (
     <>
       <Row>
+        {isUserSSS && (
+          <Dropdown
+            name="organization_unit_id"
+            label="ORGANIZACIONA JEDINICA:"
+            placeholder="Odaberi organizacionu jedinicu"
+            options={[{id: null, title: 'Sve organizacione jedinice'}, ...organizationUnits]}
+            value={filterValues.organization_unit_id}
+            onChange={value => onFilter(value as DropdownData<string>, 'organization_unit_id')}
+          />
+        )}
         <Dropdown
           label="SUBJEKT:"
           placeholder="Odaberi subjekt"

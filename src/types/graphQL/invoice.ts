@@ -1,4 +1,5 @@
 import {DropdownData} from '../dropdownData';
+import {FileItem} from '../fileUploadType.ts';
 
 export interface ArticlesType {
   id?: any;
@@ -38,6 +39,10 @@ export interface DecisionItem {
     id: number;
     title: string;
   };
+  activity: {
+    id: number;
+    title: string;
+  };
   date_of_invoice: string | Date;
   sss_invoice_receipt_date: Date;
   date_of_payment: string | Date;
@@ -54,6 +59,7 @@ export interface DecisionItem {
   status: string;
   net_price?: number;
   vat_price?: number;
+  organization_unit?: DropdownData<number>;
   file: {
     id: number;
     name: string;
@@ -66,12 +72,12 @@ export interface ContractItem {
   type: string;
   invoice_number: string;
   supplier_title: string;
-  supplier: {
-    id: number;
-    title: string;
-  };
+  supplier: DropdownData<number>;
+  activity: DropdownData<number>;
+
   net_price?: number;
   vat_price?: number;
+  organization_unit_id?: number;
   date_of_invoice: string | Date;
   sss_invoice_receipt_date: Date;
   date_of_payment: string | Date;
@@ -117,11 +123,9 @@ export interface InvoiceItem {
       id: number;
     },
   ];
-  order: {
-    id: number;
-    title: string;
-  };
-  organization_unit: DropdownData<string>;
+  order: DropdownData<number>;
+  activity: DropdownData<number>;
+  organization_unit: DropdownData<number>;
   date_of_invoice: Date;
   pro_forma_invoice_date: Date;
   receipt_date: Date;
@@ -129,16 +133,8 @@ export interface InvoiceItem {
   sss_pro_forma_invoice_receipt_date: Date;
   date_of_payment: Date;
   date_of_start: Date;
-  file: {
-    id: number;
-    name: string;
-    type: string;
-  };
-  pro_forma_invoice_file: {
-    id: number;
-    name: string;
-    type: string;
-  };
+  file: FileItem;
+  pro_forma_invoice_file: FileItem;
   bank_account: string;
   description: string;
   articles: ArticlesType[];

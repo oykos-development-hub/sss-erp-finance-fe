@@ -13,6 +13,10 @@ const getInvoice = `query invoiceOverview($id: Int, $year: Int, $supplier_id: In
                 amount
                 id
             }
+            activity{
+                id
+                title
+            }
             type_of_contract{
                 id
                 title

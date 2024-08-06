@@ -36,7 +36,6 @@ import {
   AdditionalSalaryExpenseType,
   contributionsTitleOptions,
   generateUsersDropdownOptions,
-  mockedActivitiesDropdownOption,
   tableHeads,
 } from '../constants.tsx';
 import {Salary, SalaryAdditionalExpense, SalaryAdditionalExpenseParams} from '../../../../types/graphQL/salaries.ts';
@@ -52,6 +51,8 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas.ts';
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
+import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
 
 const salaryAdditionalExpensesSchema = yup.object().shape({
   account: optionsNumberSchema.required(requiredError).default(null),
@@ -72,6 +73,7 @@ const salarySchema = yup.object().shape({
   month: optionsStringSchema.required(requiredError).default(null),
   date_of_calculation: yup.string().required(requiredError),
   description: yup.string(),
+  organization_unit_id: optionsNumberSchema.required(requiredError).default(null),
   salary_additional_expenses: yup
     .array()
     .of(salaryAdditionalExpensesSchema)
@@ -87,6 +89,7 @@ const salarySchema = yup.object().shape({
 const initialValues = {
   activity: undefined,
   month: undefined,
+  organization_unit_id: undefined,
   date_of_calculation: '',
   description: '',
   salary_additional_expenses: [
@@ -124,12 +127,19 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
 
   const {
     contextMain: {
-      organization_unit: {id: organization_unit_id},
+      organization_unit: {id: organization_unit_id, title: organization_unit_title},
       token,
     },
     navigation: {navigate},
     alert,
   } = useAppContext();
+
+  const isNew = !salary;
+
+  // TODO replace with logic from permissions
+  const isUserSSS = organization_unit_title === 'Sekretarijat Sudskog savjeta';
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
 
   const monthOptions = getMonthOptions(false);
 
@@ -140,8 +150,17 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
   const [importSuspensionsErrors, setImportSuspensionsErrors] = useState<string[]>([]);
   const [importSalariesErrors, setImportSalariesErrors] = useState<string[]>([]);
   const [totalEmployees, setTotalEmployees] = useState(0);
+  const {activities} = useGetActivities(undefined, isUserSSS ? undefined : organization_unit_id);
 
   const additionalSalaryExpenses = watch('salary_additional_expenses');
+  const organizationUnitId = watch('organization_unit_id');
+
+  useEffect(() => {
+    const selectedOU = organizationUnits?.find(ou => ou?.id === organization_unit_id);
+    if (!organization_unit_id || !selectedOU || !isNew) return;
+    setValue('organization_unit_id', selectedOU);
+  }, [organization_unit_id, organizationUnits]);
+
   const contributionsExpenses = additionalSalaryExpenses
     ?.filter(expense => expense.type === 'contributions')
     .map(expense => expense.title);
@@ -231,15 +250,13 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
     );
   };
 
-  const isNew = !salary;
-
   const onSubmit = async (data: any) => {
     const payload = {
       id: isNew ? undefined : salary?.id,
       activity_id: data.activity.id,
       month: data.month.id,
       date_of_calculation: parseDateForBackend(data.date_of_calculation) ?? '',
-      organization_unit_id,
+      organization_unit_id: organizationUnitId.id,
       description: data.description,
       number_of_employees: totalEmployees,
       salary_additional_expenses: data.salary_additional_expenses.map((additionalExpense: SalaryAdditionalExpense) => ({
@@ -249,7 +266,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
         subject_id: additionalExpense.subject.id,
         debtor_id: additionalExpense.type === 'suspensions' ? additionalExpense.debtor?.id : null,
         bank_account: additionalExpense.bank_account?.id,
-        organization_unit_id,
+        organization_unit_id: organizationUnitId.id,
         type: additionalExpense.type,
       })),
     };
@@ -287,10 +304,10 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
     // fill inputs
     reset({
       ...salary,
-      activity: mockedActivitiesDropdownOption.find(option => option.id === salary.activity.id),
       month: monthOptions.find(option => option.id === salary.month),
       date_of_calculation: salary.date_of_calculation,
       description: salary.description,
+      organization_unit_id: salary.organization_unit,
       salary_additional_expenses: [],
     });
 
@@ -578,6 +595,22 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
       <>
         <Row>
           <Controller
+            name="organization_unit_id"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={value}
+                onChange={value => onChange(value.id)}
+                label="ORGANIZACIONA JEDINICA:"
+                placeholder="Odaberi organizacionu jedinicu"
+                options={organizationUnits}
+                isDisabled={!isUserSSS}
+                error={errors?.organization_unit_id?.message}
+              />
+            )}
+          />
+          <Controller
             name="activity"
             control={control}
             render={({field: {name, value, onChange}}) => (
@@ -587,8 +620,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 onChange={onChange}
                 label="AKTIVNOST"
                 placeholder={'Odaberite aktivnost'}
-                // TODO activities not yet done, send 0 until it's fixed
-                options={mockedActivitiesDropdownOption}
+                options={activities}
                 error={errors.activity?.message}
                 isDisabled={salary?.registred}
               />

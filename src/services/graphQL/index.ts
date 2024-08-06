@@ -119,6 +119,7 @@ import nonFinancialBudgetOverview from './budget/nonFinancialBudgetOverview.ts';
 import updateNonFinancial from './insertNonFinancial/updateNonFinancial.ts';
 import createByOUFundRelease from './fundRelease/createByOUFundRelease.ts';
 import acceptBySSSFundRelease from './fundRelease/acceptBySSSFundRelease.ts';
+import getActivities from './activities/getActivities.ts';
 
 export const BFF_URL = {
   local: 'http://localhost:8080',
@@ -258,4 +259,5 @@ export const GraphQL = {
   updateNonFinancial: updateNonFinancial,
   createByOUFundRelease: createByOUFundRelease,
   acceptBySSSFundRelease: acceptBySSSFundRelease,
+  getActivities: getActivities,
 };

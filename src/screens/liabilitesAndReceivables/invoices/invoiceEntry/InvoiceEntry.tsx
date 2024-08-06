@@ -32,6 +32,7 @@ import {FileListWrapper} from '../invoicesOverview/styles.ts';
 import {invoiceSchema} from './constants.tsx';
 import {InvoiceEntryForm, PlusButtonWrapper, Row, StyledSwitch} from './styles';
 import {TypeOptions, invoiceTypeOptions} from './types.ts';
+import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 
 type InvoiceEntryForm = yup.InferType<typeof invoiceSchema>;
 
@@ -80,6 +81,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     contextMain,
   } = useAppContext();
 
+  // TODO replace with logic from permissions
+  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+
   const {
     control,
     register,
@@ -94,6 +98,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     defaultValues: defaultValues,
     resolver: yupResolver(invoiceSchema),
   });
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
 
   const [
     invoiceType,
@@ -105,6 +110,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     order_id,
     sss_pro_forma_invoice_receipt_date,
     sss_invoice_receipt_date,
+    organization_unit_id,
   ] = watch([
     'invoice_type',
     'invoice_number',
@@ -115,7 +121,13 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     'order_id',
     'sss_pro_forma_invoice_receipt_date',
     'sss_invoice_receipt_date',
+    'organization_unit_id',
   ]);
+
+  useEffect(() => {
+    if (!contextMain.organization_unit?.id) return;
+    setValue('organization_unit_id', contextMain.organization_unit?.id);
+  }, [contextMain.organization_unit?.id]);
 
   const {fields, append, remove} = useFieldArray({name: 'articles', control});
 
@@ -374,7 +386,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           passed_to_accounting: data?.passed_to_accounting,
           passed_to_inventory: data?.passed_to_inventory,
           type: 'invoices',
-          organization_unit_id: contextMain?.organization_unit?.id,
+          organization_unit_id: organization_unit_id,
           pro_forma_invoice_number: data?.pro_forma_invoice_number,
           pro_forma_invoice_date: pro_forma_invoice_date ? parseDateForBackend(pro_forma_invoice_date) : null,
           articles: fields.map((_, index) => ({
@@ -437,7 +449,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           description: data?.description,
           passed_to_accounting: data?.passed_to_accounting,
           type: 'invoices',
-          organization_unit_id: contextMain?.organization_unit?.id,
+          organization_unit_id: organization_unit_id,
           pro_forma_invoice_number: data?.pro_forma_invoice_number,
           pro_forma_invoice_date: pro_forma_invoice_date ? parseDateForBackend(pro_forma_invoice_date) : null,
           articles: fields.map((_, index) => ({
@@ -491,7 +503,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         sss_pro_forma_invoice_receipt_date: parseDateForBackend(data?.sss_pro_forma_invoice_receipt_date),
         bank_account: data?.bank_account?.id,
         date_of_payment: parseDateForBackend(data?.date_of_payment),
-        organization_unit_id: contextMain?.organization_unit?.id,
+        organization_unit_id: organization_unit_id,
         description: data?.description,
         type: 'invoices',
         pro_forma_invoice_number: data?.pro_forma_invoice_number,
@@ -784,6 +796,22 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           />
         </Row>
         <Row>
+          <Controller
+            name="organization_unit_id"
+            control={control}
+            render={({field: {name, value, onChange}}) => (
+              <Dropdown
+                name={name}
+                value={organizationUnits.find(ou => ou.id === value)}
+                onChange={value => onChange(value.id)}
+                label="ORGANIZACIONA JEDINICA:"
+                placeholder="Odaberi organizacionu jedinicu"
+                options={organizationUnits}
+                isDisabled={!isUserSSS}
+                error={errors?.organization_unit_id?.message}
+              />
+            )}
+          />
           <Controller
             name="receipt_date"
             control={control}
