@@ -12,6 +12,7 @@ import {Typography} from 'client-library';
 import {parseDate} from '../../../utils/dateUtils.ts';
 import useInternalReallocationsDelete from '../../../services/graphQL/internalReallocations/useInternalReallocationsDelete.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const tableHeads: TableHead[] = [
   {
@@ -43,7 +44,15 @@ const InternalReallocationOverview = () => {
   const {
     navigation: {navigate},
     alert,
+    contextMain,
   } = useAppContext();
+
+  const deletePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'delete');
+  const deletePermissions = deletePermittedRoutes.includes('/finance/budget/current/internal-reallocation');
+  const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/budget/current/internal-reallocation');
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermissions = createPermittedRoutes.includes('/finance/budget/current/internal-reallocation');
 
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState(initialValues);
@@ -101,14 +110,16 @@ const InternalReallocationOverview = () => {
               />
             </DropdownWrapper>
           </HeaderWrapper>
-          <ButtonWrapper>
-            <Button
-              content="Kreiraj interno preusmjerenje"
-              style={{width: '200px'}}
-              variant="secondary"
-              onClick={() => navigate('/finance/budget/current/internal-reallocation/create')}
-            />
-          </ButtonWrapper>
+          {(createPermissions || updatePermission) && (
+            <ButtonWrapper>
+              <Button
+                content="Kreiraj interno preusmjerenje"
+                style={{width: '200px'}}
+                variant="secondary"
+                onClick={() => navigate('/finance/budget/current/internal-reallocation/create')}
+              />
+            </ButtonWrapper>
+          )}
         </Wrapper>
         <Table
           data={internalReallocationsOverview}
@@ -119,6 +130,7 @@ const InternalReallocationOverview = () => {
               name: 'Izbriši',
               onClick: row => toggleModal(row.id),
               icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+              shouldRender: () => deletePermissions,
             },
           ]}
         />
@@ -131,12 +143,14 @@ const InternalReallocationOverview = () => {
           style={{marginTop: '20px'}}
         />
       </SectionBox>
-      <ConfirmationModal
-        open={!!isModalOpen}
-        onClose={() => toggleModal()}
-        onConfirm={() => onDelete(isModalOpen)}
-        subTitle={'Ovo preusmjerenje sredstava će biti trajno izbrisano iz sistema.'}
-      />
+      {deletePermissions && (
+        <ConfirmationModal
+          open={!!isModalOpen}
+          onClose={() => toggleModal()}
+          onConfirm={() => onDelete(isModalOpen)}
+          subTitle={'Ovo preusmjerenje sredstava će biti trajno izbrisano iz sistema.'}
+        />
+      )}
     </ScreenWrapper>
   );
 };

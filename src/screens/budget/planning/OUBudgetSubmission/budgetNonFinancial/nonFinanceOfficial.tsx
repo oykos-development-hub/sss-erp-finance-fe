@@ -8,6 +8,7 @@ import useNonFinancialBudgetFill from '../../../../../services/graphQL/nonFinanc
 import {BudgetRequestItem} from '../../../../../types/graphQL/budgetRequestDetails.ts';
 import Footer from '../../../../../shared/footer.ts';
 import {useEffect} from 'react';
+import {checkActionRoutePermissions} from '../../../../../services/checkRoutePermissions.ts';
 
 export const NonFinanceOfficial = ({
   budgetRequestDetails,
@@ -18,16 +19,18 @@ export const NonFinanceOfficial = ({
   isPreview?: boolean;
   refetch?: () => void;
 }) => {
-  // const [programs, setPrograms] = useState<number[]>([]);
   const {
     alert,
     navigation: {navigate},
+    contextMain: {permissions},
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermissions = updatePermittedRoutes.includes('/finance/budget/planning');
 
   const {nonFinancialBudgetFill} = useNonFinancialBudgetFill();
 
-  //TODO unify all statuses in one enum - {id: 3, title: "Na čekanju"}
-  const editingDisabled = budgetRequestDetails?.status?.id === 3;
+  const editingDisabled = !updatePermissions || budgetRequestDetails?.status?.id === 3;
 
   const methods = useForm<NonFinancialForm>({disabled: editingDisabled});
   const {
@@ -73,13 +76,6 @@ export const NonFinanceOfficial = ({
     <Container>
       <FormProvider {...methods}>
         <SectionWrapper>
-          {/*/!*TODO check if comment goes here*!/*/}
-          {/*<BorderBox>*/}
-          {/*  <BorderBoxItem>*/}
-          {/*    <Typography content={'Komentar OJ:'} variant={'bodySmall'} style={{fontWeight: 600, marginRight: 10}} />*/}
-          {/*    <Typography content={budgetRequestDetails?.non_financial?.official_comment ?? ''} variant={'bodySmall'} />*/}
-          {/*  </BorderBoxItem>*/}
-          {/*</BorderBox>*/}
           <MainTitle content="OSNOVNE INFORMACIJE" variant="bodyMedium" />
           <InputWrapper>
             <Input
@@ -106,11 +102,13 @@ export const NonFinanceOfficial = ({
               {...register('impl_contact_fullname')}
               label="Ime i prezime:"
               error={errors.impl_contact_fullname?.message as string}
+              disabled={editingDisabled}
             />
             <Input
               {...register('impl_contact_working_place')}
               label="Radno mjesto:"
               error={errors.impl_contact_working_place?.message as string}
+              disabled={editingDisabled}
             />
           </InputWrapper>
           <InputWrapper>
@@ -118,11 +116,13 @@ export const NonFinanceOfficial = ({
               {...register('impl_contact_phone')}
               label="Broj telefona:"
               error={errors.impl_contact_phone?.message as string}
+              disabled={editingDisabled}
             />
             <Input
               {...register('impl_contact_email')}
               label="Email adresa:"
               error={errors.impl_contact_email?.message as string}
+              disabled={editingDisabled}
             />
           </InputWrapper>
         </SectionWrapper>
@@ -133,11 +133,13 @@ export const NonFinanceOfficial = ({
               {...register('contact_fullname')}
               label="Ime i prezime:"
               error={errors.contact_fullname?.message as string}
+              disabled={editingDisabled}
             />
             <Input
               {...register('contact_working_place')}
               label="Radno mjesto:"
               error={errors.contact_working_place?.message as string}
+              disabled={editingDisabled}
             />
           </InputWrapper>
           <InputWrapper>
@@ -145,11 +147,13 @@ export const NonFinanceOfficial = ({
               {...register('contact_phone')}
               label="Broj telefona:"
               error={errors.contact_phone?.message as string}
+              disabled={editingDisabled}
             />
             <Input
               {...register('contact_email')}
               label="Email adresa:"
               error={errors.contact_email?.message as string}
+              disabled={editingDisabled}
             />
           </InputWrapper>
         </SectionWrapper>

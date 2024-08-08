@@ -24,7 +24,7 @@ const DecisionsDetails = () => {
   return (
     <ScreenWrapper>
       <SectionBox>
-        <MainTitle variant="bodyMedium" content={'PREGLED REŠENJA'} style={{marginBottom: 0}} />
+        <MainTitle variant="bodyMedium" content={'PREGLED RJEŠENJA'} style={{marginBottom: 0}} />
         <CustomDivider style={{marginTop: 0}} />
         <DecisionsEntry decision={decisionsItem} />
       </SectionBox>

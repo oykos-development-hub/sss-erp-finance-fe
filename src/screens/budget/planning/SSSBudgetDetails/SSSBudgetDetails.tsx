@@ -4,7 +4,6 @@ import {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import BudgetLimitModal from '../../../../components/budgetLimitModal/budgetLimitModal.tsx';
-import {UserRole} from '../../../../constants.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
 import useGetBudgets from '../../../../services/graphQL/getBudgets/useGetBudgets.ts';
 import useInsertBudget from '../../../../services/graphQL/insertBudget/useInsertBudget.ts';
@@ -17,6 +16,7 @@ import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {budgetTypeOptions} from '../budgetList/constants.tsx';
 import {MainTitle, OverviewBox, ScreenWrapper} from '../budgetList/styles.ts';
 import {BoldText, Box, Controls, TableGrid} from './SSSBudgetDetails.styles.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 export type LimitObject = {
   organization_unit_id: number;
@@ -51,6 +51,11 @@ const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
     contextMain,
     alert,
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
+  const updatePermissions = updatePermittedRoutes.includes('/finance/budget/planning');
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermissions = createPermittedRoutes.includes('/finance/budget/planning');
 
   const {
     control,
@@ -131,7 +136,7 @@ const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
               variant="secondary"
               style={{width: 130}}
               onClick={() => setLimitModal(true)}
-              disabled={!!currentBudget?.number_of_requests}
+              disabled={!createPermissions || !!currentBudget?.number_of_requests}
             />
           </Controls>
 
@@ -147,7 +152,7 @@ const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
                   options={availableYearsForBudget}
                   error={errors.year?.message}
                   placeholder="Odaberite godinu"
-                  isDisabled={!isNew}
+                  isDisabled={!createPermissions || !isNew}
                 />
               )}
             />
@@ -162,14 +167,14 @@ const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
                   options={budgetTypeOptions}
                   error={errors.budget_type?.message}
                   placeholder="Odaberite tip"
-                  isDisabled={!isNew}
+                  isDisabled={!createPermissions || !isNew}
                 />
               )}
             />
           </FlexRow>
         </Box>
 
-        {contextMain.role_id === UserRole.MANAGER_OJ && (
+        {updatePermissions && (
           <Box>
             <TableGrid>
               <BoldText variant="bodySmall" content="PROGRAM:" />
@@ -194,13 +199,15 @@ const SSSBudgetDetails = ({hasWrapper}: {hasWrapper?: boolean}) => {
             onClick={() => navigate('/finance/budget/planning')}
             disabled={!!currentBudget?.number_of_requests}
           />
-          <Button
-            content="Sačuvaj"
-            variant="primary"
-            style={{width: 130}}
-            onClick={handleSubmit(onSubmit)}
-            disabled={!!currentBudget?.number_of_requests || !limits?.length}
-          />
+          {createPermissions && (
+            <Button
+              content="Sačuvaj"
+              variant="primary"
+              style={{width: 130}}
+              onClick={handleSubmit(onSubmit)}
+              disabled={!!currentBudget?.number_of_requests || !limits?.length}
+            />
+          )}
         </Footer>
       </OverviewBox>
       <BudgetLimitModal open={limitModal} onClose={() => setLimitModal(false)} onSubmit={onLimitModalSubmit} />

@@ -1,4 +1,3 @@
-import {UserRole} from './constants.ts';
 import useAppContext from './context/useAppContext.ts';
 import {NotFound404} from './screens/404';
 import {CurrentAccountingEnforcedPaymentOrderTabs} from './screens/accounting/accountingEnforcedPaymentOrdes/currentAccountingEnforcedPaymentOrderTabs.tsx';
@@ -63,7 +62,6 @@ import ReceivablesOverview from './screens/liabilitesAndReceivables/receivables/
 import Salaries from './screens/liabilitesAndReceivables/salaries/salaries.tsx';
 import SalaryDetails from './screens/liabilitesAndReceivables/salaries/salaryDetails/salaryDetails.tsx';
 import {AccountingReports} from './screens/reports/reports.tsx';
-import {useRoleCheck} from './utils/useRoleCheck.ts';
 import BudgetDynamicVersionPreview from './screens/budget/spendingDynamics/budgetDynamicPreview/budgetDynamicVersion.tsx';
 import AddNewBudgetDynamic from './screens/budget/spendingDynamics/addNewDynamic/addNewDynamic.tsx';
 import BudgetRequestDetailsOfficial from './screens/budget/budgetRequestDetailsOfficial/budgetRequestDetailsOfficial.tsx';
@@ -73,6 +71,7 @@ import ExternalReallocationDetails from './screens/budget/externalReallocation/e
 import ExternalReallocationFinanceOfficialDetails from './screens/budget/externalReallocation/externalReallocationFinanceOfficialDetails.tsx';
 import {NonFinance} from './screens/budget/nonFinance/nonFinance.tsx';
 import FundRelease from './screens/budget/fundRelease/fundRelease.tsx';
+import {checkActionRoutePermissions} from './services/checkRoutePermissions.ts';
 
 //* OU - organization unit
 //* SSS - judicial council official
@@ -85,24 +84,51 @@ export const Router = () => {
       location: {pathname},
       navigate,
     },
-    contextMain: {role_id},
+    contextMain: {permissions},
   } = useAppContext();
+
+  const readPermittedRoutes = checkActionRoutePermissions(permissions, 'read');
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  /*const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');*/
+  console.log(
+    'FINANCE routes - ',
+    JSON.stringify(
+      permissions
+        .filter((permission: any) => permission?.route?.includes('/finance'))
+        .map((permission: any) => permission.route)
+        .sort(),
+    ),
+  );
 
   const renderScreen = () => {
     const path = pathname.split('/');
     const name = path[path.length - 1];
 
+    // BUDGET RegEx
+    const externalReallocationDetailsRegex = new RegExp('^/finance/budget/current/external-reallocation/\\d+$');
+    const budgetReallocationRegex = new RegExp('^/finance/budget/current/internal-reallocation/(create|\\d+)$');
+    const fundReleaseRegex = new RegExp('^/finance/budget/current/fund-release(?:/requests)?$');
+    const currentBudgetDynamicDetails = new RegExp('/finance/budget/current/requests/\\d+$');
+    const nonFinanceDetails = new RegExp('/finance/budget/current/non-financial/\\d+$');
+    const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
+    const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
+    const budgetRequestDetailsRegex = new RegExp(
+      '^/finance/budget/planning/\\d+/requests/\\d+/(financial|non-financial|summary)$',
+    );
+    const fillActualBudgetRegex = new RegExp('^/finance/budget/planning/\\d+/requests/\\d+/actual$');
     const SSSBudgetDetailsRegex = /^\/finance\/budget\/planning\/(add-new|\d+)$/;
     const OUBudgetDetailsSummary = /^\/finance\/budget\/planning\/\d+\/(summary|financial|non-financial)$/;
+    const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');
+    const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
+    const externalReallocationFinanceOfficialDetailsRegex = new RegExp('^/finance/budget/requests/\\d+$');
+    // DEPOSIT RegEx
     const FinancialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/financial\/\d+$/;
     const MaterialDepositDetailsRegex = /^\/finance\/deposit\/fixed\/material\/\d+$/;
     const WillDetailsRegex = /^\/finance\/deposit\/fixed\/wills\/\d+$/;
     const DepositPaymentsDetailsRegex = /^\/finance\/deposit\/transit\/payments\/\d+$/;
     const DepositPaymentsOrderDetailsRegex = /^\/finance\/deposit\/transit\/payment-orders\/\d+$/;
-
-    // const budgetDetails = new RegExp(`^/finance/budget/\\d+/${name}$`);
-    if (pathname === '/finance/liabilities-receivables') return <LiabilitiesReceivablesLandingPage />;
-    if (pathname === '/finance/liabilities-receivables/liabilities') return <LiabilitiesLandingPage />;
+    // LIABILITIES RegEx
     const invoicesRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices(?:/add-invoice)?$');
     const invoiceEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/invoices/\\d+$');
     const decisionsEditRegex = new RegExp('^/finance/liabilities-receivables/liabilities/decisions/\\d+$');
@@ -119,7 +145,7 @@ export const Router = () => {
     const enforcedPaymentEditRegex = new RegExp(
       '^/finance/liabilities-receivables/receivables/enforced-payments/\\d+$',
     );
-
+    // FINES RegEx
     const finesRegex = new RegExp('^/finance/fines-taxes/fines(?:/add-new)?$');
     const fineDetailsRegex = new RegExp('^/finance/fines-taxes/fines/\\d+$');
     const feeDetailsRegex = new RegExp('^/finance/fines-taxes/taxes/\\d+$');
@@ -130,167 +156,274 @@ export const Router = () => {
     const confiscationRegex = new RegExp('^/finance/fines-taxes/confiscation(?:/add-confiscation)?$');
     const flatRateRegex = new RegExp('^/finance/fines-taxes/flat-rate(?:/add-flat-rate)?$');
     const proceduralCostRegex = new RegExp('^/finance/fines-taxes/procedural-costs(?:/add-procedural-costs)?$');
-    const fundReleaseRegex = new RegExp('^/finance/budget/current/fund-release(?:/requests)?$');
-    const budgetPreviewDetails = new RegExp(`^/finance/budget/nonFinancePreview/${name}$`);
-    const budgetFO = new RegExp(`^/finance/budgetFO/\\d+(?:/${name})$`);
-    const sentBudgetDetails = new RegExp('/finance/budget/planning/([^/]+)/details');
-    const sentBudgetRequests = new RegExp('/finance/budget/planning/([^/]+)/requests');
-    const currentBudgetDynamicDetails = new RegExp('/finance/budget/current/requests/\\d+$');
-    const nonFinanceDetails = new RegExp('/finance/budget/current/non-financial/\\d+$');
-    const budgetRequestDetailsRegex = new RegExp(
-      '^/finance/budget/planning/\\d+/requests/\\d+/(financial|non-financial|summary)$',
-    );
-    const fillActualBudgetRegex = new RegExp('^/finance/budget/planning/\\d+/requests/\\d+/actual$');
-    const budgetReallocationRegex = new RegExp('^/finance/budget/current/internal-reallocation/(create|\\d+)$');
-
-    const externalReallocationDetailsRegex = new RegExp('^/finance/budget/current/external-reallocation/\\d+$');
-    const externalReallocationFinanceOfficialDetailsRegex = new RegExp('^/finance/budget/requests/\\d+$');
-
-    if (budgetRequestDetailsRegex.test(pathname)) return <BudgetRequestDetailsOfficial />;
-
-    if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])) {
-      if (SSSBudgetDetailsRegex.test(pathname)) return <SSSBudgetDetails />;
-      if (fillActualBudgetRegex.test(pathname)) return <BudgetFillActual />;
-    }
-
-    if (useRoleCheck(role_id, [UserRole.MANAGER_OJ, UserRole.FINANCE_OFFICIAL])) {
-      if (OUBudgetDetailsSummary.test(pathname)) return <OUBudgetSubmission />;
-    }
-
-    if (pathname === '/finance/reports') return <AccountingReports />;
-
-    if (pathname === '/finance/accounting') return <ACCOUNTING />;
 
     if (pathname === '/finance') return <LandingPage />;
-    if (pathname === '/finance/budget') return <BUDGET />;
-    if (pathname === '/finance/budget/planning') return <BudgetList />;
-    if (pathname === '/finance/budget-template') return <BudgetTemplate />;
-    if (pathname === '/finance/budget/current') return <CurrentBudgetTabs />;
-    if (pathname === '/finance/budget/requests') return <CurrentBudgetTabs />;
-    if (sentBudgetDetails.test(pathname)) return <BudgetSendTabs />;
-    if (sentBudgetRequests.test(pathname)) return <BudgetSendTabs />;
-
-    if (pathname === '/finance/accounting/payment-orders') return <CurrentAccountingPaymentOrderTabs />;
-    if (pathname === '/finance/accounting/payment-orders-overview') return <CurrentAccountingPaymentOrderTabs />;
-
-    if (pathname === '/finance/accounting/obligations') return <CurrentAccountingTabs />;
-    if (pathname === '/finance/accounting/obligations-overview') return <CurrentAccountingTabs />;
-
-    if (pathname === '/finance/accounting/enforced-payments') return <CurrentAccountingEnforcedPaymentOrderTabs />;
-    if (pathname === '/finance/accounting/enforced-payments-overview')
+    // ACCOUNTING routes
+    if (pathname === '/finance/accounting' && readPermittedRoutes.includes('/finance/accounting'))
+      return <ACCOUNTING />;
+    if (
+      pathname === '/finance/accounting/obligations' &&
+      readPermittedRoutes.includes('/finance/accounting/obligations')
+    )
+      return <CurrentAccountingTabs />;
+    if (
+      pathname === '/finance/accounting/obligations-overview' &&
+      readPermittedRoutes.includes('/finance/accounting/obligations')
+    )
+      return <CurrentAccountingTabs />;
+    if (
+      pathname === '/finance/accounting/payment-orders' &&
+      readPermittedRoutes.includes('/finance/accounting/payment-orders')
+    )
+      return <CurrentAccountingPaymentOrderTabs />;
+    if (
+      pathname === '/finance/accounting/payment-orders-overview' &&
+      readPermittedRoutes.includes('/finance/accounting/payment-orders')
+    )
+      return <CurrentAccountingPaymentOrderTabs />;
+    if (
+      pathname === '/finance/accounting/enforced-payments' &&
+      readPermittedRoutes.includes('/finance/accounting/enforced-payments')
+    )
       return <CurrentAccountingEnforcedPaymentOrderTabs />;
-
-    if (pathname === '/finance/accounting/returned-enforced-payments')
+    if (
+      pathname === '/finance/accounting/enforced-payments-overview' &&
+      readPermittedRoutes.includes('/finance/accounting/enforced-payments')
+    )
+      return <CurrentAccountingEnforcedPaymentOrderTabs />;
+    if (
+      pathname === '/finance/accounting/returned-enforced-payments' &&
+      readPermittedRoutes.includes('/finance/accounting/returned-enforced-payments')
+    )
       return <CurrentReturnedEnforcedPaymentsForAccountingTabs />;
-    if (pathname === '/finance/accounting/returned-enforced-payments-overview')
+    if (
+      pathname === '/finance/accounting/returned-enforced-payments-overview' &&
+      readPermittedRoutes.includes('/finance/accounting/returned-enforced-payments')
+    )
       return <CurrentReturnedEnforcedPaymentsForAccountingTabs />;
-
-    if (pathname === '/finance/deposit') return <DepositLandingPage />;
-    if (pathname === '/finance/deposit/fixed') return <FixedDepositLandingPage />;
-
-    if (pathname === '/finance/deposit/fixed/financial') navigate('/finance/deposit/fixed/financial/overview');
-    if (pathname === '/finance/deposit/fixed/financial/overview') return <FixedDepositTabs />;
-    if (pathname === '/finance/deposit/fixed/financial/add-new') return <FixedDepositTabs />;
-    if (FinancialDepositDetailsRegex.test(pathname)) return <FinanceDepositDetails />;
-
-    if (pathname === '/finance/deposit/fixed/material') navigate('/finance/deposit/fixed/material/overview');
-    if (pathname === '/finance/deposit/fixed/material/overview') return <FixedDepositTabs />;
-    if (pathname === '/finance/deposit/fixed/material/add-new') return <FixedDepositTabs />;
-    if (MaterialDepositDetailsRegex.test(pathname)) return <MaterialDepositDetails />;
-
-    if (pathname === '/finance/deposit/fixed/wills') navigate('/finance/deposit/fixed/wills/overview');
-    if (pathname === '/finance/deposit/fixed/wills/overview') return <FixedDepositTabs />;
-    if (pathname === '/finance/deposit/fixed/wills/add-new') return <FixedDepositTabs />;
-    if (WillDetailsRegex.test(pathname)) return <WillDetails />;
-
-    if (pathname === '/finance/deposit/transit') return <TransitDepositLandingPage />;
-
-    if (pathname === '/finance/deposit/transit/payments') navigate('/finance/deposit/transit/payments/overview');
-    if (pathname === '/finance/deposit/transit/payments/overview') return <DepositPaymentsTabs />;
-    if (pathname === '/finance/deposit/transit/payments/add-new') return <DepositPaymentsTabs />;
-    if (DepositPaymentsDetailsRegex.test(pathname)) return <DepositPaymentDetails />;
-
-    if (pathname === '/finance/deposit/transit/payment-orders')
-      navigate('/finance/deposit/transit/payment-orders/overview');
-    if (pathname === '/finance/deposit/transit/payment-orders/overview') return <DepositPaymentOrderTabs />;
-    if (pathname === '/finance/deposit/transit/payment-orders/add-new') return <DepositPaymentOrderTabs />;
-    if (DepositPaymentsOrderDetailsRegex.test(pathname)) return <DepositPaymentOrderDetails />;
-
-    if (pathname === '/finance/deposit/transit/tax-contribution-calculation') return <DepositTaxesOverview />;
-
-    if (pathname === '/finance/budget/current/non-financial') return <NonFinancialOverview />;
-    if (nonFinanceDetails.test(pathname)) return <NonFinance />;
-
-    if (pathname === '/finance/budget/current/spending-dynamics') return <SpendingDynamicsTabs />;
-    if (pathname === '/finance/budget/current/requests') return <SpendingDynamicsTabs />;
-    if (pathname === '/finance/budget/current/requests/add-new') return <AddNewBudgetDynamic />;
-    if (currentBudgetDynamicDetails.test(pathname)) return <BudgetDynamicVersionPreview />;
-
-    if (pathname === '/finance/budget/current/internal-reallocation') return <InternalReallocationOverview />;
-    if (budgetReallocationRegex.test(pathname)) return <InternalReallocationBudget />;
-
-    if (pathname === '/finance/budget/current/external-reallocation') return <ExternalReallocationOverview />;
-    if (externalReallocationDetailsRegex.test(pathname)) return <ExternalReallocationDetails />;
-    if (externalReallocationFinanceOfficialDetailsRegex.test(pathname))
+    // BUDGET routes
+    if (pathname === '/finance/budget' && readPermittedRoutes.includes('/finance/budget')) return <BUDGET />;
+    if (pathname === '/finance/budget-template' && readPermittedRoutes.includes('/finance/budget'))
+      return <BudgetTemplate />;
+    if (pathname === '/finance/budget/current' && readPermittedRoutes.includes('/finance/budget/current'))
+      return <CurrentBudgetTabs />;
+    if (pathname === '/finance/budget/requests' && createPermittedRoutes.includes('/finance/budget/current'))
+      return <CurrentBudgetTabs />;
+    if (
+      pathname === '/finance/budget/current/fund-release/new-request' &&
+      updatePermittedRoutes.includes('/finance/budget/current/fund-release')
+    )
+      return <FundReleaseRequest />;
+    if (fundReleaseDetailsRegex.test(pathname) && readPermittedRoutes.includes('/finance/budget/current/fund-release'))
+      return <FundReleaseRequest />;
+    if (
+      pathname === '/finance/budget/current/internal-reallocation' &&
+      readPermittedRoutes.includes('/finance/budget/current/internal-reallocation')
+    )
+      return <InternalReallocationOverview />;
+    if (
+      budgetReallocationRegex.test(pathname) &&
+      readPermittedRoutes.includes('/finance/budget/current/internal-reallocation') &&
+      (!pathname.includes('create') || updatePermittedRoutes.includes('/finance/budget/current/internal-reallocation'))
+    )
+      return <InternalReallocationBudget />;
+    if (
+      pathname === '/finance/budget/current/external-reallocation' &&
+      readPermittedRoutes.includes('/finance/budget/current/external-reallocation') &&
+      (!pathname.includes('create') || updatePermittedRoutes.includes('/finance/budget/current/external-reallocation'))
+    )
+      return <ExternalReallocationOverview />;
+    if (
+      externalReallocationDetailsRegex.test(pathname) &&
+      readPermittedRoutes.includes('/finance/budget/current/external-reallocation')
+    )
+      return <ExternalReallocationDetails />;
+    if (
+      (externalReallocationFinanceOfficialDetailsRegex.test(pathname) &&
+        updatePermittedRoutes.includes('/finance/budget/current/external-reallocation')) ||
+      createPermittedRoutes.includes('/finance/budget/current/external-reallocation')
+    )
       return <ExternalReallocationFinanceOfficialDetails />;
-
+    if (
+      pathname === '/finance/budget/current/non-financial' &&
+      readPermittedRoutes.includes('/finance/budget/current/non-financial')
+    )
+      return <NonFinancialOverview />;
+    if (budgetPreviewDetails.test(pathname) && readPermittedRoutes.includes('/finance/budget/current/non-financial'))
+      return <NonFinancePreview />;
+    if (
+      pathname === '/finance/budget/current/requests' &&
+      readPermittedRoutes.includes('/finance/budget/current/spending-dynamics')
+    )
+      return <SpendingDynamicsTabs />;
+    if (
+      pathname === '/finance/budget/current/requests/add-new' &&
+      updatePermittedRoutes.includes('/finance/budget/current/spending-dynamics')
+    )
+      return <AddNewBudgetDynamic />;
+    if (
+      pathname === '/finance/budget/current/spending-dynamics' &&
+      readPermittedRoutes.includes('/finance/budget/current/spending-dynamics')
+    )
+      return <SpendingDynamicsTabs />;
+    if (pathname === '/finance/budget/planning' && readPermittedRoutes.includes('/finance/budget/planning'))
+      return <BudgetList />;
+    if (budgetRequestDetailsRegex.test(pathname) && createPermittedRoutes.includes('/finance/budget/planning'))
+      return <BudgetRequestDetailsOfficial />;
+    if (
+      currentBudgetDynamicDetails.test(pathname) &&
+      readPermittedRoutes.includes('/finance/budget/current/spending-dynamics')
+    )
+      return <BudgetDynamicVersionPreview />;
+    if (fillActualBudgetRegex.test(pathname) && createPermittedRoutes.includes('/finance/budget/planning'))
+      return <BudgetFillActual />;
+    if (OUBudgetDetailsSummary.test(pathname) && readPermittedRoutes.includes('/finance/budget/planning'))
+      return <OUBudgetSubmission />;
+    if (sentBudgetDetails.test(pathname) && updatePermittedRoutes.includes('/finance/budget/planning'))
+      return <BudgetSendTabs />;
+    if (sentBudgetRequests.test(pathname) && updatePermittedRoutes.includes('/finance/budget/planning'))
+      return <BudgetSendTabs />;
+    if (SSSBudgetDetailsRegex.test(pathname) && createPermittedRoutes.includes('/finance/budget/planning'))
+      return <SSSBudgetDetails />;
+    if (budgetFO.test(pathname) && createPermittedRoutes.includes('/finance/budget/planning')) return <BudgetFO />;
+    if (fundReleaseRegex.test(pathname) && readPermittedRoutes.includes('/finance/budget/current/fund-release'))
+      return <FundRelease />;
+    if (nonFinanceDetails.test(pathname) && readPermittedRoutes.includes('/finance/budget/current/non-financial'))
+      return <NonFinance />;
+    // DEPOSIT routes
+    if (pathname === '/finance/deposit' && readPermittedRoutes.includes('/finance/deposit'))
+      return <DepositLandingPage />;
+    if (pathname === '/finance/deposit/fixed' && readPermittedRoutes.includes('/finance/deposit/fixed'))
+      return <FixedDepositLandingPage />;
+    if (
+      pathname === '/finance/deposit/fixed/financial' &&
+      readPermittedRoutes.includes('/finance/deposit/fixed/financial')
+    )
+      navigate('/finance/deposit/fixed/financial/overview');
+    if (
+      pathname === '/finance/deposit/fixed/financial/add-new' &&
+      updatePermittedRoutes.includes('/finance/deposit/fixed/financial')
+    )
+      return <FixedDepositTabs />;
+    if (
+      pathname === '/finance/deposit/fixed/financial/overview' &&
+      readPermittedRoutes.includes('/finance/deposit/fixed/financial')
+    )
+      return <FixedDepositTabs />;
+    if (
+      pathname === '/finance/deposit/fixed/material' &&
+      readPermittedRoutes.includes('/finance/deposit/fixed/material')
+    )
+      navigate('/finance/deposit/fixed/material/overview');
+    if (
+      pathname === '/finance/deposit/fixed/material/add-new' &&
+      updatePermittedRoutes.includes('/finance/deposit/fixed/material')
+    )
+      return <FixedDepositTabs />;
+    if (
+      pathname === '/finance/deposit/fixed/material/overview' &&
+      readPermittedRoutes.includes('/finance/deposit/fixed/material')
+    )
+      return <FixedDepositTabs />;
+    if (pathname === '/finance/deposit/fixed/wills' && readPermittedRoutes.includes('/finance/deposit/fixed/wills'))
+      navigate('/finance/deposit/fixed/wills/overview');
+    if (
+      pathname === '/finance/deposit/fixed/wills/add-new' &&
+      updatePermittedRoutes.includes('/finance/deposit/fixed/wills')
+    )
+      return <FixedDepositTabs />;
+    if (
+      pathname === '/finance/deposit/fixed/wills/overview' &&
+      readPermittedRoutes.includes('/finance/deposit/fixed/wills')
+    )
+      return <FixedDepositTabs />;
+    if (pathname === '/finance/deposit/transit' && readPermittedRoutes.includes('/finance/deposit/transit'))
+      return <TransitDepositLandingPage />;
+    if (
+      pathname === '/finance/deposit/transit/payments' &&
+      readPermittedRoutes.includes('/finance/deposit/transit/payments')
+    )
+      navigate('/finance/deposit/transit/payments/overview');
+    if (
+      pathname === '/finance/deposit/transit/payments/add-new' &&
+      updatePermittedRoutes.includes('/finance/deposit/transit/payments')
+    )
+      return <DepositPaymentsTabs />;
+    if (
+      pathname === '/finance/deposit/transit/payments/overview' &&
+      readPermittedRoutes.includes('/finance/deposit/transit/payments')
+    )
+      return <DepositPaymentsTabs />;
+    if (
+      pathname === '/finance/deposit/transit/payment-orders' &&
+      readPermittedRoutes.includes('/finance/deposit/transit/payment-orders')
+    )
+      navigate('/finance/deposit/transit/payment-orders/overview');
+    if (
+      pathname === '/finance/deposit/transit/payment-orders/add-new' &&
+      updatePermittedRoutes.includes('/finance/deposit/transit/payment-orders')
+    )
+      return <DepositPaymentOrderTabs />;
+    if (
+      pathname === '/finance/deposit/transit/payment-orders/overview' &&
+      readPermittedRoutes.includes('/finance/deposit/transit/payment-orders')
+    )
+      return <DepositPaymentOrderTabs />;
+    if (
+      pathname === '/finance/deposit/transit/tax-contribution-calculation' &&
+      readPermittedRoutes.includes('/finance/deposit/transit/tax-contribution-calculation')
+    )
+      return <DepositTaxesOverview />;
+    if (DepositPaymentsDetailsRegex.test(pathname) && readPermittedRoutes.includes('/finance/deposit/transit/payments'))
+      return <DepositPaymentDetails />;
+    if (
+      DepositPaymentsOrderDetailsRegex.test(pathname) &&
+      readPermittedRoutes.includes('/finance/deposit/transit/payment-orders')
+    )
+      return <DepositPaymentOrderDetails />;
+    if (FinancialDepositDetailsRegex.test(pathname) && readPermittedRoutes.includes('/finance/deposit/fixed/financial'))
+      return <FinanceDepositDetails />;
+    if (MaterialDepositDetailsRegex.test(pathname) && readPermittedRoutes.includes('/finance/deposit/fixed/material'))
+      return <MaterialDepositDetails />;
+    if (WillDetailsRegex.test(pathname) && readPermittedRoutes.includes('/finance/deposit/fixed/wills'))
+      return <WillDetails />;
+    // LIABILITIES routes
+    if (pathname === '/finance/liabilities-receivables') return <LiabilitiesReceivablesLandingPage />;
+    if (pathname === '/finance/liabilities-receivables/liabilities') return <LiabilitiesLandingPage />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/add-contract') return <Contracts />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/add-decision') return <DecisionTabs />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/contracts') return <Contracts />;
+    if (pathname === '/finance/liabilities-receivables/liabilities/decisions') return <DecisionTabs />;
     if (pathname === '/finance/liabilities-receivables/liabilities/related-expenses')
       return <AdditionalExpensesOverview />;
-
     if (pathname === '/finance/liabilities-receivables/receivables') return <ReceivablesLandingPage />;
     if (pathname === '/finance/liabilities-receivables/receivables/payment-orders') return <ReceivablesOverview />;
-    if (receiveRegex.test(pathname)) return <ReceivableEntry />;
-    if (receiveEditRegex.test(pathname)) return <ReceivableDetails />;
-    if (invoicesRegex.test(pathname)) return <Invoices />;
-    if (invoiceEditRegex.test(pathname)) return <InvoiceDetails />;
-
     if (pathname === '/finance/liabilities-receivables/receivables/enforced-payments')
       return <EnforcedPaymentsOverview />;
-    if (enforcedPaymentRegex.test(pathname)) return <EnforcedPaymentEntry />;
-    if (enforcedPaymentEditRegex.test(pathname)) return <EnforcedPaymentsDetails />;
-
-    if (budgetPreviewDetails.test(pathname)) return <NonFinancePreview />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/decisions') return <DecisionTabs />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/add-decision') return <DecisionTabs />;
     if (decisionsEditRegex.test(pathname)) return <DecisionsDetails />;
-
-    if (pathname === '/finance/liabilities-receivables/liabilities/contracts') return <Contracts />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/add-contract') return <Contracts />;
     if (contractsEditRegex.test(pathname)) return <ContractsDetails />;
-
-    if (salariesRegex.test(pathname)) return <Salaries />;
     if (salaryDetailsRegex.test(pathname)) return <SalaryDetails />;
-
-    if (budgetFO.test(pathname)) return <BudgetFO />;
-
-    // fines and taxes screen
-    if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
-    if (finesRegex.test(pathname)) return <Fines />;
-    if (fineDetailsRegex.test(pathname)) return <FineDetails />;
-
-    if (taxesRegex.test(pathname)) return <Taxes />;
-    if (feeDetailsRegex.test(pathname)) return <FeeDetails />;
-
-    if (confiscationRegex.test(pathname)) return <Confiscation />;
-    if (confiscationDetailsRegex.test(pathname)) return <PropertyBenefitsConfiscationDetails />;
-
-    if (flatRateRegex.test(pathname)) return <FlatRate />;
+    if (salariesRegex.test(pathname)) return <Salaries />;
     if (flatRateDetailsRegex.test(pathname)) return <FlatRateDetails />;
-
-    if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;
+    if (flatRateRegex.test(pathname)) return <FlatRate />;
+    if (invoicesRegex.test(pathname)) return <Invoices />;
+    if (invoiceEditRegex.test(pathname)) return <InvoiceDetails />;
+    // REPORTS routes
+    if (pathname === '/finance/reports') return <AccountingReports />;
+    // TAXES routes
+    if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
+    if (taxesRegex.test(pathname)) return <Taxes />;
+    if (enforcedPaymentEditRegex.test(pathname)) return <EnforcedPaymentsDetails />;
+    if (enforcedPaymentRegex.test(pathname)) return <EnforcedPaymentEntry />;
+    if (feeDetailsRegex.test(pathname)) return <FeeDetails />;
+    if (fineDetailsRegex.test(pathname)) return <FineDetails />;
+    if (finesRegex.test(pathname)) return <Fines />;
+    if (receiveEditRegex.test(pathname)) return <ReceivableDetails />;
+    if (receiveRegex.test(pathname)) return <ReceivableEntry />;
     if (proceduralCostDetailsRegex.test(pathname)) return <ProceduralCostDetails />;
-
-    // if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
-    if (fundReleaseRegex.test(pathname)) return <FundRelease />;
-    if (pathname === '/finance/budget/current/fund-release/new-request') return <FundReleaseRequest />;
-    if (fundReleaseDetailsRegex.test(pathname)) return <FundReleaseRequest />;
-    if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.MANAGER_OJ])) {
-      // }
-      // add role specific routes here
-      if (pathname === '/blablabla') return <div />;
-    } else if (useRoleCheck(role_id, [UserRole.FINANCE_OFFICIAL])) {
-      if (pathname === '/blablabla') return <div />;
-    }
+    if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;
+    if (confiscationDetailsRegex.test(pathname)) return <PropertyBenefitsConfiscationDetails />;
+    if (confiscationRegex.test(pathname)) return <Confiscation />;
 
     return <NotFound404 />;
   };

@@ -19,6 +19,7 @@ import useRejectOUExternalReallocations from '../../../services/graphQL/external
 import {createOptions} from '../../../utils/createOptions.ts';
 import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const tableHeads: TableHead[] = [
   {
@@ -72,7 +73,15 @@ const ExternalReallocationOverview = () => {
       role_id,
     },
     navigation: {navigate},
+    contextMain,
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/budget/current/internal-reallocation');
+  const deletePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'delete');
+  const deletePermissions = deletePermittedRoutes.includes('/finance/budget/current/internal-reallocation');
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermissions = createPermittedRoutes.includes('/finance/budget/current/internal-reallocation');
 
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState(initialValues);
@@ -180,14 +189,16 @@ const ExternalReallocationOverview = () => {
               />
             </DropdownWrapper>
           </HeaderWrapper>
-          <ButtonWrapper>
-            <Button
-              content="Kreiraj eksterno preusmjerenje"
-              style={{width: '200px'}}
-              variant="secondary"
-              onClick={() => toggleModal(0)}
-            />
-          </ButtonWrapper>
+          {(createPermissions || updatePermission) && (
+            <ButtonWrapper>
+              <Button
+                content="Kreiraj eksterno preusmjerenje"
+                style={{width: '200px'}}
+                variant="secondary"
+                onClick={() => toggleModal(0)}
+              />
+            </ButtonWrapper>
+          )}
         </Wrapper>
         <Table
           data={externalReallocations}
@@ -203,6 +214,7 @@ const ExternalReallocationOverview = () => {
               onClick: row => toggleDeleteModal(row.id),
               icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
               shouldRender: row =>
+                deletePermissions &&
                 row?.status === ReallocationStatusEnum.created &&
                 row?.destination_organization_unit?.id === organization_unit_id,
             },

@@ -51,6 +51,10 @@ export const ScreenWrapper = styled.div`
     margin: 0;
     padding: 0;
   }
+
+  @media screen and (max-width: 1600px) {
+    height: calc(100vh - 117px);
+  }
 `;
 
 export const TitleWrapper = styled.div`

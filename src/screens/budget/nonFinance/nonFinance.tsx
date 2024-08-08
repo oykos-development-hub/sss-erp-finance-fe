@@ -8,6 +8,7 @@ import {NonFinancialForm} from '../../../types/nonFinance.ts';
 import Footer from '../../../shared/footer.ts';
 import useGetNonFinancialBudgetOverview from '../../../services/graphQL/budget/useGetNonFinancialBudgetOverview.ts';
 import useUpdateNonFinancial from '../../../services/graphQL/insertNonFinancial/useUpdateNonFinancial.ts';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 export const NonFinance = ({isPreview, refetch}: {isPreview?: boolean; refetch?: () => void}) => {
   const {
@@ -16,7 +17,11 @@ export const NonFinance = ({isPreview, refetch}: {isPreview?: boolean; refetch?:
       navigate,
       location: {pathname},
     },
+    contextMain: {permissions},
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermissions = updatePermittedRoutes.includes('/finance/budget/planning');
 
   const year = parseInt(pathname.split('/').pop());
 
@@ -24,8 +29,7 @@ export const NonFinance = ({isPreview, refetch}: {isPreview?: boolean; refetch?:
   const {updateNonFinancial} = useUpdateNonFinancial();
 
   const nonFinancialBudgetDetails = nonFinancialBudgets[0];
-  //TODO unify all statuses in one enum - {id: 3, title: "Na čekanju"}
-  const editingDisabled = nonFinancialBudgetDetails?.status?.id === 3;
+  const editingDisabled = !updatePermissions || nonFinancialBudgetDetails?.status?.id === 3;
 
   const methods = useForm<NonFinancialForm>({disabled: editingDisabled});
   const {
@@ -151,7 +155,6 @@ export const NonFinance = ({isPreview, refetch}: {isPreview?: boolean; refetch?:
         />
         {!isPreview && (
           <Footer>
-            {/*<Button content="Nazad" variant="secondary" onClick={handleReset} />*/}
             <Button
               content="Sačuvaj"
               variant="secondary"

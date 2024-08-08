@@ -13,6 +13,7 @@ import WillOverview from './wills/willOverview';
 import {Divider, Theme} from 'client-library';
 import {MainTitle} from '../../../shared/pageElements';
 import SectionBox from '../../../shared/sectionBox';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 export const FixedDepositTabs = () => {
   const {
@@ -20,6 +21,7 @@ export const FixedDepositTabs = () => {
       navigate,
       location: {pathname},
     },
+    contextMain: {permissions},
   } = useAppContext();
 
   const [activeTab, setActiveTab] = useState(getCurrentTab(location.pathname) || 1);
@@ -27,6 +29,9 @@ export const FixedDepositTabs = () => {
   const pathnameSegments = pathname.split('/');
   const currentFinancePath = pathnameSegments[pathnameSegments.length - 1];
   const type = pathnameSegments[pathnameSegments.length - 2] as FixedDepositType | 'wills';
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes(`/finance/deposit/fixed/${type}`);
 
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
@@ -72,7 +77,11 @@ export const FixedDepositTabs = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle} style={{marginBottom: 0}} />
-          <StyledTabs tabs={stockTabs} activeTab={activeTab} onChange={onTabChange} />
+          <StyledTabs
+            tabs={updatePermission ? stockTabs : stockTabs.slice(0, 1)}
+            activeTab={activeTab}
+            onChange={onTabChange}
+          />
         </TitleTabsWrapper>
         <Divider style={{marginTop: 0, marginBottom: 20}} height="1px" color={Theme.palette.gray200} />
         {currentFinanceDepositRoute}

@@ -11,6 +11,7 @@ import {parseDateForBackend} from '../../../utils/dateUtils.ts';
 import {SectionBox} from '../../accounting/styles.tsx';
 import {Container, InitialStateItem, LandingPageTitle} from './styles.ts';
 import {formatCurrency} from '../../../utils/currencyUtils.ts';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 type InitialStateFilterType = {
   date: Date | null;
@@ -31,8 +32,10 @@ const TransitDepositLandingPage: React.FC = () => {
   const {
     contextMain: {
       organization_unit: {id: organization_unit_id, bank_accounts},
+      permissions,
     },
   } = useAppContext();
+  const readPermittedRoutes = checkActionRoutePermissions(permissions, 'read');
 
   const {data: transitionalState} = useGetInitialState({
     transitional_bank_account: true,
@@ -66,21 +69,27 @@ const TransitDepositLandingPage: React.FC = () => {
           <Typography variant="bodyLarge" style={{fontWeight: 600}} content="PROLAZNI DEPOZIT" />
         </LandingPageTitle>
         <Container>
-          <LandingPageContentBox
-            title={'Uplata na račun'}
-            path={'/finance/deposit/transit/payments/overview'}
-            icon={<DepositIcon />}
-          />
-          <LandingPageContentBox
-            title={'Nalozi za plaćanje'}
-            path={'/finance/deposit/transit/payment-orders/overview'}
-            icon={<DepositIcon />}
-          />
-          <LandingPageContentBox
-            title={'Vezani troškovi'}
-            path={'/finance/deposit/transit/tax-contribution-calculation'}
-            icon={<DepositIcon />}
-          />
+          {readPermittedRoutes.includes('/finance/deposit/transit/payments') && (
+            <LandingPageContentBox
+              title={'Uplata na račun'}
+              path={'/finance/deposit/transit/payments/overview'}
+              icon={<DepositIcon />}
+            />
+          )}
+          {readPermittedRoutes.includes('/finance/deposit/transit/payment-orders') && (
+            <LandingPageContentBox
+              title={'Nalozi za plaćanje'}
+              path={'/finance/deposit/transit/payment-orders/overview'}
+              icon={<DepositIcon />}
+            />
+          )}
+          {readPermittedRoutes.includes('/finance/deposit/transit/tax-contribution-calculation') && (
+            <LandingPageContentBox
+              title={'Vezani troškovi'}
+              path={'/finance/deposit/transit/tax-contribution-calculation'}
+              icon={<DepositIcon />}
+            />
+          )}
         </Container>
       </div>
       <SectionBox style={{marginTop: 20}}>

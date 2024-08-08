@@ -12,7 +12,7 @@ It renders other FE micro-services as child components and passes properties dow
 - Create `.env` file in the root of the project with following content:
 
 ```
-VITE_PORT=3004
+VITE_PORT=3005
 GITLAB_CLIENT_LIBRARY=gitlab.sudovi.me/erp/storybook.git
 GITLAB_USER=${YOUR_GITLAB_USERNAME}
 GITLAB_PAT=${PERSONAL_ACCESS_TOKEN}

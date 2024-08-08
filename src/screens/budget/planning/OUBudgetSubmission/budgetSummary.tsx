@@ -6,8 +6,7 @@ import {BudgetRequestItem} from '../../../../types/graphQL/budgetRequestDetails.
 import useSendBudgetOnReview from '../../../../services/graphQL/sendBudgetOnReview/useSendBudgetOnReview.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
 import {useState} from 'react';
-import {useRoleCheck} from '../../../../utils/useRoleCheck.ts';
-import {UserRole} from '../../../../constants.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const BudgetSummary = ({
   budgetRequestDetails,
@@ -22,9 +21,12 @@ const BudgetSummary = ({
       location: {pathname},
       alert,
     },
-    contextMain: {role_id},
+    contextMain: {permissions},
     breadcrumbs,
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermissions = updatePermittedRoutes.includes('/finance/budget/planning');
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const toggleModal = () => setShowModal(prevState => !prevState);
@@ -106,7 +108,7 @@ const BudgetSummary = ({
         />
         {/*This screen is used both for managers and finance official*/}
         {/*Hide button for finance official because only manager can send the budget*/}
-        {!useRoleCheck(role_id, [UserRole.FINANCE_OFFICIAL]) && (
+        {updatePermissions && (
           <Button
             content="Pošalji"
             variant="primary"
@@ -116,25 +118,27 @@ const BudgetSummary = ({
           />
         )}
       </FooterWrapper>
-      <ConfirmationModal
-        open={showModal}
-        onClose={toggleModal}
-        onConfirm={handleSend}
-        customContent={
-          <>
-            <Typography
-              content="Da li ste sigurni da želite poslati budžet?"
-              variant="bodyMedium"
-              style={{fontWeight: 600, textAlign: 'center'}}
-            />
-            <Typography
-              content={'Naknadne izmjene neće biti moguće.'}
-              variant="bodySmall"
-              style={{textAlign: 'center'}}
-            />
-          </>
-        }
-      />
+      {updatePermissions && (
+        <ConfirmationModal
+          open={showModal}
+          onClose={toggleModal}
+          onConfirm={handleSend}
+          customContent={
+            <>
+              <Typography
+                content="Da li ste sigurni da želite poslati budžet?"
+                variant="bodyMedium"
+                style={{fontWeight: 600, textAlign: 'center'}}
+              />
+              <Typography
+                content={'Naknadne izmjene neće biti moguće.'}
+                variant="bodySmall"
+                style={{textAlign: 'center'}}
+              />
+            </>
+          }
+        />
+      )}
     </>
   );
 };

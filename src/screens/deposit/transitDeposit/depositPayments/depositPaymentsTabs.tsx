@@ -9,6 +9,7 @@ import DepositPaymentsOverview from './depositPaymentsOverview';
 import {MainTitle} from '../../../../shared/pageElements';
 import SectionBox from '../../../../shared/sectionBox';
 import ScreenWrapper from '../../../../shared/screenWrapper/screenWrapper';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const DepositPaymentsTabs = () => {
   const {
@@ -16,8 +17,10 @@ const DepositPaymentsTabs = () => {
       navigate,
       location: {pathname},
     },
+    contextMain: {permissions},
   } = useAppContext();
-
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/payments');
   const [activeTab, setActiveTab] = useState(getCurrentTab(location.pathname) || 1);
 
   const pathnameSegments = pathname.split('/');
@@ -59,7 +62,11 @@ const DepositPaymentsTabs = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle} style={{marginBottom: 0}} />
-          <StyledTabs tabs={stockTabs} activeTab={activeTab} onChange={onTabChange} />
+          <StyledTabs
+            tabs={updatePermission ? stockTabs : stockTabs.slice(0, 1)}
+            activeTab={activeTab}
+            onChange={onTabChange}
+          />
         </TitleTabsWrapper>
         <Divider style={{marginTop: 0, marginBottom: 20}} height="1px" color={Theme.palette.gray200} />
         {currentFinanceDepositRoute}

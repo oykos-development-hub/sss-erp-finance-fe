@@ -3,7 +3,7 @@ import {Button, Divider, EditIconTwo, Pagination, SendIcon, Table, Theme, TrashI
 import {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
-import {PAGE_SIZE, UserRole} from '../../../../constants';
+import {PAGE_SIZE} from '../../../../constants';
 import useAppContext from '../../../../context/useAppContext';
 import useDeleteBudget from '../../../../services/graphQL/deleteBudget/useDeleteBudget';
 import useGetBudgets from '../../../../services/graphQL/getBudgets/useGetBudgets';
@@ -16,7 +16,7 @@ import {optionsNumberSchema} from '../../../../utils/formSchemas';
 import {getYearOptions} from '../../../../utils/getYearOptions';
 import {budgetListTableHeads, budgetListTableHeadsOfficial, budgetTypeFilterOptions} from './constants';
 import {Controls, FilterDropdown, Filters, Header, MainTitle, OverviewBox, ScreenWrapper} from './styles';
-import {useRoleCheck} from '../../../../utils/useRoleCheck.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 /*
  * This is a component used to show a list of budgets for both SSS official and managers of OUs.
@@ -33,6 +33,20 @@ const budgetListSchema = yup.object().shape({
 type BudgetListFilters = yup.InferType<typeof budgetListSchema>;
 
 const BudgetList = () => {
+  const {
+    navigation: {navigate},
+    alert,
+    breadcrumbs,
+    contextMain: {permissions},
+  } = useAppContext();
+
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/budget/planning');
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/finance/budget/planning');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/budget/planning');
+
   const [showDeleteModalBudgetId, setShowDeleteModalBudgetId] = useState<number | undefined>(undefined);
   const [showSendModalBudgetId, setShowSendModalBudgetId] = useState<number | undefined>(undefined);
   const [page, setPage] = useState(1);
@@ -53,13 +67,6 @@ const BudgetList = () => {
 
   const {deleteBudget} = useDeleteBudget();
   const {sendBudget} = useSendBudget();
-
-  const {
-    navigation: {navigate},
-    alert,
-    breadcrumbs,
-    contextMain: {role_id},
-  } = useAppContext();
 
   const onDelete = (budget: BudgetOverviewItem) => {
     setShowDeleteModalBudgetId(budget.id);
@@ -118,7 +125,7 @@ const BudgetList = () => {
   };
 
   const onRowClick = (row: BudgetOverviewItem) => {
-    if (useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])) {
+    if (createPermission || updatePermission) {
       navigate(`/finance/budget/planning/${row.id}/details`);
       breadcrumbs.add({
         name: 'Detalji',
@@ -138,35 +145,23 @@ const BudgetList = () => {
       onClick: onSend,
       icon: <SendIcon stroke={Theme?.palette?.gray800} />,
       // hide send icon if budget is already sent
-      shouldRender: (row: any) => row.status.id === BudgetStatusTypeEnum.Created,
+      shouldRender: (row: any) => createPermission && row.status.id === BudgetStatusTypeEnum.Created,
     },
     {
       name: 'Izmijeni',
       onClick: (row: any) => {
-        // if (useRoleCheck(role_id, [UserRole.ADMIN])) {
-        //   navigate(`/finance/budget/planning/budget-create-${row.year}/${row.id}`);
-        // } else {
         navigate(`/finance/budget/planning/${row.id}/summary`);
-        // }
       },
       icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
       shouldRender: (row: any) => {
-        if (useRoleCheck(role_id, [UserRole.ADMIN])) {
-          return row.status.id === BudgetStatusTypeEnum.Created;
-          //   TODO check if this is needed or if the manager should not have actions at all
-          // } else if (useRoleCheck(role_id, [UserRole.MANAGER_OJ])) {
-          //   return row.status.id !== BudgetSubmissionStatusEnum.Completed;
-        } else {
-          //* Do we need a separate condition for the finance official or will he have the same rights as the admin?
-          return false;
-        }
+        return updatePermission && row.status.id === BudgetStatusTypeEnum.Created;
       },
     },
     {
       name: 'Izbriši',
       onClick: onDelete,
       icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-      shouldRender: (row: any) => row.status.id !== BudgetSubmissionStatusEnum.ToBeFilled,
+      shouldRender: (row: any) => deletePermission && row.status.id !== BudgetSubmissionStatusEnum.ToBeFilled,
     },
   ];
 
@@ -221,7 +216,7 @@ const BudgetList = () => {
             />
           </Filters>
           <Controls>
-            {useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL]) && (
+            {createPermission && (
               <Button
                 content="Novi budžet"
                 variant="secondary"
@@ -232,14 +227,10 @@ const BudgetList = () => {
           </Controls>
         </Header>
         <Table
-          tableHeads={
-            useRoleCheck(role_id, [UserRole.ADMIN, UserRole.FINANCE_OFFICIAL])
-              ? budgetListTableHeadsOfficial
-              : budgetListTableHeads
-          }
+          tableHeads={createPermission ? budgetListTableHeadsOfficial : budgetListTableHeads}
           data={budgets}
           style={{marginBottom: 22}}
-          tableActions={useRoleCheck(role_id, [UserRole.MANAGER_OJ]) ? [] : tableActions}
+          tableActions={tableActions}
           onRowClick={row => onRowClick(row)}
         />
         <DeleteModal

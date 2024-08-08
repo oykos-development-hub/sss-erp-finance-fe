@@ -15,6 +15,7 @@ import {FilterInput} from '../../accounting/styles.tsx';
 import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
 import {tableHeads} from './constants.tsx';
 import {Header} from '../styles.ts';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const financeDepositFilterSchema = yup.object({
   status: optionsStringSchema.default(null),
@@ -29,11 +30,16 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
   const {
     contextMain: {
       organization_unit: {id: organization_unit_id},
+      permissions,
     },
     navigation: {navigate},
     alert,
     breadcrumbs,
   } = useAppContext();
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed');
 
   const {register, control, watch} = useForm<FinancialDepositFilterType>({
     resolver: yupResolver(financeDepositFilterSchema),
@@ -104,15 +110,17 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
               navigate(`/finance/deposit/fixed/${type}/${row.id}`);
             },
             icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: () => updatePermission,
           },
           {
             name: 'delete',
             onClick: row => setDeleteItemId(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: () => deletePermission,
           },
         ]}
       />
-      {deleteItemId && (
+      {deletePermission && deleteItemId && (
         <ConfirmationModal
           open={true}
           onClose={() => setDeleteItemId(null)}

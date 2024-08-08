@@ -7,6 +7,7 @@ import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits
 import {BudgetDynamicHistoryItem} from '../../../types/graphQL/budgetDynamic';
 import {budgetDynamicHistoryTHeads} from './constants';
 import {ButtonWrapper, DropdownWrapper, HeaderWrapper, Wrapper} from './styles';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const BudgetDynamicHistory = () => {
   const [organizationUnit, setOrganizationUnit] = useState<any>(null);
@@ -14,7 +15,13 @@ const BudgetDynamicHistory = () => {
   const {
     navigation: {navigate},
     breadcrumbs,
+    contextMain,
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
+  const updatePermissions = updatePermittedRoutes.includes('/finance/budget/current/spending-dynamics');
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermissions = createPermittedRoutes.includes('/finance/budget/current/spending-dynamics');
   const {organizationUnits} = useGetOrganizationUnits();
 
   const {budgetDynamicHistory} = useGetBudgetDynamicHistory({});
@@ -46,13 +53,15 @@ const BudgetDynamicHistory = () => {
             />
           </DropdownWrapper>
         </HeaderWrapper>
-        <ButtonWrapper>
-          <Button
-            content="Dodaj dinamiku potrošnje"
-            variant="secondary"
-            onClick={() => navigate('/finance/budget/current/requests/add-new')}
-          />
-        </ButtonWrapper>
+        {(updatePermissions || createPermissions) && (
+          <ButtonWrapper>
+            <Button
+              content="Dodaj dinamiku potrošnje"
+              variant="secondary"
+              onClick={() => navigate('/finance/budget/current/requests/add-new')}
+            />
+          </ButtonWrapper>
+        )}
       </Wrapper>
       <Table
         data={(dynamicHistory as any) || []}

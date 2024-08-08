@@ -12,6 +12,7 @@ import {TypesForReceivables} from '../../liabilitesAndReceivables/receivables/co
 import {tableHeads} from '../constants.tsx';
 import {FilterInput, Header} from '../styles.tsx';
 import {parseDateForBackend} from '../../../utils/dateUtils.ts';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 export interface AccountingFilters {
   type?: DropdownData<string> | null;
@@ -33,6 +34,8 @@ const AddAccountingObligations = () => {
     contextMain,
     alert,
   } = useAppContext();
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/finance/accounting/obligations');
 
   const {handleSubmit} = useForm();
 
@@ -132,23 +135,25 @@ const AddAccountingObligations = () => {
             onChange={date => onFilter(date as Date, 'date_of_end')}
           />
         </Filters>
-        <Controls>
-          <Button
-            content="Knjiži"
-            variant="primary"
-            style={{width: 130}}
-            size="sm"
-            onClick={handleSubmit(onSubmit)}
-            disabled={!selectedRows.length}
-          />
-        </Controls>
+        {createPermission && (
+          <Controls>
+            <Button
+              content="Knjiži"
+              variant="primary"
+              style={{width: 130}}
+              size="sm"
+              onClick={handleSubmit(onSubmit)}
+              disabled={!selectedRows.length}
+            />
+          </Controls>
+        )}
       </Header>
       <Table
         tableHeads={tableHeads}
         data={obligationsForAccounting}
         style={{marginBottom: 22}}
         checkedRows={selectedRows}
-        checkboxes
+        checkboxes={createPermission}
         onCheck={onCheck}
         tableActions={[
           {

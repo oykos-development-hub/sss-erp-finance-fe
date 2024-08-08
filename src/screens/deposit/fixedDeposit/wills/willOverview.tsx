@@ -15,6 +15,7 @@ import {FilterInput} from '../../../accounting/styles';
 import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles';
 import {Header} from '../../styles';
 import {willStatusOptions, willTableHeads} from './constants';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const willDepositSchema = yup.object({
   status: optionsStringSchema.default(null),
@@ -29,11 +30,14 @@ const WillOverview = () => {
   const {
     contextMain: {
       organization_unit: {id: organization_unit_id},
+      permissions,
     },
     navigation: {navigate},
     alert,
     breadcrumbs,
   } = useAppContext();
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed');
 
   const {register, control, watch} = useForm<WillDepositFilterType>({
     resolver: yupResolver(willDepositSchema),
@@ -112,6 +116,7 @@ const WillOverview = () => {
             name: 'delete',
             onClick: row => setDeleteItemId(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: () => deletePermission,
           },
         ]}
       />

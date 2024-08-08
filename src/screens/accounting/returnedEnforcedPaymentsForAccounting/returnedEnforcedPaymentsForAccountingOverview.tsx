@@ -14,6 +14,7 @@ import {AccountingPaymentOrdersModal} from '../../../components/accountingPaymen
 import {Controller, useForm} from 'react-hook-form';
 import useAccountingEntryReport from '../../../services/graphQL/accounting/useAccountingEntryReport.ts';
 import {parseDateForBackend} from '../../../utils/dateUtils.ts';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const ReturnedEnforcedPaymentsForAccountingOverview = () => {
   const {
@@ -21,6 +22,9 @@ const ReturnedEnforcedPaymentsForAccountingOverview = () => {
     alert,
     reportService: {generatePdf, loadingPDF},
   } = useAppContext();
+
+  const deletePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/accounting/obligations');
 
   const {
     control,
@@ -198,7 +202,7 @@ const ReturnedEnforcedPaymentsForAccountingOverview = () => {
             name: 'Izbriši',
             onClick: row => onDelete(row),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => row?.items[0]?.id === data[0].items[0]?.id,
+            shouldRender: row => deletePermission && row?.items[0]?.id === data[0].items[0]?.id,
           },
         ]}
       />

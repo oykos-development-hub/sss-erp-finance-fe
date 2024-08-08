@@ -9,6 +9,7 @@ import {Tabs, getCurrentTab, getRouteName, stockTabs} from '../../constants';
 import {StyledTabs, TitleTabsWrapper} from '../../styles';
 import DepositPaymentOrderNewEntry from './depositPaymentOrderNewEntry';
 import DepositPaymentOrderOverview from './depositPaymentOrderOverview';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const DepositPaymentOrderTabs = () => {
   const {
@@ -16,7 +17,10 @@ const DepositPaymentOrderTabs = () => {
       navigate,
       location: {pathname},
     },
+    contextMain: {permissions},
   } = useAppContext();
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/payments');
 
   const [activeTab, setActiveTab] = useState(getCurrentTab(location.pathname) || 1);
 
@@ -59,7 +63,11 @@ const DepositPaymentOrderTabs = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle} style={{marginBottom: 0}} />
-          <StyledTabs tabs={stockTabs} activeTab={activeTab} onChange={onTabChange} />
+          <StyledTabs
+            tabs={updatePermission ? stockTabs : stockTabs.slice(0, 1)}
+            activeTab={activeTab}
+            onChange={onTabChange}
+          />
         </TitleTabsWrapper>
         <Divider style={{marginTop: 0, marginBottom: 20}} height="1px" color={Theme.palette.gray200} />
         {currentFinanceDepositRoute}

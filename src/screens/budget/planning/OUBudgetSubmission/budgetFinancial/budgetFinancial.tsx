@@ -8,6 +8,7 @@ import useFinancialBudgetFill from '../../../../../services/graphQL/financialBud
 import {flattenBudgetData} from '../../../../../shared/budgetTable/utils.ts';
 import {useEffect, useRef, useState} from 'react';
 import BudgetTableFinanceManager from '../../../../../shared/budgetTable/budgetTableFinanceManager.tsx';
+import {checkActionRoutePermissions} from '../../../../../services/checkRoutePermissions.ts';
 
 const budgetFinancial = ({
   budgetRequestDetails,
@@ -17,10 +18,13 @@ const budgetFinancial = ({
   refetch?: () => void;
 }) => {
   const {
-    contextMain: {organization_unit},
+    contextMain: {organization_unit, permissions},
     alert,
     navigation: {navigate},
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/budget/planning');
 
   const year = budgetRequestDetails?.budget?.title ? parseInt(budgetRequestDetails.budget.title) : 0;
 
@@ -34,7 +38,8 @@ const budgetFinancial = ({
   //TODO unify all statuses in one enum -
   //   {id: 3, title: "Na čekanju"}
   //   {id: 4, title: "Odobreno"}
-  const editingDisabled = budgetRequestDetails?.status?.id === 3 || budgetRequestDetails?.status?.id === 4;
+  const editingDisabled =
+    !updatePermission || budgetRequestDetails?.status?.id === 3 || budgetRequestDetails?.status?.id === 4;
 
   useEffect(() => {
     if (!currentBudgetSuccessfullySaved || !donationsBudgetSuccessfullySaved) return;

@@ -9,17 +9,19 @@ import {OrganizationUnit} from '../../../types/graphQL/organizationUnits.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import useGetCurrentBudget from '../../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
 import {calculateSums} from '../../../utils/sumActualBudgetFilledData.ts';
-import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
-import {UserRole} from '../../../constants.ts';
 import {Typography} from 'client-library';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const CurrentBudget = () => {
   const {
     contextMain: {
       organization_unit: {id: organization_unit_id},
-      role_id,
+      permissions,
     },
   } = useAppContext();
+
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermissions = createPermittedRoutes.includes('/finance/budget/planning');
 
   const [organizationUnit, setOrganizationUnit] = useState<OrganizationUnit | undefined>(undefined);
   const {organizationUnits} = useGetOrganizationUnits(organizationUnit ? {id: organizationUnit?.id} : undefined, {
@@ -50,7 +52,7 @@ const CurrentBudget = () => {
   return (
     <>
       <Header>
-        {!useRoleCheck(role_id, [UserRole.MANAGER_OJ]) && (
+        {createPermissions && (
           <Filters>
             <FilterDropdown
               label="ORGANIZACIONA JEDINICA:"

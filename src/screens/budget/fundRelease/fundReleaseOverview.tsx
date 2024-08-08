@@ -12,6 +12,7 @@ import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationM
 import {FundReleaseItem} from '../../../types/graphQL/fundRelease';
 import FundReleaseModal from '../../../components/fundReleaseModal/fundReleaseModal.tsx';
 import FundReleaseModalAcceptBySSS from '../../../components/fundReleaseModal/fundReleaseModalAcceptBySSS.tsx';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 type FundReleaseFilters = {
   year: DropdownData<number>;
@@ -31,8 +32,14 @@ const FundReleaseOverview = () => {
     alert,
     contextMain: {
       organization_unit: {id: organization_unit_id},
+      permissions,
     },
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermissions = updatePermittedRoutes.includes('/finance/budget/current/fund-release');
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermissions = createPermittedRoutes.includes('/finance/budget/current/fund-release');
 
   const [filters, setFilters] = useState<FundReleaseFilters>({
     year: {id: new Date().getFullYear(), title: new Date().getFullYear().toString()},
@@ -120,38 +127,17 @@ const FundReleaseOverview = () => {
             </DropdownWrapper>
           </HeaderWrapper>
           <ButtonWrapper>
-            {!currentMonthReleaseExists && !isRequests && (
+            {!currentMonthReleaseExists && !isRequests && (updatePermissions || createPermissions) && (
               <Button
                 content="Kreiraj zahtjev za otpuštanje sredstava"
                 style={{width: '200px'}}
                 variant="secondary"
-                // onClick={navigateToCreateFundRelease}
                 onClick={() => setShowCreateFundReleaseModal(true)}
               />
             )}
           </ButtonWrapper>
         </Wrapper>
-        <Table
-          data={fundRelease}
-          tableHeads={fundReleaseTableHeads}
-          // TODO: Delete temporarily removed
-          // tableActions={[
-          //   {
-          //     name: 'Izbriši',
-          //     onClick: () => {
-          //       onDeleteClick();
-          //     },
-          //     icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-          //     shouldRender: (row: any) => {
-          //       const currentMonth = new Date().toLocaleString('default', {month: 'long'}).toLowerCase() as MonthType;
-          //       const monthNumber = monthVars.indexOf(currentMonth) + 1;
-          //       console.log(row.month, monthNumber);
-          //       return row.month === monthNumber;
-          //     },
-          //   },
-          // ]}
-          onRowClick={handleRowClick}
-        />
+        <Table data={fundRelease} tableHeads={fundReleaseTableHeads} onRowClick={handleRowClick} />
       </SectionBox>
 
       <ConfirmationModal

@@ -6,6 +6,7 @@ import useAppContext from '../../../context/useAppContext';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import CurrentBudget from './currentBudgetPreview';
 import {RequestsPage} from './requests';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 export const CurrentBudgetTabs = () => {
   const {
@@ -13,7 +14,12 @@ export const CurrentBudgetTabs = () => {
       navigate,
       location: {pathname},
     },
+    contextMain,
   } = useAppContext();
+
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermissions = createPermittedRoutes.includes('/finance/budget/current');
+
   const [activeTab, setActiveTab] = useState(getCurrentTab(location.pathname) || 1);
   const currentBudgetPath = pathname && pathname.split('/')[pathname.split('/').length - 1];
 
@@ -54,7 +60,11 @@ export const CurrentBudgetTabs = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle()} style={{marginBottom: 0}} />
-          <StyledTabs tabs={stockTabs} activeTab={activeTab} onChange={onTabChange} />
+          <StyledTabs
+            tabs={createPermissions ? stockTabs : stockTabs.slice(0, 1)}
+            activeTab={activeTab}
+            onChange={onTabChange}
+          />
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
         {currentBudgetRoute}
