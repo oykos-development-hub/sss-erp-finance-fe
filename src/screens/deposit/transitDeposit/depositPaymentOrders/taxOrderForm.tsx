@@ -17,6 +17,7 @@ import {parseDateForBackend} from '../../../../utils/dateUtils';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
 import {additionalExpensesTableHeads} from './constants';
 import PayOrderModal from './payOrderModal';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const SUBJECT_ENTITY = 'other';
 
@@ -62,11 +63,13 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
       location: {pathname},
     },
     contextMain: {
-      organization_unit: {id: organization_unit_id, bank_accounts: org_unit_bank_accounts},
+      organization_unit: {id: organization_unit_id, bank_accounts: org_unit_bank_accounts, permissions},
     },
     fileService: {uploadFile},
     alert,
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
 
   const id = pathname.split('/').pop();
   const isNew = id === 'add-new';
@@ -221,7 +224,7 @@ const TaxOrderForm = ({data, refetchPaymentOrder}: TaxOrderFormProps) => {
   }, [org_unit_bank_accounts]);
 
   //* If there is a date and id of statement, it means this has been payed, so everthing should be disabled.
-  const isDisabled = Boolean(date_of_statement && id_of_statement);
+  const isDisabled = !updatePermittedRoutes || Boolean(date_of_statement && id_of_statement);
 
   return (
     <FlexColumn gap={20} align="stretch">

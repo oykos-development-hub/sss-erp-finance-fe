@@ -15,6 +15,7 @@ import {TableTitle} from '../../../../shared/tableTitle.tsx';
 import {WillDispatch} from '../../../../types/graphQL/wills.ts';
 import {PlusButtonWrapper} from '../../styles.ts';
 import {willDispatchTableHeads} from './constants.tsx';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const WillDetails = () => {
   const [dispatchModal, setDispatchModal] = useState(false);
@@ -26,10 +27,14 @@ const WillDetails = () => {
       location: {pathname},
     },
     contextMain: {
-      organization_unit: {id: organization_unit_id},
+      organization_unit: {id: organization_unit_id, permissions},
     },
     alert,
   } = useAppContext();
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed/financial');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/financial');
 
   const id = pathname.split('/').pop();
 
@@ -59,7 +64,7 @@ const WillDetails = () => {
     setDeleteDispatchId(null);
   };
 
-  const disabled = currentWill[0]?.status === 'Zakljucen';
+  const disabled = !updatePermission || currentWill[0]?.status === 'Zakljucen';
 
   return (
     <ScreenWrapper showBreadcrumbs={true}>
@@ -91,11 +96,13 @@ const WillDetails = () => {
                       setDispatchModal(true);
                     },
                     icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                    shouldRender: () => updatePermission,
                   },
                   {
                     name: 'delete',
                     onClick: row => setDeleteDispatchId(row.id),
                     icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                    shouldRender: () => deletePermission,
                   },
                 ]
           }

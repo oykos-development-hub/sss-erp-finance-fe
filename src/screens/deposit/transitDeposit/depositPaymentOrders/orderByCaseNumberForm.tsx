@@ -24,6 +24,7 @@ import {parseDateForBackend} from '../../../../utils/dateUtils';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
 import {additionalExpensesTableHeads} from './constants';
 import PayOrderModal from './payOrderModal';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const SUBJECT_ENTITY = 'subjects';
 const MUNICIPALITY_ENTITY = 'municipalities';
@@ -88,11 +89,13 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
       location: {pathname},
     },
     contextMain: {
-      organization_unit: {id: organization_unit_id, bank_accounts: org_unit_bank_accounts},
+      organization_unit: {id: organization_unit_id, bank_accounts: org_unit_bank_accounts, permissions},
     },
     fileService: {uploadFile},
     alert,
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
 
   const id = pathname.split('/').pop();
   const isNew = id === 'add-new';
@@ -324,7 +327,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
 
   //* If there is a date and id of statement, it means this has been payed, so everything should be disabled.
   //* When editing, everything is to be disabled except the file upload and the date of payment.
-  const isDisabled = !!date_of_statement && !!id_of_statement;
+  const isDisabled = !updatePermittedRoutes || (!!date_of_statement && !!id_of_statement);
 
   return (
     <FlexColumn gap={20} align="stretch">

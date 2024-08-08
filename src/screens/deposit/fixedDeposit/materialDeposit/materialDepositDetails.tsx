@@ -17,6 +17,7 @@ import {PlusButtonWrapper} from '../../styles.ts';
 import {materialDepositItemTableHeads, materialDispatchTableHeads} from './constants.tsx';
 import SectionBox from '../../../../shared/sectionBox.ts';
 import {MainTitle} from '../../../../shared/pageElements.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const MaterialDepositDetails = () => {
   const [confiscationModal, setConfiscationModal] = useState(false);
@@ -32,10 +33,14 @@ const MaterialDepositDetails = () => {
       location: {pathname},
     },
     contextMain: {
-      organization_unit: {id: organization_unit_id},
+      organization_unit: {id: organization_unit_id, permissions},
     },
     alert,
   } = useAppContext();
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed/financial');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/financial');
 
   const id = pathname.split('/').pop();
 
@@ -82,7 +87,7 @@ const MaterialDepositDetails = () => {
     setDeleteDispatchId(null);
   };
 
-  const disabled = currentDeposit?.items[0]?.status === 'Zakljucen';
+  const disabled = !updatePermission || currentDeposit?.items[0]?.status === 'Zakljucen';
 
   return (
     <ScreenWrapper>
@@ -115,11 +120,13 @@ const MaterialDepositDetails = () => {
                       setConfiscationModal(true);
                     },
                     icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                    shouldRender: () => updatePermission,
                   },
                   {
                     name: 'delete',
                     onClick: row => setDeleteItemId(row.id),
                     icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                    shouldRender: () => deletePermission,
                   },
                 ]
           }
@@ -166,11 +173,13 @@ const MaterialDepositDetails = () => {
                       setDispatchModal(true);
                     },
                     icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                    shouldRender: () => updatePermission,
                   },
                   {
                     name: 'delete',
                     onClick: row => setDeleteDispatchId(row.id),
                     icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                    shouldRender: () => deletePermission,
                   },
                 ]
           }
