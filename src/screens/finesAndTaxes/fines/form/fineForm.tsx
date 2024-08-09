@@ -14,6 +14,7 @@ import * as yup from 'yup';
 import FileList from '../../../../components/fileList/fileList.tsx';
 import {FinesOverviewItem} from '../../../../types/graphQL/finesOverview.ts';
 import {optionsNumberSchema} from '../../../../utils/formSchemas.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const fineSchema = yup.object().shape({
   act_type: optionsNumberSchema.required(requiredError).default(null),
@@ -74,7 +75,11 @@ const FineForm = ({fine}: FineFormProps) => {
     alert,
     fileService: {uploadFile},
     navigation: {navigate},
+    contextMain: {permissions},
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/fines');
 
   const countsDropdownOptions = useMemo(() => {
     return generateDropdownOptions(counts);
@@ -181,6 +186,7 @@ const FineForm = ({fine}: FineFormProps) => {
               options={actTypeOptions}
               isRequired
               error={errors.act_type?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
@@ -192,6 +198,7 @@ const FineForm = ({fine}: FineFormProps) => {
       </Row>
       <Row>
         <Input
+          disabled={!updatePermission}
           {...register('decision_number')}
           label="BROJ RJEŠENJA / PRESUDE:"
           isRequired
@@ -208,18 +215,21 @@ const FineForm = ({fine}: FineFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.decision_date?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
       </Row>
       <Row>
         <Input
+          disabled={!updatePermission}
           {...register('debit_reference_number')}
           label="POZIV NA BROJ ZADUŽENJA:"
           isRequired
           error={errors.debit_reference_number?.message}
         />
         <Input
+          disabled={!updatePermission}
           {...register('payment_reference_number')}
           label="POZIV NA BROJ ODOBRENJA:"
           isRequired
@@ -232,6 +242,7 @@ const FineForm = ({fine}: FineFormProps) => {
           control={control}
           render={({field: {onChange, value}}) => (
             <Input
+              disabled={!updatePermission}
               value={value.toString()}
               onChange={onChange}
               label="VISINA KAZNE:"
@@ -269,6 +280,7 @@ const FineForm = ({fine}: FineFormProps) => {
               options={countsDropdownOptions}
               isRequired
               error={errors.account_id?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
@@ -277,6 +289,7 @@ const FineForm = ({fine}: FineFormProps) => {
           control={control}
           render={({field: {onChange, value}}) => (
             <Input
+              disabled={!updatePermission}
               value={value?.toString()}
               onChange={onChange}
               label="SUDSKI TROŠKOVI:"
@@ -299,6 +312,7 @@ const FineForm = ({fine}: FineFormProps) => {
               label="KONTO ZA SUDSKE TROŠKOVE:"
               placeholder={'Odaberite konto za sudske troškove'}
               options={countsDropdownOptions}
+              isDisabled={!updatePermission}
             />
           )}
         />
@@ -315,6 +329,7 @@ const FineForm = ({fine}: FineFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.payment_deadline_date?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
@@ -329,12 +344,13 @@ const FineForm = ({fine}: FineFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.execution_date?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
       </Row>
       <Row>
-        <Input {...register('description')} label="OPIS:" textarea />
+        <Input disabled={!updatePermission} {...register('description')} label="OPIS:" textarea />
       </Row>
 
       <Row>
@@ -345,12 +361,15 @@ const FineForm = ({fine}: FineFormProps) => {
           onUpload={handleUpload}
           note={<Typography variant="bodySmall" content="Dodaj fajl" />}
           buttonText="Učitaj"
+          disabled={!updatePermission}
         />
         <FileList files={(fine?.file && fine?.file) ?? []} />
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
+        {updatePermission && (
+          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
+        )}
       </Footer>
     </Container>
   );

@@ -27,6 +27,7 @@ import {decisionsSchema} from './constants.tsx';
 import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 type DecisionEntryForm = yup.InferType<typeof decisionsSchema>;
 interface DecisionFormProps {
@@ -37,12 +38,16 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   const {
     alert,
     navigation: {navigate},
-    contextMain,
     fileService: {uploadFile},
+    contextMain,
   } = useAppContext();
 
-  // TODO replace with logic from permissions
-  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/decisions');
+  const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/decisions');
+
+  const isUserSSS = createPermission;
 
   const {
     control,
@@ -138,7 +143,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 value={value}
                 onChange={onChange}
                 error={errors?.additionalExpenses?.[index]?.account?.message}
-                isDisabled={decision?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             </div>
           )}
@@ -184,7 +189,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                     value={value}
                     onChange={onChange}
                     error={errors?.additionalExpenses?.[index]?.bank_account?.message}
-                    isDisabled={decision?.status === 'Na nalogu'}
+                    isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
                   />
                 </div>
               )}
@@ -388,7 +393,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 placeholder="Odaberite ime subjekta"
                 options={suppliersDropdownOptions}
                 error={errors?.supplier_id?.message}
-                isDisabled={decision?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -403,7 +408,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 label="VRSTA PREDMETA:"
                 placeholder={'Odaberite vrstu predmeta'}
                 options={typeOfDecision?.items}
-                isDisabled={decision?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -412,14 +417,14 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             label="BROJ PREDMETA/DJELOVODNI BROJ:"
             placeholder="Unesite broj predmeta/djelovodni broj"
             error={errors.invoice_number?.message}
-            disabled={decision?.status === 'Na nalogu'}
+            disabled={!updatePermission || decision?.status === 'Na nalogu'}
           />
           <Input
             {...register('issuer')}
             label="IZDAVALAC:"
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
-            disabled={decision?.status === 'Na nalogu'}
+            disabled={!updatePermission || decision?.status === 'Na nalogu'}
           />
         </Row>
         <Row>
@@ -450,7 +455,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 label="AKTIVNOST:"
                 placeholder={'Odaberite aktivnost'}
                 options={activities}
-                isDisabled={decision?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -466,7 +471,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 placeholder="Odaberite izvor finansiranja"
                 options={SourceOfFunding}
                 error={errors.source_of_funding?.message}
-                isDisabled={decision?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -482,7 +487,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 label="DATUM RJEŠENJA:"
                 onChange={onChange}
                 error={errors.date_of_invoice?.message}
-                disabled={decision?.status === 'Na nalogu'}
+                disabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -496,7 +501,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 label="DATUM VALUTE:"
                 onChange={onChange}
                 error={errors.date_of_payment?.message}
-                disabled={decision?.status === 'Na nalogu'}
+                disabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -509,7 +514,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA RJEŠENJA:"
                 onChange={onChange}
-                disabled={decision?.status === 'Na nalogu'}
+                disabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -522,7 +527,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA RJEŠENJA SSS:"
                 onChange={onChange}
-                disabled={decision?.status === 'Na nalogu'}
+                disabled={!updatePermission || decision?.status === 'Na nalogu'}
               />
             )}
           />
@@ -533,7 +538,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             label="OPIS:"
             textarea
             placeholder="Unesite opis"
-            disabled={decision?.status === 'Na nalogu'}
+            disabled={!updatePermission || decision?.status === 'Na nalogu'}
           />
         </Row>
         <Row>
@@ -546,7 +551,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               note={<Typography variant="bodySmall" content="Rješenje" />}
               hint={'Fajlovi neće biti učitani dok ne sačuvate rješenje.'}
               buttonText="Učitaj"
-              disabled={decision?.status === 'Na nalogu'}
+              disabled={!updatePermission || decision?.status === 'Na nalogu'}
             />
           </FileUploadWrapper>
         </Row>
@@ -576,7 +581,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                       options={municipalities}
                       isSearchable
                       error={errors.municipality_id?.message}
-                      isDisabled={decision?.status === 'Na nalogu'}
+                      isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
                     />
                   )}
                 />
@@ -592,7 +597,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                       placeholder="Odaberite šifarnik"
                       options={optionsForTaxAuthorityCodebook}
                       error={errors.tax_authority_codebook_id?.message}
-                      isDisabled={decision?.status === 'Na nalogu'}
+                      isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
                     />
                   )}
                 />
@@ -605,7 +610,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   label="IZNOS ZA UPLATU BRUTO:"
                   placeholder="Unesite iznos"
                   leftContent={<div>€</div>}
-                  disabled={!!net_price || decision?.status === 'Na nalogu'}
+                  disabled={!updatePermission || !!net_price || decision?.status === 'Na nalogu'}
                   error={errors.gross_price?.message}
                 />
                 <Input
@@ -614,6 +619,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
                   disabled={
+                    !updatePermission ||
                     !!net_price ||
                     !!previous_income_net ||
                     selectedSupplierEntity !== 'employee' ||
@@ -628,7 +634,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   label={'NETO IZNOS:'}
                   placeholder={'Unesite neto iznos'}
                   leftContent={<div>€</div>}
-                  disabled={!!gross_price || decision?.status === 'Na nalogu'}
+                  disabled={!updatePermission || !!gross_price || decision?.status === 'Na nalogu'}
                   error={errors.net_price?.message}
                 />
                 <Input
@@ -637,6 +643,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
                   disabled={
+                    !updatePermission ||
                     !!gross_price ||
                     !!previous_income_gross ||
                     selectedSupplierEntity !== 'employee' ||
@@ -675,12 +682,14 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             style={{width: 130}}
             onClick={() => navigate('/finance/liabilities-receivables/liabilities/decisions')}
           />
-          <Button
-            content="Sačuvaj"
-            variant="primary"
-            onClick={handleSubmit(onSubmit)}
-            disabled={!fields.length || decision?.status === 'Na nalogu'}
-          />
+          {updatePermission && (
+            <Button
+              content="Sačuvaj"
+              variant="primary"
+              onClick={handleSubmit(onSubmit)}
+              disabled={!fields.length || decision?.status === 'Na nalogu'}
+            />
+          )}
         </Footer>
       </>
     </DecisionsFormContainer>

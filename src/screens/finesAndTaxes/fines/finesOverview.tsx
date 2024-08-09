@@ -10,6 +10,7 @@ import useAppContext from '../../../context/useAppContext.ts';
 import {FinesOverviewItem} from '../../../types/graphQL/finesOverview.ts';
 import useDeleteFine from '../../../services/graphQL/fines/useDeleteFine.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const initialValues = {
   act_type_id: defaultDropdownOption.id,
@@ -25,7 +26,11 @@ const FinesOverview = () => {
   const {
     navigation: {navigate},
     alert,
+    contextMain: {permissions},
   } = useAppContext();
+
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/fines');
 
   const {fines, total, refetch, loading} = useGetFines({
     page: page,
@@ -95,6 +100,7 @@ const FinesOverview = () => {
             name: 'delete',
             onClick: row => setShowDeleteFineModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: () => deletePermission,
           },
         ]}
       />
@@ -107,12 +113,14 @@ const FinesOverview = () => {
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
       />
-      <ConfirmationModal
-        open={!!showDeleteFineModal}
-        subTitle={'Ova kazna će biti trajno izbrisana iz sistema.'}
-        onClose={() => setShowDeleteFineModal(null)}
-        onConfirm={() => handleDeleteFine()}
-      />
+      {deletePermission && (
+        <ConfirmationModal
+          open={!!showDeleteFineModal}
+          subTitle={'Ova kazna će biti trajno izbrisana iz sistema.'}
+          onClose={() => setShowDeleteFineModal(null)}
+          onConfirm={() => handleDeleteFine()}
+        />
+      )}
     </>
   );
 };

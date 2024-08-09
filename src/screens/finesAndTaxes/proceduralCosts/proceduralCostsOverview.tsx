@@ -12,6 +12,7 @@ import useDeleteProceduralCost from '../../../services/graphQL/proceduralCosts/u
 import {defaultDropdownOption, TypeOfFines} from '../fines/constants.tsx';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 import {ProceduralCostOverviewItem} from '../../../types/graphQL/proceduralCosts.ts';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const initialValues = {
   procedure_cost_type_id: defaultDropdownOption.id,
@@ -27,7 +28,11 @@ const ProceduralCostsOverview = () => {
   const {
     navigation: {navigate},
     alert,
+    contextMain: {permissions},
   } = useAppContext();
+
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/procedural-costs');
 
   const {proceduralCosts, total, refetch, loading} = useGetProceduralCosts({
     page: page,
@@ -97,6 +102,7 @@ const ProceduralCostsOverview = () => {
             name: 'delete',
             onClick: row => setShowDeleteProceduralCostModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: () => deletePermission,
           },
         ]}
       />
@@ -108,12 +114,14 @@ const ProceduralCostsOverview = () => {
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
       />
-      <ConfirmationModal
-        open={!!showDeleteProceduralCostModal}
-        subTitle={'Ovaj trošak postupka će biti trajno izbrisan iz sistema.'}
-        onClose={() => setShowDeleteProceduralCostModal(null)}
-        onConfirm={() => handleDeleteProceduralCost()}
-      />
+      {deletePermission && (
+        <ConfirmationModal
+          open={!!showDeleteProceduralCostModal}
+          subTitle={'Ovaj trošak postupka će biti trajno izbrisan iz sistema.'}
+          onClose={() => setShowDeleteProceduralCostModal(null)}
+          onConfirm={() => handleDeleteProceduralCost()}
+        />
+      )}
     </>
   );
 };

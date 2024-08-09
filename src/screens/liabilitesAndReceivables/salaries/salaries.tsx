@@ -10,6 +10,7 @@ import {getRouteName} from '../../../utils/getRouteName.ts';
 import {NotFound404} from '../../404.tsx';
 import SalaryForm from './salaryForm/salaryForm.tsx';
 import SalariesOverview from './salariesOverview/salariesOverview.tsx';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const Salaries = () => {
   const {
@@ -17,7 +18,9 @@ const Salaries = () => {
       navigate,
       location: {pathname},
     },
+    contextMain: {permissions},
   } = useAppContext();
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname, salariesTabs) || 1);
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
@@ -41,7 +44,15 @@ const Salaries = () => {
   return (
     <ScreenWrapper>
       <SectionBox>
-        <StyledTabsWithTitle tabs={salariesTabs} onChange={onTabChange} activeTab={activeTab} />
+        <StyledTabsWithTitle
+          tabs={
+            createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/salaries')
+              ? salariesTabs
+              : salariesTabs.splice(0, 1)
+          }
+          onChange={onTabChange}
+          activeTab={activeTab}
+        />
         {renderScreen()}
       </SectionBox>
     </ScreenWrapper>

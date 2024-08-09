@@ -12,6 +12,7 @@ import {useDebounce} from '../../../utils/useDebounce.ts';
 import useAppContext from '../../../context/useAppContext.ts';
 import useGetPropertyBenefitsConfiscations from '../../../services/graphQL/propertyBenefitsConfiscation/useGetPropertyBenefitsConfiscation.ts';
 import useDeletePropertyBenefitsConfiscation from '../../../services/graphQL/propertyBenefitsConfiscation/useDeletePropertyBenefitsConfiscation.ts';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const initialValues = {
   property_benefits_confiscation_type_id: defaultDropdownOption.id,
@@ -26,7 +27,11 @@ const ConfiscationOverview = () => {
   const {
     navigation: {navigate},
     alert,
+    contextMain: {permissions},
   } = useAppContext();
+
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/confiscation');
 
   const {propertyBenefitsConfiscations, total, refetch, loading} = useGetPropertyBenefitsConfiscations({
     page: page,
@@ -97,6 +102,7 @@ const ConfiscationOverview = () => {
             name: 'delete',
             onClick: row => setShowDeleteProceduralCostModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: () => deletePermission,
           },
         ]}
       />
@@ -108,12 +114,14 @@ const ConfiscationOverview = () => {
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
       />
-      <ConfirmationModal
-        open={!!showDeleteProceduralCostModal}
-        subTitle={'Ovo oduzimanje imovinske koristi će biti trajno izbrisano iz sistema.'}
-        onClose={() => setShowDeleteProceduralCostModal(null)}
-        onConfirm={() => handleDeleteProceduralCost()}
-      />
+      {deletePermission && (
+        <ConfirmationModal
+          open={!!showDeleteProceduralCostModal}
+          subTitle={'Ovo oduzimanje imovinske koristi će biti trajno izbrisano iz sistema.'}
+          onClose={() => setShowDeleteProceduralCostModal(null)}
+          onConfirm={() => handleDeleteProceduralCost()}
+        />
+      )}
     </>
   );
 };

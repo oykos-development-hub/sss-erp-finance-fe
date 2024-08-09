@@ -13,6 +13,7 @@ import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {Row} from '../../decisions/decisionsOverview/styles.ts';
 import {enforcedPaymentsStatusOptions, tableHeads} from '../constants.tsx';
 import {ButtonOverviewWrapper, FilterWrapper, RowWrapper} from '../styles.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 export interface EnforcedPaymentsOverviewFilters {
   year?: DropdownData<string> | null;
@@ -31,7 +32,16 @@ const initialEnforcedPaymentsFilterValues = {
 const EnforcedPaymentsOverview = () => {
   const {
     navigation: {navigate},
+    contextMain: {permissions},
   } = useAppContext();
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermission = createPermittedRoutes.includes(
+    '/finance/liabilities-receivables/receivables/enforced-payments',
+  );
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes(
+    '/finance/liabilities-receivables/receivables/enforced-payments',
+  );
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState<EnforcedPaymentsOverviewFilters>(
     initialEnforcedPaymentsFilterValues,
@@ -101,15 +111,17 @@ const EnforcedPaymentsOverview = () => {
                 rightContent={<SearchIcon style={{marginLeft: 10, marginRight: 10}} stroke={Theme.palette.gray500} />}
               />
             </FilterWrapper>
-            <ButtonOverviewWrapper>
-              <Button
-                content="Kreirajte nalog za plaćanje"
-                size="md"
-                onClick={() =>
-                  navigate('/finance/liabilities-receivables/receivables/enforced-payments/add-enforced-payment')
-                }
-              />
-            </ButtonOverviewWrapper>
+            {createPermission && (
+              <ButtonOverviewWrapper>
+                <Button
+                  content="Kreirajte nalog za plaćanje"
+                  size="md"
+                  onClick={() =>
+                    navigate('/finance/liabilities-receivables/receivables/enforced-payments/add-enforced-payment')
+                  }
+                />
+              </ButtonOverviewWrapper>
+            )}
           </Row>
         </RowWrapper>
 
@@ -127,7 +139,7 @@ const EnforcedPaymentsOverview = () => {
               onClick: (row: EnforcedPaymentItem) =>
                 navigate(`/finance/liabilities-receivables/receivables/enforced-payments/${row.id}`),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status !== 'Povraćaj',
+              shouldRender: row => updatePermission && row.status !== 'Povraćaj',
             },
           ]}
         />

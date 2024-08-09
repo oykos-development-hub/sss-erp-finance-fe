@@ -53,6 +53,7 @@ import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSc
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const salaryAdditionalExpensesSchema = yup.object().shape({
   account: optionsNumberSchema.required(requiredError).default(null),
@@ -127,17 +128,21 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
 
   const {
     contextMain: {
-      organization_unit: {id: organization_unit_id, title: organization_unit_title},
+      organization_unit: {id: organization_unit_id},
       token,
+      permissions,
     },
     navigation: {navigate},
     alert,
   } = useAppContext();
 
-  const isNew = !salary;
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/salaries');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/salaries');
 
-  // TODO replace with logic from permissions
-  const isUserSSS = organization_unit_title === 'Sekretarijat Sudskog savjeta';
+  const isNew = !salary;
+  const isUserSSS = createPermission;
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
 
@@ -369,7 +374,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
               options={debtorDropdownOptions}
               isRequired
               error={errors.salary_additional_expenses?.[index]?.debtor?.message}
-              isDisabled={salary?.registred}
+              isDisabled={!updatePermission || salary?.registred}
             />
           )}
         />
@@ -401,7 +406,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 options={contributionsTitleOptions.filter(option => !contributionsExpenses?.includes(option.id))}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.title?.message}
-                isDisabled={salary?.registred}
+                isDisabled={!updatePermission || salary?.registred}
               />
             )}
           />
@@ -409,7 +414,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           <Input
             {...register(`salary_additional_expenses.${index}.title`)}
             error={errors.salary_additional_expenses?.[index]?.title?.message}
-            disabled={salary?.registred}
+            disabled={!updatePermission || salary?.registred}
           />
         );
       },
@@ -435,7 +440,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 options={countsDropdownOptions}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.account?.message}
-                isDisabled={salary?.registred}
+                isDisabled={!updatePermission || salary?.registred}
               />
             )}
           />
@@ -460,7 +465,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 type="currency"
                 rightContent={<div>€</div>}
                 error={errors.salary_additional_expenses?.[index]?.amount?.message}
-                disabled={salary?.registred}
+                disabled={!updatePermission || salary?.registred}
               />
             )}
             name={`salary_additional_expenses.${index}.amount`}
@@ -518,7 +523,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 options={row.type === 'banks' ? banks : (suppliersDropdownOptions as Supplier[])}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.subject?.message}
-                isDisabled={salary?.registred}
+                isDisabled={!updatePermission || salary?.registred}
               />
             )}
           />
@@ -556,7 +561,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 options={bankAccounts}
                 isRequired
                 error={errors.salary_additional_expenses?.[index]?.bank_account?.message}
-                isDisabled={salary?.registred}
+                isDisabled={!updatePermission || salary?.registred}
               />
             )}
           />
@@ -622,7 +627,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 placeholder={'Odaberite aktivnost'}
                 options={activities}
                 error={errors.activity?.message}
-                isDisabled={salary?.registred}
+                isDisabled={!updatePermission || salary?.registred}
               />
             )}
           />
@@ -640,7 +645,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 placeholder={'Odaberite mjesec'}
                 options={monthOptions}
                 error={errors.month?.message}
-                isDisabled={salary?.registred}
+                isDisabled={!updatePermission || salary?.registred}
               />
             )}
           />
@@ -654,7 +659,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
                 label="DATUM OBRAČUNA:"
                 onChange={onChange}
                 error={errors.date_of_calculation?.message}
-                disabled={salary?.registred}
+                disabled={!updatePermission || salary?.registred}
               />
             )}
           />
@@ -666,7 +671,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
             textarea
             placeholder="Unesite opis"
             error={errors.description?.message}
-            disabled={salary?.registred}
+            disabled={!updatePermission || salary?.registred}
           />
         </Row>
 
@@ -692,7 +697,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
               </>
             }
             buttonText="UČITAJ FAJL"
-            disabled={salary?.registred}
+            disabled={!updatePermission || salary?.registred}
           />
           <FileUploadErrorsWrapper>
             {importSalariesErrors.map((error, index) => (
@@ -716,7 +721,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
               </>
             }
             buttonText="UČITAJ FAJL"
-            disabled={salary?.registred}
+            disabled={!updatePermission || salary?.registred}
           />
           <FileUploadErrorsWrapper>
             {importSuspensionsErrors.map((error, index) => (
@@ -761,7 +766,12 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
             variant="secondary"
             onClick={() => navigate('/finance/liabilities-receivables/liabilities/salaries')}
           />
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} disabled={salary?.registred} />
+          <Button
+            content="Sačuvaj"
+            variant="primary"
+            onClick={handleSubmit(onSubmit)}
+            disabled={!updatePermission || salary?.registred}
+          />
         </Footer>
       </>
     </SalariesFormContainer>

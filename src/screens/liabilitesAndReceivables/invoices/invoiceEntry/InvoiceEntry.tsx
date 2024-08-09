@@ -33,6 +33,7 @@ import {invoiceSchema} from './constants.tsx';
 import {InvoiceEntryForm, PlusButtonWrapper, Row, StyledSwitch} from './styles';
 import {TypeOptions, invoiceTypeOptions} from './types.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 type InvoiceEntryForm = yup.InferType<typeof invoiceSchema>;
 
@@ -81,8 +82,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     contextMain,
   } = useAppContext();
 
-  // TODO replace with logic from permissions
-  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/invoices');
+  const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/invoices');
+
+  const isUserSSS = createPermission;
 
   const {
     control,
@@ -173,7 +178,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 {...register(`articles.${index}.title`)}
                 style={{minWidth: '100px'}}
                 error={errors.articles?.[index]?.title?.message}
-                disabled={invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+                disabled={
+                  !updatePermission || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                }
               />
             );
           } else {
@@ -192,7 +199,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               style={{minWidth: '100px'}}
               leftContent={<>Є</>}
               error={errors.articles?.[index]?.net_price?.message}
-              disabled={!isManual || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+              disabled={
+                !updatePermission ||
+                !isManual ||
+                invoice?.status == 'Na nalogu' ||
+                invoice?.status === 'Djelimično na nalogu'
+              }
             />
           );
         },
@@ -214,7 +226,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                       name={name}
                       value={value as any}
                       onChange={onChange}
-                      isDisabled={invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+                      isDisabled={
+                        !updatePermission ||
+                        invoice?.status == 'Na nalogu' ||
+                        invoice?.status === 'Djelimično na nalogu'
+                      }
                     />
                   </div>
                 )}
@@ -246,7 +262,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               {...register(`articles.${index}.amount`)}
               style={{minWidth: '100px'}}
               error={errors.articles?.[index]?.amount?.message}
-              disabled={!isManual || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+              disabled={
+                !updatePermission ||
+                !isManual ||
+                invoice?.status == 'Na nalogu' ||
+                invoice?.status === 'Djelimično na nalogu'
+              }
             />
           );
         },
@@ -278,7 +299,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                   value={value as any}
                   onChange={onChange}
                   error={errors.articles?.[index]?.account?.message}
-                  isDisabled={invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+                  isDisabled={
+                    !updatePermission || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                  }
                 />
               </div>
             )}
@@ -295,7 +318,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               <Input
                 {...register(`articles.${index}.description`)}
                 style={{minWidth: '200px'}}
-                disabled={invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+                disabled={
+                  !updatePermission || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                }
               />
             );
           } else {
@@ -679,7 +704,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 options={TypeOptions}
                 error={errors?.type_for_invoice?.message}
                 isRequired
-                isDisabled={invoice !== undefined}
+                isDisabled={!updatePermission || invoice !== undefined}
               />
             )}
           />
@@ -712,6 +737,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 placeholder="Odaberite ime dobavljača"
                 options={suppliers}
                 isDisabled={
+                  !updatePermission ||
                   ((type?.id === false || type.id === true) && Boolean(order_id)) ||
                   type === undefined ||
                   invoice?.status === 'Na nalogu' ||
@@ -732,6 +758,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             error={errors?.invoice_number?.message}
             isRequired
             disabled={
+              !updatePermission ||
               type?.id === true ||
               (Boolean(order_id) && !invoice?.passed_to_accounting) ||
               invoice?.status === 'Na nalogu' ||
@@ -749,6 +776,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="DATUM PREDRAČUNA:"
                 onChange={onChange}
                 disabled={
+                  !updatePermission ||
                   type?.id === true ||
                   (Boolean(order_id) && !invoice?.passed_to_accounting) ||
                   invoice?.status === 'Na nalogu' ||
@@ -764,6 +792,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             label="BROJ RAČUNA:"
             placeholder="Unesite broj računa"
             disabled={
+              !updatePermission ||
               (!invoice && type?.id === false) ||
               (!invoice && type?.id === true && !isManual) ||
               (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_number) ||
@@ -783,6 +812,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="DATUM RAČUNA:"
                 onChange={onChange}
                 disabled={
+                  !updatePermission ||
                   (!invoice && type?.id === false) ||
                   (!invoice && type?.id === true && !isManual) ||
                   (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_date) ||
@@ -822,6 +852,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="DATUM PRIJEMA ROBE:"
                 onChange={onChange}
                 disabled={
+                  !updatePermission ||
                   invoiceType?.id === 'accounting' ||
                   invoice?.status === 'Na nalogu' ||
                   passedToAccounting === true ||
@@ -842,6 +873,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 error={errors?.sss_pro_forma_invoice_receipt_date?.message}
                 isRequired
                 disabled={
+                  !updatePermission ||
                   type?.id === true ||
                   invoice?.status === 'Na nalogu' ||
                   invoice?.status === 'Djelimično na nalogu' ||
@@ -861,7 +893,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 onChange={onChange}
                 error={errors?.sss_invoice_receipt_date?.message}
                 isRequired
-                disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+                disabled={
+                  !updatePermission || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                }
               />
             )}
           />
@@ -872,7 +906,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             <FileUpload
               icon={null}
               files={uploadedFileProForma}
-              disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+              disabled={
+                !updatePermission || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+              }
               variant="secondary"
               onUpload={handleUploadProForma}
               note={<Typography variant="bodySmall" content="Predračun" />}
@@ -887,7 +923,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             <FileUpload
               icon={null}
               files={uploadedFile}
-              disabled={(invoice?.status === 'Na nalogu' && type?.id) || invoice?.status === 'Djelimično na nalogu'}
+              disabled={
+                !updatePermission ||
+                (invoice?.status === 'Na nalogu' && type?.id) ||
+                invoice?.status === 'Djelimično na nalogu'
+              }
               variant="secondary"
               onUpload={handleUpload}
               note={<Typography variant="bodySmall" content="Račun" />}
@@ -943,7 +983,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 }
                 error={errors?.bank_account?.message}
                 isRequired
-                isDisabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+                isDisabled={
+                  !updatePermission || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                }
               />
             )}
           />
@@ -957,7 +999,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="DATUM VALUTE:"
                 onChange={onChange}
                 error={errors?.date_of_payment?.message}
-                disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+                disabled={
+                  !updatePermission || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                }
               />
             )}
           />
@@ -968,7 +1012,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             label="OPIS:"
             textarea
             placeholder="Unesite opis"
-            disabled={invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'}
+            disabled={
+              !updatePermission || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+            }
           />
         </Row>
 
@@ -989,7 +1035,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                       style={{marginLeft: 10}}
                     />
                   }
-                  disabled={!!invoice?.id}
+                  disabled={!updatePermission || !!invoice?.id}
                   theme={Theme}
                 />
               )}
@@ -997,7 +1043,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           </div>
         )}
 
-        {isManual && (
+        {updatePermission && isManual && (
           <PlusButtonWrapper>
             <PlusButton onClick={() => handleAddRow()} />
           </PlusButtonWrapper>
@@ -1014,7 +1060,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 removeRow(row?.id);
               },
               tooltip: () => 'Uklonite artikal',
-              shouldRender: () => isManual,
+              shouldRender: () => updatePermission && isManual,
             },
           ]}
         />
@@ -1036,7 +1082,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           variant="primary"
           onClick={handleSubmit(onSubmit)}
           disabled={
-            (invoice?.status === 'Na nalogu' && invoice?.is_invoice) || invoice?.status === 'Djelimično na nalogu'
+            !updatePermission ||
+            (invoice?.status === 'Na nalogu' && invoice?.is_invoice) ||
+            invoice?.status === 'Djelimično na nalogu'
           }
         />
       </Footer>

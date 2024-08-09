@@ -12,6 +12,7 @@ import useGetFlatRate from '../../../services/graphQL/flatRate/useGetFlatRate.ts
 import useDeleteFlatRate from '../../../services/graphQL/flatRate/useDeleteFlatRate.ts';
 import {FlatRateOverviewItem} from '../../../types/graphQL/flatRate.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const initialValues = {
   flat_rate_type_id: defaultDropdownOption.id,
@@ -27,7 +28,11 @@ const FlatRateOverview = () => {
   const {
     navigation: {navigate},
     alert,
+    contextMain: {permissions},
   } = useAppContext();
+
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/flat-rate');
 
   const {flatRates, total, refetch, loading} = useGetFlatRate({
     page: page,
@@ -97,6 +102,7 @@ const FlatRateOverview = () => {
             name: 'delete',
             onClick: row => setShowDeleteFlatRateModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: () => deletePermission,
           },
         ]}
       />
@@ -108,12 +114,14 @@ const FlatRateOverview = () => {
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
       />
-      <ConfirmationModal
-        open={!!showDeleteFlatRateModal}
-        subTitle={'Ovaj trošak postupka će biti trajno izbrisan iz sistema.'}
-        onClose={() => setShowDeleteFlatRateModal(null)}
-        onConfirm={() => handleDeleteFlatRate()}
-      />
+      {deletePermission && (
+        <ConfirmationModal
+          open={!!showDeleteFlatRateModal}
+          subTitle={'Ovaj trošak postupka će biti trajno izbrisan iz sistema.'}
+          onClose={() => setShowDeleteFlatRateModal(null)}
+          onConfirm={() => handleDeleteFlatRate()}
+        />
+      )}
     </>
   );
 };

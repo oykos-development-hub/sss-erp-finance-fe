@@ -90,7 +90,7 @@ export const Router = () => {
   const readPermittedRoutes = checkActionRoutePermissions(permissions, 'read');
   const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
   const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
-  /*const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');*/
+  /*const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
   console.log(
     'FINANCE routes - ',
     JSON.stringify(
@@ -99,7 +99,7 @@ export const Router = () => {
         .map((permission: any) => permission.route)
         .sort(),
     ),
-  );
+  );*/
 
   const renderScreen = () => {
     const path = pathname.split('/');
@@ -388,42 +388,146 @@ export const Router = () => {
     if (WillDetailsRegex.test(pathname) && readPermittedRoutes.includes('/finance/deposit/fixed/wills'))
       return <WillDetails />;
     // LIABILITIES routes
-    if (pathname === '/finance/liabilities-receivables') return <LiabilitiesReceivablesLandingPage />;
-    if (pathname === '/finance/liabilities-receivables/liabilities') return <LiabilitiesLandingPage />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/add-contract') return <Contracts />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/add-decision') return <DecisionTabs />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/contracts') return <Contracts />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/decisions') return <DecisionTabs />;
-    if (pathname === '/finance/liabilities-receivables/liabilities/related-expenses')
+    if (
+      pathname === '/finance/liabilities-receivables' &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables')
+    )
+      return <LiabilitiesReceivablesLandingPage />;
+    if (
+      pathname === '/finance/liabilities-receivables/liabilities' &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/liabilities')
+    )
+      return <LiabilitiesLandingPage />;
+    if (
+      pathname === '/finance/liabilities-receivables/liabilities/contracts' &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts')
+    )
+      return <Contracts />;
+    if (
+      pathname === '/finance/liabilities-receivables/liabilities/add-contract' &&
+      createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts')
+    )
+      return <Contracts />;
+    if (
+      pathname === '/finance/liabilities-receivables/liabilities/decisions' &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/decisions')
+    )
+      return <DecisionTabs />;
+    if (
+      pathname === '/finance/liabilities-receivables/liabilities/add-decision' &&
+      createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/decisions')
+    )
+      return <DecisionTabs />;
+    if (
+      pathname === '/finance/liabilities-receivables/liabilities/related-expenses' &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/related-expenses')
+    )
       return <AdditionalExpensesOverview />;
-    if (pathname === '/finance/liabilities-receivables/receivables') return <ReceivablesLandingPage />;
-    if (pathname === '/finance/liabilities-receivables/receivables/payment-orders') return <ReceivablesOverview />;
-    if (pathname === '/finance/liabilities-receivables/receivables/enforced-payments')
+    if (
+      pathname === '/finance/liabilities-receivables/receivables' &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/receivables')
+    )
+      return <ReceivablesLandingPage />;
+    if (
+      pathname === '/finance/liabilities-receivables/receivables/payment-orders' &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/receivables/payment-orders')
+    )
+      return <ReceivablesOverview />;
+    if (
+      pathname === '/finance/liabilities-receivables/receivables/enforced-payments' &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/receivables/enforced-payments')
+    )
       return <EnforcedPaymentsOverview />;
+    if (invoiceEditRegex.test(pathname)) return <InvoiceDetails />;
     if (decisionsEditRegex.test(pathname)) return <DecisionsDetails />;
     if (contractsEditRegex.test(pathname)) return <ContractsDetails />;
     if (salaryDetailsRegex.test(pathname)) return <SalaryDetails />;
     if (salariesRegex.test(pathname)) return <Salaries />;
-    if (flatRateDetailsRegex.test(pathname)) return <FlatRateDetails />;
-    if (flatRateRegex.test(pathname)) return <FlatRate />;
-    if (invoicesRegex.test(pathname)) return <Invoices />;
-    if (invoiceEditRegex.test(pathname)) return <InvoiceDetails />;
+    if (
+      invoicesRegex.test(pathname) &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/invoices')
+    ) {
+      if (
+        !pathname.includes('add-invoice') ||
+        createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/invoices')
+      ) {
+        return <Invoices />;
+      }
+    }
+    if (
+      receiveEditRegex.test(pathname) &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/receivables/payment-orders')
+    )
+      return <ReceivableDetails />;
+    if (
+      receiveRegex.test(pathname) &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/receivables/payment-orders')
+    ) {
+      if (
+        !pathname.includes('add-receivable') ||
+        createPermittedRoutes.includes('/finance/liabilities-receivables/receivables/payment-orders')
+      ) {
+        return <ReceivableEntry />;
+      }
+    }
+    if (
+      enforcedPaymentRegex.test(pathname) &&
+      readPermittedRoutes.includes('/finance/liabilities-receivables/receivables/enforced-payments')
+    ) {
+      if (
+        !pathname.includes('add-enforced-payment') ||
+        createPermittedRoutes.includes('/finance/liabilities-receivables/receivables/enforced-payments')
+      ) {
+        return <EnforcedPaymentEntry />;
+      }
+    }
+    if (
+      enforcedPaymentEditRegex.test(pathname) &&
+      updatePermittedRoutes.includes('/finance/liabilities-receivables/receivables/enforced-payments')
+    )
+      return <EnforcedPaymentsDetails />;
     // REPORTS routes
-    if (pathname === '/finance/reports') return <AccountingReports />;
+    if (pathname === '/finance/reports' && readPermittedRoutes.includes('/finance/reports'))
+      return <AccountingReports />;
     // TAXES routes
-    if (pathname === '/finance/fines-taxes') return <FinesAndTaxesLanding />;
-    if (taxesRegex.test(pathname)) return <Taxes />;
-    if (enforcedPaymentEditRegex.test(pathname)) return <EnforcedPaymentsDetails />;
-    if (enforcedPaymentRegex.test(pathname)) return <EnforcedPaymentEntry />;
+    if (pathname === '/finance/fines-taxes' && readPermittedRoutes.includes('/finance/fines-taxes'))
+      return <FinesAndTaxesLanding />;
+    if (taxesRegex.test(pathname) && readPermittedRoutes.includes('/finance/fines-taxes/taxes')) {
+      if (!pathname.includes('add-taxes') || createPermittedRoutes.includes('/finance/fines-taxes/taxes')) {
+        return <Taxes />;
+      }
+    }
+    if (finesRegex.test(pathname) && readPermittedRoutes.includes('/finance/fines-taxes/fines')) {
+      if (!pathname.includes('add-new') || createPermittedRoutes.includes('/finance/fines-taxes/fines')) {
+        return <Fines />;
+      }
+    }
+    if (confiscationRegex.test(pathname) && readPermittedRoutes.includes('/finance/fines-taxes/confiscation')) {
+      if (
+        !pathname.includes('add-confiscation') ||
+        createPermittedRoutes.includes('/finance/fines-taxes/confiscation')
+      ) {
+        return <Confiscation />;
+      }
+    }
+    if (flatRateRegex.test(pathname) && readPermittedRoutes.includes('/finance/fines-taxes/flat-rate')) {
+      if (!pathname.includes('add-flat-rate') || createPermittedRoutes.includes('/finance/fines-taxes/flat-rate')) {
+        return <FlatRate />;
+      }
+    }
+    if (proceduralCostRegex.test(pathname) && readPermittedRoutes.includes('/finance/fines-taxes/procedural-costs')) {
+      if (
+        !pathname.includes('add-procedural-costs') ||
+        createPermittedRoutes.includes('/finance/fines-taxes/procedural-costs')
+      ) {
+        return <ProceduralCosts />;
+      }
+    }
     if (feeDetailsRegex.test(pathname)) return <FeeDetails />;
     if (fineDetailsRegex.test(pathname)) return <FineDetails />;
-    if (finesRegex.test(pathname)) return <Fines />;
-    if (receiveEditRegex.test(pathname)) return <ReceivableDetails />;
-    if (receiveRegex.test(pathname)) return <ReceivableEntry />;
     if (proceduralCostDetailsRegex.test(pathname)) return <ProceduralCostDetails />;
-    if (proceduralCostRegex.test(pathname)) return <ProceduralCosts />;
     if (confiscationDetailsRegex.test(pathname)) return <PropertyBenefitsConfiscationDetails />;
-    if (confiscationRegex.test(pathname)) return <Confiscation />;
+    if (flatRateDetailsRegex.test(pathname)) return <FlatRateDetails />;
 
     return <NotFound404 />;
   };

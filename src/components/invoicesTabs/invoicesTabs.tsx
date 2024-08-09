@@ -9,6 +9,7 @@ import InvoicesOverview from '../../screens/liabilitesAndReceivables/invoices/in
 import InvoiceEntry from '../../screens/liabilitesAndReceivables/invoices/invoiceEntry/InvoiceEntry';
 import StyledTabsWithTitle from '../../shared/styledTabsWithTitle/styledTabsWithTitle.tsx';
 import {getCurrentTab} from '../../utils/getCurrentTab.ts';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 const InvoicesTabs = () => {
   const {
@@ -16,7 +17,9 @@ const InvoicesTabs = () => {
       location: {pathname},
       navigate,
     },
+    contextMain: {permissions},
   } = useAppContext();
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname, invoicesTabs) || 1);
 
   const onTabChange = (tab: Tab) => {
@@ -45,7 +48,15 @@ const InvoicesTabs = () => {
 
   return (
     <SectionBox>
-      <StyledTabsWithTitle tabs={invoicesTabs} onChange={onTabChange} activeTab={activeTab} />
+      <StyledTabsWithTitle
+        tabs={
+          createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/invoices')
+            ? invoicesTabs
+            : invoicesTabs.slice(0, 1)
+        }
+        onChange={onTabChange}
+        activeTab={activeTab}
+      />
       {renderScreen()}
     </SectionBox>
   );

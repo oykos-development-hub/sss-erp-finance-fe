@@ -8,6 +8,7 @@ import {CustomDivider, StyledTabs, TitleTabsWrapper} from '../../accounting/styl
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper';
 import SectionBox from '../../../shared/sectionBox';
 import {MainTitle} from '../../../shared/pageElements';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 export const DecisionTabs = () => {
   const {
@@ -15,7 +16,9 @@ export const DecisionTabs = () => {
       navigate,
       location: {pathname},
     },
+    contextMain: {permissions},
   } = useAppContext();
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
   const [activeTab, setActiveTab] = useState(getCurrentTab(location.pathname) || 1);
   const currentAccountingPath = pathname && pathname.split('/')[pathname.split('/').length - 1];
 
@@ -56,7 +59,15 @@ export const DecisionTabs = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle()} style={{marginBottom: 0}} />
-          <StyledTabs tabs={decisionTabs} activeTab={activeTab} onChange={onTabChange} />
+          <StyledTabs
+            tabs={
+              createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/decisions')
+                ? decisionTabs
+                : decisionTabs.slice(0, 1)
+            }
+            activeTab={activeTab}
+            onChange={onTabChange}
+          />
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
         {currentAccountingRoute}

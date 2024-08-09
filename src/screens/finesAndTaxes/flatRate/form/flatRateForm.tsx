@@ -13,6 +13,7 @@ import FileList from '../../../../components/fileList/fileList.tsx';
 import {optionsNumberSchema} from '../../../../utils/formSchemas.ts';
 import {FlatRateOverviewItem, FlatRateForm} from '../../../../types/graphQL/flatRate.ts';
 import useInsertFlatRate from '../../../../services/graphQL/flatRate/useInsertFlatRate.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const flatRateSchema = yup.object().shape({
   flat_rate_type: optionsNumberSchema.required(requiredError).default(null),
@@ -73,7 +74,11 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
     alert,
     fileService: {uploadFile},
     navigation: {navigate},
+    contextMain: {permissions},
   } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/flat-rate');
 
   const countsDropdownOptions = useMemo(() => {
     return generateDropdownOptions(counts);
@@ -180,20 +185,40 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               options={actTypeOptions}
               isRequired
               error={errors.flat_rate_type?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
-        <Input {...register('subject')} label="SUBJEKAT:" isRequired error={errors.subject?.message} />
+        <Input
+          disabled={!updatePermission}
+          {...register('subject')}
+          label="SUBJEKAT:"
+          isRequired
+          error={errors.subject?.message}
+        />
       </Row>
       <Row>
-        <Input {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} />
-        <Input {...register('residence')} label="PREBIVALIŠTE:" isRequired error={errors.residence?.message} />
+        <Input
+          disabled={!updatePermission}
+          {...register('jmbg')}
+          label="JMBG:"
+          isRequired
+          error={errors.jmbg?.message}
+        />
+        <Input
+          disabled={!updatePermission}
+          {...register('residence')}
+          label="PREBIVALIŠTE:"
+          isRequired
+          error={errors.residence?.message}
+        />
       </Row>
       <Row>
         <Input
           {...register('decision_number')}
           label="BROJ RJEŠENJA / PRESUDE:"
           isRequired
+          disabled={!updatePermission}
           error={errors.decision_number?.message}
         />
         <Controller
@@ -207,6 +232,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.decision_date?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
@@ -217,12 +243,14 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
           label="POZIV NA BROJ ZADUŽENJA:"
           isRequired
           error={errors.debit_reference_number?.message}
+          disabled={!updatePermission}
         />
         <Input
           {...register('payment_reference_number')}
           label="POZIV NA BROJ ODOBRENJA:"
           isRequired
           error={errors.payment_reference_number?.message}
+          disabled={!updatePermission}
         />
       </Row>
       <Row>
@@ -239,6 +267,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               leftContent={<div>€</div>}
               isRequired
               error={errors.amount?.message}
+              disabled={!updatePermission}
             />
           )}
         />
@@ -268,6 +297,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               options={countsDropdownOptions}
               isRequired
               error={errors.account_id?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
@@ -283,6 +313,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               inputMode={'decimal'}
               leftContent={<div>€</div>}
               style={{flexGrow: 1 / 2}}
+              disabled={!updatePermission}
             />
           )}
         />
@@ -298,6 +329,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               label="KONTO ZA SUDSKE TROŠKOVE:"
               placeholder={'Odaberite konto za sudske troškove'}
               options={countsDropdownOptions}
+              isDisabled={!updatePermission}
             />
           )}
         />
@@ -314,6 +346,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.payment_deadline_date?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
@@ -328,12 +361,13 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.execution_date?.message}
+              isDisabled={!updatePermission}
             />
           )}
         />
       </Row>
       <Row>
-        <Input {...register('description')} label="OPIS:" textarea />
+        <Input disabled={!updatePermission} {...register('description')} label="OPIS:" textarea />
       </Row>
 
       <Row>
@@ -344,12 +378,15 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
           onUpload={handleUpload}
           note={<Typography variant="bodySmall" content="Dodaj fajl" />}
           buttonText="Učitaj"
+          disabled={!updatePermission}
         />
         <FileList files={(flat_rate?.file && flat_rate?.file) ?? []} />
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
+        {updatePermission && (
+          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
+        )}
       </Footer>
     </Container>
   );

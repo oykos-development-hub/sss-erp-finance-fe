@@ -6,6 +6,7 @@ import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import FinesOverview from './finesOverview.tsx';
 import AddFine from './addFine/addFine.tsx';
 import {Tabs, getCurrentTab, getRouteName, stockTabs} from './constants.tsx';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const Fines = () => {
   const {
@@ -13,7 +14,12 @@ const Fines = () => {
       navigate,
       location: {pathname},
     },
+    contextMain: {permissions},
   } = useAppContext();
+
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/finance/fines-taxes/fines');
+
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname) || 1);
   const currentPath = pathname && pathname.split('/')[pathname.split('/').length - 1];
   const getTitle = () => {
@@ -51,7 +57,11 @@ const Fines = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle()} style={{marginBottom: 0}} />
-          <StyledTabs tabs={stockTabs} activeTab={activeTab} onChange={onTabChange} />
+          <StyledTabs
+            tabs={createPermission ? stockTabs : stockTabs.slice(0, 1)}
+            activeTab={activeTab}
+            onChange={onTabChange}
+          />
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
         {currentFinesRoute}

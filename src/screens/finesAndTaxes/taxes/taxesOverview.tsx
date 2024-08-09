@@ -12,6 +12,7 @@ import useAppContext from '../../../context/useAppContext.ts';
 import useDeleteFee from '../../../services/graphQL/fees/useDeleteFee.ts';
 import {useDebounce} from '../../../utils/useDebounce.ts';
 import {defaultDropdownOption} from '../fines/constants.tsx';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const initialValues = {
   fee_type_id: undefined,
@@ -34,7 +35,11 @@ const TaxesOverview = () => {
   const {
     navigation: {navigate},
     alert,
+    contextMain: {permissions},
   } = useAppContext();
+
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/taxes');
   // TO DO implement the logic when the BE is done
   const {deleteFee} = useDeleteFee();
 
@@ -108,6 +113,7 @@ const TaxesOverview = () => {
             name: 'delete',
             onClick: row => setShowDeleteFeeModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+            shouldRender: () => deletePermission,
           },
         ]}
       />
@@ -119,12 +125,14 @@ const TaxesOverview = () => {
         pageRangeDisplayed={3}
         style={{marginTop: '20px'}}
       />
-      <ConfirmationModal
-        open={!!showDeleteFeeModal}
-        subTitle={'Ova taksa će biti trajno izbrisana iz sistema.'}
-        onClose={() => setShowDeleteFeeModal(null)}
-        onConfirm={() => handleDeleteFee()}
-      />
+      {deletePermission && (
+        <ConfirmationModal
+          open={!!showDeleteFeeModal}
+          subTitle={'Ova taksa će biti trajno izbrisana iz sistema.'}
+          onClose={() => setShowDeleteFeeModal(null)}
+          onConfirm={() => handleDeleteFee()}
+        />
+      )}
     </>
   );
 };

@@ -26,6 +26,7 @@ import {MainTitle} from '../../../../shared/pageElements.ts';
 import {SourceOfFunding} from '../../decisions/constants.tsx';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 type ContractEntryForm = yup.InferType<typeof contractsSchema>;
 interface ContractFormProps {
@@ -36,12 +37,16 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
   const {
     alert,
     navigation: {navigate},
-    contextMain,
     fileService: {uploadFile},
+    contextMain,
   } = useAppContext();
 
-  // TODO replace with logic from permissions
-  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts');
+  const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts');
+
+  const isUserSSS = createPermission;
 
   const {
     control,
@@ -134,7 +139,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 value={value}
                 onChange={onChange}
                 error={errors?.additionalExpenses?.[index]?.account?.message}
-                isDisabled={contract?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             </div>
           )}
@@ -180,7 +185,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                     value={value}
                     onChange={onChange}
                     error={errors?.additionalExpenses?.[index]?.bank_account?.message}
-                    isDisabled={contract?.status === 'Na nalogu'}
+                    isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
                   />
                 </div>
               )}
@@ -385,7 +390,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 placeholder="Odaberite ime subjekta"
                 options={suppliers}
                 error={errors.supplier_id?.message}
-                isDisabled={contract?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -393,7 +398,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             {...register('invoice_number')}
             label="DJELOVODNI BROJ:"
             placeholder={'Unesite djelovodni broj'}
-            disabled={contract?.status === 'Na nalogu'}
+            disabled={!updatePermission || contract?.status === 'Na nalogu'}
             error={errors.invoice_number?.message}
           />
 
@@ -402,7 +407,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             label="IZDAVALAC:"
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
-            disabled={contract?.status === 'Na nalogu'}
+            disabled={!updatePermission || contract?.status === 'Na nalogu'}
           />
           <Controller
             name={'activity_id'}
@@ -415,7 +420,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="AKTIVNOST:"
                 placeholder={'Odaberite aktivnost'}
                 options={activities}
-                isDisabled={contract?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -450,7 +455,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 placeholder="Odaberite izvor finansiranja"
                 options={SourceOfFunding}
                 error={errors.source_of_funding?.message}
-                isDisabled={contract?.status === 'Na nalogu'}
+                isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -465,7 +470,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 placeholder={'Odaberite trajanje ugovora'}
                 onChange={onChange}
                 error={errors.date_of_start?.message}
-                disabled={contract?.status === 'Na nalogu'}
+                disabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -479,7 +484,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="DATUM UGOVORA:"
                 onChange={onChange}
                 error={errors.date_of_invoice?.message}
-                disabled={contract?.status === 'Na nalogu'}
+                disabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -495,7 +500,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="DATUM VALUTE:"
                 onChange={onChange}
                 error={errors.date_of_payment?.message}
-                disabled={contract?.status === 'Na nalogu'}
+                disabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -508,7 +513,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA U RAČUNOVODSTVO:"
                 onChange={onChange}
-                disabled={contract?.status === 'Na nalogu'}
+                disabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -522,7 +527,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 selected={value ? new Date(value) : ''}
                 label="DATUM PRIJEMA UGOVORA SSS:"
                 onChange={onChange}
-                disabled={contract?.status === 'Na nalogu'}
+                disabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             )}
           />
@@ -533,7 +538,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             label="OPIS:"
             textarea
             placeholder="Unesite opis"
-            disabled={contract?.status === 'Na nalogu'}
+            disabled={!updatePermission || contract?.status === 'Na nalogu'}
           />
         </Row>
         <Row>
@@ -546,7 +551,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
               note={<Typography variant="bodySmall" content="Ugovor" />}
               hint={'Fajlovi neće biti učitani dok ne sačuvate ugovor.'}
               buttonText="Učitaj"
-              disabled={contract?.status === 'Na nalogu'}
+              disabled={!updatePermission || contract?.status === 'Na nalogu'}
             />
           </FileUploadWrapper>
         </Row>
@@ -575,7 +580,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                       options={municipalities}
                       isSearchable
                       error={errors.municipality_id?.message}
-                      isDisabled={contract?.status === 'Na nalogu'}
+                      isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
                     />
                   )}
                 />
@@ -592,7 +597,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                       placeholder={'Odaberite šifarnik'}
                       options={optionsForTaxAuthorityCodebook}
                       error={errors.tax_authority_codebook_id?.message}
-                      isDisabled={contract?.status === 'Na nalogu'}
+                      isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
                     />
                   )}
                 />
@@ -605,7 +610,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   label="IZNOS ZA UPLATU BRUTO:"
                   placeholder="Unesite iznos"
                   leftContent={<div>€</div>}
-                  disabled={!!net_price || contract?.status === 'Na nalogu'}
+                  disabled={!updatePermission || !!net_price || contract?.status === 'Na nalogu'}
                   error={errors.gross_price?.message}
                 />
                 <Input
@@ -614,6 +619,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
                   disabled={
+                    !updatePermission ||
                     !!net_price ||
                     !!previous_income_net ||
                     selectedSupplierEntity !== 'employee' ||
@@ -628,7 +634,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   label={'NETO IZNOS:'}
                   placeholder={'Unesite neto iznos'}
                   leftContent={<div>€</div>}
-                  disabled={!!gross_price || contract?.status === 'Na nalogu'}
+                  disabled={!updatePermission || !!gross_price || contract?.status === 'Na nalogu'}
                   error={errors.net_price?.message}
                 />
                 <Input
@@ -637,6 +643,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
                   disabled={
+                    !updatePermission ||
                     !!gross_price ||
                     !!previous_income_gross ||
                     selectedSupplierEntity !== 'employee' ||
@@ -649,7 +656,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 content="Obračunaj"
                 variant={'primary'}
                 onClick={() => onCount()}
-                disabled={contract?.status === 'Na nalogu'}
+                disabled={!updatePermission || contract?.status === 'Na nalogu'}
               />
             </HalfWidthContainer>
           </>
@@ -680,7 +687,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             content="Sačuvaj"
             variant="primary"
             onClick={handleSubmit(onSubmit)}
-            disabled={!fields.length || contract?.status === 'Na nalogu'}
+            disabled={!updatePermission || !fields.length || contract?.status === 'Na nalogu'}
           />
         </Footer>
       </>

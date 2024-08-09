@@ -8,6 +8,7 @@ import {MainTitle} from '../../../shared/pageElements';
 import {Tabs, contractTabs, getCurrentTab, getRouteName} from './constants';
 import ContractsEntry from './contractsEntry/contractsEntry';
 import ContractsOverview from './contractsOverview/contractsOverview';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 export const Contracts = () => {
   const {
@@ -15,7 +16,9 @@ export const Contracts = () => {
       navigate,
       location: {pathname},
     },
+    contextMain: {permissions},
   } = useAppContext();
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
   const [activeTab, setActiveTab] = useState(getCurrentTab(location.pathname) || 1);
   const currentAccountingPath = pathname && pathname.split('/')[pathname.split('/').length - 1];
 
@@ -56,7 +59,15 @@ export const Contracts = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle()} style={{marginBottom: 0}} />
-          <StyledTabs tabs={contractTabs} activeTab={activeTab} onChange={onTabChange} />
+          <StyledTabs
+            tabs={
+              createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts')
+                ? contractTabs
+                : contractTabs.splice(0, 1)
+            }
+            activeTab={activeTab}
+            onChange={onTabChange}
+          />
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
         {currentAccountingRoute}

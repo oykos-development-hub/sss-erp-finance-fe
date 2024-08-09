@@ -33,6 +33,7 @@ import {receivablesStatusOptions, tableHeads} from '../constants.tsx';
 import {ButtonOverviewWrapper, FilterWrapper, RowWrapper} from '../styles.ts';
 import {REQUEST_STATUSES} from '../../../../services/constants.ts';
 import {importSapIds} from '../../../../services/importExcel/importSapIds.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 export interface OverviewFilters {
   year?: DropdownData<string> | null;
@@ -55,8 +56,20 @@ const ReceivablesOverview = () => {
     alert,
     navigation: {navigate},
     spreadsheetService: {openImportModal, closeImportModal},
-    contextMain: {token},
+    contextMain: {token, permissions},
   } = useAppContext();
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermission = createPermittedRoutes.includes(
+    '/finance/liabilities-receivables/receivables/payment-orders',
+  );
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes(
+    '/finance/liabilities-receivables/receivables/payment-orders',
+  );
+  const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes(
+    '/finance/liabilities-receivables/receivables/payment-orders',
+  );
 
   const [page, setPage] = useState(1);
   const [filterValues, setFilterValues] = useState<OverviewFilters>(initialFilterValues);
@@ -250,14 +263,16 @@ const ReceivablesOverview = () => {
             </FilterWrapper>
           </Row>
         </RowWrapper>
-        <ButtonOverviewWrapper>
-          <Button content="Uvezi podatke iz SAP-a" size="md" onClick={handleImportSapIds} />
-          <Button
-            content="Kreirajte nalog za plaćanje"
-            size="md"
-            onClick={() => navigate('/finance/liabilities-receivables/receivables/payment-orders/add-receivable')}
-          />
-        </ButtonOverviewWrapper>
+        {createPermission && (
+          <ButtonOverviewWrapper>
+            <Button content="Uvezi podatke iz SAP-a" size="md" onClick={handleImportSapIds} />
+            <Button
+              content="Kreirajte nalog za plaćanje"
+              size="md"
+              onClick={() => navigate('/finance/liabilities-receivables/receivables/payment-orders/add-receivable')}
+            />
+          </ButtonOverviewWrapper>
+        )}
 
         <Table
           tableHeads={tableHeads}
@@ -272,20 +287,20 @@ const ReceivablesOverview = () => {
               onClick: (row: PaymentOrderItem) =>
                 navigate(`/finance/liabilities-receivables/receivables/payment-orders/${row.id}`),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status !== 'Plaćen' && row.status !== 'Storniran',
+              shouldRender: row => updatePermission && row.status !== 'Plaćen' && row.status !== 'Storniran',
             },
             {
               name: 'Storniraj',
               onClick: (row: PaymentOrderItem) => onCancelPayment(row),
               icon: <RotateCWIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status === 'Plaćen',
+              shouldRender: row => updatePermission && row.status === 'Plaćen',
               tooltip: () => 'Storniraj',
             },
             {
               name: 'Izbriši',
               onClick: onDelete,
               icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-              shouldRender: row => row.status !== 'Plaćen' && row.status !== 'Storniran',
+              shouldRender: row => deletePermission && row.status !== 'Plaćen' && row.status !== 'Storniran',
             },
           ]}
         />
