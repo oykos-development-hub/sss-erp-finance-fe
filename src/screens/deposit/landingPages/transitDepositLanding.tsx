@@ -66,7 +66,7 @@ const TransitDepositLandingPage: React.FC = () => {
     <ScreenWrapper showBreadcrumbs={false}>
       <div>
         <LandingPageTitle>
-          <Typography variant="bodyLarge" style={{fontWeight: 600}} content="PROLAZNI DEPOZIT" />
+          <Typography variant="bodyLarge" style={{fontWeight: 600}} content="PROLAZNI RAČUN DEPOZITA" />
         </LandingPageTitle>
         <Container>
           {readPermittedRoutes.includes('/finance/deposit/transit/payments') && (
@@ -76,17 +76,17 @@ const TransitDepositLandingPage: React.FC = () => {
               icon={<DepositIcon />}
             />
           )}
+          {readPermittedRoutes.includes('/finance/deposit/transit/tax-contribution-calculation') && (
+            <LandingPageContentBox
+              title={'Obračun poreza i doprinosa'}
+              path={'/finance/deposit/transit/tax-contribution-calculation'}
+              icon={<DepositIcon />}
+            />
+          )}
           {readPermittedRoutes.includes('/finance/deposit/transit/payment-orders') && (
             <LandingPageContentBox
               title={'Nalozi za plaćanje'}
               path={'/finance/deposit/transit/payment-orders/overview'}
-              icon={<DepositIcon />}
-            />
-          )}
-          {readPermittedRoutes.includes('/finance/deposit/transit/tax-contribution-calculation') && (
-            <LandingPageContentBox
-              title={'Vezani troškovi'}
-              path={'/finance/deposit/transit/tax-contribution-calculation'}
               icon={<DepositIcon />}
             />
           )}

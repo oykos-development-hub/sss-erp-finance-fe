@@ -1,9 +1,9 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {Button, Datepicker, Dropdown, FileUpload, Input, Typography} from 'client-library';
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
-import {requiredError} from '../../constants';
+import {generateDropdownOptions, requiredError} from '../../constants';
 import useAppContext from '../../context/useAppContext';
 import useGetCountOverview from '../../services/graphQL/counts/useGetCountOverview';
 import useInsertFixedDeposit from '../../services/graphQL/fixedDeposits/useInsertFixedDeposit';
@@ -54,7 +54,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
     resolver: yupResolver(financialDepositSchema),
   });
 
-  const {counts} = useGetCountOverview({});
+  const {counts} = useGetCountOverview({level: 3});
 
   const {insertFixedDeposit, loading: isSaving} = useInsertFixedDeposit();
 
@@ -130,6 +130,10 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
 
   const disabled = data?.status === 'Zakljucen';
 
+  const dropdownCountsOptions = useMemo(() => {
+    return generateDropdownOptions(counts);
+  }, [counts]);
+
   return (
     <FlexColumn gap={20} style={{alignItems: 'stretch'}}>
       <FlexRow gap={8}>
@@ -185,7 +189,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
               value={value}
               onChange={onChange}
               name={name}
-              options={counts}
+              options={dropdownCountsOptions}
               label="KONTO:"
               error={errors.account_id?.message}
               isDisabled={disabled}

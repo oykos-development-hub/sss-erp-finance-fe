@@ -239,9 +239,9 @@ export const Router = () => {
     )
       return <ExternalReallocationDetails />;
     if (
-      (externalReallocationFinanceOfficialDetailsRegex.test(pathname) &&
-        updatePermittedRoutes.includes('/finance/budget/current/external-reallocation')) ||
-      createPermittedRoutes.includes('/finance/budget/current/external-reallocation')
+      externalReallocationFinanceOfficialDetailsRegex.test(pathname) &&
+      (updatePermittedRoutes.includes('/finance/budget/current/external-reallocation') ||
+        createPermittedRoutes.includes('/finance/budget/current/external-reallocation'))
     )
       return <ExternalReallocationFinanceOfficialDetails />;
     if (
@@ -303,8 +303,9 @@ export const Router = () => {
     if (
       pathname === '/finance/deposit/fixed/financial/add-new' &&
       updatePermittedRoutes.includes('/finance/deposit/fixed/financial')
-    )
+    ) {
       return <FixedDepositTabs />;
+    }
     if (
       pathname === '/finance/deposit/fixed/financial/overview' &&
       readPermittedRoutes.includes('/finance/deposit/fixed/financial')

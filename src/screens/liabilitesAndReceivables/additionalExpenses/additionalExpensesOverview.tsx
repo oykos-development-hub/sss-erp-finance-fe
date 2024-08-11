@@ -105,7 +105,7 @@ const AdditionalExpensesOverview = () => {
               name="organization_unit_id"
               label="ORGANIZACIONA JEDINICA:"
               placeholder="Odaberi organizacionu jedinicu"
-              options={usePrependedDropdownOptions(organizationUnits, 'organizacione jedinice')}
+              options={usePrependedDropdownOptions(organizationUnits, 'Sve organizacione jedinice')}
               value={filterValues.organization_unit_id}
               onChange={value => onFilter(value as DropdownData<string>, 'organization_unit_id')}
             />

@@ -24,7 +24,15 @@ const useGetFines = (params: FinesOverviewParams) => {
 
   useEffect(() => {
     fetchFinesOverview();
-  }, [params.id, params.page, params.size, params.search, params.subject, params.act_type_id]);
+  }, [
+    params.id,
+    params.page,
+    params.size,
+    params.search,
+    params.subject,
+    params.act_type_id,
+    params.organization_unit_id,
+  ]);
 
   return {fines, loading, total, refetch: fetchFinesOverview};
 };

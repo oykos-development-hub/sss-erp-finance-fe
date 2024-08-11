@@ -7,9 +7,10 @@ import {Fee} from '../../../screens/finesAndTaxes/taxes/constants.tsx';
 
 type GetFeesParams = PageParams & {
   id?: number;
-  fee_subcategory_id?: number;
+  fee_subcategory_id?: number | null;
   search?: string;
-  fee_type_id?: number;
+  fee_type_id?: number | null;
+  organization_unit_id?: number | null;
 };
 
 const useGetFees = (params: GetFeesParams) => {
@@ -32,7 +33,15 @@ const useGetFees = (params: GetFeesParams) => {
 
   useEffect(() => {
     fetchFeesOverview();
-  }, [params.id, params.fee_subcategory_id, params.fee_type_id, params.page, params.search, params.size]);
+  }, [
+    params.id,
+    params.fee_subcategory_id,
+    params.fee_type_id,
+    params.page,
+    params.search,
+    params.size,
+    params.organization_unit_id,
+  ]);
 
   return {fees, loading, total, refetch: fetchFeesOverview};
 };

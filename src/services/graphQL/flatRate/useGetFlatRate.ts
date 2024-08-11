@@ -24,7 +24,15 @@ const useGetFlatRate = (params: FlatRateParams) => {
 
   useEffect(() => {
     fetchFlatRateOverview();
-  }, [params.id, params.page, params.size, params.search, params.subject, params.flat_rate_type_id]);
+  }, [
+    params.id,
+    params.page,
+    params.size,
+    params.search,
+    params.subject,
+    params.flat_rate_type_id,
+    params.organization_unit_id,
+  ]);
 
   return {flatRates, loading, total, refetch: fetchFlatRateOverview};
 };

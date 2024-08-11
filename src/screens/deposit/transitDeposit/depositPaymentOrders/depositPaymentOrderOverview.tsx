@@ -9,15 +9,18 @@ import useGetDepositPaymentOrders from '../../../../services/graphQL/transitDepo
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal';
 import {FixedDepositStatus} from '../../../../types/deposits';
 import {FixedDeposit} from '../../../../types/graphQL/fixedDeposits';
-import {optionsStringSchema} from '../../../../utils/formSchemas';
+import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
 import {useDebounce} from '../../../../utils/useDebounce';
 import {FilterInput} from '../../../accounting/styles';
 import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles';
 import {Header} from '../../styles';
 import {DepositPaymentOrderStatusOptions, depositPaymentOrderTableHeads} from './constants';
+import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import usePrependedDropdownOptions from '../../../../utils/usePrependedDropdownOptions.ts';
 
 const depositPaymentOrderFilterSchema = yup.object({
   status: optionsStringSchema.default(null),
+  organization_unit_id: optionsNumberSchema.default(null),
   search: yup.string(),
 });
 
@@ -27,9 +30,7 @@ const DepositPaymentOrderOverview = () => {
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
 
   const {
-    contextMain: {
-      organization_unit: {id: organization_unit_id},
-    },
+    contextMain: {organization_unit},
     navigation: {navigate},
     alert,
     breadcrumbs,
@@ -39,14 +40,25 @@ const DepositPaymentOrderOverview = () => {
     resolver: yupResolver(depositPaymentOrderFilterSchema),
   });
 
-  const {search, status} = watch();
+  const {search, status, organization_unit_id} = watch();
 
   const debouncedSearch = useDebounce(search, 500);
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+  // TODO replace with logic from permissions
+  const isUserSSS = organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+
+  const organizationUnitsFilter = (): number | undefined => {
+    if (isUserSSS) {
+      return organization_unit_id?.id ? organization_unit_id?.id : undefined;
+    }
+    return organization_unit?.id;
+  };
 
   const {data, loading, refetch} = useGetDepositPaymentOrders({
     search: debouncedSearch,
     status: status?.title as FixedDepositStatus,
-    organization_unit_id: organization_unit_id,
+    organization_unit_id: organizationUnitsFilter(),
   });
 
   const {deleteDepositPaymentOrder} = useDeleteDepositPaymentOrder();
@@ -70,6 +82,22 @@ const DepositPaymentOrderOverview = () => {
     <>
       <Header>
         <Filters>
+          {isUserSSS && (
+            <Controller
+              control={control}
+              name="organization_unit_id"
+              render={({field: {name, value, onChange}}) => (
+                <FilterDropdown
+                  label="ORGANIZACIONA JEDINICA:"
+                  options={usePrependedDropdownOptions(organizationUnits, 'Sve organizacione jedinice')}
+                  onChange={onChange}
+                  value={value}
+                  name={name}
+                  placeholder="Odaberi organizacionu jedinicu"
+                />
+              )}
+            />
+          )}
           <Controller
             control={control}
             name="status"

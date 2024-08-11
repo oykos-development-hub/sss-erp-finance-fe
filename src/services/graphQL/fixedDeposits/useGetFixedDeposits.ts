@@ -12,7 +12,7 @@ type GetBudgetFinancialParams = {
   id?: number | null;
   status?: FixedDepositStatus;
   search?: string;
-  organization_unit_id: number;
+  organization_unit_id?: number;
   type: FixedDepositType;
 } & PageParams;
 

@@ -1,11 +1,11 @@
 import {useMemo} from 'react';
 import {DropdownData} from '../types/dropdownData.ts';
 
-const usePrependedDropdownOptions = <T>(options: DropdownData<T>[], label?: string): DropdownData<T>[] => {
+const usePrependedDropdownOptions = <T>(options: DropdownData<T>[], filterAllLabel?: string): DropdownData<T>[] => {
   return useMemo(() => {
     const defaultOption: DropdownData<T> = {
       id: null as unknown as T,
-      title: `Sve ${label ? label : ''}`,
+      title: `${filterAllLabel ? filterAllLabel : 'Sve'}`,
     };
     return [defaultOption, ...options];
   }, [options]);

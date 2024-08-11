@@ -1,5 +1,5 @@
-const finesOverview = `query fineOverview($id: Int, $subject: String, $search: String, $act_type_id: Int, $page:Int, $size:Int) {
-    fine_Overview(id: $id, subject: $subject, search: $search, act_type_id: $act_type_id,    page:$page, size:$size) {
+const finesOverview = `query fineOverview($id: Int, $subject: String, $search: String, $act_type_id: Int, $page:Int, $size:Int, $organization_unit_id: Int) {
+    fine_Overview(id: $id, subject: $subject, search: $search, act_type_id: $act_type_id,    page:$page, size:$size, organization_unit_id: $organization_unit_id) {
         status
         message
         total

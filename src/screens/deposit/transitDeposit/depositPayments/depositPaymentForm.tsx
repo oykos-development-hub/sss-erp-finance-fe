@@ -4,7 +4,7 @@ import {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import FileList from '../../../../components/fileList/fileList';
-import {requiredError} from '../../../../constants';
+import {generateDropdownOptions, requiredError} from '../../../../constants';
 import useAppContext from '../../../../context/useAppContext';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview';
 import useInsertDepositPayment from '../../../../services/graphQL/transitDeposits/useInsertDepositPayment';
@@ -73,7 +73,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
   });
 
   const {insertDepositPayment, loading: isSaving} = useInsertDepositPayment();
-  const {counts} = useGetCountOverview({});
+  const {counts} = useGetCountOverview({level: 3});
 
   const handleUpload = (files: FileList) => {
     setUploadedFiles(files);
@@ -157,6 +157,10 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
     return null;
   }
 
+  const dropdownCountsOptions = useMemo(() => {
+    return generateDropdownOptions(counts);
+  }, [counts]);
+
   return (
     <div>
       <FlexColumn gap={20} align="stretch">
@@ -198,7 +202,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
             render={({field: {name, value, onChange}}) => (
               <Dropdown
                 name={name}
-                options={counts}
+                options={dropdownCountsOptions}
                 value={value}
                 onChange={onChange}
                 label="KONTO:"

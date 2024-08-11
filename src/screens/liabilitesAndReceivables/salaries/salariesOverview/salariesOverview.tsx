@@ -96,7 +96,7 @@ const SalariesOverview = () => {
             name="organization_unit_id"
             label="ORGANIZACIONA JEDINICA:"
             placeholder="Odaberi organizacionu jedinicu"
-            options={usePrependedDropdownOptions(organizationUnits, 'organizacione jedinice')}
+            options={usePrependedDropdownOptions(organizationUnits, 'Sve organizacione jedinice')}
             value={organizationUnits.find(unit => unit.id === filters.organization_unit_id)}
             onChange={value => onFilterChange(value as DropdownData<string>, 'organization_unit_id')}
           />
@@ -104,7 +104,7 @@ const SalariesOverview = () => {
         <Dropdown
           label={'AKTIVNOST:'}
           placeholder={'Odaberi aktivnost'}
-          options={usePrependedDropdownOptions(mockDropdownOptions, 'aktivnosti')}
+          options={usePrependedDropdownOptions(mockDropdownOptions, 'Sve aktivnosti')}
           value={filters.activity_id}
           onChange={(value: any) => onFilterChange(value, 'activity_id')}
         />

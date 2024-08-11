@@ -4,7 +4,7 @@ import {FilterInput} from '../../accounting/styles.tsx';
 import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
 import {tableHeadsFlatRateOverview} from './constants.tsx';
 import {Header} from './styles.ts';
-import {defaultDropdownOption, TypeOfFines} from '../fines/constants.tsx';
+import {TypeOfFines} from '../fines/constants.tsx';
 import {useState} from 'react';
 import {useDebounce} from '../../../utils/useDebounce.ts';
 import useAppContext from '../../../context/useAppContext.ts';
@@ -13,9 +13,13 @@ import useDeleteFlatRate from '../../../services/graphQL/flatRate/useDeleteFlatR
 import {FlatRateOverviewItem} from '../../../types/graphQL/flatRate.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
+import {DropdownData} from '../../../types/dropdownData.ts';
+import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 
 const initialValues = {
-  flat_rate_type_id: defaultDropdownOption.id,
+  flat_rate_type_id: null,
+  organization_unit_id: null,
 };
 
 const FlatRateOverview = () => {
@@ -28,8 +32,19 @@ const FlatRateOverview = () => {
   const {
     navigation: {navigate},
     alert,
-    contextMain: {permissions},
+    contextMain: {permissions, organization_unit},
   } = useAppContext();
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+  // TODO replace with logic from permissions
+  const isUserSSS = organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+
+  const organizationUnitsFilter = (): number | undefined => {
+    if (isUserSSS) {
+      return filters.organization_unit_id ? filters.organization_unit_id : undefined;
+    }
+    return organization_unit?.id;
+  };
 
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
   const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/flat-rate');
@@ -38,6 +53,7 @@ const FlatRateOverview = () => {
     page: page,
     size: PAGE_SIZE,
     ...filters,
+    organization_unit_id: organizationUnitsFilter(),
     search: debouncedSearch || undefined,
   });
   const {deleteFlatRate} = useDeleteFlatRate();
@@ -67,12 +83,23 @@ const FlatRateOverview = () => {
     setPage(page + 1);
   };
 
-  const filterDropdownOptions = [defaultDropdownOption, ...TypeOfFines] || [];
+  const filterDropdownOptions = usePrependedDropdownOptions(TypeOfFines, 'Sve vrste');
+  const organizationUnitOptions = usePrependedDropdownOptions(organizationUnits, 'Sve organizacione jedinice');
 
   return (
     <>
       <Header>
         <Filters>
+          {isUserSSS && (
+            <FilterDropdown
+              name="organization_unit_id"
+              label="ORGANIZACIONA JEDINICA:"
+              placeholder="Odaberi organizacionu jedinicu"
+              options={organizationUnitOptions}
+              value={organizationUnitOptions.find(unit => unit.id === filters.organization_unit_id)}
+              onChange={value => onFilterChange(value as DropdownData<string>, 'organization_unit_id')}
+            />
+          )}
           <FilterDropdown
             name="flat_rate_type_id"
             value={filterDropdownOptions.find(option => option.id === filters?.flat_rate_type_id)}

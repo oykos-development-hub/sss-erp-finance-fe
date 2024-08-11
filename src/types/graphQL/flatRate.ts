@@ -37,6 +37,7 @@ export interface FlatRateParams {
   subject?: string | null;
   search?: string | null;
   flat_rate_type_id?: number | null;
+  organization_unit_id?: number | null;
 }
 
 export interface FlatRateDetails {

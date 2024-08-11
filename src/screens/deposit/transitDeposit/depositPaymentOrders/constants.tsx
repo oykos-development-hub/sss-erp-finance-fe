@@ -2,6 +2,7 @@ import {DropdownData} from '../../../../types/dropdownData';
 import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../../../utils/dateUtils';
 import {DepositPaymentOrder} from '../../../../types/graphQL/depositPaymentOrders';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 
 export type DepositPaymentOrderStatusType = 'payed' | 'pending';
 
@@ -58,12 +59,12 @@ export const depositPaymentOrderTableHeads: TableHead[] = [
       const isTaxOrder = row.additional_expenses_for_paying.length > 0;
 
       if (isTaxOrder) {
+        console.log('is tax order');
         amount = row.additional_expenses_for_paying.reduce((acc, curr) => acc + curr.price, 0);
       } else {
         amount = value;
       }
-
-      return <Typography variant="bodyMedium" content={amount} />;
+      return <Typography variant="bodyMedium" content={formatCurrency(amount)} style={{textAlign: 'right'}} />;
     },
   },
   {

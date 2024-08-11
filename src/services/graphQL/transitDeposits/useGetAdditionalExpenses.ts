@@ -16,7 +16,7 @@ type GetAdditionalExpensesParams = {
   subject_id?: number;
   status?: string;
   search?: string;
-  organization_unit_id: number;
+  organization_unit_id?: number;
   source_bank_account?: string;
 } & PageParams;
 

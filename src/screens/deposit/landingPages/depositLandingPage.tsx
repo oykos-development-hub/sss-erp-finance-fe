@@ -24,7 +24,7 @@ export const DepositLandingPage: React.FC = () => {
           )}
           {readPermittedRoutes.includes('/finance/deposit/transit') && (
             <LandingPageContentBox
-              title={'Prolazni depozit'}
+              title={'Prolazni račun depozita'}
               path={'/finance/deposit/transit'}
               icon={<DepositIcon />}
             />

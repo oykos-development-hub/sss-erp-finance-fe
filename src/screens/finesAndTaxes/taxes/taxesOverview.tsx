@@ -11,14 +11,35 @@ import {useState} from 'react';
 import useAppContext from '../../../context/useAppContext.ts';
 import useDeleteFee from '../../../services/graphQL/fees/useDeleteFee.ts';
 import {useDebounce} from '../../../utils/useDebounce.ts';
-import {defaultDropdownOption} from '../fines/constants.tsx';
 import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
+import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import {DropdownData} from '../../../types/dropdownData.ts';
 
 const initialValues = {
-  fee_type_id: undefined,
-  fee_subcategory_id: undefined,
+  fee_type_id: null,
+  fee_subcategory_id: null,
+  organization_unit_id: null,
 };
+
 const TaxesOverview = () => {
+  const {
+    navigation: {navigate},
+    alert,
+    contextMain: {permissions, organization_unit},
+  } = useAppContext();
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+  // TODO replace with logic from permissions
+  const isUserSSS = organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+
+  const organizationUnitsFilter = (): number | undefined => {
+    if (isUserSSS) {
+      return filters.organization_unit_id ? filters.organization_unit_id : undefined;
+    }
+    return organization_unit?.id;
+  };
+
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState(initialValues);
   const [search, setSearch] = useState('');
@@ -29,14 +50,9 @@ const TaxesOverview = () => {
     size: PAGE_SIZE,
     ...filters,
     search: debouncedSearch || undefined,
+    organization_unit_id: organizationUnitsFilter(),
   });
   const [showDeleteFeeModal, setShowDeleteFeeModal] = useState<number | null>(null);
-
-  const {
-    navigation: {navigate},
-    alert,
-    contextMain: {permissions},
-  } = useAppContext();
 
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
   const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/taxes');
@@ -70,13 +86,24 @@ const TaxesOverview = () => {
     setPage(page + 1);
   };
 
-  const filterDropdownOptionsType = [defaultDropdownOption, ...feeTypeOptions] || [];
-  const filterDropdownOptionsSubcategory = [defaultDropdownOption, ...feeSubcategoryOptions] || [];
+  const filterDropdownOptionsType = usePrependedDropdownOptions(feeTypeOptions, 'Sve vrste');
+  const filterDropdownOptionsSubcategory = usePrependedDropdownOptions(feeSubcategoryOptions, 'Sve potkategorije');
+  const organizationUnitOptions = usePrependedDropdownOptions(organizationUnits, 'Sve organizacione jedinice');
 
   return (
     <>
       <Header>
         <Filters>
+          {isUserSSS && (
+            <FilterDropdown
+              name="organization_unit_id"
+              label="ORGANIZACIONA JEDINICA:"
+              placeholder="Odaberi organizacionu jedinicu"
+              options={organizationUnitOptions}
+              value={organizationUnitOptions.find(unit => unit.id === filters.organization_unit_id)}
+              onChange={value => onFilterChange(value as DropdownData<string>, 'organization_unit_id')}
+            />
+          )}
           <FilterDropdown
             name="fee_type_id"
             value={filterDropdownOptionsType.find(option => option.id === filters?.fee_type_id)}

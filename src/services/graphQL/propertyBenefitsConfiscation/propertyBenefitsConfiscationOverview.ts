@@ -1,5 +1,5 @@
-const propertyBenefitsConfiscationOverview = `query propertyBenefitConfiscationOverview($id: Int,   $subject: String, $search: String, $property_benefits_confiscation_type_id: Int, $page:Int, $size:Int) {
-    propertyBenefitConfiscation_Overview(id: $id, subject: $subject, search: $search, property_benefits_confiscation_type_id: $property_benefits_confiscation_type_id,    page:$page, size:$size) {
+const propertyBenefitsConfiscationOverview = `query propertyBenefitConfiscationOverview($id: Int,   $subject: String, $search: String, $property_benefits_confiscation_type_id: Int, $page:Int, $size:Int, $organization_unit_id: Int) {
+    propertyBenefitConfiscation_Overview(id: $id, subject: $subject, search: $search, property_benefits_confiscation_type_id: $property_benefits_confiscation_type_id, page:$page, size:$size, organization_unit_id: $organization_unit_id) {
         message
         status
         total

@@ -8,6 +8,7 @@ export interface FinesOverviewParams {
   subject?: string | null;
   search?: string | null;
   act_type_id?: number | null;
+  organization_unit_id?: number | null;
 }
 
 export interface FineFeeDetails {

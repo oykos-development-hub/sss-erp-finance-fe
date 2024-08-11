@@ -1,5 +1,5 @@
-const flatRateOverview = `query flatRateOverview($id: Int,   $subject: String, $search: String, $flat_rate_type_id: Int, $page:Int, $size:Int) {
-    flatRate_Overview(id: $id, subject: $subject, search: $search, flat_rate_type_id: $flat_rate_type_id,    page:$page, size:$size) {
+const flatRateOverview = `query flatRateOverview($id: Int,   $subject: String, $search: String, $flat_rate_type_id: Int, $page:Int, $size:Int, $organization_unit_id: Int) {
+    flatRate_Overview(id: $id, subject: $subject, search: $search, flat_rate_type_id: $flat_rate_type_id,    page:$page, size:$size, organization_unit_id: $organization_unit_id) {
         message
         total
         status

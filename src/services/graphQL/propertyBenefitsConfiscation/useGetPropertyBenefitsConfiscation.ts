@@ -39,6 +39,7 @@ const useGetPropertyBenefitsConfiscations = (params: PropertyBenefitsConfiscatio
     params.search,
     params.subject,
     params.property_benefits_confiscation_type_id,
+    params.organization_unit_id,
   ]);
 
   return {propertyBenefitsConfiscations, loading, total, refetch: fetchPropertyBenefitsConfiscationsOverview};

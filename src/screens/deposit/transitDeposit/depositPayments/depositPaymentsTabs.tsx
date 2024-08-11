@@ -20,7 +20,7 @@ const DepositPaymentsTabs = () => {
     contextMain: {permissions},
   } = useAppContext();
   const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
-  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/payments');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/transit/payments');
   const [activeTab, setActiveTab] = useState(getCurrentTab(location.pathname) || 1);
 
   const pathnameSegments = pathname.split('/');

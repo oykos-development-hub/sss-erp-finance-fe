@@ -7,15 +7,19 @@ import {Filters, FilterDropdown} from '../../budget/planning/budgetList/styles.t
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 import {ProceduralCostOverviewItem} from '../../../types/graphQL/proceduralCosts.ts';
 import {useState} from 'react';
-import {defaultDropdownOption, TypeOfFines} from '../fines/constants.tsx';
+import {TypeOfFines} from '../fines/constants.tsx';
 import {useDebounce} from '../../../utils/useDebounce.ts';
 import useAppContext from '../../../context/useAppContext.ts';
 import useGetPropertyBenefitsConfiscations from '../../../services/graphQL/propertyBenefitsConfiscation/useGetPropertyBenefitsConfiscation.ts';
 import useDeletePropertyBenefitsConfiscation from '../../../services/graphQL/propertyBenefitsConfiscation/useDeletePropertyBenefitsConfiscation.ts';
 import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
+import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import {DropdownData} from '../../../types/dropdownData.ts';
 
 const initialValues = {
-  property_benefits_confiscation_type_id: defaultDropdownOption.id,
+  property_benefits_confiscation_type_id: null,
+  organization_unit_id: null,
 };
 const ConfiscationOverview = () => {
   const [page, setPage] = useState(1);
@@ -27,8 +31,19 @@ const ConfiscationOverview = () => {
   const {
     navigation: {navigate},
     alert,
-    contextMain: {permissions},
+    contextMain: {permissions, organization_unit},
   } = useAppContext();
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+  // TODO replace with logic from permissions
+  const isUserSSS = organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+
+  const organizationUnitsFilter = (): number | undefined => {
+    if (isUserSSS) {
+      return filters.organization_unit_id ? filters.organization_unit_id : undefined;
+    }
+    return organization_unit?.id;
+  };
 
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
   const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/confiscation');
@@ -37,6 +52,7 @@ const ConfiscationOverview = () => {
     page: page,
     size: PAGE_SIZE,
     ...filters,
+    organization_unit_id: organizationUnitsFilter(),
     search: debouncedSearch,
   });
 
@@ -54,7 +70,7 @@ const ConfiscationOverview = () => {
     setPage(page + 1);
   };
 
-  const filterDropdownOptions = [defaultDropdownOption, ...TypeOfFines] || [];
+  const filterDropdownOptions = usePrependedDropdownOptions(TypeOfFines, 'Sve vrste');
 
   const handleDeleteProceduralCost = async () => {
     if (!showDeleteProceduralCostModal) return;
@@ -69,10 +85,21 @@ const ConfiscationOverview = () => {
     setShowDeleteProceduralCostModal(null);
   };
 
+  const organizationUnitOptions = usePrependedDropdownOptions(organizationUnits, 'Sve organizacione jedinice');
   return (
     <>
       <Header>
         <Filters>
+          {isUserSSS && (
+            <FilterDropdown
+              name="organization_unit_id"
+              label="ORGANIZACIONA JEDINICA:"
+              placeholder="Odaberi organizacionu jedinicu"
+              options={organizationUnitOptions}
+              value={organizationUnitOptions.find(unit => unit.id === filters.organization_unit_id)}
+              onChange={value => onFilterChange(value as DropdownData<string>, 'organization_unit_id')}
+            />
+          )}
           <FilterDropdown
             name="property_benefits_confiscation_type_id"
             value={filterDropdownOptions.find(option => option.id === filters?.property_benefits_confiscation_type_id)}

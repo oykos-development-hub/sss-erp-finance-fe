@@ -14,6 +14,9 @@ import SectionBox from '../../../../shared/sectionBox';
 import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSchemas';
 import {DepositTaxStatusOptions, depositTaxesTableHeads} from './constants';
 import {FilterContainer} from './styles';
+import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import usePrependedDropdownOptions from '../../../../utils/usePrependedDropdownOptions.ts';
+import {FilterDropdown} from '../../../budget/planning/budgetList/styles.ts';
 
 const SUBJECT_ENTITY = 'other';
 
@@ -21,6 +24,7 @@ const depositTaxesFilterSchema = yup.object().shape({
   status: optionsStringSchema.nullable().default(null),
   search: yup.string(),
   subject_id: optionsNumberSchema.nullable().default(null),
+  organization_unit_id: optionsNumberSchema.default(null),
 });
 
 type DepositTaxesFilterForm = yup.InferType<typeof depositTaxesFilterSchema>;
@@ -29,23 +33,31 @@ const DepositTaxesOverview = () => {
   const [page, setPage] = useState(1);
 
   const {
-    contextMain: {
-      organization_unit: {id: organization_unit_id},
-    },
+    contextMain: {organization_unit},
   } = useAppContext();
 
   const {control, watch, register} = useForm<DepositTaxesFilterForm>({
     resolver: yupResolver(depositTaxesFilterSchema),
   });
 
-  const {search, subject_id, status} = watch();
+  const {search, subject_id, organization_unit_id, status} = watch();
+
+  const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
+  // TODO replace with logic from permissions
+  const isUserSSS = organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const organizationUnitsFilter = (): number | undefined => {
+    if (isUserSSS) {
+      return organization_unit_id?.id ? organization_unit_id?.id : undefined;
+    }
+    return organization_unit?.id;
+  };
 
   const {data, fetchAdditionalExpenses} = useGetAdditionalExpenses({
-    organization_unit_id,
     search,
     subject_id: subject_id?.id,
     status: status?.id,
     page: page,
+    organization_unit_id: organizationUnitsFilter(),
     size: PAGE_SIZE,
   });
 
@@ -59,15 +71,33 @@ const DepositTaxesOverview = () => {
 
   useEffect(() => {
     fetchAdditionalExpenses();
-  }, [search, subject_id, status, page]);
+  }, [search, subject_id, status, page, organization_unit_id]);
 
   return (
     <ScreenWrapper>
       <SectionBox>
-        <MainTitle variant="bodyMedium" content="VEZANI TROŠKOVI" />
+        <MainTitle variant="bodyMedium" content="OBRAČUN POREZA I DOPRINOSA" />
         <Divider color="#615959" height="1px" />
 
         <FlexRow gap={8} style={{flexWrap: 'wrap', marginBlock: 22}}>
+          {isUserSSS && (
+            <FilterContainer>
+              <Controller
+                control={control}
+                name="organization_unit_id"
+                render={({field: {name, value, onChange}}) => (
+                  <FilterDropdown
+                    label="ORGANIZACIONA JEDINICA:"
+                    options={usePrependedDropdownOptions(organizationUnits, 'Sve organizacione jedinice')}
+                    onChange={onChange}
+                    value={value}
+                    name={name}
+                    placeholder="Odaberi organizacionu jedinicu"
+                  />
+                )}
+              />
+            </FilterContainer>
+          )}
           <FilterContainer>
             <Controller
               control={control}
@@ -75,7 +105,7 @@ const DepositTaxesOverview = () => {
               render={({field: {name, onChange, value}}) => (
                 <Dropdown
                   label="SUBJEKT:"
-                  options={[{id: null, title: 'Sve'}, ...subjects]}
+                  options={usePrependedDropdownOptions(subjects, 'Svi subjekti')}
                   value={value}
                   name={name}
                   onChange={onChange}
@@ -91,7 +121,7 @@ const DepositTaxesOverview = () => {
               render={({field: {name, onChange, value}}) => (
                 <Dropdown
                   label="STATUS:"
-                  options={DepositTaxStatusOptions}
+                  options={usePrependedDropdownOptions(DepositTaxStatusOptions, 'Svi statusi')}
                   value={value}
                   name={name}
                   onChange={onChange}

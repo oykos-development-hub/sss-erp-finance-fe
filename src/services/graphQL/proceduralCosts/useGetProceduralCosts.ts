@@ -24,7 +24,15 @@ const useGetProceduralCosts = (params: ProceduralCostParams) => {
 
   useEffect(() => {
     fetchProceduralCostsOverview();
-  }, [params.id, params.page, params.size, params.search, params.subject, params.procedure_cost_type_id]);
+  }, [
+    params.id,
+    params.page,
+    params.size,
+    params.search,
+    params.subject,
+    params.procedure_cost_type_id,
+    params.organization_unit_id,
+  ]);
 
   return {proceduralCosts, loading, total, refetch: fetchProceduralCostsOverview};
 };

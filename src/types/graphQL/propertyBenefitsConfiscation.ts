@@ -37,6 +37,7 @@ export interface PropertyBenefitsConfiscationParams {
   subject?: string | null;
   search?: string | null;
   property_benefits_confiscation_type_id?: number | null;
+  organization_unit_id?: number | null;
 }
 
 export interface PropertyBenefitsConfiscationDetails {

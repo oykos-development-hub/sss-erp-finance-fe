@@ -37,6 +37,7 @@ export interface ProceduralCostParams {
   subject?: string | null;
   search?: string | null;
   procedure_cost_type_id?: number | null;
+  organization_unit_id?: number | null;
 }
 
 export interface ProceduralCostDetails {

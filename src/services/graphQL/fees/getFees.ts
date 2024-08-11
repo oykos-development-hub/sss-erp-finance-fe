@@ -1,5 +1,5 @@
-const getFeesOverview = `query feeOverview($id: Int,   $fee_subcategory_id: Int, $search: String, $fee_type_id: Int, $page:Int, $size:Int) {
-    fee_Overview(id: $id, fee_subcategory_id: $fee_subcategory_id, search: $search, fee_type_id: $fee_type_id,    page:$page, size:$size) {
+const getFeesOverview = `query feeOverview($id: Int,   $fee_subcategory_id: Int, $search: String, $fee_type_id: Int, $page:Int, $size:Int, $organization_unit_id: Int) {
+    fee_Overview(id: $id, fee_subcategory_id: $fee_subcategory_id, search: $search, fee_type_id: $fee_type_id,    page:$page, size:$size, organization_unit_id: $organization_unit_id) {
         message
         status
         total

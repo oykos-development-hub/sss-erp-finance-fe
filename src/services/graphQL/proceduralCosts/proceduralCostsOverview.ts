@@ -1,5 +1,5 @@
-const proceduralCostsOverview = `query procedureCostOverview($id: Int,   $subject: String, $search: String, $procedure_cost_type_id: Int, $page:Int, $size:Int) {
-    procedureCost_Overview(id: $id, subject: $subject, search: $search, procedure_cost_type_id: $procedure_cost_type_id,    page:$page, size:$size) {
+const proceduralCostsOverview = `query procedureCostOverview($id: Int,   $subject: String, $search: String, $procedure_cost_type_id: Int, $page:Int, $size:Int, $organization_unit_id: Int) {
+    procedureCost_Overview(id: $id, subject: $subject, search: $search, procedure_cost_type_id: $procedure_cost_type_id,    page:$page, size:$size, organization_unit_id: $organization_unit_id) {
         message
         status
         total
