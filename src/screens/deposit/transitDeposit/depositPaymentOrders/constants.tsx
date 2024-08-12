@@ -107,6 +107,6 @@ export const additionalExpensesTableHeads: TableHead[] = [
     title: 'Iznos',
     accessor: 'price',
     type: 'custom',
-    renderContents: (value: number) => <Typography variant="bodyMedium" content={value ? value : 0} />,
+    renderContents: price => <Typography content={formatCurrency(price)} />,
   },
 ];

@@ -1,5 +1,6 @@
 import {TableHead, Typography} from 'client-library';
 import {parseDate} from '../../../utils/dateUtils.ts';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export enum Tabs {
   OverviewScreen = 1,
@@ -41,19 +42,21 @@ export const tableHeadsFlatRateOverview: TableHead[] = [
   {
     title: 'Visina kazne',
     accessor: 'amount',
-    type: 'text',
+    type: 'custom',
+    renderContents: amount => <Typography content={formatCurrency(amount)} />,
   },
   {
     title: 'Sudski troškovi',
     accessor: 'court_costs',
-    type: 'text',
+    type: 'custom',
+    renderContents: court_costs => <Typography content={formatCurrency(court_costs)} />,
   },
   {
     title: 'Naplaćeno',
     accessor: 'flat_rate_details',
     type: 'custom',
     renderContents: flat_rate_details => {
-      return <Typography content={flat_rate_details?.all_payments_amount} />;
+      return <Typography content={formatCurrency(flat_rate_details?.all_payments_amount)} />;
     },
   },
   {

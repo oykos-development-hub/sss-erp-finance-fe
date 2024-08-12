@@ -106,7 +106,7 @@ const DepositPaymentsOverview = () => {
             render={({field: {name, value, onChange}}) => (
               <FilterDropdown
                 label="STATUS:"
-                options={DepositPaymentStatusOptions}
+                options={usePrependedDropdownOptions(DepositPaymentStatusOptions, 'Svi statusi')}
                 onChange={onChange}
                 value={value}
                 name={name}

@@ -193,7 +193,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
             />
           </div>
 
-          <Input label="IZNOS:" {...register('amount')} error={errors.amount?.message} />
+          <Input label="IZNOS:" {...register('amount')} type={'currency'} error={errors.amount?.message} />
         </FlexRow>
         <FlexRow gap={8}>
           <Controller

@@ -1,5 +1,6 @@
 import {TableHead, Typography} from 'client-library';
 import {DropdownData} from '../../../../types/dropdownData';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 
 export const depositTaxesTableHeads: TableHead[] = [
   {
@@ -23,7 +24,7 @@ export const depositTaxesTableHeads: TableHead[] = [
     title: 'Iznos',
     accessor: 'price',
     type: 'custom',
-    renderContents: (value: number) => <Typography variant="bodyMedium" content={value ? value : 0} />,
+    renderContents: price => <Typography content={formatCurrency(price)} />,
   },
   {
     title: 'Status',

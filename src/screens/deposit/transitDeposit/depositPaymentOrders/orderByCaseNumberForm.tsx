@@ -368,6 +368,14 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
             />
           )}
         />
+        {!data && (
+          <Input
+            label="IZNOS ZA PLAĆANJE:"
+            value={left_case_amount ? left_case_amount.toString() : undefined}
+            type={'currency'}
+            disabled={true}
+          />
+        )}
       </FlexRow>
       <FlexRow gap={8}>
         <Controller

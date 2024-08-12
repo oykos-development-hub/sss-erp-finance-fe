@@ -1,6 +1,7 @@
 import {TableHead, Typography} from 'client-library';
 import {DropdownData} from '../../../../types/dropdownData';
 import {parseDate} from '../../../../utils/dateUtils';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 
 export type PaymentStatusType = 'Prelazni račun' | 'Glavni račun';
 
@@ -40,7 +41,8 @@ export const depositPaymentTableHeads: TableHead[] = [
   {
     title: 'Iznos',
     accessor: 'amount',
-    type: 'text',
+    type: 'custom',
+    renderContents: amount => <Typography content={formatCurrency(amount)} />,
   },
   {
     title: 'Status',

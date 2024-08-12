@@ -1,6 +1,7 @@
 import {TableHead, Typography} from 'client-library';
 import StatusTableCell from '../../../shared/statusTableCell/statusTableCell.tsx';
 import {TypesTitles} from '../enforcedPayments/constants.tsx';
+import {formatCurrency} from '../../../utils/currencyUtils.ts';
 
 export const tableHeads: TableHead[] = [
   {
@@ -40,7 +41,7 @@ export const tableHeads: TableHead[] = [
     title: 'Iznos',
     accessor: 'price',
     type: 'custom',
-    renderContents: price => <Typography content={price ? price?.toFixed(2) : ''} />,
+    renderContents: price => <Typography content={formatCurrency(price)} />,
   },
   {
     title: 'Račun banke',

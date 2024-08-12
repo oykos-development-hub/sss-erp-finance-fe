@@ -1,6 +1,7 @@
 import {TableHead, Typography} from 'client-library';
 import {DropdownData} from '../../../../types/dropdownData';
 import {parseDate} from '../../../../utils/dateUtils';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 
 export const materialDepositItemTableHeads: TableHead[] = [
   {
@@ -23,7 +24,8 @@ export const materialDepositItemTableHeads: TableHead[] = [
   {
     title: 'Iznos',
     accessor: 'amount',
-    type: 'text',
+    type: 'custom',
+    renderContents: amount => <Typography content={formatCurrency(amount)} />,
   },
   {
     title: 'Datum oduzimanja',
