@@ -105,12 +105,12 @@ const DepositPaymentsOverview = () => {
             name="status"
             render={({field: {name, value, onChange}}) => (
               <FilterDropdown
-                label="STATUS:"
-                options={usePrependedDropdownOptions(DepositPaymentStatusOptions, 'Svi statusi')}
+                label="TIP RAČUNA:"
+                options={usePrependedDropdownOptions(DepositPaymentStatusOptions, 'Svi računi')}
                 onChange={onChange}
                 value={value}
                 name={name}
-                placeholder="Izaberite status"
+                placeholder="Odaberi tip računa"
               />
             )}
           />
