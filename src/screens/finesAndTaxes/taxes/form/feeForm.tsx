@@ -159,7 +159,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
     await insertFee(
       payload,
       id => {
-        navigate(`/finance/fines-taxes/fines/${id}`);
+        navigate(`/finance/fines-taxes/taxes/${id}`);
         alert.success('Taksa uspješno kreirana');
       },
       () => {
