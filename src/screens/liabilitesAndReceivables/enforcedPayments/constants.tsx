@@ -78,7 +78,7 @@ export const enforcedPaymentSchema = yup.object().shape({
   date_of_sap: yup.date().nullable().required(requiredError),
   description: yup.string().nullable(),
   return_amount: yup.number().nullable(),
-  agent_id: optionsNumberSchema.default(null),
+  agent_id: optionsNumberSchema.default(null).required(requiredError),
   execution_number: yup.string(),
   amount: yup
     .number()
@@ -87,16 +87,31 @@ export const enforcedPaymentSchema = yup.object().shape({
   amount_for_lawyer: yup
     .number()
     .transform(value => (Number.isNaN(value) ? null : value))
-    .nullable(),
+    .nullable()
+    .when('id', {
+      is: (id: number) => !id, // If id is not present, it's create mode
+      then: schema => schema.required(requiredError),
+    }),
   amount_for_agent: yup
     .number()
     .transform(value => (Number.isNaN(value) ? null : value))
-    .nullable(),
+    .nullable()
+    .when('id', {
+      is: (id: number) => !id, // If id is not present, it's create mode
+      then: schema => schema.required(requiredError),
+    }),
   amount_for_bank: yup
     .string()
     .transform(value => (Number.isNaN(value) ? null : value))
-    .nullable(),
-  account_id_for_expenses: optionsNumberSchema.default(null),
+    .nullable()
+    .when('id', {
+      is: (id: number) => !id, // If id is not present, it's create mode
+      then: schema => schema.required(requiredError),
+    }),
+  account_id_for_expenses: optionsNumberSchema.default(null).when('id', {
+    is: (id: number) => !id, // If id is not present, it's create mode
+    then: schema => schema.required(requiredError),
+  }),
   items: yup
     .array()
     .of(

@@ -1,5 +1,5 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {EditIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {EditIconTwo, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
@@ -139,7 +139,7 @@ const WillOverview = () => {
             onClick: row => {
               navigate(`/finance/deposit/fixed/wills/${row.id}`);
             },
-            icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
           },
           {
             name: 'delete',

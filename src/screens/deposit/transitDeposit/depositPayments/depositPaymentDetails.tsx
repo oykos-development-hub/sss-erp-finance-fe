@@ -23,7 +23,7 @@ const DepositPaymentDetails = () => {
         <MainTitle content={`UPLATA NA RAČUN - ${currentPayment?.items[0]?.case_number}`} />
         <Divider color={Theme?.palette?.gray200} height="1px" style={{marginBottom: 20}} />
 
-        <DepositPaymentForm data={currentPayment.items[0]} isLoading={loading} />
+        <DepositPaymentForm data={currentPayment?.items[0]} isLoading={loading} />
       </SectionBox>
     </ScreenWrapper>
   );

@@ -100,9 +100,7 @@ const MaterialDepositForm = ({data}: {data?: FixedDeposit}) => {
         alert.success(
           isNew ? 'Uspješno ste dodali novi materijalni depozit' : 'Uspješno ste izmjenili materijalni depozit',
         );
-        if (isNew) {
-          navigate(`/finance/deposit/fixed/material/${data.id}`);
-        }
+        navigate(isNew ? `/finance/deposit/fixed/material/${data.id}` : '/finance/deposit/fixed/material/overview');
       },
       () => {
         alert.error(

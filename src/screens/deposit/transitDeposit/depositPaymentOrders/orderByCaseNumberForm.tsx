@@ -26,7 +26,6 @@ import {additionalExpensesTableHeads} from './constants';
 import PayOrderModal from './payOrderModal';
 import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
-const SUBJECT_ENTITY = 'subjects';
 const MUNICIPALITY_ENTITY = 'municipalities';
 
 type OrderByCaseNumberFormProps = {
@@ -37,7 +36,7 @@ type OrderByCaseNumberFormProps = {
 const orderByCaseNumberSchema = yup.object().shape(
   {
     source_bank_account: optionsStringSchema.required(requiredError),
-    case_number: optionsStringSchema.required(requiredError).nullable().default(null),
+    case_number: optionsStringSchema.nullable().required(requiredError).default(null),
     //* Just for show.
     left_case_amount: yup.number().required(requiredError).nullable().default(null),
     //* Choose either gross or net amount to pay. The other should be disabled and vice-versa.
@@ -141,7 +140,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
     },
   );
 
-  const {suppliers: subjects} = useGetSuppliers({entity: SUBJECT_ENTITY, parent_id: null});
+  const {suppliers: subjects} = useGetSuppliers({parent_id: null});
 
   const {suppliers: municipalities} = useGetSuppliers({entity: MUNICIPALITY_ENTITY});
   const {data: taxAuthorityCodebook} = useGetTaxAuthorityCodebook();
@@ -181,7 +180,8 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
     if (
       data.left_case_amount &&
       data.gross_amount_to_pay &&
-      data.left_case_amount < parseInt(data.gross_amount_to_pay)
+      data.left_case_amount < parseInt(data.gross_amount_to_pay) &&
+      isNew
     ) {
       alert.error('Iznos za plaćanje ne može biti veći od preostalog iznosa za plaćanje');
       return;
@@ -309,8 +309,8 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
   }, [data, cases]);
 
   const onSourceBankAccountChange = () => {
-    setValue('case_number', null);
-    setValue('left_case_amount', null);
+    setValue('case_number', null as any);
+    setValue('left_case_amount', null as any);
   };
 
   const bankAccountOptions = useMemo(() => {
@@ -347,6 +347,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
               options={orgUnitBankAccountOptions}
               error={errors.source_bank_account?.message}
               isDisabled={isDisabled || !isNew}
+              isRequired
             />
           )}
         />
@@ -355,7 +356,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
           control={control}
           render={({field: {name, value, onChange}}) => (
             <Dropdown
-              label="BROJ_PREDMETA:"
+              label="BROJ PREDMETA:"
               name={name}
               value={value}
               onChange={value => {
@@ -365,6 +366,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
               options={cases}
               error={errors.case_number?.message}
               isDisabled={isDisabled || !isNew}
+              isRequired
             />
           )}
         />
@@ -390,6 +392,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
               options={subjects}
               error={errors.supplier_id?.message}
               isDisabled={isDisabled || !isNew}
+              isRequired
             />
           )}
         />
@@ -405,6 +408,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
               options={bankAccountOptions}
               error={errors.bank_account?.message}
               isDisabled={!subject || isDisabled || !isNew}
+              isRequired
             />
           )}
         />
@@ -422,6 +426,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
               options={municipalities}
               error={errors.municipality_id?.message}
               isDisabled={isDisabled || !isNew}
+              isRequired
             />
           )}
         />
@@ -437,6 +442,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
               options={taxAuthorityCodebook}
               error={errors.tax_authority_codebook_id?.message}
               isDisabled={isDisabled || !isNew}
+              isRequired
             />
           )}
         />
@@ -452,6 +458,7 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
                 label="DATUM NALOGA"
                 error={errors.date_of_payment?.message}
                 disabled={isDisabled}
+                isRequired
               />
             )}
           />
@@ -463,12 +470,14 @@ const OrderByCaseNumberForm = ({data, refetchPaymentOrder}: OrderByCaseNumberFor
           {...register('net_amount_to_pay')}
           error={errors.net_amount_to_pay?.message}
           disabled={Boolean(gross_amount_to_pay && !net_amount_to_pay) || isDisabled || !isNew}
+          isRequired
         />
         <Input
           label="BRUTO IZNOS:"
           {...register('gross_amount_to_pay')}
           error={errors.gross_amount_to_pay?.message}
           disabled={Boolean(net_amount_to_pay && !gross_amount_to_pay) || isDisabled || !isNew}
+          isRequired
         />
       </FlexRow>
       <div style={{marginBottom: 10}}>

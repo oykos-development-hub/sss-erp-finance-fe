@@ -100,15 +100,16 @@ const ReceivableDetails = () => {
       id_of_statement: paymentData?.id_of_statement,
       date_of_payment: parseDateForBackend(data?.date_of_payment),
       description: data?.description,
+      source_of_funding: data?.source_of_funding?.id,
     };
 
     insertPaymentOrder(
       payload as any,
       () => {
-        alert.success('Uspješno dodavanje naloga.');
+        alert.success('Uspješna izmjena naloga.');
         navigate('/finance/liabilities-receivables/receivables/payment-orders');
       },
-      () => alert.error('Neuspješno dodavanje naloga.'),
+      () => alert.error('Neuspješna izmjena naloga.'),
     );
 
     return;
@@ -149,7 +150,7 @@ const ReceivableDetails = () => {
                   onChange={onChange}
                   label="ORGANIZACIONA JEDINICA:"
                   options={organizationUnits}
-                  error={errors.supplier_id?.message}
+                  error={errors.organization_unit_id?.message}
                   isSearchable
                   isDisabled={paymentData?.status === 'Plaćen'}
                 />
@@ -181,9 +182,10 @@ const ReceivableDetails = () => {
                   onChange={onChange}
                   label="IZVOR SREDSTAVA:"
                   options={sourceOfFunding}
-                  error={errors.supplier_id?.message}
+                  error={errors.source_of_funding?.message}
                   isSearchable
                   isDisabled={paymentData?.status === 'Plaćen'}
+                  isRequired
                 />
               )}
             />
@@ -228,6 +230,7 @@ const ReceivableDetails = () => {
                   onChange={onChange}
                   error={errors.date_of_payment?.message}
                   disabled={paymentData?.status === 'Plaćen'}
+                  isRequired
                 />
               )}
             />

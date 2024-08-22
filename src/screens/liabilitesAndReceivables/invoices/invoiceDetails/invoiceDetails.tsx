@@ -9,18 +9,16 @@ const InvoiceDetails = () => {
     navigation: {
       location: {pathname},
     },
-    contextMain,
   } = useAppContext();
   const id = pathname && pathname.split('/')[pathname.split('/').length - 1];
   const {invoice} = useGetInvoice({
     page: 1,
-    size: 1000,
+    size: 1,
     type: 'invoices',
-    organization_unit_id: contextMain?.organization_unit?.id,
     id: id,
   });
 
-  const invoiceItem = invoice.length ? invoice[0] : undefined;
+  const invoiceItem = invoice?.length ? invoice[0] : undefined;
   return (
     <ScreenWrapper>
       <SectionBox>

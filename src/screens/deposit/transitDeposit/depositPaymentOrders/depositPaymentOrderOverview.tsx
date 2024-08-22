@@ -1,5 +1,5 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {EditIcon, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
+import {EditIconTwo, SearchIcon, Table, Theme, TrashIcon} from 'client-library';
 import {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
@@ -130,7 +130,8 @@ const DepositPaymentOrderOverview = () => {
             onClick: row => {
               navigate(`/finance/deposit/transit/payment-orders/${row.id}`);
             },
-            icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => row.status !== 'Plaćen',
           },
           {
             name: 'delete',

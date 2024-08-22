@@ -100,9 +100,7 @@ const FinancialDepositForm = ({data}: {data?: FixedDeposit}) => {
         alert.success(
           isNew ? 'Uspešno ste dodali novi finansijski depozit' : 'Uspešno ste izmjenili finansijski depozit',
         );
-        if (isNew) {
-          navigate(`/finance/deposit/fixed/financial/${data.id}`);
-        }
+        navigate(isNew ? `/finance/deposit/fixed/financial/${data.id}` : '/finance/deposit/fixed/financial/overview');
       },
       () => {
         alert.error(

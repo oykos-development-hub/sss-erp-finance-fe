@@ -1,5 +1,5 @@
 import {Divider} from '@oykos-development/devkit-react-ts-styled-components';
-import {EditIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
+import {EditIconTwo, Table, Theme, TrashIcon, Typography} from 'client-library';
 import {useState} from 'react';
 import WillDispatchModal from '../../../../components/willDipatchModal/willDispatchModal.tsx';
 import WillForm from '../../../../components/willForm/willForm.tsx';
@@ -27,14 +27,15 @@ const WillDetails = () => {
       location: {pathname},
     },
     contextMain: {
-      organization_unit: {id: organization_unit_id, permissions},
+      organization_unit: {id: organization_unit_id},
+      permissions,
     },
     alert,
   } = useAppContext();
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
-  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed/financial');
+  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed/will');
   const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
-  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/financial');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/will');
 
   const id = pathname.split('/').pop();
 
@@ -95,7 +96,7 @@ const WillDetails = () => {
                       setDispatchEditData(row);
                       setDispatchModal(true);
                     },
-                    icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                    icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
                     shouldRender: () => updatePermission,
                   },
                   {

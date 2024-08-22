@@ -214,51 +214,57 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
       const formData = new FormData();
       formData.append('file', uploadedFile[0]);
 
-      await uploadFile(formData, (files: FileResponseItem[]) => {
-        setUploadedFile(null);
-        const payload = {
-          id: data?.id,
-          invoice_number: data.invoice_number,
-          tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
-          municipality_id: data?.municipality_id?.id,
-          supplier_id: data?.supplier_id?.id,
-          date_of_invoice: parseDateForBackend(data?.date_of_invoice),
-          date_of_start: parseDateForBackend(data?.date_of_start),
-          receipt_date: parseDateForBackend(data?.receipt_date),
-          sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
-          type: 'contracts',
-          supplier_title: data.supplier_title,
-          issuer: data?.issuer,
-          activity_id: data?.activity_id?.id,
-          source_of_funding: data?.source_of_funding?.id,
-          date_of_payment: parseDateForBackend(data?.date_of_payment),
-          description: data?.description,
-          organization_unit_id: organization_unit_id,
-          file_id: files[0]?.id,
-          additional_expenses: fields.map((_, index) => ({
-            id: data.additionalExpenses[index]?.id,
-            title: data.additionalExpenses[index]?.title,
-            price: data.additionalExpenses[index]?.price,
-            account_id: data.additionalExpenses[index]?.account?.id,
-            bank_account: data.additionalExpenses[index]?.bank_account.id,
-            subject_id:
-              index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
-          })),
-        };
+      await uploadFile(
+        formData,
+        (files: FileResponseItem[]) => {
+          setUploadedFile(null);
+          const payload = {
+            id: data?.id,
+            invoice_number: data.invoice_number,
+            tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
+            municipality_id: data?.municipality_id?.id,
+            supplier_id: data?.supplier_id?.id,
+            date_of_invoice: parseDateForBackend(data?.date_of_invoice),
+            date_of_start: parseDateForBackend(data?.date_of_start),
+            receipt_date: parseDateForBackend(data?.receipt_date),
+            sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+            type: 'contracts',
+            supplier_title: data.supplier_title,
+            issuer: data?.issuer,
+            activity_id: data?.activity_id?.id,
+            source_of_funding: data?.source_of_funding?.id,
+            date_of_payment: parseDateForBackend(data?.date_of_payment),
+            description: data?.description,
+            organization_unit_id: organization_unit_id,
+            file_id: files[0]?.id,
+            additional_expenses: fields.map((_, index) => ({
+              id: data.additionalExpenses[index]?.id,
+              title: data.additionalExpenses[index]?.title,
+              price: data.additionalExpenses[index]?.price,
+              account_id: data.additionalExpenses[index]?.account?.id,
+              bank_account: data.additionalExpenses[index]?.bank_account.id,
+              subject_id:
+                index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
+            })),
+          };
 
-        insertInvoice(
-          payload as any,
-          () => {
-            ID ? alert.success('Uspješno ste izmijenili ugovor.') : alert.success('Uspješno dodavanje ugovora.');
-            navigate('/finance/liabilities-receivables/liabilities/contracts');
-          },
-          () => {
-            ID
-              ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.')
-              : alert.error('Neuspješno dodavanje ugovora.');
-          },
-        );
-      });
+          insertInvoice(
+            payload as any,
+            () => {
+              ID ? alert.success('Uspješno ste izmijenili ugovor.') : alert.success('Uspješno dodavanje ugovora.');
+              navigate('/finance/liabilities-receivables/liabilities/contracts');
+            },
+            () => {
+              ID
+                ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.')
+                : alert.error('Neuspješno dodavanje ugovora.');
+            },
+          );
+        },
+        () => {
+          alert.error('Došlo je do greške prilikom dodavanja fajla.');
+        },
+      );
 
       return;
     } else {
@@ -391,6 +397,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 options={suppliers}
                 error={errors.supplier_id?.message}
                 isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -400,6 +407,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             placeholder={'Unesite djelovodni broj'}
             disabled={!updatePermission || contract?.status === 'Na nalogu'}
             error={errors.invoice_number?.message}
+            isRequired
           />
 
           <Input
@@ -438,7 +446,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="ORGANIZACIONA JEDINICA:"
                 placeholder="Odaberi organizacionu jedinicu"
                 options={organizationUnits}
-                isDisabled={!isUserSSS}
+                isDisabled={(!isUserSSS && !updatePermission) || contract?.status === 'Na nalogu'}
                 error={errors?.organization_unit_id?.message}
               />
             )}
@@ -456,6 +464,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 options={SourceOfFunding}
                 error={errors.source_of_funding?.message}
                 isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -471,6 +480,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 onChange={onChange}
                 error={errors.date_of_start?.message}
                 disabled={!updatePermission || contract?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -485,6 +495,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 onChange={onChange}
                 error={errors.date_of_invoice?.message}
                 disabled={!updatePermission || contract?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -501,6 +512,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 onChange={onChange}
                 error={errors.date_of_payment?.message}
                 disabled={!updatePermission || contract?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -656,7 +668,12 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 content="Obračunaj"
                 variant={'primary'}
                 onClick={() => onCount()}
-                disabled={!updatePermission || contract?.status === 'Na nalogu'}
+                disabled={
+                  !updatePermission ||
+                  contract?.status === 'Na nalogu' ||
+                  (!municipality_id && !tax_authority_codebook_id) ||
+                  (!net_price && !gross_price)
+                }
               />
             </HalfWidthContainer>
           </>
@@ -664,7 +681,6 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
 
         {!!fields.length && (
           <>
-            {' '}
             <Table tableHeads={additionalExpensesTableHeads} data={fields} />
             {!!contract && contract?.net_price && contract?.vat_price && (
               <Row>

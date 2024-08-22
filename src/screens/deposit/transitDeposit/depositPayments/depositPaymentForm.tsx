@@ -75,6 +75,10 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
   const {insertDepositPayment, loading: isSaving} = useInsertDepositPayment();
   const {counts} = useGetCountOverview({level: 3});
 
+  const dropdownCountsOptions = useMemo(() => {
+    return generateDropdownOptions(counts);
+  }, [counts]);
+
   const handleUpload = (files: FileList) => {
     setUploadedFiles(files);
   };
@@ -157,10 +161,6 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
     return null;
   }
 
-  const dropdownCountsOptions = useMemo(() => {
-    return generateDropdownOptions(counts);
-  }, [counts]);
-
   return (
     <div>
       <FlexColumn gap={20} align="stretch">
@@ -203,7 +203,7 @@ const DepositPaymentForm = ({data, isLoading}: DepositPaymentFormProps) => {
               <Dropdown
                 name={name}
                 options={dropdownCountsOptions}
-                value={value}
+                value={dropdownCountsOptions?.find(option => option?.id === value?.id)}
                 onChange={onChange}
                 label="KONTO:"
                 error={errors.account_id?.message}

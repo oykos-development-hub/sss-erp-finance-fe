@@ -1,5 +1,5 @@
 import {Divider} from '@oykos-development/devkit-react-ts-styled-components';
-import {EditIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
+import {EditIconTwo, Table, Theme, TrashIcon, Typography} from 'client-library';
 import {useState} from 'react';
 import DepositConfiscationModal from '../../../../components/depositConfiscationModal/depositConfiscationModal.tsx';
 import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
@@ -33,14 +33,15 @@ const MaterialDepositDetails = () => {
       location: {pathname},
     },
     contextMain: {
-      organization_unit: {id: organization_unit_id, permissions},
+      organization_unit: {id: organization_unit_id},
+      permissions,
     },
     alert,
   } = useAppContext();
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
-  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed/financial');
+  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed/material');
   const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
-  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/financial');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/material');
 
   const id = pathname.split('/').pop();
 
@@ -119,7 +120,7 @@ const MaterialDepositDetails = () => {
                       setItemEditData(row);
                       setConfiscationModal(true);
                     },
-                    icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                    icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
                     shouldRender: () => updatePermission,
                   },
                   {
@@ -172,7 +173,7 @@ const MaterialDepositDetails = () => {
                       setDispatchEditData(row);
                       setDispatchModal(true);
                     },
-                    icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                    icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
                     shouldRender: () => updatePermission,
                   },
                   {

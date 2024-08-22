@@ -37,6 +37,7 @@ const EnforcedPaymentsDetails = () => {
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: {errors},
   } = useForm<EnforcedPaymentEntryForm>({
     resolver: yupResolver(enforcedPaymentSchema),
@@ -44,6 +45,8 @@ const EnforcedPaymentsDetails = () => {
 
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
   const [showFileUploadError, setShowFileUploadError] = useState<boolean>(false);
+  const [uploadedReturnFile, setUploadedReturnFile] = useState<FileList | null>(null);
+  const [showReturnFileUploadError, setShowReturnFileUploadError] = useState<boolean>(false);
   const [totalForPayment, setTotalForPayment] = useState<number>();
   const enforcedPaymentID = location.pathname.split('/').at(-1);
 
@@ -63,7 +66,7 @@ const EnforcedPaymentsDetails = () => {
     organization_unit_id: null,
   });
 
-  const enforcedPaymentData = enforcedPayment[0] ? enforcedPayment[0] : null;
+  const enforcedPaymentData = enforcedPayment?.length ? enforcedPayment[0] : null;
 
   const {insertEnforcedPayment, loading} = useInsertEnforcedPayment();
 
@@ -139,6 +142,7 @@ const EnforcedPaymentsDetails = () => {
         agent_id: agent_id?.id,
         execution_number: data?.execution_number,
         id_of_statement: enforcedPaymentData?.id_of_statement,
+        file_id: enforcedPaymentData?.file?.id,
       };
 
       insertEnforcedPayment(
@@ -157,17 +161,22 @@ const EnforcedPaymentsDetails = () => {
     setShowFileUploadError(false);
   };
 
+  const handleReturnUpload = (files: FileList) => {
+    setUploadedReturnFile(files);
+    setShowReturnFileUploadError(false);
+  };
+
   const onReturn = async () => {
     if (returnLoading) return;
 
-    if (uploadedFile) {
-      setShowFileUploadError(false);
+    if (uploadedReturnFile) {
+      setShowReturnFileUploadError(false);
 
       const formData = new FormData();
-      formData.append('file', uploadedFile[0]);
+      formData.append('file', uploadedReturnFile[0]);
 
       await uploadFile(formData, (files: FileResponseItem[]) => {
-        setUploadedFile(null);
+        setUploadedReturnFile(null);
         const payload = {
           id: enforcedPaymentID,
           return_file_id: files[0].id,
@@ -185,7 +194,7 @@ const EnforcedPaymentsDetails = () => {
         );
       });
     } else {
-      setShowFileUploadError(true);
+      setShowReturnFileUploadError(true);
     }
   };
 
@@ -229,6 +238,12 @@ const EnforcedPaymentsDetails = () => {
     });
   }, [enforcedPaymentData]);
 
+  useEffect(() => {
+    if (!enforcedPaymentData) return;
+    // set id to the form so that we can use optional validation for some fields required only in create mode and not in edit
+    setValue('id', enforcedPaymentData.id);
+  }, [enforcedPaymentData]);
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -246,9 +261,10 @@ const EnforcedPaymentsDetails = () => {
                   onChange={onChange}
                   label="ORGANIZACIONA JEDINICA:"
                   options={organizationUnits}
-                  error={errors.supplier_id?.message}
+                  error={errors.organization_unit_id?.message}
                   isSearchable
                   isDisabled={enforcedPaymentData?.status === 'Povraćaj'}
+                  isRequired
                 />
               )}
             />
@@ -265,6 +281,7 @@ const EnforcedPaymentsDetails = () => {
                   error={errors.supplier_id?.message}
                   isSearchable
                   isDisabled={enforcedPaymentData?.status === 'Povraćaj'}
+                  isRequired
                 />
               )}
             />
@@ -281,7 +298,7 @@ const EnforcedPaymentsDetails = () => {
             <Input
               {...register('execution_number')}
               label="BROJ IZVRŠENJA:"
-              error={errors.sap_id?.message}
+              error={errors.execution_number?.message}
               style={{width: '350px'}}
               disabled={enforcedPaymentData?.status === 'Povraćaj'}
             />
@@ -294,9 +311,10 @@ const EnforcedPaymentsDetails = () => {
                   label="IZVRŠITELJ:"
                   value={value}
                   onChange={onChange}
-                  error={errors.date_of_payment?.message}
+                  error={errors.agent_id?.message}
                   options={executor}
                   isDisabled={enforcedPaymentData?.status === 'Povraćaj'}
+                  isRequired
                 />
               )}
             />
@@ -308,6 +326,7 @@ const EnforcedPaymentsDetails = () => {
               error={errors.sap_id?.message}
               style={{width: '350px'}}
               disabled={enforcedPaymentData?.status === 'Povraćaj'}
+              isRequired
             />
             <Controller
               name="date_of_sap"
@@ -346,9 +365,10 @@ const EnforcedPaymentsDetails = () => {
                 variant="secondary"
                 onUpload={handleUpload}
                 note={<Typography variant="bodySmall" content="Dokument" />}
-                hint={'Fajlovi neće biti učitani dok ne sačuvate povraćaj.'}
+                hint={'Fajlovi neće biti učitani dok ne sačuvate prinudnu naplatu.'}
                 buttonText="Učitaj"
                 disabled={enforcedPaymentData?.status === 'Povraćaj'}
+                error={showFileUploadError ? 'Morate učitati fajl' : undefined}
               />
             </FileUploadWrapper>
           </Row>
@@ -394,13 +414,13 @@ const EnforcedPaymentsDetails = () => {
               <FileUploadWrapper>
                 <FileUpload
                   icon={null}
-                  files={uploadedFile}
+                  files={uploadedReturnFile}
                   variant="secondary"
-                  onUpload={handleUpload}
+                  onUpload={handleReturnUpload}
                   note={<Typography variant="bodySmall" content="Povraćaj" />}
                   hint={'Fajlovi neće biti učitani dok ne sačuvate povraćaj.'}
                   buttonText="Učitaj"
-                  error={showFileUploadError ? 'Morate učitati fajl' : undefined}
+                  error={showReturnFileUploadError ? 'Morate učitati fajl' : undefined}
                 />
               </FileUploadWrapper>
             )}

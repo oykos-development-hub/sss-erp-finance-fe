@@ -4,16 +4,46 @@ import {requiredError} from '../../../../constants';
 
 export const invoiceSchema = yup.object().shape({
   id: yup.number(),
-  invoice_number: yup.string(),
-  pro_forma_invoice_number: yup.string(),
   description: yup.string().nullable(),
   supplier_id: optionsNumberSchema.required(requiredError).default(null),
   order_id: yup.number(),
-  date_of_invoice: yup.date().nullable(),
-  pro_forma_invoice_date: yup.date().nullable(),
+  invoice_number: yup.string().when('is_invoice', {
+    is: (item: {id: boolean; title: string}) => item.id,
+    then: schema => schema.required(requiredError).default(null),
+  }),
+  date_of_invoice: yup
+    .date()
+    .nullable()
+    .when('is_invoice', {
+      is: (item: {id: boolean; title: string}) => item.id,
+      then: schema => schema.required(requiredError).default(null),
+    }),
   receipt_date: yup.date().nullable(),
-  sss_invoice_receipt_date: yup.date().nullable(),
-  sss_pro_forma_invoice_receipt_date: yup.date().nullable(),
+  sss_invoice_receipt_date: yup
+    .date()
+    .nullable()
+    .when('is_invoice', {
+      is: (item: {id: boolean; title: string}) => item.id,
+      then: schema => schema.required(requiredError).default(null),
+    }),
+  pro_forma_invoice_number: yup.string().when('is_invoice', {
+    is: (item: {id: boolean; title: string}) => !item.id,
+    then: schema => schema.required(requiredError).default(null),
+  }),
+  pro_forma_invoice_date: yup
+    .date()
+    .nullable()
+    .when('is_invoice', {
+      is: (item: {id: boolean; title: string}) => !item.id,
+      then: schema => schema.required(requiredError).default(null),
+    }),
+  sss_pro_forma_invoice_receipt_date: yup
+    .date()
+    .nullable()
+    .when('is_invoice', {
+      is: (item: {id: boolean; title: string}) => !item.id,
+      then: schema => schema.required(requiredError).default(null),
+    }),
   bank_account: optionsStringSchema.required(requiredError),
   date_of_payment: yup.date().nullable(),
   type_for_invoice: yup
@@ -36,23 +66,11 @@ export const invoiceSchema = yup.object().shape({
         id: yup.number(),
         description: yup.string(),
         title: yup.string().required('Naziv stavke je obavezan.'),
-        net_price: yup.number().required('Neto iznos je obavezan.'),
+        net_price: yup.number().required('Neto iznos je obavezan.').moreThan(0, 'Neto iznos mora biti veći od 0.'),
         vat_price: yup.number(),
-        amount: yup.number().required('Količina je obavezna.'),
-        vat_percentage: yup
-          .object({
-            id: yup.number(),
-            title: yup.string(),
-          })
-          .required('PDV stopa je obavezna.')
-          .nullable(),
-        account: yup
-          .object({
-            id: yup.number(),
-            title: yup.string(),
-          })
-          .required('Konto je obavezan.')
-          .nullable(),
+        amount: yup.number().required('Količina je obavezna.').moreThan(0, 'Količina mora biti veća od 0.'),
+        vat_percentage: optionsNumberSchema.required('PDV stopa je obavezna.').default(null),
+        account: optionsNumberSchema.required('Konto je obavezan.').default(null),
       }),
     )
     .nullable(),

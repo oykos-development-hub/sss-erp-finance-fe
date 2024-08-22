@@ -73,7 +73,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   const [showFileUploadError, setShowFileUploadError] = useState<boolean>(false);
   const [accountingInvoiceFile, setAccountingInvoiceFile] = useState<FileItem | null>(null);
   const [accountingProFormaInvoiceFile, setAccountingProFormaInvoiceFile] = useState<FileItem | null>(null);
-  const isNew = location.pathname.split('/').at(-1);
+  const isNew = location.pathname.split('/').at(-1) === 'add-invoice';
 
   const {
     navigation: {navigate},
@@ -97,8 +97,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     formState: {errors},
     setValue,
     reset,
-    setError,
-    clearErrors,
   } = useForm<InvoiceEntryForm>({
     defaultValues: defaultValues,
     resolver: yupResolver(invoiceSchema),
@@ -113,8 +111,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     pro_forma_invoice_date,
     supplier_id,
     order_id,
-    sss_pro_forma_invoice_receipt_date,
-    sss_invoice_receipt_date,
     organization_unit_id,
   ] = watch([
     'invoice_type',
@@ -124,8 +120,6 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
     'pro_forma_invoice_date',
     'supplier_id',
     'order_id',
-    'sss_pro_forma_invoice_receipt_date',
-    'sss_invoice_receipt_date',
     'organization_unit_id',
   ]);
 
@@ -175,12 +169,14 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           if (isManual) {
             return (
               <Input
-                {...register(`articles.${index}.title`)}
+                {...register(`articles.${index}.title`, {required: 'Ovo polje je obavezno'})}
                 style={{minWidth: '100px'}}
+                key={`articles.${index}.title`}
                 error={errors.articles?.[index]?.title?.message}
                 disabled={
                   !updatePermission || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
                 }
+                isRequired
               />
             );
           } else {
@@ -195,10 +191,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         renderContents: (_item, _row, index) => {
           return (
             <Input
-              {...register(`articles.${index}.net_price`)}
+              {...register(`articles.${index}.net_price`, {required: 'Ovo polje je obavezno'})}
               style={{minWidth: '100px'}}
+              key={`articles.${index}.net_price`}
               leftContent={<>Є</>}
               error={errors.articles?.[index]?.net_price?.message}
+              isRequired
               disabled={
                 !updatePermission ||
                 !isManual ||
@@ -218,14 +216,18 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             return (
               <Controller
                 name={`articles.${index}.vat_percentage`}
+                key={`articles.${index}.vat_percentage`}
+                rules={{required: 'Ovo polje je obavezno'}}
                 control={control}
                 render={({field: {onChange, name, value}}) => (
                   <div style={{minWidth: '100px'}}>
                     <Dropdown
                       options={pdvOptions}
+                      error={errors.articles?.[index]?.vat_percentage?.message}
                       name={name}
                       value={value as any}
                       onChange={onChange}
+                      isRequired
                       isDisabled={
                         !updatePermission ||
                         invoice?.status == 'Na nalogu' ||
@@ -259,9 +261,11 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         renderContents: (_item, _row, index) => {
           return (
             <Input
-              {...register(`articles.${index}.amount`)}
+              {...register(`articles.${index}.amount`, {required: 'Ovo polje je obavezno'})}
+              key={`articles.${index}.amount`}
               style={{minWidth: '100px'}}
               error={errors.articles?.[index]?.amount?.message}
+              isRequired
               disabled={
                 !updatePermission ||
                 !isManual ||
@@ -290,7 +294,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         renderContents: (_item, _row, index) => (
           <Controller
             name={`articles.${index}.account`}
+            key={`articles.${index}.account`}
             control={control}
+            rules={{required: 'Ovo polje je obavezno'}}
             render={({field: {onChange, name, value}}) => (
               <div style={{minWidth: '200px'}}>
                 <Dropdown
@@ -299,6 +305,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                   value={value as any}
                   onChange={onChange}
                   error={errors.articles?.[index]?.account?.message}
+                  isRequired
                   isDisabled={
                     !updatePermission || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
                   }
@@ -317,6 +324,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             return (
               <Input
                 {...register(`articles.${index}.description`)}
+                key={`articles.${index}.description`}
                 style={{minWidth: '200px'}}
                 disabled={
                   !updatePermission || invoice?.status == 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
@@ -330,7 +338,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
       },
       {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
     ];
-  }, [invoiceType, register, control, dropdowncountsOptions]);
+  }, [invoiceType, register, control, dropdowncountsOptions, errors, fields]);
 
   const calculateTotalPrice = (index: number) => {
     const net_price = watch('articles')?.[index].net_price;
@@ -351,39 +359,22 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   };
 
   const handleAddRow = () => {
+    console.log('Before append:', fields); // Log state to debug
     append({
       id: 0,
       title: '',
       net_price: 0,
       vat_price: 0,
       description: '',
-      account: null,
-      vat_percentage: null,
+      account: null as any,
+      vat_percentage: null as any,
       amount: 1,
     });
+    console.log('After append:', fields); // Log state to debug
   };
 
   const onSubmit = async (data: any) => {
     if (loading) return;
-
-    if (type.id === false && !sss_pro_forma_invoice_receipt_date) {
-      setError('sss_pro_forma_invoice_receipt_date', {
-        type: 'manual',
-        message: 'Ovo polje je obavezno.',
-      });
-    } else {
-      clearErrors('sss_pro_forma_invoice_receipt_date');
-    }
-
-    if (type.id === true && !sss_invoice_receipt_date) {
-      setError('sss_invoice_receipt_date', {
-        type: 'manual',
-        message: 'Ovo polje je obavezno.',
-      });
-    } else {
-      clearErrors('sss_invoice_receipt_date');
-    }
-
     if (uploadedFile) {
       setShowFileUploadError(false);
 
@@ -426,23 +417,16 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         insertInvoice(
           payload,
           () => {
-            !isNew && type.id
-              ? alert.success('Račun je uspješno izmijenjen')
-              : type.id
-              ? alert.success('Uspješno dodavanje računa.')
-              : !isNew && !type.id
-              ? alert.success('Predračun je uspješno izmijenjen')
-              : alert.success('Uspješno dodavanje predračuna.');
+            isNew
+              ? alert.success(`Uspješno dodavanje ${type.id ? 'računa' : 'predračuna'}.`)
+              : alert.success(`${type.id ? 'Račun' : 'Predračun'} je uspješno izmijenjen.`);
             navigate('/finance/liabilities-receivables/liabilities/invoices');
           },
           () => {
-            !isNew && type.id
-              ? alert.error('Došlo je do greške prilikom izmjene računa.')
-              : type.id
-              ? alert.error('Neuspješno dodavanje računa.')
-              : !isNew && !type.id
-              ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
-              : alert.error('Došlo je do greške prilikom izmjene predračuna.');
+            isNew
+              ? alert.error(`Neuspješno dodavanje ${type.id ? 'računa' : 'predračuna'}.`)
+              : alert.error(`Došlo je do greške prilikom izmjene ${type.id ? 'računa' : 'predračuna'}.`);
+            navigate('/finance/liabilities-receivables/liabilities/invoices');
           },
         );
       });
@@ -489,23 +473,16 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         insertInvoice(
           payload,
           () => {
-            !isNew && type.id
-              ? alert.success('Račun je uspješno izmijenjen')
-              : type.id
-              ? alert.success('Uspješno dodavanje računa.')
-              : !isNew && !type.id
-              ? alert.success('Predračun je uspješno izmijenjen')
-              : alert.success('Uspješno dodavanje predračuna.');
+            isNew
+              ? alert.success(`Uspješno dodavanje ${type.id ? 'računa' : 'predračuna'}.`)
+              : alert.success(`${type.id ? 'Račun' : 'Predračun'} je uspješno izmijenjen.`);
             navigate('/finance/liabilities-receivables/liabilities/invoices');
           },
           () => {
-            !isNew && type.id
-              ? alert.error('Došlo je do greške prilikom izmjene računa.')
-              : type.id
-              ? alert.error('Neuspješno dodavanje računa.')
-              : !isNew && !type.id
-              ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
-              : alert.error('Došlo je do greške prilikom izmjene predračuna.');
+            isNew
+              ? alert.error(`Neuspješno dodavanje ${type.id ? 'računa' : 'predračuna'}.`)
+              : alert.error(`Došlo je do greške prilikom izmjene ${type.id ? 'računa' : 'predračuna'}.`);
+            navigate('/finance/liabilities-receivables/liabilities/invoices');
           },
         );
       });
@@ -546,23 +523,16 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
       insertInvoice(
         payload,
         () => {
-          !isNew && type.id
-            ? alert.success('Račun je uspješno izmijenjen')
-            : type.id
-            ? alert.success('Uspješno dodavanje računa.')
-            : !isNew && !type.id
-            ? alert.success('Predračun je uspješno izmijenjen')
-            : alert.success('Uspješno dodavanje predračuna.');
+          isNew
+            ? alert.success(`Uspješno dodavanje ${type.id ? 'računa' : 'predračuna'}.`)
+            : alert.success(`${type.id ? 'Račun' : 'Predračun'} je uspješno izmijenjen.`);
           navigate('/finance/liabilities-receivables/liabilities/invoices');
         },
         () => {
-          !isNew && type.id
-            ? alert.error('Došlo je do greške prilikom izmjene računa.')
-            : type.id
-            ? alert.error('Neuspješno dodavanje računa.')
-            : !isNew && !type.id
-            ? alert.error('Došlo je do greške prilikom izmjene predračuna.')
-            : alert.error('Došlo je do greške prilikom izmjene predračuna.');
+          isNew
+            ? alert.error(`Neuspješno dodavanje ${type.id ? 'računa' : 'predračuna'}.`)
+            : alert.error(`Došlo je do greške prilikom izmjene ${type.id ? 'računa' : 'predračuna'}.`);
+          navigate('/finance/liabilities-receivables/liabilities/invoices');
         },
       );
     }
@@ -603,7 +573,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             net_price: article.net_price,
             vat_price: 0,
             description: article.description,
-            account: null,
+            account: null as any,
             vat_percentage: {id: Number(article.vat_percentage), title: article.vat_percentage},
             amount: article.amount,
           });
@@ -652,6 +622,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         date_of_payment: invoice.date_of_payment,
         bank_account: {id: invoice.bank_account, title: invoice.bank_account},
         description: invoice?.description,
+        organization_unit_id: invoice?.organization_unit?.id,
         passed_to_accounting: invoice?.passed_to_accounting,
         pro_forma_invoice_date: invoice?.pro_forma_invoice_date,
         pro_forma_invoice_number: invoice?.pro_forma_invoice_number,
@@ -755,8 +726,8 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             {...register('pro_forma_invoice_number')}
             label="BROJ PREDRAČUNA:"
             placeholder="Unesite broj predračuna"
-            error={errors?.invoice_number?.message}
-            isRequired
+            error={errors?.pro_forma_invoice_number?.message}
+            isRequired={!type?.id}
             disabled={
               !updatePermission ||
               type?.id === true ||
@@ -782,8 +753,8 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                   invoice?.status === 'Na nalogu' ||
                   invoice?.status === 'Djelimično na nalogu'
                 }
-                error={errors?.date_of_invoice?.message}
-                isRequired
+                error={errors?.pro_forma_invoice_date?.message}
+                isRequired={!type?.id}
               />
             )}
           />
@@ -800,7 +771,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
               invoice?.status === 'Djelimično na nalogu'
             }
             error={errors?.invoice_number?.message}
-            isRequired
+            isRequired={type?.id}
           />
           <Controller
             name="date_of_invoice"
@@ -820,7 +791,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                   invoice?.status === 'Djelimično na nalogu'
                 }
                 error={errors?.date_of_invoice?.message}
-                isRequired
+                isRequired={type?.id}
               />
             )}
           />
@@ -1082,6 +1053,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           variant="primary"
           onClick={handleSubmit(onSubmit)}
           disabled={
+            !!receipt_date ||
             !updatePermission ||
             (invoice?.status === 'Na nalogu' && invoice?.is_invoice) ||
             invoice?.status === 'Djelimično na nalogu'

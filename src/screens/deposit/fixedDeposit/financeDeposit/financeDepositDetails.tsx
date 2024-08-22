@@ -1,5 +1,5 @@
 import {Divider} from '@oykos-development/devkit-react-ts-styled-components';
-import {EditIcon, Table, Theme, TrashIcon, Typography} from 'client-library';
+import {EditIconTwo, Table, Theme, TrashIcon, Typography} from 'client-library';
 import {useState} from 'react';
 import DepositConfiscationModal from '../../../../components/depositConfiscationModal/depositConfiscationModal.tsx';
 import DepositDispatchModal from '../../../../components/depositDispatchModal/depositDispatchModal.tsx';
@@ -33,7 +33,8 @@ const FinanceDepositDetails = () => {
       location: {pathname},
     },
     contextMain: {
-      organization_unit: {id: organization_unit_id, permissions},
+      organization_unit: {id: organization_unit_id},
+      permissions,
     },
     alert,
   } = useAppContext();
@@ -119,7 +120,7 @@ const FinanceDepositDetails = () => {
                       setItemEditData(row);
                       setConfiscationModal(true);
                     },
-                    icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                    icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
                     shouldRender: () => updatePermission,
                   },
                   {
@@ -172,7 +173,7 @@ const FinanceDepositDetails = () => {
                       setDispatchEditData(row);
                       setDispatchModal(true);
                     },
-                    icon: <EditIcon stroke={Theme?.palette?.gray800} />,
+                    icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
                   },
                   {
                     name: 'delete',

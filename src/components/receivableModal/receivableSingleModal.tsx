@@ -4,7 +4,6 @@ import {Controller, useFieldArray, useForm} from 'react-hook-form';
 import {generateDropdownOptions} from '../../constants.ts';
 import {formatCurrency} from '../../utils/currencyUtils.ts';
 import useGetCurrentBudget from '../../services/graphQL/currentBudget/useGetCurrentBudget.ts';
-import useAppContext from '../../context/useAppContext.ts';
 import {ObligationsItem} from '../../types/graphQL/receivablesTypes.ts';
 import {Row} from '../../screens/liabilitesAndReceivables/receivables/styles.ts';
 import {flattenAccounts} from '../../shared/budgetTable/utils.ts';
@@ -14,13 +13,20 @@ interface FundReleaseModalProps {
   open: boolean;
   data: any;
   selectedRow: ObligationsItem[];
+  selectedOrganizationUnit: number;
   id?: number;
   onSubmit: (data: any, additionalData: any) => void;
 }
 
-const ReceivableSingleModal = ({onClose, open, data, selectedRow, onSubmit}: FundReleaseModalProps) => {
+const ReceivableSingleModal = ({
+  onClose,
+  open,
+  data,
+  selectedRow,
+  onSubmit,
+  selectedOrganizationUnit,
+}: FundReleaseModalProps) => {
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
-  const {contextMain} = useAppContext();
   const {
     control,
     handleSubmit,
@@ -36,8 +42,7 @@ const ReceivableSingleModal = ({onClose, open, data, selectedRow, onSubmit}: Fun
     keyName: 'key',
   });
 
-  const organizationUnitID = contextMain.organization_unit.id;
-  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id: organizationUnitID});
+  const {currentBudgetAccounts} = useGetCurrentBudget({organization_unit_id: selectedOrganizationUnit});
   const counts = flattenAccounts(currentBudgetAccounts, true);
   const [amountValue, setAmountValue] = useState<number>();
   const [totalAmount, setTotalAmount] = useState<string>();

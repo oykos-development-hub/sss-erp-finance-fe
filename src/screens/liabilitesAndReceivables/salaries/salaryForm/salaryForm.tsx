@@ -273,15 +273,14 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
         bank_account: additionalExpense.bank_account?.id,
         organization_unit_id: organizationUnitId.id,
         type: additionalExpense.type,
+        id: additionalExpense.id,
       })),
     };
 
     insertSalary(
       payload,
       salaryId => {
-        if (isNew) {
-          navigate(`/finance/liabilities-receivables/liabilities/salaries/${salaryId}`);
-        }
+        navigate(`/finance/liabilities-receivables/liabilities/salaries${isNew ? `/${salaryId}` : ''}`);
         refetchSalary && refetchSalary();
         alert.success('Uspješno sačuvano.');
       },
@@ -682,7 +681,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           {renderInfoBox('ZA ISPLATU BANKAMA', salary ? salary.net_price : 0, true)}
         </InfoBoxWrapper>
         <Row>
-          <FileUploadStepTitle variant="bodyMedium" content="STEP 1: UVEZI REKAPITULACIJU MJESEČNE ZARADE" />
+          <FileUploadStepTitle variant="bodyMedium" content="KORAK 1: UVEZI REKAPITULACIJU MJESEČNE ZARADE" />
         </Row>
         <FileUploadWrapper>
           <FileUpload
@@ -706,7 +705,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           </FileUploadErrorsWrapper>
         </FileUploadWrapper>
         <Row>
-          <FileUploadStepTitle variant="bodyMedium" content="STEP 2: UVEZI REKAPITULACIJU OBUSTAVA ZARADA" />
+          <FileUploadStepTitle variant="bodyMedium" content="KORAK 2: UVEZI REKAPITULACIJU OBUSTAVA ZARADA" />
         </Row>
         <FileUploadWrapper>
           <FileUpload

@@ -364,6 +364,7 @@ const ReceivableEntry = () => {
                           options={sourceOfFunding}
                           error={errors.source_of_funding?.message}
                           isSearchable
+                          isRequired
                         />
                       </div>
                     )}
@@ -409,6 +410,7 @@ const ReceivableEntry = () => {
                         label="DATUM PLAĆANJA:"
                         onChange={onChange}
                         error={errors.date_of_payment?.message}
+                        isRequired
                       />
                     )}
                   />
@@ -448,6 +450,7 @@ const ReceivableEntry = () => {
                 data={fields}
                 selectedRow={selectedRows}
                 onSubmit={handleModalSubmit}
+                selectedOrganizationUnit={organization_unit_id?.id ?? 0}
               />
             )}
 
@@ -458,6 +461,7 @@ const ReceivableEntry = () => {
                 data={fields}
                 selectedRow={selectedRows}
                 onSubmit={handleModalSubmit}
+                selectedOrganizationUnit={organization_unit_id?.id ?? 0}
               />
             )}
 

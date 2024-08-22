@@ -1,33 +1,31 @@
 // Formats currency with thousands separator, two decimals and currency symbol on left/right side (default is right)
 // e.g. 10,000.00 €
-// Returns '' if input is undefined, null or empty
+// Returns '' if input is undefined, null or empty string
 export const formatCurrency = (
   input: number | string | null | undefined,
   hideSymbol?: boolean,
   symbolPositionLeft?: boolean,
 ): string => {
-  const formatNumber = (num: number | string): string => {
-    if (num === '' || isNaN(Number(num))) return '';
-    const parts = parseFloat(num.toString()).toFixed(2).split('.');
+  const formatNumber = (num: number): string => {
+    const parts = num.toFixed(2).split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return `${parts.join('.')}`;
+    return parts.join('.');
   };
 
   if (input === undefined || input === null || input === '') {
     return '';
   }
 
-  const value = input.toString();
-  const [integerPart, decimalPart] = value.split('.');
-  let validDecimalPart = decimalPart;
-
-  if (decimalPart && decimalPart.length > 2) {
-    validDecimalPart = decimalPart.slice(0, 2);
+  const num = parseFloat(input.toString());
+  if (isNaN(num)) {
+    return '';
   }
 
-  const rawValue = validDecimalPart !== undefined ? `${integerPart}.${validDecimalPart}` : integerPart;
+  const formattedValue = formatNumber(num);
 
-  if (hideSymbol) return `${formatNumber(rawValue)}`;
-  if (symbolPositionLeft) return `€ ${formatNumber(rawValue)}`;
-  return `${formatNumber(rawValue)} €`;
+  if (hideSymbol) {
+    return formattedValue;
+  }
+
+  return symbolPositionLeft ? `€ ${formattedValue}` : `${formattedValue} €`;
 };

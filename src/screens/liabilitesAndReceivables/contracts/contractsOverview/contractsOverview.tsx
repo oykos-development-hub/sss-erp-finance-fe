@@ -14,6 +14,7 @@ import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {contractsOverviewTableHeads} from '../constants.tsx';
 import {Row} from './styles.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 export interface ContractsOverviewFilters {
   year?: DropdownData<string> | null;
@@ -43,6 +44,8 @@ const ContractsOverview = () => {
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
+  const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts');
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
   // TODO replace with logic from permissions
@@ -179,13 +182,13 @@ const ContractsOverview = () => {
             onClick: (row: ContractItem) =>
               navigate(`/finance/liabilities-receivables/liabilities/contracts/${row.id}`),
             icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => row.status === 'Kreiran' && !row.registred,
+            shouldRender: row => row.status === 'Kreiran' && !row.registred && updatePermission,
           },
           {
             name: 'Izbriši',
             onClick: onDelete,
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => row.status === 'Kreiran' && !row.registred,
+            shouldRender: row => row.status === 'Kreiran' && !row.registred && updatePermission,
           },
         ]}
       />

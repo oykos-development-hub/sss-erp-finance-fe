@@ -385,7 +385,7 @@ const EnforcedPaymentEntry = () => {
                     <Input
                       {...register('execution_number')}
                       label="BROJ IZVRŠENJA:"
-                      error={errors.sap_id?.message}
+                      error={errors.execution_number?.message}
                       style={{width: '350px'}}
                     />
                     <Controller
@@ -397,8 +397,9 @@ const EnforcedPaymentEntry = () => {
                           label="IZVRŠITELJ:"
                           value={value}
                           onChange={onChange}
-                          error={errors.date_of_payment?.message}
+                          error={errors.agent_id?.message}
                           options={executor}
+                          isRequired
                         />
                       )}
                     />
@@ -479,6 +480,7 @@ const EnforcedPaymentEntry = () => {
                             error={errors.amount?.message}
                             value={manualAmount !== null ? manualAmount : totalAmount ? totalAmount : ''}
                             style={{width: '250px'}}
+                            type={'currency'}
                             onChange={handleAmountChange}
                           />
                         </Row>
@@ -490,6 +492,7 @@ const EnforcedPaymentEntry = () => {
                             error={errors.amount_for_lawyer?.message}
                             style={{width: '250px'}}
                             isRequired
+                            type={'currency'}
                           />
                           <Input
                             {...register('amount_for_agent')}
@@ -497,13 +500,15 @@ const EnforcedPaymentEntry = () => {
                             error={errors.amount_for_agent?.message}
                             style={{width: '250px'}}
                             isRequired
+                            type={'currency'}
                           />
                           <Input
                             {...register('amount_for_bank')}
                             label="Naknada Centralne banke:"
-                            error={errors.amount_for_agent?.message}
+                            error={errors.amount_for_bank?.message}
                             style={{width: '250px'}}
                             isRequired
+                            type={'currency'}
                           />
                           <Controller
                             name="account_id_for_expenses"
@@ -560,7 +565,7 @@ const EnforcedPaymentEntry = () => {
                   content="Sačuvaj"
                   variant="primary"
                   onClick={handleSubmit(onSaveClick)}
-                  disabled={!fields.length}
+                  disabled={!fields.length || !selectedRows.length || (!manualAmount && !totalAmount)}
                 />
               )}
             </Footer>

@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import {requiredError} from '../constants.ts';
 
 export const optionsStringSchema = yup
   .object()
@@ -7,7 +8,21 @@ export const optionsStringSchema = yup
     title: yup.string().required().default('default'),
   })
   .nullable()
-  .default(null);
+  .default(null)
+  .test('required-field', requiredError, function (value) {
+    if (value === null) return true; // Allow null if it's nullable
+
+    const isValid = value?.id !== 'default' && value?.title !== 'default';
+
+    if (!isValid) {
+      return this.createError({
+        path: this.path, // Associate the error with the entire object
+        message: requiredError,
+      });
+    }
+
+    return true;
+  });
 
 export const optionsNumberSchema = yup
   .object()
@@ -16,7 +31,21 @@ export const optionsNumberSchema = yup
     title: yup.string().required().default('default'),
   })
   .nullable()
-  .default(null);
+  .default(null)
+  .test('required-field', requiredError, function (value) {
+    if (value === null) return true; // Allow null if it's nullable
+
+    const isValid = value?.id !== 0 && value?.title !== 'default';
+
+    if (!isValid) {
+      return this.createError({
+        path: this.path, // Associate the error with the entire object
+        message: requiredError,
+      });
+    }
+
+    return true;
+  });
 
 export const optionsBooleanSchema = yup
   .object()
@@ -25,4 +54,18 @@ export const optionsBooleanSchema = yup
     title: yup.string().required().default('default'),
   })
   .nullable()
-  .default(null);
+  .default(null)
+  .test('required-field', requiredError, function (value) {
+    if (value === null) return true; // Allow null if it's nullable
+
+    const isValid = value?.id !== false && value?.title !== 'default';
+
+    if (!isValid) {
+      return this.createError({
+        path: this.path, // Associate the error with the entire object
+        message: requiredError,
+      });
+    }
+
+    return true;
+  });

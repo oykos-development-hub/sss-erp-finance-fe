@@ -111,6 +111,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
 
   const selectedSupplier = suppliersDropdownOptions.find(s => s.id === supplier_id?.id);
   const selectedSupplierEntity = selectedSupplier?.entity;
+  const [invoiceNumberPrefix, setInvoiceNumberPrefix] = useState<string>('');
 
   const {fields, remove, insert} = useFieldArray({
     control,
@@ -205,106 +206,82 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     setUploadedFile(files);
   };
 
-  const onSubmit = async (data: any) => {
-    const selectedOption = typeOfDecision?.items?.find(option => option.id === type_of_decision.id);
-    const abbreviation = selectedOption ? selectedOption.abbreviation : '';
-    const formattedInvoiceNumber = `${abbreviation}  ${data.invoice_number}`;
+  const removeAbbrevFromInvoiceNumber = (invoiceNumber: string) => {
+    const typeOfDecisionAbbreviations = typeOfDecision?.items?.map(option => option.abbreviation) || [];
 
+    for (const abbreviation of typeOfDecisionAbbreviations) {
+      if (invoiceNumber.includes(`${abbreviation} `)) {
+        // Replace the abbreviation and the following space with an empty string
+        invoiceNumber = invoiceNumber.replace(`${abbreviation} `, '');
+        !!abbreviation && setInvoiceNumberPrefix(abbreviation);
+      }
+    }
+
+    return invoiceNumber;
+  };
+
+  const onSubmit = async (data: any) => {
     if (loading) return;
+
+    const selectedOption = typeOfDecision?.items?.find(option => option.id === type_of_decision.id);
+    const formattedInvoiceNumber = `${selectedOption?.abbreviation || ''} ${data.invoice_number}`;
+
+    const buildPayload = (fileId: number | null = null) => ({
+      id: data?.id,
+      invoice_number: formattedInvoiceNumber,
+      tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
+      municipality_id: data?.municipality_id?.id,
+      supplier_id: data?.supplier_id?.id,
+      date_of_invoice: parseDateForBackend(data?.date_of_invoice),
+      receipt_date: parseDateForBackend(data?.receipt_date),
+      sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
+      type: 'decisions',
+      type_of_decision: data?.type_of_decision?.id,
+      supplier_title: data.supplier_title,
+      issuer: data?.issuer,
+      activity_id: data?.activity_id?.id,
+      source_of_funding: data?.source_of_funding?.id,
+      date_of_payment: parseDateForBackend(data?.date_of_payment),
+      description: data?.description,
+      organization_unit_id: organization_unit_id?.id,
+      file_id: fileId,
+      additional_expenses: fields.map((_, index) => ({
+        id: data.additionalExpenses[index]?.id,
+        title: data.additionalExpenses[index]?.title,
+        price: data.additionalExpenses[index]?.price,
+        account_id: data.additionalExpenses[index]?.account?.id,
+        bank_account: data.additionalExpenses[index]?.bank_account?.id,
+        subject_id: index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
+      })),
+    });
+
+    const handleResponse = (isSuccess: boolean) => {
+      const successMessage = ID ? 'Uspješno ste izmijenili rješenje.' : 'Uspješno dodavanje rješenja.';
+      const errorMessage = ID ? 'Došlo je do greške. Izmjene nisu sačuvane.' : 'Neuspješno dodavanje rješenja.';
+      isSuccess ? alert.success(successMessage) : alert.error(errorMessage);
+      isSuccess && navigate('/finance/liabilities-receivables/liabilities/decisions');
+    };
+
     if (uploadedFile) {
       const formData = new FormData();
       formData.append('file', uploadedFile[0]);
 
       await uploadFile(formData, (files: FileResponseItem[]) => {
         setUploadedFile(null);
-        const payload = {
-          id: data?.id,
-          invoice_number: formattedInvoiceNumber,
-          tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
-          municipality_id: data?.municipality_id?.id,
-          supplier_id: data?.supplier_id?.id,
-          date_of_invoice: parseDateForBackend(data?.date_of_invoice),
-          receipt_date: parseDateForBackend(data?.receipt_date),
-          sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
-          type: 'decisions',
-          type_of_decision: data?.type_of_decision?.id,
-          supplier_title: data.supplier_title,
-          issuer: data?.issuer,
-          activity_id: data?.activity_id?.id,
-          source_of_funding: data?.source_of_funding?.id,
-          date_of_payment: parseDateForBackend(data?.date_of_payment),
-          description: data?.description,
-          organization_unit_id: organization_unit_id,
-          file_id: files[0]?.id,
-          additional_expenses: fields.map((_, index) => ({
-            title: data.additionalExpenses[index]?.title,
-            price: data.additionalExpenses[index]?.price,
-            account_id: data.additionalExpenses[index]?.account?.id,
-            id: data.additionalExpenses[index]?.id,
-            bank_account: data.additionalExpenses[index]?.bank_account?.id,
-            subject_id:
-              index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
-          })),
-        };
-
+        const payload = buildPayload(files[0]?.id);
         insertInvoice(
           payload as any,
-          () => {
-            ID ? alert.success('Uspješno ste izmijenili rješenje.') : alert.success('Uspješno dodavanje rješenja.');
-            navigate('/finance/liabilities-receivables/liabilities/decisions');
-          },
-          () => {
-            ID
-              ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.')
-              : alert.error('Neuspješno dodavanje rješenja.');
-          },
+          () => handleResponse(true),
+          () => handleResponse(false),
         );
       });
-
-      return;
     } else {
-      const payload = {
-        id: data?.id,
-        invoice_number: formattedInvoiceNumber,
-        tax_authority_codebook_id: data?.tax_authority_codebook_id?.id,
-        municipality_id: data?.municipality_id?.id,
-        supplier_id: data?.supplier_id?.id,
-        date_of_invoice: parseDateForBackend(data?.date_of_invoice),
-        receipt_date: parseDateForBackend(data?.receipt_date),
-        sss_invoice_receipt_date: parseDateForBackend(data?.sss_invoice_receipt_date),
-        type: 'decisions',
-        type_of_decision: data?.type_of_decision?.id,
-        supplier_title: data.supplier_title,
-        issuer: data?.issuer,
-        activity_id: data?.activity_id?.id,
-        source_of_funding: data?.source_of_funding?.id,
-        date_of_payment: parseDateForBackend(data?.date_of_payment),
-        organization_unit_id: organization_unit_id,
-        description: data?.description,
-        additional_expenses: fields.map((_, index) => ({
-          id: data.additionalExpenses[index]?.id,
-          title: data.additionalExpenses[index]?.title,
-          price: data.additionalExpenses[index]?.price,
-          account_id: data.additionalExpenses[index]?.account?.id,
-          bank_account: data.additionalExpenses[index]?.bank_account?.id,
-          subject_id: index === fields.length - 1 ? data?.supplier_id?.id : data.additionalExpenses[index]?.subject.id,
-        })),
-      };
-
+      const payload = buildPayload();
       insertInvoice(
         payload as any,
-        () => {
-          ID ? alert.success('Uspješno ste izmijenili rješenje.') : alert.success('Uspješno dodavanje rješenja.');
-          navigate('/finance/liabilities-receivables/liabilities/decisions');
-        },
-        () => {
-          ID
-            ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.')
-            : alert.error('Neuspješno dodavanje rješenja.');
-        },
+        () => handleResponse(true),
+        () => handleResponse(false),
       );
-
-      return;
     }
   };
 
@@ -340,7 +317,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         id: decision.id,
         supplier_id: {id: decision.supplier.id, title: decision.supplier.title},
         supplier_title: decision.supplier_title,
-        invoice_number: decision.invoice_number,
+        invoice_number: removeAbbrevFromInvoiceNumber(decision.invoice_number),
         date_of_invoice: decision.date_of_invoice !== null ? new Date(decision.date_of_invoice) : undefined,
         receipt_date: decision.receipt_date !== null ? new Date(decision.receipt_date) : undefined,
         date_of_payment: decision.date_of_payment !== null ? new Date(decision.date_of_payment) : undefined,
@@ -394,6 +371,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 options={suppliersDropdownOptions}
                 error={errors?.supplier_id?.message}
                 isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -404,11 +382,16 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
               <Dropdown
                 name={name}
                 value={value}
-                onChange={onChange}
+                onChange={e => {
+                  onChange(e);
+                  const type = typeOfDecision?.items?.find(item => item.id === e.id);
+                  setInvoiceNumberPrefix(type?.abbreviation || '');
+                }}
                 label="VRSTA PREDMETA:"
                 placeholder={'Odaberite vrstu predmeta'}
                 options={typeOfDecision?.items}
                 isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -418,6 +401,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             placeholder="Unesite broj predmeta/djelovodni broj"
             error={errors.invoice_number?.message}
             disabled={!updatePermission || decision?.status === 'Na nalogu'}
+            leftContent={<Typography content={invoiceNumberPrefix} />}
+            isRequired
           />
           <Input
             {...register('issuer')}
@@ -425,6 +410,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             placeholder="Odaberite subjekt"
             error={errors.issuer?.message}
             disabled={!updatePermission || decision?.status === 'Na nalogu'}
+            isRequired
           />
         </Row>
         <Row>
@@ -434,8 +420,8 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             render={({field: {name, value, onChange}}) => (
               <Dropdown
                 name={name}
-                value={organizationUnits.find(ou => ou.id === value?.id)}
-                onChange={value => onChange(value.id)}
+                value={value}
+                onChange={onChange}
                 label="ORGANIZACIONA JEDINICA:"
                 placeholder="Odaberi organizacionu jedinicu"
                 options={organizationUnits}
@@ -472,6 +458,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 options={SourceOfFunding}
                 error={errors.source_of_funding?.message}
                 isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -488,6 +475,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 onChange={onChange}
                 error={errors.date_of_invoice?.message}
                 disabled={!updatePermission || decision?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -502,6 +490,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 onChange={onChange}
                 error={errors.date_of_payment?.message}
                 disabled={!updatePermission || decision?.status === 'Na nalogu'}
+                isRequired
               />
             )}
           />
@@ -611,6 +600,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   placeholder="Unesite iznos"
                   leftContent={<div>€</div>}
                   disabled={!updatePermission || !!net_price || decision?.status === 'Na nalogu'}
+                  type={'currency'}
                   error={errors.gross_price?.message}
                 />
                 <Input
@@ -625,6 +615,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                     selectedSupplierEntity !== 'employee' ||
                     decision?.status === 'Na nalogu'
                   }
+                  type={'currency'}
                   error={errors.previous_income_gross?.message}
                 />
               </Row>
@@ -636,12 +627,14 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   leftContent={<div>€</div>}
                   disabled={!updatePermission || !!gross_price || decision?.status === 'Na nalogu'}
                   error={errors.net_price?.message}
+                  type={'currency'}
                 />
                 <Input
                   {...register('previous_income_net')}
                   label="PRETHODNA PRIMANJA U MJESECU NETO:"
                   placeholder="Unesite prethodna primanja"
                   leftContent={<div>€</div>}
+                  type={'currency'}
                   disabled={
                     !updatePermission ||
                     !!gross_price ||
@@ -656,7 +649,11 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                 content="Obračunaj"
                 variant={'primary'}
                 onClick={() => onCount()}
-                disabled={decision?.status === 'Na nalogu'}
+                disabled={
+                  decision?.status === 'Na nalogu' ||
+                  (!municipality_id && !tax_authority_codebook_id) ||
+                  (!net_price && !gross_price)
+                }
               />
             </HalfWidthContainer>
           </>

@@ -5,10 +5,10 @@ const enforcedPaymentOverview = `query enforcedPayment_Overview($id: Int,$status
         data
         total
         items {
-               id
-        organization_unit{
-                    id
-                    title
+            id
+            organization_unit{
+                id
+                title
             }
             supplier{
                 id
@@ -30,6 +30,7 @@ const enforcedPaymentOverview = `query enforcedPayment_Overview($id: Int,$status
             bank_account
             date_of_payment
             date_of_sap
+            description
             id_of_statement
             sap_id
             status

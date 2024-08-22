@@ -94,9 +94,7 @@ const WillForm = ({data}: {data?: Will}) => {
       payload,
       (id: number) => {
         alert.success(isNew ? 'Uspešno ste dodali novi testament.' : 'Uspešno ste izmjenili testament.');
-        if (isNew) {
-          navigate(`/finance/deposit/fixed/wills/${id}`);
-        }
+        navigate(isNew ? `/finance/deposit/fixed/wills/${id}` : '/finance/deposit/fixed/wills/overview');
       },
       () => {
         alert.error(isNew ? 'Greška prilikom dodavanja novog testamenta.' : 'Greška prilikom izmjene testamenta.');
