@@ -74,16 +74,12 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     organization_unit_id,
   } = watch();
 
-  useEffect(() => {
-    if (!contextMain.organization_unit?.id) return;
-    setValue('organization_unit_id', contextMain.organization_unit?.id);
-  }, [contextMain.organization_unit?.id]);
-
   const [uploadedFile, setUploadedFile] = useState<FileList | null>(null);
   const ID = location.pathname.split('/').at(-1);
+  const isNew = ID === 'add-contract';
 
   useEffect(() => {
-    if (!contextMain.organization_unit?.id || ID) return;
+    if (!contextMain.organization_unit?.id || !isNew) return;
     setValue('organization_unit_id', contextMain.organization_unit);
   }, [contextMain.organization_unit?.id]);
 
@@ -249,13 +245,13 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
           insertInvoice(
             payload as any,
             () => {
-              ID ? alert.success('Uspješno ste izmijenili ugovor.') : alert.success('Uspješno dodavanje ugovora.');
+              isNew ? alert.success('Uspješno dodavanje ugovora.') : alert.success('Uspješno ste izmijenili ugovor.');
               navigate('/finance/liabilities-receivables/liabilities/contracts');
             },
             () => {
-              ID
-                ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.')
-                : alert.error('Neuspješno dodavanje ugovora.');
+              isNew
+                ? alert.error('Neuspješno dodavanje ugovora.')
+                : alert.error('Došlo je do greške. Izmjene nisu sačuvane.');
             },
           );
         },
@@ -284,6 +280,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         date_of_payment: parseDateForBackend(data?.date_of_payment),
         organization_unit_id: organization_unit_id,
         description: data?.description,
+        file_id: contract?.file?.id,
         additional_expenses: fields.map((_, index) => ({
           id: data.additionalExpenses[index]?.id,
           title: data.additionalExpenses[index]?.title,
@@ -297,11 +294,13 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
       insertInvoice(
         payload as any,
         () => {
-          ID ? alert.success('Uspješno ste izmijenili ugovor.') : alert.success('Uspješno dodavanje ugovora.');
+          isNew ? alert.success('Uspješno dodavanje ugovora.') : alert.success('Uspješno ste izmijenili ugovor.');
           navigate('/finance/liabilities-receivables/liabilities/contracts');
         },
         () => {
-          ID ? alert.error('Došlo je do greške. Izmjene nisu sačuvane.') : alert.error('Neuspješno dodavanje ugovora.');
+          isNew
+            ? alert.error('Neuspješno dodavanje ugovora.')
+            : alert.error('Došlo je do greške. Izmjene nisu sačuvane.');
         },
       );
 
@@ -444,7 +443,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                 label="ORGANIZACIONA JEDINICA:"
                 placeholder="Odaberi organizacionu jedinicu"
                 options={organizationUnits}
-                isDisabled={(!isUserSSS && !updatePermission) || contract?.status === 'Na nalogu'}
+                isDisabled={!isUserSSS || !updatePermission || contract?.status === 'Na nalogu'}
                 error={errors?.organization_unit_id?.message}
               />
             )}
@@ -591,6 +590,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                       isSearchable
                       error={errors.municipality_id?.message}
                       isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
+                      isRequired
                     />
                   )}
                 />
@@ -608,6 +608,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                       options={optionsForTaxAuthorityCodebook}
                       error={errors.tax_authority_codebook_id?.message}
                       isDisabled={!updatePermission || contract?.status === 'Na nalogu'}
+                      isRequired
                     />
                   )}
                 />
@@ -622,6 +623,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   leftContent={<div>€</div>}
                   disabled={!updatePermission || !!net_price || contract?.status === 'Na nalogu'}
                   error={errors.gross_price?.message}
+                  isRequired
                 />
                 <Input
                   {...register('previous_income_gross')}
@@ -636,6 +638,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                     contract?.status === 'Na nalogu'
                   }
                   error={errors.previous_income_gross?.message}
+                  isRequired
                 />
               </Row>
               <Row>
@@ -646,6 +649,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                   leftContent={<div>€</div>}
                   disabled={!updatePermission || !!gross_price || contract?.status === 'Na nalogu'}
                   error={errors.net_price?.message}
+                  isRequired
                 />
                 <Input
                   {...register('previous_income_net')}
@@ -660,6 +664,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
                     contract?.status === 'Na nalogu'
                   }
                   error={errors.previous_income_net?.message}
+                  isRequired
                 />
               </Row>
               <Button

@@ -123,8 +123,8 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   ]);
 
   useEffect(() => {
-    if (!contextMain.organization_unit?.id) return;
-    setValue('organization_unit_id', contextMain.organization_unit?.id);
+    if (!contextMain.organization_unit?.id || !isNew) return;
+    setValue('organization_unit_id', contextMain.organization_unit);
   }, [contextMain.organization_unit?.id]);
 
   const {fields, append, remove} = useFieldArray({name: 'articles', control});

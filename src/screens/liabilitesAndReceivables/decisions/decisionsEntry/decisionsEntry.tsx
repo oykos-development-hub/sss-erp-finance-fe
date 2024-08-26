@@ -43,11 +43,9 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   } = useAppContext();
 
   const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const createPermission = createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/decisions');
+  const isUserSSS = createPermittedRoutes.includes('/finance');
   const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
   const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/decisions');
-
-  const isUserSSS = createPermission;
 
   const {
     control,
@@ -80,7 +78,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
   const ID = location.pathname.split('/').at(-1);
 
   useEffect(() => {
-    if (!contextMain.organization_unit?.id || ID) return;
+    if (!contextMain.organization_unit?.id) return;
     setValue('organization_unit_id', contextMain.organization_unit);
   }, [contextMain.organization_unit?.id]);
 
@@ -244,7 +242,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       date_of_payment: parseDateForBackend(data?.date_of_payment),
       description: data?.description,
       organization_unit_id: organization_unit_id?.id,
-      file_id: fileId,
+      file_id: fileId ? fileId : decision?.file?.id,
       additional_expenses: fields.map((_, index) => ({
         id: data.additionalExpenses[index]?.id,
         title: data.additionalExpenses[index]?.title,
@@ -571,6 +569,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                       isSearchable
                       error={errors.municipality_id?.message}
                       isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
+                      isRequired
                     />
                   )}
                 />
@@ -587,6 +586,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                       options={optionsForTaxAuthorityCodebook}
                       error={errors.tax_authority_codebook_id?.message}
                       isDisabled={!updatePermission || decision?.status === 'Na nalogu'}
+                      isRequired
                     />
                   )}
                 />
@@ -602,6 +602,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   disabled={!updatePermission || !!net_price || decision?.status === 'Na nalogu'}
                   type={'currency'}
                   error={errors.gross_price?.message}
+                  isRequired
                 />
                 <Input
                   {...register('previous_income_gross')}
@@ -617,6 +618,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   }
                   type={'currency'}
                   error={errors.previous_income_gross?.message}
+                  isRequired
                 />
               </Row>
               <Row>
@@ -628,6 +630,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                   disabled={!updatePermission || !!gross_price || decision?.status === 'Na nalogu'}
                   error={errors.net_price?.message}
                   type={'currency'}
+                  isRequired
                 />
                 <Input
                   {...register('previous_income_net')}
@@ -643,6 +646,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
                     decision?.status === 'Na nalogu'
                   }
                   error={errors.previous_income_net?.message}
+                  isRequired
                 />
               </Row>
               <Button

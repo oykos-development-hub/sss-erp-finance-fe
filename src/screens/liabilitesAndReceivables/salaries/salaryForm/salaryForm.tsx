@@ -137,12 +137,11 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
   } = useAppContext();
 
   const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const createPermission = createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/salaries');
   const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
   const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/salaries');
 
   const isNew = !salary;
-  const isUserSSS = createPermission;
+  const isUserSSS = createPermittedRoutes.includes('/finance');
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
 
@@ -605,7 +604,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
               <Dropdown
                 name={name}
                 value={value}
-                onChange={value => onChange(value.id)}
+                onChange={onChange}
                 label="ORGANIZACIONA JEDINICA:"
                 placeholder="Odaberi organizacionu jedinicu"
                 options={organizationUnits}
