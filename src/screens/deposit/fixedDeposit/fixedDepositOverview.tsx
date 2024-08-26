@@ -50,8 +50,8 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
   const debouncedSearch = useDebounce(search, 500);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  // TODO replace with logic from permissions
-  const isUserSSS = organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const isUserSSS = createPermittedRoutes.includes('/finance');
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

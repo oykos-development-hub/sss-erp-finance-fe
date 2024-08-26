@@ -42,11 +42,9 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
   } = useAppContext();
 
   const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const createPermission = createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts');
+  const isUserSSS = createPermittedRoutes.includes('/finance');
   const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
   const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts');
-
-  const isUserSSS = createPermission;
 
   const {
     control,

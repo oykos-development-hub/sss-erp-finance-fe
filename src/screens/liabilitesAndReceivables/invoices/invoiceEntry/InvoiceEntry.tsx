@@ -34,6 +34,7 @@ import {InvoiceEntryForm, PlusButtonWrapper, Row, StyledSwitch} from './styles';
 import {TypeOptions, invoiceTypeOptions} from './types.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 
 type InvoiceEntryForm = yup.InferType<typeof invoiceSchema>;
 
@@ -83,11 +84,9 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
   } = useAppContext();
 
   const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const createPermission = createPermittedRoutes.includes('/finance/liabilities-receivables/liabilities/invoices');
+  const isUserSSS = createPermittedRoutes.includes('/finance');
   const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
   const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/invoices');
-
-  const isUserSSS = createPermission;
 
   const {
     control,
@@ -190,19 +189,29 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         type: 'custom',
         renderContents: (_item, _row, index) => {
           return (
-            <Input
-              {...register(`articles.${index}.net_price`, {required: 'Ovo polje je obavezno'})}
-              style={{minWidth: '100px'}}
+            <Controller
+              name={`articles.${index}.net_price`}
               key={`articles.${index}.net_price`}
-              leftContent={<>Є</>}
-              error={errors.articles?.[index]?.net_price?.message}
-              isRequired
-              disabled={
-                !updatePermission ||
-                !isManual ||
-                invoice?.status == 'Na nalogu' ||
-                invoice?.status === 'Djelimično na nalogu'
-              }
+              rules={{required: 'Ovo polje je obavezno'}}
+              control={control}
+              render={({field: {onChange, name, value}}) => (
+                <Input
+                  onChange={onChange}
+                  name={name}
+                  value={value.toString()}
+                  style={{minWidth: '100px'}}
+                  leftContent={<>Є</>}
+                  error={errors.articles?.[index]?.net_price?.message}
+                  isRequired
+                  type={'currency'}
+                  disabled={
+                    !updatePermission ||
+                    !isManual ||
+                    invoice?.status == 'Na nalogu' ||
+                    invoice?.status === 'Djelimično na nalogu'
+                  }
+                />
+              )}
             />
           );
         },
@@ -251,7 +260,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           const vatPercentage = watch(`articles.${index}.vat_percentage`);
           const vatPrice = vatPercentage?.id !== 0 ? calculateVatPrice(index) : 0.0;
 
-          return <Input value={vatPrice?.toFixed(2)} disabled leftContent={<>Є</>} />;
+          return <Input value={formatCurrency(vatPrice, true)} disabled leftContent={<>Є</>} />;
         },
       },
       {
@@ -284,7 +293,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           const vatPercentage = watch(`articles.${index}.vat_percentage`);
           const total = vatPercentage ? calculateTotalPrice(index) : 0;
 
-          return <Input value={Number(total)?.toFixed(2)} disabled leftContent={<>Є</>} />;
+          return <Input value={formatCurrency(total, true)} disabled leftContent={<>Є</>} />;
         },
       },
       {
@@ -808,7 +817,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 label="ORGANIZACIONA JEDINICA:"
                 placeholder="Odaberi organizacionu jedinicu"
                 options={organizationUnits}
-                isDisabled={!isUserSSS}
+                isDisabled={
+                  !isUserSSS ||
+                  !updatePermission ||
+                  invoice?.status === 'Na nalogu' ||
+                  invoice?.status === 'Djelimično na nalogu'
+                }
                 error={errors?.organization_unit_id?.message}
               />
             )}
@@ -1053,6 +1067,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           variant="primary"
           onClick={handleSubmit(onSubmit)}
           disabled={
+            !fields.length ||
             !!receipt_date ||
             !updatePermission ||
             (invoice?.status === 'Na nalogu' && invoice?.is_invoice) ||

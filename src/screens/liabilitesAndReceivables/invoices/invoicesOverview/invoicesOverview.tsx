@@ -14,6 +14,7 @@ import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {StatusOptionsInvoice, invoicesOverviewTableHeads} from '../constants.tsx';
 import {Row} from './styles.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 export interface InvoiceOverviewFilters {
   year?: DropdownData<string> | null;
@@ -44,8 +45,9 @@ const InvoicesOverview = () => {
   const debouncedSearch = useDebounce(search, 500);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  // TODO replace with logic from permissions
-  const isUserSSS = contextMain?.organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+  const isUserSSS = createPermittedRoutes.includes('/finance');
+
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {
       return filterValues.organization_unit_id ? filterValues.organization_unit_id.id : undefined;

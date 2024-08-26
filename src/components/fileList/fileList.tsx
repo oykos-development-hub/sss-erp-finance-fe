@@ -25,6 +25,7 @@ const FileList = ({files, onDelete, isInModal}: FileListProps) => {
   } = useAppContext();
 
   const handleDownload = async (file: FileItem) => {
+    console.log(file, file);
     await downloadFile(file.id, {
       onSuccess: () => {
         alert.success(`Fajl ${file.name} uspješno preuzet`);
@@ -61,6 +62,7 @@ const FileList = ({files, onDelete, isInModal}: FileListProps) => {
               <FileIconButton
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   handleDownload(file);
                 }}>
                 <DownloadFileIcon stroke={Theme.palette.gray700} />

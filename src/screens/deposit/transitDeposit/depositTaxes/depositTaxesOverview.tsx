@@ -17,6 +17,7 @@ import {FilterContainer} from './styles';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import usePrependedDropdownOptions from '../../../../utils/usePrependedDropdownOptions.ts';
 import {FilterDropdown} from '../../../budget/planning/budgetList/styles.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const SUBJECT_ENTITY = 'other';
 
@@ -33,7 +34,7 @@ const DepositTaxesOverview = () => {
   const [page, setPage] = useState(1);
 
   const {
-    contextMain: {organization_unit},
+    contextMain: {organization_unit, permissions},
   } = useAppContext();
 
   const {control, watch, register} = useForm<DepositTaxesFilterForm>({
@@ -43,8 +44,9 @@ const DepositTaxesOverview = () => {
   const {search, subject_id, organization_unit_id, status} = watch();
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  // TODO replace with logic from permissions
-  const isUserSSS = organization_unit?.title === 'Sekretarijat Sudskog savjeta';
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const isUserSSS = createPermittedRoutes.includes('/finance');
+
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {
       return organization_unit_id?.id ? organization_unit_id?.id : undefined;
