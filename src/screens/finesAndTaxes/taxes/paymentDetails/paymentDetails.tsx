@@ -25,6 +25,7 @@ import useGetFeesPayments from '../../../../services/graphQL/fees/feesPayments/u
 import useInsertFeesPayment from '../../../../services/graphQL/fees/feesPayments/useInsertFeesPayment.ts';
 import useDeleteFeesPayment from '../../../../services/graphQL/fees/feesPayments/useDeleteFeesPayment.ts';
 import {FinePaymentMethods} from '../../fines/constants.tsx';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const singlePaymentSchema = yup.object().shape({
   id: yup.number().required(requiredError),
@@ -63,7 +64,15 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
   const {payments, refetch} = useGetFeesPayments(fee?.id);
   const {insertFeePayment} = useInsertFeesPayment();
   const {deleteFeePayment} = useDeleteFeesPayment();
-  const {alert} = useAppContext();
+  const {
+    alert,
+    contextMain: {permissions},
+  } = useAppContext();
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/taxes');
+
+  const isDisabled = !updatePermission || fee?.status.title === 'Plaćeno';
 
   const [editRowId, setEditRowId] = useState<number | null>(null);
   const [showDeletePaymentModal, setShowDeletePaymentModal] = useState<number | null>(null);
@@ -112,14 +121,15 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
           payment_date: new Date(payment?.payment_date),
         });
       });
-      appendLastRow();
+      !isDisabled && appendLastRow();
       return;
     }
 
-    appendLastRow();
+    !isDisabled && appendLastRow();
   }, [payments]);
 
   const isRowDisabled = (row: any) => {
+    if (isDisabled) return true;
     return editRowId ? editRowId !== row.originalID : !!row.originalID;
   };
 
@@ -200,7 +210,7 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
                 name={name}
                 onChange={onChange}
                 value={value ?? FinePaymentMethods.find(method => method.title === value)}
-                options={FinePaymentMethods}
+                options={FinePaymentMethods.slice(0, -1)}
                 isDisabled={isRowDisabled(row)}
                 error={isRowDisabled(row) ? '' : errors?.payments?.[index]?.payment_method?.title?.message}
               />
@@ -319,38 +329,66 @@ const PaymentDetails = ({fee, refetchFee}: PaymentFormProps) => {
       <Table
         tableHeads={tableHeadsPayments}
         data={fields}
-        tableActions={[
-          {
-            name: 'Otkaži',
-            onClick: () => setEditRowId(null),
-            icon: <CloseIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !isRowDisabled(row) && !!row.originalID,
-          },
-          {
-            name: 'Plati',
+        tableActions={
+          isDisabled
+            ? []
+            : [
+                {
+                  name: 'Otkaži',
+                  onClick: () => setEditRowId(null),
+                  icon: <CloseIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => !isRowDisabled(row) && !!row.originalID,
+                },
+                {
+                  name: 'Plati',
 
-            onClick: handleSubmit(handleSubmitPayment),
-            icon: <CheckIcon stroke={Theme?.palette?.gray800} width={'20px'} height={'20px'} />,
-            shouldRender: row => !isRowDisabled(row) || !row.originalID,
-          },
-          {
-            name: 'Izmijeni',
-            onClick: row => setEditRowId(row.originalID),
-            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => isRowDisabled(row) && !!row.originalID,
-          },
-          {
-            name: 'Izbriši',
-            onClick: row => setShowDeletePaymentModal(row.originalID),
-            icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !!row.originalID && (!editRowId || editRowId !== row.originalID),
-          },
-        ]}
+                  onClick: handleSubmit(handleSubmitPayment),
+                  icon: <CheckIcon stroke={Theme?.palette?.gray800} width={'20px'} height={'20px'} />,
+                  shouldRender: row => !isRowDisabled(row) || !row.originalID,
+                },
+                {
+                  name: 'Izmijeni',
+                  onClick: row => setEditRowId(row.originalID),
+                  icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => isRowDisabled(row) && !!row.originalID,
+                },
+                {
+                  name: 'Izbriši',
+                  onClick: row => setShowDeletePaymentModal(row.originalID),
+                  icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => !!row.originalID && (!editRowId || editRowId !== row.originalID),
+                },
+              ]
+        }
       />
       <FinePaymentDetailsWrapper>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UKUPNO:" />
           <Typography variant="bodySmall" content={formatCurrency(fineFeeDetails?.fee_all_payments_amount)} />
+        </Amount>
+      </FinePaymentDetailsWrapper>
+      <LabeledDivider>
+        <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREGLED PLAĆANJA:" />
+      </LabeledDivider>
+      <FinePaymentDetailsWrapper>
+        <Amount>
+          <Typography style={{fontWeight: 600}} variant="bodySmall" content="IZREČENA TAKSA:" />
+          <Typography variant="bodySmall" content={formatCurrency(fee.amount)} />
+        </Amount>
+        <Amount>
+          <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENA TAKSA:" />
+          <Typography variant="bodySmall" content={formatCurrency(fineFeeDetails?.fee_all_payments_amount)} />
+        </Amount>
+        <Amount>
+          <Typography style={{fontWeight: 600}} variant="bodySmall" content="UMANJENJE TAKSE:" />
+          <Typography
+            variant="bodySmall"
+            content={
+              fineFeeDetails?.fee_amount_grace_period_available
+                ? formatCurrency(fee?.amount - fineFeeDetails?.fee_amount_grace_period)
+                : '0,00 €'
+            }
+          />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />

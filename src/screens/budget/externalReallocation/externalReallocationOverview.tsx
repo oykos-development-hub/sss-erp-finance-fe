@@ -157,7 +157,16 @@ const ExternalReallocationOverview = () => {
 
   const disableModalButtons = (reallocation: ReallocationItem | undefined) =>
     reallocation?.status === ReallocationStatusEnum.acceptedSSS ||
-    reallocation?.status === ReallocationStatusEnum.rejectedSSS;
+    reallocation?.status === ReallocationStatusEnum.rejectedSSS ||
+    reallocation?.status === ReallocationStatusEnum.rejectedOJ;
+
+  const navigateToExternalReallocation = () => {
+    navigate(
+      useRoleCheck(role_id, [UserRole.MANAGER_OJ]) && isRequestModalOpen?.status === ReallocationStatusEnum.created
+        ? `/finance/budget/current/external-reallocation/${isRequestModalOpen?.id}`
+        : `/finance/budget/requests/${isRequestModalOpen?.id}`,
+    );
+  };
 
   return (
     <ScreenWrapper>
@@ -261,17 +270,7 @@ const ExternalReallocationOverview = () => {
           }
           customButtonsControls={
             <ModalControlButtons>
-              <Button
-                content={'Pregledaj'}
-                onClick={() =>
-                  navigate(
-                    useRoleCheck(role_id, [UserRole.MANAGER_OJ])
-                      ? `/finance/budget/current/external-reallocation/${isRequestModalOpen?.id}`
-                      : `/finance/budget/requests/${isRequestModalOpen?.id}`,
-                  )
-                }
-                variant="primary"
-              />
+              <Button content={'Pregledaj'} onClick={navigateToExternalReallocation} variant="primary" />
               {!disableModalButtons(isRequestModalOpen) && (
                 <Button
                   content={'Odbij'}

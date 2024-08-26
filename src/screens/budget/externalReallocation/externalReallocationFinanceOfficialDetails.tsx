@@ -47,7 +47,8 @@ const ExternalReallocationFinanceOfficialDetails = () => {
 
   const disabled =
     reallocation?.status === ReallocationStatusEnum.acceptedSSS ||
-    reallocation?.status === ReallocationStatusEnum.rejectedSSS;
+    reallocation?.status === ReallocationStatusEnum.rejectedSSS ||
+    reallocation?.status === ReallocationStatusEnum.rejectedOJ;
 
   let totalRequestedAmount = 0;
 

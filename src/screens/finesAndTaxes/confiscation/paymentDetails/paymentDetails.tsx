@@ -28,6 +28,7 @@ import {
 } from '../../../../types/graphQL/propertyBenefitsConfiscation.ts';
 import {FinePaymentMethods} from '../../fines/constants.tsx';
 import useGetPropertyBenefitsConfiscationPayments from '../../../../services/graphQL/propertyBenefitsConfiscation/propertyBenefitsConfiscationPayments/useGetPropertyBenefitsConfiscationPayments.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const singlePaymentSchema = yup.object().shape({
   id: yup.number().required(requiredError),
@@ -67,10 +68,16 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
   const {payments, refetch} = useGetPropertyBenefitsConfiscationPayments(property_benefits_confiscation?.id);
   const {insertPropertyBenefitsConfiscationPayment} = useInsertPropertyBenefitsConfiscationPayment();
   const {deletePropertyBenefitsConfiscationPayment} = useDeletePropertyBenefitsConfiscationPayment();
-  const {alert} = useAppContext();
+  const {
+    alert,
+    contextMain: {permissions},
+  } = useAppContext();
 
   const [editRowId, setEditRowId] = useState<number | null>(null);
   const [showDeletePaymentModal, setShowDeletePaymentModal] = useState<number | null>(null);
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/confiscation');
 
   const {
     control,
@@ -79,6 +86,8 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
     formState: {errors},
     setError,
   } = useForm<PaymentEntryForm>({});
+
+  const isDisabled = !updatePermission || property_benefits_confiscation?.status.title === 'Plaćeno';
 
   const {fields, append, remove} = useFieldArray({name: 'payments', control});
   const appendLastRow = () =>
@@ -116,14 +125,15 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
           payment_date: new Date(payment?.payment_date),
         });
       });
-      appendLastRow();
+      !isDisabled && appendLastRow();
       return;
     }
 
-    appendLastRow();
+    !isDisabled && appendLastRow();
   }, [payments]);
 
   const isRowDisabled = (row: any) => {
+    if (isDisabled) return true;
     return editRowId ? editRowId !== row.originalID : !!row.originalID;
   };
 
@@ -323,33 +333,37 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
       <Table
         tableHeads={tableHeadsPayments}
         data={fields}
-        tableActions={[
-          {
-            name: 'Otkaži',
-            onClick: () => setEditRowId(null),
-            icon: <CloseIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !isRowDisabled(row) && !!row.originalID,
-          },
-          {
-            name: 'Plati',
+        tableActions={
+          isDisabled
+            ? []
+            : [
+                {
+                  name: 'Otkaži',
+                  onClick: () => setEditRowId(null),
+                  icon: <CloseIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => !isRowDisabled(row) && !!row.originalID,
+                },
+                {
+                  name: 'Plati',
 
-            onClick: handleSubmit(handleSubmitPayment),
-            icon: <CheckIcon stroke={Theme?.palette?.gray800} width={'20px'} height={'20px'} />,
-            shouldRender: row => !isRowDisabled(row) || !row.originalID,
-          },
-          {
-            name: 'Izmijeni',
-            onClick: row => setEditRowId(row.originalID),
-            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => isRowDisabled(row) && !!row.originalID,
-          },
-          {
-            name: 'Izbriši',
-            onClick: row => setShowDeletePaymentModal(row.originalID),
-            icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !!row.originalID && (!editRowId || editRowId !== row.originalID),
-          },
-        ]}
+                  onClick: handleSubmit(handleSubmitPayment),
+                  icon: <CheckIcon stroke={Theme?.palette?.gray800} width={'20px'} height={'20px'} />,
+                  shouldRender: row => !isRowDisabled(row) || !row.originalID,
+                },
+                {
+                  name: 'Izmijeni',
+                  onClick: row => setEditRowId(row.originalID),
+                  icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => isRowDisabled(row) && !!row.originalID,
+                },
+                {
+                  name: 'Izbriši',
+                  onClick: row => setShowDeletePaymentModal(row.originalID),
+                  icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => !!row.originalID && (!editRowId || editRowId !== row.originalID),
+                },
+              ]
+        }
       />
       <FinePaymentDetailsWrapper>
         <Amount>
@@ -371,17 +385,6 @@ const PaymentDetails = ({property_benefits_confiscation, refetchPropertyBenefits
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENA KAZNA:" />
           <Typography variant="bodySmall" content={formatCurrency(propBenConfDetails?.all_payments_amount)} />
-        </Amount>
-        <Amount>
-          <Typography style={{fontWeight: 600}} variant="bodySmall" content="UMANJENJE KAZNE:" />
-          <Typography
-            variant="bodySmall"
-            content={
-              propBenConfDetails?.amount_grace_period_available
-                ? formatCurrency(property_benefits_confiscation?.amount - propBenConfDetails?.amount_grace_period)
-                : '0.00 €'
-            }
-          />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />

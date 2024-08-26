@@ -12,6 +12,7 @@ const getOverviewBudgetRequestOfficial = `query OfficialBudgetRequestOverview($b
             receive_date
             total
             limit
+            year
         }
     }
 }`;

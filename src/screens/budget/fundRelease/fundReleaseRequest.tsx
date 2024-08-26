@@ -9,9 +9,12 @@ import {BudgetDynamicCount} from '../../../types/graphQL/budgetDynamic';
 import {monthVars} from '../spendingDynamics/constants';
 import {TableWrapper} from '../spendingDynamics/styles';
 import FundReleaseTable from './fundReleaseTable';
-import {MainTitle, SectionBox} from './styles';
+import {FileWrapper, MainTitle, SectionBox} from './styles';
 import useGetFundReleaseDetails from '../../../services/graphQL/fundRelease/useGetFundReleaseDetails';
 import {fundReleaseDetailsRegex} from '../../../router';
+import FileList from '../../../components/fileList/fileList.tsx';
+import useGetFundRelease from '../../../services/graphQL/fundRelease/useGetFundRelease.ts';
+import {Typography} from '@oykos-development/devkit-react-ts-styled-components';
 
 const FundReleaseRequest = () => {
   const [invalidRows, setInvalidRows] = useState<string[]>([]);
@@ -20,6 +23,9 @@ const FundReleaseRequest = () => {
     navigation: {
       navigate,
       location: {pathname},
+    },
+    contextMain: {
+      organization_unit: {id: organization_unit_id},
     },
     alert,
   } = useAppContext();
@@ -42,7 +48,11 @@ const FundReleaseRequest = () => {
   const methods = useForm<any>();
 
   const {budgetDynamic, loading} = useGetBudgetDynamic({});
-  const {fundReleaseDetails} = useGetFundReleaseDetails({month: currentMonthYear?.month, year: currentMonthYear?.year});
+  const {fundReleaseDetails} = useGetFundReleaseDetails({
+    unit_id: organization_unit_id,
+    month: currentMonthYear?.month,
+    year: currentMonthYear?.year,
+  });
   const {insertFundRelease} = useInsertFundRelease();
 
   const isDetails = fundReleaseDetailsRegex.test(pathname);
@@ -113,12 +123,31 @@ const FundReleaseRequest = () => {
     }
   };
 
+  const {fundRelease} = useGetFundRelease({
+    unit_id: organization_unit_id,
+    month: currentMonthYear?.month,
+    year: currentMonthYear?.year ?? 0,
+  });
+
+  const fundReleaseItem = fundRelease[0];
+
   return (
     <ScreenWrapper>
       <SectionBox>
         <MainTitle variant="bodyMedium" content="ZAHTJEV ZA OTPUŠTANJE SREDSTAVA" />
         <Divider color="#615959" height="1px" />
-
+        {!!fundReleaseItem?.sss_file?.id && (
+          <FileWrapper gap={10}>
+            <Typography content={'Fajl SSS:'} variant={'bodyMedium'} />
+            <FileList files={(fundReleaseItem && [fundReleaseItem?.sss_file]) ?? []} />
+          </FileWrapper>
+        )}
+        {!!fundReleaseItem?.organization_unit_file?.id && (
+          <FileWrapper gap={22}>
+            <Typography content={'Fajl OJ: '} variant={'bodyMedium'} />
+            <FileList files={(fundReleaseItem && [fundReleaseItem?.organization_unit_file]) ?? []} />
+          </FileWrapper>
+        )}
         <FormProvider {...methods}>
           <TableWrapper style={{marginTop: 22}}>
             <FundReleaseTable
@@ -129,7 +158,6 @@ const FundReleaseRequest = () => {
             />
           </TableWrapper>
         </FormProvider>
-
         <div style={{marginTop: 22, display: 'flex'}}>
           <Button
             variant="secondary"

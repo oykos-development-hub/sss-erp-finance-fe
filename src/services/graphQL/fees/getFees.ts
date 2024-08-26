@@ -33,8 +33,11 @@ const getFeesOverview = `query feeOverview($id: Int,   $fee_subcategory_id: Int,
                 title
             }
             fee_details {
-              fee_all_payments_amount  
-              fee_left_to_pay_amount 
+                fee_left_to_pay_amount
+                fee_all_payments_amount
+                fee_amount_grace_period
+                fee_amount_grace_period_due_date
+                fee_amount_grace_period_available
             }
             file{
                 id

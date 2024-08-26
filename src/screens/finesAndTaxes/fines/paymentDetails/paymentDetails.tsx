@@ -25,6 +25,7 @@ import useAppContext from '../../../../context/useAppContext.ts';
 import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import useDeleteFinePayment from '../../../../services/graphQL/fines/finePayments/useDeleteFinePayment.ts';
 import {ConfirmationModal} from '../../../../shared/confirmationModal/confirmationModal.tsx';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const singlePaymentSchema = yup.object().shape({
   id: yup.number().required(requiredError),
@@ -63,10 +64,15 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
   const {payments, refetch} = useGetFinePayments(fine?.id);
   const {insertFinePayment} = useInsertFinePayment();
   const {deleteFinePayment} = useDeleteFinePayment();
-  const {alert} = useAppContext();
+  const {
+    alert,
+    contextMain: {permissions},
+  } = useAppContext();
 
   const [editRowId, setEditRowId] = useState<number | null>(null);
   const [showDeletePaymentModal, setShowDeletePaymentModal] = useState<number | null>(null);
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/fines');
 
   const {
     control,
@@ -77,6 +83,9 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
   } = useForm<PaymentEntryForm>({});
 
   const {fields, append, remove} = useFieldArray({name: 'payments', control});
+
+  const isDisabled = !updatePermission || fine?.status.title === 'Plaćeno';
+
   const appendLastRow = () =>
     append({
       id: 0,
@@ -112,14 +121,15 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
           payment_date: new Date(payment?.payment_date),
         });
       });
-      appendLastRow();
+      !isDisabled && appendLastRow();
       return;
     }
 
-    appendLastRow();
+    !isDisabled && appendLastRow();
   }, [payments]);
 
   const isRowDisabled = (row: any) => {
+    if (isDisabled) return true;
     return editRowId ? editRowId !== row.originalID : !!row.originalID;
   };
 
@@ -319,33 +329,37 @@ const PaymentDetails = ({fine, refetchFine}: PaymentFormProps) => {
       <Table
         tableHeads={tableHeadsPayments}
         data={fields}
-        tableActions={[
-          {
-            name: 'Otkaži',
-            onClick: () => setEditRowId(null),
-            icon: <CloseIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !isRowDisabled(row) && !!row.originalID,
-          },
-          {
-            name: 'Plati',
+        tableActions={
+          isDisabled
+            ? []
+            : [
+                {
+                  name: 'Otkaži',
+                  onClick: () => setEditRowId(null),
+                  icon: <CloseIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => !isRowDisabled(row) && !!row.originalID,
+                },
+                {
+                  name: 'Plati',
 
-            onClick: handleSubmit(handleSubmitPayment),
-            icon: <CheckIcon stroke={Theme?.palette?.gray800} width={'20px'} height={'20px'} />,
-            shouldRender: row => !isRowDisabled(row) || !row.originalID,
-          },
-          {
-            name: 'Izmijeni',
-            onClick: row => setEditRowId(row.originalID),
-            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => isRowDisabled(row) && !!row.originalID,
-          },
-          {
-            name: 'Izbriši',
-            onClick: row => setShowDeletePaymentModal(row.originalID),
-            icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !!row.originalID && (!editRowId || editRowId !== row.originalID),
-          },
-        ]}
+                  onClick: handleSubmit(handleSubmitPayment),
+                  icon: <CheckIcon stroke={Theme?.palette?.gray800} width={'20px'} height={'20px'} />,
+                  shouldRender: row => !isRowDisabled(row) || !row.originalID,
+                },
+                {
+                  name: 'Izmijeni',
+                  onClick: row => setEditRowId(row.originalID),
+                  icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => isRowDisabled(row) && !!row.originalID,
+                },
+                {
+                  name: 'Izbriši',
+                  onClick: row => setShowDeletePaymentModal(row.originalID),
+                  icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => !!row.originalID && (!editRowId || editRowId !== row.originalID),
+                },
+              ]
+        }
       />
       <FinePaymentDetailsWrapper>
         <Amount>

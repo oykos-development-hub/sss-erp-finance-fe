@@ -1,12 +1,12 @@
 import {Controller, useForm} from 'react-hook-form';
-import {Dropdown, Datepicker, Input, Typography, FileUpload, Button} from 'client-library';
+import {Dropdown, Datepicker, Input, Typography, FileUpload, Button, Theme} from 'client-library';
 import {Container, Row} from './styles.ts';
 import {feeSubcategoryOptions, feeTypeOptions, generateDropdownOptions, requiredError} from '../../../../constants.ts';
 import {useEffect, useMemo, useState} from 'react';
 import Footer from '../../../../shared/footer.ts';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
-import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
+import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FileList from '../../../../components/fileList/fileList.tsx';
@@ -94,6 +94,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
       decision_date: parseDateForBackend(data.decision_date),
       execution_date: parseDateForBackend(data.execution_date),
       payment_deadline_date: parseDateForBackend(data.payment_deadline_date),
+      file: [file[0]?.id],
     };
 
     if (uploadedFile) {
@@ -147,6 +148,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
         updatedPayload,
         () => {
           alert.success('Taksa uspješno izmijenjena');
+          navigate('/finance/fines-taxes/taxes');
         },
         () => {
           alert.error('Došlo je do greške prilikom izmjene takse');
@@ -168,6 +170,8 @@ const FeeForm = ({fee}: FeeFormProps) => {
     );
   };
 
+  const disabled = !updatePermission || fee?.status.title === 'Plaćeno';
+
   return (
     <Container>
       <Row>
@@ -184,7 +188,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
               options={feeTypeOptions}
               isRequired
               error={errors.fee_type?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
@@ -201,12 +205,12 @@ const FeeForm = ({fee}: FeeFormProps) => {
               options={feeSubcategoryOptions}
               isRequired
               error={errors.fee_subcategory?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
         <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('subject')}
           label="SUBJEKAT:"
           isRequired
@@ -214,15 +218,9 @@ const FeeForm = ({fee}: FeeFormProps) => {
         />
       </Row>
       <Row>
+        <Input disabled={disabled} {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} />
         <Input
-          disabled={!updatePermission}
-          {...register('jmbg')}
-          label="JMBG:"
-          isRequired
-          error={errors.jmbg?.message}
-        />
-        <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('residence')}
           label="PREBIVALIŠTE:"
           isRequired
@@ -235,7 +233,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
           label="BROJ RJEŠENJA / PRESUDE:"
           isRequired
           error={errors.decision_number?.message}
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <Controller
           name={'decision_date'}
@@ -248,7 +246,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.decision_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -259,14 +257,14 @@ const FeeForm = ({fee}: FeeFormProps) => {
           label="POZIV NA BROJ ZADUŽENJA:"
           isRequired
           error={errors.debit_reference_number?.message}
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <Input
           {...register('payment_reference_number')}
           label="POZIV NA BROJ ODOBRENJA:"
           isRequired
           error={errors.payment_reference_number?.message}
-          disabled={!updatePermission}
+          disabled={disabled}
         />
       </Row>
       <Row>
@@ -283,11 +281,22 @@ const FeeForm = ({fee}: FeeFormProps) => {
               leftContent={<div>€</div>}
               isRequired
               error={errors.amount?.message}
-              disabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
-
+        <Input
+          value={fee?.fee_details.fee_amount_grace_period.toFixed(2)}
+          label={`2/3 TAKSE - UKOLIKO UPLATITE DO ${parseDate(
+            fee?.fee_details.fee_amount_grace_period_due_date ?? null,
+          )}`}
+          type={'currency'}
+          inputMode={'decimal'}
+          leftContent={<div style={{color: Theme.palette.gray300}}>€</div>}
+          disabled
+        />
+      </Row>
+      <Row>
         <Controller
           name="court_account"
           control={control}
@@ -301,12 +310,10 @@ const FeeForm = ({fee}: FeeFormProps) => {
               options={countsDropdownOptions}
               isRequired
               error={errors.court_account?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
-      </Row>
-      <Row>
         <Controller
           name={'payment_deadline_date'}
           control={control}
@@ -318,7 +325,7 @@ const FeeForm = ({fee}: FeeFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.payment_deadline_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -333,13 +340,13 @@ const FeeForm = ({fee}: FeeFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.execution_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
       </Row>
       <Row>
-        <Input disabled={!updatePermission} {...register('description')} label="OPIS:" textarea />
+        <Input disabled={disabled} {...register('description')} label="OPIS:" textarea />
       </Row>
 
       <Row>
@@ -350,15 +357,19 @@ const FeeForm = ({fee}: FeeFormProps) => {
           onUpload={handleUpload}
           note={<Typography variant="bodySmall" content="Dodaj fajl" />}
           buttonText="Učitaj"
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <FileList files={(fee?.file && fee?.file) ?? []} />
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        {updatePermission && (
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
-        )}
+        <Button
+          content="Sačuvaj"
+          variant="primary"
+          onClick={handleSubmit(onSubmit)}
+          isLoading={loading}
+          disabled={disabled}
+        />
       </Footer>
     </Container>
   );

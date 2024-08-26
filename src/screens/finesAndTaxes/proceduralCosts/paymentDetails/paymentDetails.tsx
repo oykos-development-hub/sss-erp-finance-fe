@@ -25,6 +25,7 @@ import useDeleteProceduralCostPayment from '../../../../services/graphQL/procedu
 import {ProceduralCostDetails, ProceduralCostOverviewItem} from '../../../../types/graphQL/proceduralCosts.ts';
 import {FinePaymentMethods} from '../../fines/constants.tsx';
 import useGetProceduralCostPayments from '../../../../services/graphQL/proceduralCosts/proceduralCostsPayments/useGetProceduralCostPayments.ts';
+import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
 
 const singlePaymentSchema = yup.object().shape({
   id: yup.number().required(requiredError),
@@ -63,10 +64,16 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
   const {payments, refetch} = useGetProceduralCostPayments(procedural_cost?.id);
   const {insertProceduralCostPayment} = useInsertProceduralCostPayment();
   const {deleteProceduralCostPayment} = useDeleteProceduralCostPayment();
-  const {alert} = useAppContext();
+  const {
+    alert,
+    contextMain: {permissions},
+  } = useAppContext();
 
   const [editRowId, setEditRowId] = useState<number | null>(null);
   const [showDeletePaymentModal, setShowDeletePaymentModal] = useState<number | null>(null);
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/procedural-costs');
 
   const {
     control,
@@ -77,6 +84,9 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
   } = useForm<PaymentEntryForm>({});
 
   const {fields, append, remove} = useFieldArray({name: 'payments', control});
+
+  const isDisabled = !updatePermission || procedural_cost?.status.title === 'Plaćeno';
+
   const appendLastRow = () =>
     append({
       id: 0,
@@ -112,14 +122,15 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
           payment_date: new Date(payment?.payment_date),
         });
       });
-      appendLastRow();
+      !isDisabled && appendLastRow();
       return;
     }
 
-    appendLastRow();
+    !isDisabled && appendLastRow();
   }, [payments]);
 
   const isRowDisabled = (row: any) => {
+    if (isDisabled) return true;
     return editRowId ? editRowId !== row.originalID : !!row.originalID;
   };
 
@@ -319,33 +330,37 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
       <Table
         tableHeads={tableHeadsPayments}
         data={fields}
-        tableActions={[
-          {
-            name: 'Otkaži',
-            onClick: () => setEditRowId(null),
-            icon: <CloseIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !isRowDisabled(row) && !!row.originalID,
-          },
-          {
-            name: 'Plati',
+        tableActions={
+          isDisabled
+            ? []
+            : [
+                {
+                  name: 'Otkaži',
+                  onClick: () => setEditRowId(null),
+                  icon: <CloseIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => !isRowDisabled(row) && !!row.originalID,
+                },
+                {
+                  name: 'Plati',
 
-            onClick: handleSubmit(handleSubmitPayment),
-            icon: <CheckIcon stroke={Theme?.palette?.gray800} width={'20px'} height={'20px'} />,
-            shouldRender: row => !isRowDisabled(row) || !row.originalID,
-          },
-          {
-            name: 'Izmijeni',
-            onClick: row => setEditRowId(row.originalID),
-            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => isRowDisabled(row) && !!row.originalID,
-          },
-          {
-            name: 'Izbriši',
-            onClick: row => setShowDeletePaymentModal(row.originalID),
-            icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !!row.originalID && (!editRowId || editRowId !== row.originalID),
-          },
-        ]}
+                  onClick: handleSubmit(handleSubmitPayment),
+                  icon: <CheckIcon stroke={Theme?.palette?.gray800} width={'20px'} height={'20px'} />,
+                  shouldRender: row => !isRowDisabled(row) || !row.originalID,
+                },
+                {
+                  name: 'Izmijeni',
+                  onClick: row => setEditRowId(row.originalID),
+                  icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => isRowDisabled(row) && !!row.originalID,
+                },
+                {
+                  name: 'Izbriši',
+                  onClick: row => setShowDeletePaymentModal(row.originalID),
+                  icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: row => !!row.originalID && (!editRowId || editRowId !== row.originalID),
+                },
+              ]
+        }
       />
       <FinePaymentDetailsWrapper>
         <Amount>
@@ -369,17 +384,6 @@ const PaymentDetails = ({procedural_cost, refetchProceduralCost}: PaymentFormPro
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="UPLAĆENA KAZNA:" />
           <Typography variant="bodySmall" content={formatCurrency(proceduralCostDetails?.all_payments_amount)} />
-        </Amount>
-        <Amount>
-          <Typography style={{fontWeight: 600}} variant="bodySmall" content="UMANJENJE KAZNE:" />
-          <Typography
-            variant="bodySmall"
-            content={
-              proceduralCostDetails?.amount_grace_period_available
-                ? formatCurrency(procedural_cost?.amount - proceduralCostDetails?.amount_grace_period)
-                : '0.00 €'
-            }
-          />
         </Amount>
         <Amount>
           <Typography style={{fontWeight: 600}} variant="bodySmall" content="PREOSTALO ZA UPLATU:" />

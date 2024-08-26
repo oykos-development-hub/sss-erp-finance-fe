@@ -125,7 +125,7 @@ const BudgetList = () => {
   };
 
   const onRowClick = (row: BudgetOverviewItem) => {
-    if (createPermission || updatePermission) {
+    if (createPermission && updatePermission) {
       navigate(`/finance/budget/planning/${row.id}/details`);
       breadcrumbs.add({
         name: 'Detalji',

@@ -54,3 +54,11 @@ export const FundReleaseInput = styled(Input)<{invalid?: boolean}>`
     border-color: ${({invalid}) => (invalid ? Theme.palette.error500 : Theme.palette.gray300)};
   }
 `;
+
+export const FileWrapper = styled.div<{gap: number}>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: ${({gap}) => gap};
+  margin-top: 10px;
+`;

@@ -12,6 +12,7 @@ export type GetFundReleaseParams = {
 };
 
 export type GetFundReleaseDetailsParams = {
+  unit_id?: number;
   month?: number;
   year?: number;
 };

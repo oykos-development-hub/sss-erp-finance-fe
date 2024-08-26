@@ -16,6 +16,7 @@ import {checkActionRoutePermissions} from '../../../services/checkRoutePermissio
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
+import {EditIconTwo} from '@oykos-development/devkit-react-ts-styled-components';
 
 const initialValues = {
   property_benefits_confiscation_type_id: null,
@@ -47,6 +48,8 @@ const ConfiscationOverview = () => {
 
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
   const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/confiscation');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/confiscation');
 
   const {propertyBenefitsConfiscations, total, refetch, loading} = useGetPropertyBenefitsConfiscations({
     page: page,
@@ -126,10 +129,16 @@ const ConfiscationOverview = () => {
         onRowClick={(row: ProceduralCostOverviewItem) => navigate(`/finance/fines-taxes/confiscation/${row.id}`)}
         tableActions={[
           {
+            name: 'edit',
+            onClick: row => navigate(`/finance/fines-taxes/confiscation/${row.id}`),
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => updatePermission && row?.status?.title !== 'Plaćeno',
+          },
+          {
             name: 'delete',
             onClick: row => setShowDeleteProceduralCostModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: () => deletePermission,
+            shouldRender: row => deletePermission && row?.status?.title !== 'Plaćeno',
           },
         ]}
       />

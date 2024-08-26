@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import useAppContext from '../../../context/useAppContext.ts';
 import {fundReleaseTabs, getCurrentTab, getRouteName, Tabs} from './constants.tsx';
 import FundReleaseOverview from './fundReleaseOverview.tsx';
@@ -18,7 +18,6 @@ const FundRelease = () => {
   } = useAppContext();
 
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname) || 1);
-  const currentPath = pathname && pathname.split('/')[pathname.split('/').length - 1];
 
   const getTitle = () => {
     switch (activeTab) {
@@ -30,18 +29,7 @@ const FundRelease = () => {
     }
   };
 
-  const currentFundReleaseRoute = useMemo(() => {
-    switch (currentPath) {
-      case 'requests':
-        return <FundReleaseOverview />;
-      default:
-        return <FundReleaseOverview />;
-    }
-  }, [currentPath, activeTab]);
-
   const onTabChange = (tab: Tab) => {
-    console.log(tab, ' - tab');
-
     setActiveTab(tab.id as number);
     const routeName = getRouteName(tab.title as string);
     navigate(
@@ -67,7 +55,7 @@ const FundRelease = () => {
           />
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
-        {currentFundReleaseRoute}
+        <FundReleaseOverview />
       </SectionBox>
     </ScreenWrapper>
   );

@@ -116,6 +116,9 @@ export const tableHeadsAddTaxes: TableHead[] = [
 export type FeeDetails = {
   fee_all_payments_amount: number;
   fee_left_to_pay_amount: number;
+  fee_amount_grace_period: number;
+  fee_amount_grace_period_due_date: string;
+  fee_amount_grace_period_available: boolean;
 };
 
 export type Fee = {

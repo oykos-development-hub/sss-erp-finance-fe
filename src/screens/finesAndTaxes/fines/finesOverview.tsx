@@ -14,6 +14,7 @@ import {checkActionRoutePermissions} from '../../../services/checkRoutePermissio
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import {EditIconTwo} from '@oykos-development/devkit-react-ts-styled-components';
 
 const initialValues = {
   act_type_id: null,
@@ -46,6 +47,8 @@ const FinesOverview = () => {
 
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
   const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/fines');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/fines');
 
   const {fines, total, refetch, loading} = useGetFines({
     page: page,
@@ -124,10 +127,16 @@ const FinesOverview = () => {
         onRowClick={(row: FinesOverviewItem) => navigate(`/finance/fines-taxes/fines/${row.id}`)}
         tableActions={[
           {
+            name: 'edit',
+            onClick: row => navigate(`/finance/fines-taxes/fines/${row.id}`),
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => updatePermission && row?.status?.title !== 'Plaćeno',
+          },
+          {
             name: 'delete',
             onClick: row => setShowDeleteFineModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: () => deletePermission,
+            shouldRender: row => deletePermission && row?.status?.title !== 'Plaćeno',
           },
         ]}
       />

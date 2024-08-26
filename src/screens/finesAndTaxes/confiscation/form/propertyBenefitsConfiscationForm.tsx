@@ -1,12 +1,12 @@
 import {Controller, useForm} from 'react-hook-form';
-import {Dropdown, Datepicker, Input, Typography, FileUpload, Button, Theme} from 'client-library';
+import {Dropdown, Datepicker, Input, Typography, FileUpload, Button} from 'client-library';
 import {Container, Row} from '../../taxes/addFee/styles.ts';
 import {actTypeOptions, generateDropdownOptions, requiredError} from '../../../../constants.ts';
 import {useEffect, useMemo, useState} from 'react';
 import Footer from '../../../../shared/footer.ts';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
-import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
+import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FileList from '../../../../components/fileList/fileList.tsx';
@@ -110,6 +110,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
       decision_date: parseDateForBackend(data.decision_date),
       execution_date: parseDateForBackend(data.execution_date),
       payment_deadline_date: parseDateForBackend(data.payment_deadline_date),
+      file: [file[0]?.id],
     };
 
     if (uploadedFile) {
@@ -167,6 +168,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
         updatedPayload,
         () => {
           alert.success('Oduzimanje imovinske koristi uspješno izmijenjeno');
+          navigate('/finance/fines-taxes/confiscation');
         },
         () => {
           alert.error('Došlo je do greške prilikom izmjene oduzimanja imovinske koristi');
@@ -188,6 +190,8 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
     );
   };
 
+  const disabled = !updatePermission || property_benefits_confiscation?.status.title === 'Plaćeno';
+
   return (
     <Container>
       <Row>
@@ -204,12 +208,12 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
               options={actTypeOptions}
               isRequired
               error={errors.property_benefits_confiscation_type?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
         <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('subject')}
           label="SUBJEKAT:"
           isRequired
@@ -217,15 +221,9 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
         />
       </Row>
       <Row>
+        <Input disabled={disabled} {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} />
         <Input
-          disabled={!updatePermission}
-          {...register('jmbg')}
-          label="JMBG:"
-          isRequired
-          error={errors.jmbg?.message}
-        />
-        <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('residence')}
           label="PREBIVALIŠTE:"
           isRequired
@@ -238,7 +236,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
           label="BROJ RJEŠENJA / PRESUDE:"
           isRequired
           error={errors.decision_number?.message}
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <Controller
           name={'decision_date'}
@@ -251,7 +249,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
               onChange={onChange}
               isRequired
               error={errors.decision_date?.message}
-              disabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -262,44 +260,14 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
           label="POZIV NA BROJ ZADUŽENJA:"
           isRequired
           error={errors.debit_reference_number?.message}
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <Input
           {...register('payment_reference_number')}
           label="POZIV NA BROJ ODOBRENJA:"
           isRequired
           error={errors.payment_reference_number?.message}
-          disabled={!updatePermission}
-        />
-      </Row>
-      <Row>
-        <Controller
-          name={'amount'}
-          control={control}
-          render={({field: {onChange, value}}) => (
-            <Input
-              value={value.toString()}
-              onChange={onChange}
-              label="VISINA KAZNE:"
-              type={'currency'}
-              inputMode={'decimal'}
-              leftContent={<div>€</div>}
-              isRequired
-              error={errors.amount?.message}
-              disabled={!updatePermission}
-            />
-          )}
-        />
-
-        <Input
-          value={property_benefits_confiscation?.property_benefits_confiscation_details.amount_grace_period.toFixed(2)}
-          label={`2/3 KAZNE - UKOLIKO UPLATITE DO ${parseDate(
-            property_benefits_confiscation?.property_benefits_confiscation_details.amount_grace_period_due_date ?? null,
-          )}`}
-          type={'currency'}
-          inputMode={'decimal'}
-          leftContent={<div style={{color: Theme.palette.gray300}}>€</div>}
-          disabled
+          disabled={disabled}
         />
       </Row>
       <Row>
@@ -316,10 +284,29 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
               options={countsDropdownOptions}
               isRequired
               error={errors.account_id?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
+        <Controller
+          name={'amount'}
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Input
+              value={value.toString()}
+              onChange={onChange}
+              label="VISINA KAZNE:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              isRequired
+              error={errors.amount?.message}
+              disabled={disabled}
+            />
+          )}
+        />
+      </Row>
+      <Row>
         <Controller
           control={control}
           name={'court_costs'}
@@ -331,8 +318,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
               type={'currency'}
               inputMode={'decimal'}
               leftContent={<div>€</div>}
-              style={{flexGrow: 1 / 2}}
-              disabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -348,7 +334,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
               label="KONTO ZA SUDSKE TROŠKOVE:"
               placeholder={'Odaberite konto za sudske troškove'}
               options={countsDropdownOptions}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
@@ -365,7 +351,7 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
               onChange={onChange}
               isRequired
               error={errors.payment_deadline_date?.message}
-              disabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -380,13 +366,13 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
               onChange={onChange}
               isRequired
               error={errors.execution_date?.message}
-              disabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
       </Row>
       <Row>
-        <Input disabled={!updatePermission} {...register('description')} label="OPIS:" textarea />
+        <Input disabled={disabled} {...register('description')} label="OPIS:" textarea />
       </Row>
 
       <Row>
@@ -397,15 +383,19 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
           onUpload={handleUpload}
           note={<Typography variant="bodySmall" content="Dodaj fajl" />}
           buttonText="Učitaj"
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <FileList files={(property_benefits_confiscation?.file && property_benefits_confiscation?.file) ?? []} />
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        {updatePermission && (
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
-        )}
+        <Button
+          content="Sačuvaj"
+          variant="primary"
+          onClick={handleSubmit(onSubmit)}
+          isLoading={loading}
+          disabled={disabled}
+        />
       </Footer>
     </Container>
   );

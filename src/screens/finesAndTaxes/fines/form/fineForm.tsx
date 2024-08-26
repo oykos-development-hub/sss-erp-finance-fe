@@ -96,6 +96,7 @@ const FineForm = ({fine}: FineFormProps) => {
       decision_date: parseDateForBackend(data.decision_date),
       execution_date: parseDateForBackend(data.execution_date),
       payment_deadline_date: parseDateForBackend(data.payment_deadline_date),
+      file: [file[0]?.id],
     };
 
     if (uploadedFile) {
@@ -148,6 +149,7 @@ const FineForm = ({fine}: FineFormProps) => {
       await insertFine(
         updatedPayload,
         () => {
+          navigate('/finance/fines-taxes/fines');
           alert.success('Kazna uspješno izmijenjena');
         },
         () => {
@@ -170,6 +172,8 @@ const FineForm = ({fine}: FineFormProps) => {
     );
   };
 
+  const disabled = !updatePermission || fine?.status.title === 'Plaćeno';
+
   return (
     <Container>
       <Row>
@@ -186,19 +190,31 @@ const FineForm = ({fine}: FineFormProps) => {
               options={actTypeOptions}
               isRequired
               error={errors.act_type?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
-        <Input {...register('subject')} label="SUBJEKAT:" isRequired error={errors.subject?.message} />
+        <Input
+          {...register('subject')}
+          label="SUBJEKAT:"
+          isRequired
+          error={errors.subject?.message}
+          disabled={disabled}
+        />
       </Row>
       <Row>
-        <Input {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} />
-        <Input {...register('residence')} label="PREBIVALIŠTE:" isRequired error={errors.residence?.message} />
+        <Input {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} disabled={disabled} />
+        <Input
+          {...register('residence')}
+          label="PREBIVALIŠTE:"
+          isRequired
+          error={errors.residence?.message}
+          disabled={disabled}
+        />
       </Row>
       <Row>
         <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('decision_number')}
           label="BROJ RJEŠENJA / PRESUDE:"
           isRequired
@@ -215,21 +231,21 @@ const FineForm = ({fine}: FineFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.decision_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
       </Row>
       <Row>
         <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('debit_reference_number')}
           label="POZIV NA BROJ ZADUŽENJA:"
           isRequired
           error={errors.debit_reference_number?.message}
         />
         <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('payment_reference_number')}
           label="POZIV NA BROJ ODOBRENJA:"
           isRequired
@@ -242,7 +258,7 @@ const FineForm = ({fine}: FineFormProps) => {
           control={control}
           render={({field: {onChange, value}}) => (
             <Input
-              disabled={!updatePermission}
+              disabled={disabled}
               value={value.toString()}
               onChange={onChange}
               label="VISINA KAZNE:"
@@ -280,7 +296,7 @@ const FineForm = ({fine}: FineFormProps) => {
               options={countsDropdownOptions}
               isRequired
               error={errors.account_id?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
@@ -289,7 +305,7 @@ const FineForm = ({fine}: FineFormProps) => {
           control={control}
           render={({field: {onChange, value}}) => (
             <Input
-              disabled={!updatePermission}
+              disabled={disabled}
               value={value?.toString()}
               onChange={onChange}
               label="SUDSKI TROŠKOVI:"
@@ -312,7 +328,7 @@ const FineForm = ({fine}: FineFormProps) => {
               label="KONTO ZA SUDSKE TROŠKOVE:"
               placeholder={'Odaberite konto za sudske troškove'}
               options={countsDropdownOptions}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
@@ -329,7 +345,7 @@ const FineForm = ({fine}: FineFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.payment_deadline_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -344,13 +360,13 @@ const FineForm = ({fine}: FineFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.execution_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
       </Row>
       <Row>
-        <Input disabled={!updatePermission} {...register('description')} label="OPIS:" textarea />
+        <Input disabled={disabled} {...register('description')} label="OPIS:" textarea />
       </Row>
 
       <Row>
@@ -361,15 +377,19 @@ const FineForm = ({fine}: FineFormProps) => {
           onUpload={handleUpload}
           note={<Typography variant="bodySmall" content="Dodaj fajl" />}
           buttonText="Učitaj"
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <FileList files={(fine?.file && fine?.file) ?? []} />
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        {updatePermission && (
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
-        )}
+        <Button
+          content="Sačuvaj"
+          variant="primary"
+          onClick={handleSubmit(onSubmit)}
+          isLoading={loading}
+          disabled={disabled}
+        />
       </Footer>
     </Container>
   );

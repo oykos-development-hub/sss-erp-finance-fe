@@ -15,6 +15,7 @@ import {checkActionRoutePermissions} from '../../../services/checkRoutePermissio
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
+import {EditIconTwo} from '@oykos-development/devkit-react-ts-styled-components';
 
 const initialValues = {
   fee_type_id: null,
@@ -56,6 +57,8 @@ const TaxesOverview = () => {
 
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
   const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/taxes');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/taxes');
   // TO DO implement the logic when the BE is done
   const {deleteFee} = useDeleteFee();
 
@@ -137,10 +140,16 @@ const TaxesOverview = () => {
         onRowClick={(row: FinesOverviewItem) => navigate(`/finance/fines-taxes/taxes/${row.id}`)}
         tableActions={[
           {
+            name: 'edit',
+            onClick: row => navigate(`/finance/fines-taxes/taxes/${row.id}`),
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => updatePermission && row?.status?.title !== 'Plaćeno',
+          },
+          {
             name: 'delete',
             onClick: row => setShowDeleteFeeModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: () => deletePermission,
+            shouldRender: row => deletePermission && row?.status?.title !== 'Plaćeno',
           },
         ]}
       />

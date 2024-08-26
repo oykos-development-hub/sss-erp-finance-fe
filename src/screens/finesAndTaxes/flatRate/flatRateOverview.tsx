@@ -16,6 +16,7 @@ import {checkActionRoutePermissions} from '../../../services/checkRoutePermissio
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
+import {EditIconTwo} from '@oykos-development/devkit-react-ts-styled-components';
 
 const initialValues = {
   flat_rate_type_id: null,
@@ -48,6 +49,8 @@ const FlatRateOverview = () => {
 
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
   const deletePermission = deletePermittedRoutes.includes('/finance/fines-taxes/flat-rate');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/finance/fines-taxes/flat-rate');
 
   const {flatRates, total, refetch, loading} = useGetFlatRate({
     page: page,
@@ -126,10 +129,16 @@ const FlatRateOverview = () => {
         onRowClick={(row: FlatRateOverviewItem) => navigate(`/finance/fines-taxes/flat-rate/${row.id}`)}
         tableActions={[
           {
+            name: 'edit',
+            onClick: row => navigate(`/finance/fines-taxes/flat-rate/${row.id}`),
+            icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+            shouldRender: row => updatePermission && row?.status?.title !== 'Plaćeno',
+          },
+          {
             name: 'delete',
             onClick: row => setShowDeleteFlatRateModal(row.id),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: () => deletePermission,
+            shouldRender: row => deletePermission && row?.status?.title !== 'Plaćeno',
           },
         ]}
       />

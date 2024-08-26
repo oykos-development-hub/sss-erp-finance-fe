@@ -1,12 +1,12 @@
 import {Controller, useForm} from 'react-hook-form';
-import {Dropdown, Datepicker, Input, Typography, FileUpload, Button, Theme} from 'client-library';
+import {Dropdown, Datepicker, Input, Typography, FileUpload, Button} from 'client-library';
 import {Container, Row} from '../../taxes/addFee/styles.ts';
 import {actTypeOptions, generateDropdownOptions, requiredError} from '../../../../constants.ts';
 import {useEffect, useMemo, useState} from 'react';
 import Footer from '../../../../shared/footer.ts';
 import useGetCountOverview from '../../../../services/graphQL/counts/useGetCountOverview.ts';
 import useAppContext from '../../../../context/useAppContext.ts';
-import {parseDate, parseDateForBackend} from '../../../../utils/dateUtils.ts';
+import {parseDateForBackend} from '../../../../utils/dateUtils.ts';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FileList from '../../../../components/fileList/fileList.tsx';
@@ -95,6 +95,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
       decision_date: parseDateForBackend(data.decision_date),
       execution_date: parseDateForBackend(data.execution_date),
       payment_deadline_date: parseDateForBackend(data.payment_deadline_date),
+      file: [file[0]?.id],
     };
 
     if (uploadedFile) {
@@ -148,6 +149,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
         updatedPayload,
         () => {
           alert.success('Paušal uspješno izmijenjen');
+          navigate('/finance/fines-taxes/flat-rate');
         },
         () => {
           alert.error('Došlo je do greške prilikom izmjene paušala');
@@ -169,6 +171,8 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
     );
   };
 
+  const disabled = !updatePermission || flat_rate?.status.title === 'Plaćeno';
+
   return (
     <Container>
       <Row>
@@ -185,12 +189,12 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               options={actTypeOptions}
               isRequired
               error={errors.flat_rate_type?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
         <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('subject')}
           label="SUBJEKAT:"
           isRequired
@@ -198,15 +202,9 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
         />
       </Row>
       <Row>
+        <Input disabled={disabled} {...register('jmbg')} label="JMBG:" isRequired error={errors.jmbg?.message} />
         <Input
-          disabled={!updatePermission}
-          {...register('jmbg')}
-          label="JMBG:"
-          isRequired
-          error={errors.jmbg?.message}
-        />
-        <Input
-          disabled={!updatePermission}
+          disabled={disabled}
           {...register('residence')}
           label="PREBIVALIŠTE:"
           isRequired
@@ -218,7 +216,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
           {...register('decision_number')}
           label="BROJ RJEŠENJA / PRESUDE:"
           isRequired
-          disabled={!updatePermission}
+          disabled={disabled}
           error={errors.decision_number?.message}
         />
         <Controller
@@ -232,7 +230,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.decision_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -243,44 +241,14 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
           label="POZIV NA BROJ ZADUŽENJA:"
           isRequired
           error={errors.debit_reference_number?.message}
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <Input
           {...register('payment_reference_number')}
           label="POZIV NA BROJ ODOBRENJA:"
           isRequired
           error={errors.payment_reference_number?.message}
-          disabled={!updatePermission}
-        />
-      </Row>
-      <Row>
-        <Controller
-          name={'amount'}
-          control={control}
-          render={({field: {onChange, value}}) => (
-            <Input
-              value={value.toString()}
-              onChange={onChange}
-              label="VISINA PAUŠALA:"
-              type={'currency'}
-              inputMode={'decimal'}
-              leftContent={<div>€</div>}
-              isRequired
-              error={errors.amount?.message}
-              disabled={!updatePermission}
-            />
-          )}
-        />
-
-        <Input
-          value={flat_rate?.flat_rate_details.amount_grace_period.toFixed(2)}
-          label={`2/3 PAUŠALA - UKOLIKO UPLATITE DO ${parseDate(
-            flat_rate?.flat_rate_details.amount_grace_period_due_date ?? null,
-          )}`}
-          type={'currency'}
-          inputMode={'decimal'}
-          leftContent={<div style={{color: Theme.palette.gray300}}>€</div>}
-          disabled
+          disabled={disabled}
         />
       </Row>
       <Row>
@@ -297,10 +265,29 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               options={countsDropdownOptions}
               isRequired
               error={errors.account_id?.message}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
+        <Controller
+          name={'amount'}
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <Input
+              value={value.toString()}
+              onChange={onChange}
+              label="VISINA PAUŠALA:"
+              type={'currency'}
+              inputMode={'decimal'}
+              leftContent={<div>€</div>}
+              isRequired
+              error={errors.amount?.message}
+              disabled={disabled}
+            />
+          )}
+        />
+      </Row>
+      <Row>
         <Controller
           name={'court_costs'}
           control={control}
@@ -312,8 +299,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               type={'currency'}
               inputMode={'decimal'}
               leftContent={<div>€</div>}
-              style={{flexGrow: 1 / 2}}
-              disabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -329,7 +315,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               label="KONTO ZA SUDSKE TROŠKOVE:"
               placeholder={'Odaberite konto za sudske troškove'}
               options={countsDropdownOptions}
-              isDisabled={!updatePermission}
+              isDisabled={disabled}
             />
           )}
         />
@@ -346,7 +332,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.payment_deadline_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
@@ -361,13 +347,13 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
               onChange={onChange}
               isRequired
               error={errors.execution_date?.message}
-              isDisabled={!updatePermission}
+              disabled={disabled}
             />
           )}
         />
       </Row>
       <Row>
-        <Input disabled={!updatePermission} {...register('description')} label="OPIS:" textarea />
+        <Input disabled={disabled} {...register('description')} label="OPIS:" textarea />
       </Row>
 
       <Row>
@@ -378,15 +364,19 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
           onUpload={handleUpload}
           note={<Typography variant="bodySmall" content="Dodaj fajl" />}
           buttonText="Učitaj"
-          disabled={!updatePermission}
+          disabled={disabled}
         />
         <FileList files={(flat_rate?.file && flat_rate?.file) ?? []} />
       </Row>
       <Footer>
         <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
-        {updatePermission && (
-          <Button content="Sačuvaj" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={loading} />
-        )}
+        <Button
+          content="Sačuvaj"
+          variant="primary"
+          onClick={handleSubmit(onSubmit)}
+          isLoading={loading}
+          disabled={disabled}
+        />
       </Footer>
     </Container>
   );
