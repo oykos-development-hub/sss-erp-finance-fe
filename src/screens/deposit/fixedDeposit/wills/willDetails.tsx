@@ -33,9 +33,9 @@ const WillDetails = () => {
     alert,
   } = useAppContext();
   const deletePermittedRoutes = checkActionRoutePermissions(permissions, 'delete');
-  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed/will');
+  const deletePermission = deletePermittedRoutes.includes('/finance/deposit/fixed/wills');
   const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
-  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/will');
+  const updatePermission = updatePermittedRoutes.includes('/finance/deposit/fixed/wills');
 
   const id = pathname.split('/').pop();
 
@@ -65,7 +65,7 @@ const WillDetails = () => {
     setDeleteDispatchId(null);
   };
 
-  const disabled = !updatePermission || currentWill[0]?.status === 'Zakljucen';
+  const disabled = !updatePermission || currentWill[0]?.status === 'Zaključen';
 
   return (
     <ScreenWrapper showBreadcrumbs={true}>

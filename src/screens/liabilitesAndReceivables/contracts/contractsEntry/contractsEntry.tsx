@@ -229,7 +229,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             source_of_funding: data?.source_of_funding?.id,
             date_of_payment: parseDateForBackend(data?.date_of_payment),
             description: data?.description,
-            organization_unit_id: organization_unit_id,
+            organization_unit_id: organization_unit_id?.id,
             file_id: files[0]?.id,
             additional_expenses: fields.map((_, index) => ({
               id: data.additionalExpenses[index]?.id,
@@ -278,7 +278,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         activity_id: data?.activity_id?.id,
         source_of_funding: data?.source_of_funding?.id,
         date_of_payment: parseDateForBackend(data?.date_of_payment),
-        organization_unit_id: organization_unit_id,
+        organization_unit_id: organization_unit_id?.id,
         description: data?.description,
         file_id: contract?.file?.id,
         additional_expenses: fields.map((_, index) => ({
@@ -347,7 +347,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         receipt_date: contract.receipt_date !== null ? new Date(contract.receipt_date) : undefined,
         date_of_payment: contract.date_of_payment !== null ? new Date(contract.date_of_payment) : undefined,
         description: contract?.description,
-        organization_unit_id: contract?.organization_unit_id,
+        organization_unit_id: contract?.organization_unit,
         source_of_funding: {id: contract.source_of_funding, title: contract.source_of_funding},
         issuer: contract?.issuer,
         municipality_id: {id: contract.municipality.id, title: contract.municipality.title},
@@ -438,8 +438,8 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             render={({field: {name, value, onChange}}) => (
               <Dropdown
                 name={name}
-                value={organizationUnits.find(ou => ou.id === value)}
-                onChange={value => onChange(value.id)}
+                value={value}
+                onChange={onChange}
                 label="ORGANIZACIONA JEDINICA:"
                 placeholder="Odaberi organizacionu jedinicu"
                 options={organizationUnits}
@@ -616,55 +616,91 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
             </HalfWidthContainer>
             <HalfWidthContainer>
               <Row>
-                <Input
-                  {...register('gross_price')}
-                  label="IZNOS ZA UPLATU BRUTO:"
-                  placeholder="Unesite iznos"
-                  leftContent={<div>€</div>}
-                  disabled={!updatePermission || !!net_price || contract?.status === 'Na nalogu'}
-                  error={errors.gross_price?.message}
-                  isRequired
+                <Controller
+                  name={'gross_price'}
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Input
+                      name={name}
+                      value={value?.toString()}
+                      onChange={onChange}
+                      label="IZNOS ZA UPLATU BRUTO:"
+                      placeholder="Unesite iznos"
+                      leftContent={<div>€</div>}
+                      disabled={!updatePermission || !!net_price || contract?.status === 'Na nalogu'}
+                      error={errors.gross_price?.message}
+                      type={'currency'}
+                      isRequired
+                    />
+                  )}
                 />
-                <Input
-                  {...register('previous_income_gross')}
-                  label="PRETHODNA PRIMANJA U MJESECU BRUTO:"
-                  placeholder="Unesite prethodna primanja"
-                  leftContent={<div>€</div>}
-                  disabled={
-                    !updatePermission ||
-                    !!net_price ||
-                    !!previous_income_net ||
-                    selectedSupplierEntity !== 'employee' ||
-                    contract?.status === 'Na nalogu'
-                  }
-                  error={errors.previous_income_gross?.message}
-                  isRequired
+                <Controller
+                  name={'previous_income_gross'}
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Input
+                      name={name}
+                      value={value?.toString()}
+                      onChange={onChange}
+                      label="PRETHODNA PRIMANJA U MJESECU BRUTO:"
+                      placeholder="Unesite prethodna primanja"
+                      leftContent={<div>€</div>}
+                      disabled={
+                        !updatePermission ||
+                        !!net_price ||
+                        !!previous_income_net ||
+                        selectedSupplierEntity !== 'employee' ||
+                        contract?.status === 'Na nalogu'
+                      }
+                      error={errors.previous_income_gross?.message}
+                      type={'currency'}
+                      isRequired
+                    />
+                  )}
                 />
               </Row>
               <Row>
-                <Input
-                  {...register('net_price')}
-                  label={'NETO IZNOS:'}
-                  placeholder={'Unesite neto iznos'}
-                  leftContent={<div>€</div>}
-                  disabled={!updatePermission || !!gross_price || contract?.status === 'Na nalogu'}
-                  error={errors.net_price?.message}
-                  isRequired
+                <Controller
+                  name={'net_price'}
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Input
+                      name={name}
+                      value={value?.toString()}
+                      onChange={onChange}
+                      label={'NETO IZNOS:'}
+                      placeholder={'Unesite neto iznos'}
+                      leftContent={<div>€</div>}
+                      disabled={!updatePermission || !!gross_price || contract?.status === 'Na nalogu'}
+                      error={errors.net_price?.message}
+                      type={'currency'}
+                      isRequired
+                    />
+                  )}
                 />
-                <Input
-                  {...register('previous_income_net')}
-                  label="PRETHODNA PRIMANJA U MJESECU NETO:"
-                  placeholder="Unesite prethodna primanja"
-                  leftContent={<div>€</div>}
-                  disabled={
-                    !updatePermission ||
-                    !!gross_price ||
-                    !!previous_income_gross ||
-                    selectedSupplierEntity !== 'employee' ||
-                    contract?.status === 'Na nalogu'
-                  }
-                  error={errors.previous_income_net?.message}
-                  isRequired
+                <Controller
+                  name={'previous_income_net'}
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Input
+                      name={name}
+                      value={value?.toString()}
+                      onChange={onChange}
+                      label="PRETHODNA PRIMANJA U MJESECU NETO:"
+                      placeholder="Unesite prethodna primanja"
+                      leftContent={<div>€</div>}
+                      disabled={
+                        !updatePermission ||
+                        !!gross_price ||
+                        !!previous_income_gross ||
+                        selectedSupplierEntity !== 'employee' ||
+                        contract?.status === 'Na nalogu'
+                      }
+                      error={errors.previous_income_net?.message}
+                      type={'currency'}
+                      isRequired
+                    />
+                  )}
                 />
               </Row>
               <Button
@@ -685,14 +721,14 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
         {!!fields.length && (
           <>
             <Table tableHeads={additionalExpensesTableHeads} data={fields} />
-            {!!contract && contract?.net_price && contract?.vat_price && (
+            {!!contract && !!contract?.net_price && !!contract?.vat_price && (
               <Row>
                 <MainTitle
                   content={`Ukupno: ${formatCurrency(contract?.net_price + contract?.vat_price)}`}
                   style={{marginTop: 20, marginLeft: 10}}
                 />
               </Row>
-            )}{' '}
+            )}
           </>
         )}
         <Footer>

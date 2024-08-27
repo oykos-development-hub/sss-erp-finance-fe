@@ -95,7 +95,7 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
       decision_date: parseDateForBackend(data.decision_date),
       execution_date: parseDateForBackend(data.execution_date),
       payment_deadline_date: parseDateForBackend(data.payment_deadline_date),
-      file: [file[0]?.id],
+      file: flat_rate?.file[0]?.id ? [flat_rate?.file[0]?.id] : [],
     };
 
     if (uploadedFile) {

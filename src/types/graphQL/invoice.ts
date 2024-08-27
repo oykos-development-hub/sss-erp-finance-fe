@@ -74,10 +74,9 @@ export interface ContractItem {
   supplier_title: string;
   supplier: DropdownData<number>;
   activity: DropdownData<number>;
-
   net_price?: number;
   vat_price?: number;
-  organization_unit_id?: number;
+  organization_unit: DropdownData<number>;
   date_of_invoice: string | Date;
   sss_invoice_receipt_date: Date;
   date_of_payment: string | Date;

@@ -110,7 +110,9 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
       decision_date: parseDateForBackend(data.decision_date),
       execution_date: parseDateForBackend(data.execution_date),
       payment_deadline_date: parseDateForBackend(data.payment_deadline_date),
-      file: [file[0]?.id],
+      file: property_benefits_confiscation_details?.file[0]?.id
+        ? [property_benefits_confiscation_details?.file[0]?.id]
+        : [],
     };
 
     if (uploadedFile) {

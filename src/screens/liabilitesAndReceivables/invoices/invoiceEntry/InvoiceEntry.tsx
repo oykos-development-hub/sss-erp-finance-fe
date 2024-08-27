@@ -411,7 +411,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           passed_to_accounting: data?.passed_to_accounting,
           passed_to_inventory: data?.passed_to_inventory,
           type: 'invoices',
-          organization_unit_id: organization_unit_id,
+          organization_unit_id: organization_unit_id?.id,
           pro_forma_invoice_number: data?.pro_forma_invoice_number,
           pro_forma_invoice_date: pro_forma_invoice_date ? parseDateForBackend(pro_forma_invoice_date) : null,
           articles: fields.map((_, index) => ({
@@ -467,7 +467,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           description: data?.description,
           passed_to_accounting: data?.passed_to_accounting,
           type: 'invoices',
-          organization_unit_id: organization_unit_id,
+          organization_unit_id: organization_unit_id?.id,
           pro_forma_invoice_number: data?.pro_forma_invoice_number,
           pro_forma_invoice_date: pro_forma_invoice_date ? parseDateForBackend(pro_forma_invoice_date) : null,
           articles: fields.map((_, index) => ({
@@ -514,7 +514,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         sss_pro_forma_invoice_receipt_date: parseDateForBackend(data?.sss_pro_forma_invoice_receipt_date),
         bank_account: data?.bank_account?.id,
         date_of_payment: parseDateForBackend(data?.date_of_payment),
-        organization_unit_id: organization_unit_id,
+        organization_unit_id: organization_unit_id?.id,
         description: data?.description,
         type: 'invoices',
         pro_forma_invoice_number: data?.pro_forma_invoice_number,
@@ -631,7 +631,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         date_of_payment: invoice.date_of_payment,
         bank_account: {id: invoice.bank_account, title: invoice.bank_account},
         description: invoice?.description,
-        organization_unit_id: invoice?.organization_unit?.id,
+        organization_unit_id: invoice?.organization_unit,
         passed_to_accounting: invoice?.passed_to_accounting,
         pro_forma_invoice_date: invoice?.pro_forma_invoice_date,
         pro_forma_invoice_number: invoice?.pro_forma_invoice_number,
@@ -812,8 +812,8 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             render={({field: {name, value, onChange}}) => (
               <Dropdown
                 name={name}
-                value={organizationUnits.find(ou => ou.id === value)}
-                onChange={value => onChange(value.id)}
+                value={value}
+                onChange={onChange}
                 label="ORGANIZACIONA JEDINICA:"
                 placeholder="Odaberi organizacionu jedinicu"
                 options={organizationUnits}

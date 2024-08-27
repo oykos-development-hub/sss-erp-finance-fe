@@ -85,7 +85,8 @@ export const RequestsPage = () => {
                 <BudgetIcon stroke={Theme?.palette?.gray800} />
               </IconWrapper>
             ),
-            shouldRender: row => row?.status === 'Odobreno',
+            // Only allow entry for current year
+            shouldRender: row => row?.status === 'Odobreno' && row?.year === new Date().getFullYear(),
           },
         ]}
       />

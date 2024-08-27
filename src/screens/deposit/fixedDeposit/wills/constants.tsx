@@ -74,7 +74,7 @@ export const willDispatchOptions = [
 export const willStatusOptions = [
   {id: 'U toku', title: 'U toku'},
   {id: 'Depozit', title: 'Depozit'},
-  {id: 'Zakljucen', title: 'Zakljucen'},
+  {id: 'Zaključen', title: 'Zaključen'},
 ];
 
-export type WillStatusType = 'U toku' | 'Depozit' | 'Zakljucen';
+export type WillStatusType = 'U toku' | 'Depozit' | 'Zaključen';

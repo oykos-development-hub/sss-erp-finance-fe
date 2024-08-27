@@ -120,9 +120,7 @@ const WillForm = ({data}: {data?: Will}) => {
     }
   }, [data]);
 
-  console.log(errors);
-
-  const disabled = data?.status === 'Zakljucen';
+  const disabled = data?.status === 'Zaključen';
 
   return (
     <FlexColumn gap={20} style={{alignItems: 'stretch'}}>

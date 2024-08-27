@@ -57,7 +57,7 @@ export const invoiceSchema = yup.object().shape({
   is_invoice: optionsBooleanSchema.required(requiredError),
   invoice_type: optionsStringSchema.required(requiredError),
   file_id: yup.number().nullable(),
-  organization_unit_id: yup.number(),
+  organization_unit_id: optionsNumberSchema.default(null).required(requiredError),
   passed_to_accounting: yup.boolean(),
   articles: yup
     .array()

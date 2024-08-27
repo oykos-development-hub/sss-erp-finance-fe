@@ -51,3 +51,7 @@ export const decisionsSchema = yup.object().shape({
     }),
   ),
 });
+
+//TODO Remove this when correct error is returned from backend
+export const fixedErrorMessage =
+  'make api request: backend error: API error: 500 - upper tx: repo additional expenses delete: upper delete: ERROR: update or delete on table "additional_expenses" violates foreign key constraint "payment_order_items_additional_expense_id_fkey" on table "payment_order_items" (SQLSTATE 23503)';

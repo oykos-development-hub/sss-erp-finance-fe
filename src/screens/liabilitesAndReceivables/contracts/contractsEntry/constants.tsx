@@ -35,7 +35,7 @@ export const contractsSchema = yup.object().shape({
   date_of_start: yup.date().required(requiredError),
   vat_price: yup.number().nullable(),
   source_of_funding: optionsStringSchema.default(null).required(requiredError),
-  organization_unit_id: yup.number(),
+  organization_unit_id: optionsNumberSchema.default(null).required(requiredError),
   additionalExpenses: yup
     .array()
     .of(

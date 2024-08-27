@@ -23,7 +23,7 @@ import {formatCurrency} from '../../../../utils/currencyUtils.ts';
 import {FileListWrapper} from '../../invoices/invoicesOverview/styles.ts';
 import {getSuppliersDropdown} from '../../salaries/salaryUtils.ts';
 import {SourceOfFunding} from '../constants.tsx';
-import {decisionsSchema} from './constants.tsx';
+import {decisionsSchema, fixedErrorMessage} from './constants.tsx';
 import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
@@ -253,9 +253,15 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       })),
     });
 
-    const handleResponse = (isSuccess: boolean) => {
+    const handleResponse = (isSuccess: boolean, error?: string) => {
       const successMessage = ID ? 'Uspješno ste izmijenili rješenje.' : 'Uspješno dodavanje rješenja.';
-      const errorMessage = ID ? 'Došlo je do greške. Izmjene nisu sačuvane.' : 'Neuspješno dodavanje rješenja.';
+      const errorMessage =
+        error === fixedErrorMessage
+          ? 'Došlo je do greške. Rješenje je djelimično ili u potpunosti plaćeno.'
+          : ID
+          ? 'Došlo je do greške. Izmjene nisu sačuvane.'
+          : 'Neuspješno dodavanje rješenja.';
+
       isSuccess ? alert.success(successMessage) : alert.error(errorMessage);
       isSuccess && navigate('/finance/liabilities-receivables/liabilities/decisions');
     };
@@ -270,7 +276,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
         insertInvoice(
           payload as any,
           () => handleResponse(true),
-          () => handleResponse(false),
+          error => handleResponse(false, error),
         );
       });
     } else {
@@ -278,7 +284,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
       insertInvoice(
         payload as any,
         () => handleResponse(true),
-        () => handleResponse(false),
+        error => handleResponse(false, error),
       );
     }
   };
@@ -594,59 +600,92 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
             </HalfWidthContainer>
             <HalfWidthContainer>
               <Row>
-                <Input
-                  {...register('gross_price')}
-                  label="IZNOS ZA UPLATU BRUTO:"
-                  placeholder="Unesite iznos"
-                  leftContent={<div>€</div>}
-                  disabled={!updatePermission || !!net_price || decision?.status === 'Na nalogu'}
-                  type={'currency'}
-                  error={errors.gross_price?.message}
-                  isRequired
+                <Controller
+                  name={'gross_price'}
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Input
+                      name={name}
+                      value={value?.toString()}
+                      onChange={onChange}
+                      label="IZNOS ZA UPLATU BRUTO:"
+                      placeholder="Unesite iznos"
+                      leftContent={<div>€</div>}
+                      disabled={!updatePermission || !!net_price || decision?.status === 'Na nalogu'}
+                      type={'currency'}
+                      error={errors.gross_price?.message}
+                      isRequired
+                    />
+                  )}
                 />
-                <Input
-                  {...register('previous_income_gross')}
-                  label="PRETHODNA PRIMANJA U MJESECU BRUTO:"
-                  placeholder="Unesite prethodna primanja"
-                  leftContent={<div>€</div>}
-                  disabled={
-                    !updatePermission ||
-                    !!net_price ||
-                    !!previous_income_net ||
-                    selectedSupplierEntity !== 'employee' ||
-                    decision?.status === 'Na nalogu'
-                  }
-                  type={'currency'}
-                  error={errors.previous_income_gross?.message}
-                  isRequired
+                <Controller
+                  name={'previous_income_gross'}
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Input
+                      name={name}
+                      value={value?.toString()}
+                      onChange={onChange}
+                      label="PRETHODNA PRIMANJA U MJESECU BRUTO:"
+                      placeholder="Unesite prethodna primanja"
+                      leftContent={<div>€</div>}
+                      disabled={
+                        !updatePermission ||
+                        !!net_price ||
+                        !!previous_income_net ||
+                        selectedSupplierEntity !== 'employee' ||
+                        decision?.status === 'Na nalogu'
+                      }
+                      type={'currency'}
+                      error={errors.previous_income_gross?.message}
+                      isRequired
+                    />
+                  )}
                 />
               </Row>
               <Row>
-                <Input
-                  {...register('net_price')}
-                  label={'NETO IZNOS:'}
-                  placeholder={'Unesite neto iznos'}
-                  leftContent={<div>€</div>}
-                  disabled={!updatePermission || !!gross_price || decision?.status === 'Na nalogu'}
-                  error={errors.net_price?.message}
-                  type={'currency'}
-                  isRequired
+                <Controller
+                  name={'net_price'}
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Input
+                      name={name}
+                      value={value?.toString()}
+                      onChange={onChange}
+                      label={'NETO IZNOS:'}
+                      placeholder={'Unesite neto iznos'}
+                      leftContent={<div>€</div>}
+                      disabled={!updatePermission || !!gross_price || decision?.status === 'Na nalogu'}
+                      error={errors.net_price?.message}
+                      type={'currency'}
+                      isRequired
+                    />
+                  )}
                 />
-                <Input
-                  {...register('previous_income_net')}
-                  label="PRETHODNA PRIMANJA U MJESECU NETO:"
-                  placeholder="Unesite prethodna primanja"
-                  leftContent={<div>€</div>}
-                  type={'currency'}
-                  disabled={
-                    !updatePermission ||
-                    !!gross_price ||
-                    !!previous_income_gross ||
-                    selectedSupplierEntity !== 'employee' ||
-                    decision?.status === 'Na nalogu'
-                  }
-                  error={errors.previous_income_net?.message}
-                  isRequired
+
+                <Controller
+                  name={'previous_income_net'}
+                  control={control}
+                  render={({field: {name, value, onChange}}) => (
+                    <Input
+                      name={name}
+                      value={value?.toString()}
+                      onChange={onChange}
+                      label="PRETHODNA PRIMANJA U MJESECU NETO:"
+                      placeholder="Unesite prethodna primanja"
+                      leftContent={<div>€</div>}
+                      type={'currency'}
+                      disabled={
+                        !updatePermission ||
+                        !!gross_price ||
+                        !!previous_income_gross ||
+                        selectedSupplierEntity !== 'employee' ||
+                        decision?.status === 'Na nalogu'
+                      }
+                      error={errors.previous_income_net?.message}
+                      isRequired
+                    />
+                  )}
                 />
               </Row>
               <Button
