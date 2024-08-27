@@ -58,7 +58,7 @@ export const optionsBooleanSchema = yup
   .test('required-field', requiredError, function (value) {
     if (value === null) return true; // Allow null if it's nullable
 
-    const isValid = value?.id !== false && value?.title !== 'default';
+    const isValid = value?.title !== 'default';
 
     if (!isValid) {
       return this.createError({

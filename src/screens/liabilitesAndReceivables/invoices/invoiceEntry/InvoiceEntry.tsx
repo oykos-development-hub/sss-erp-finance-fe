@@ -718,7 +718,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                 options={suppliers}
                 isDisabled={
                   !updatePermission ||
-                  ((type?.id === false || type.id === true) && Boolean(order_id)) ||
+                  !!order_id ||
                   type === undefined ||
                   invoice?.status === 'Na nalogu' ||
                   invoice?.status === 'Djelimično na nalogu'
@@ -885,14 +885,15 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             )}
           />
         </Row>
-        {((order_id !== 0 && type?.id === false && isManual) ||
-          (invoice && !invoice.is_invoice && !invoice?.pro_forma_invoice_date)) && (
+        {type?.id === false && (
           <FileUploadWrapper>
             <FileUpload
               icon={null}
               files={uploadedFileProForma}
               disabled={
-                !updatePermission || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
+                !updatePermission ||
+                invoice?.status === 'Na nalogu' ||
+                (invoice?.status === 'Djelimično na nalogu' && !!receipt_date)
               }
               variant="secondary"
               onUpload={handleUploadProForma}
@@ -903,15 +904,13 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
             />
           </FileUploadWrapper>
         )}
-        {((order_id !== 0 && type?.id === true && isManual) || invoice?.pro_forma_invoice_date) && (
+        {type?.id === true && (
           <FileUploadWrapper>
             <FileUpload
               icon={null}
               files={uploadedFile}
               disabled={
-                !updatePermission ||
-                (invoice?.status === 'Na nalogu' && type?.id) ||
-                invoice?.status === 'Djelimično na nalogu'
+                !updatePermission || invoice?.status === 'Na nalogu' || invoice?.status === 'Djelimično na nalogu'
               }
               variant="secondary"
               onUpload={handleUpload}
