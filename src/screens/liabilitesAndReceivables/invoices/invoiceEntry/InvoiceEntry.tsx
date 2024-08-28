@@ -1067,8 +1067,8 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           onClick={handleSubmit(onSubmit)}
           disabled={
             !fields.length ||
-            !!receipt_date ||
             !updatePermission ||
+            (!!receipt_date && invoice?.status !== 'Nepotpun') ||
             (invoice?.status === 'Na nalogu' && invoice?.is_invoice) ||
             invoice?.status === 'Djelimično na nalogu'
           }

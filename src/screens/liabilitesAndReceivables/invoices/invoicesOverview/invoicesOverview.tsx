@@ -187,16 +187,17 @@ const InvoicesOverview = () => {
             onClick: (row: InvoiceItem) => navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`),
             icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
             shouldRender: row =>
-              !row.receipt_date &&
-              (row.status === 'Nepotpun' ||
-                (row.status === 'Kreiran' && !row.registred) ||
-                (row.status === 'Na nalogu' && !row?.is_invoice)),
+              row.status === 'Nepotpun' ||
+              (!row.receipt_date &&
+                !row.registred &&
+                (row.status === 'Kreiran' || (row.status === 'Na nalogu' && !row.is_invoice))),
           },
           {
             name: 'Izbriši',
             onClick: row => onDelete(row),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-            shouldRender: row => !row.receipt_date && row.status === 'Kreiran' && !row.registred,
+            shouldRender: row =>
+              !row.receipt_date && !row.registred && (row.status === 'Kreiran' || row.status === 'Nepotpun'),
           },
         ]}
       />
