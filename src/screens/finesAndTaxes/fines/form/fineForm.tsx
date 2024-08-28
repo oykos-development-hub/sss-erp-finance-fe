@@ -382,7 +382,12 @@ const FineForm = ({fine}: FineFormProps) => {
         <FileList files={(fine?.file && fine?.file) ?? []} />
       </Row>
       <Footer>
-        <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
+        <Button
+          content="Odustani"
+          variant="secondary"
+          style={{width: 130}}
+          onClick={() => navigate('/finance/fines-taxes/fines')}
+        />
         <Button
           content="Sačuvaj"
           variant="primary"

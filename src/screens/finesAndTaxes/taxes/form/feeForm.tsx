@@ -362,7 +362,12 @@ const FeeForm = ({fee}: FeeFormProps) => {
         <FileList files={(fee?.file && fee?.file) ?? []} />
       </Row>
       <Footer>
-        <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
+        <Button
+          content="Odustani"
+          variant="secondary"
+          style={{width: 130}}
+          onClick={() => navigate('/finance/fines-taxes/taxes')}
+        />
         <Button
           content="Sačuvaj"
           variant="primary"

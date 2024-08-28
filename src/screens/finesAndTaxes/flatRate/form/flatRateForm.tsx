@@ -369,7 +369,12 @@ const FlatRateForm = ({flat_rate}: FlatRateFormProps) => {
         <FileList files={(flat_rate?.file && flat_rate?.file) ?? []} />
       </Row>
       <Footer>
-        <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
+        <Button
+          content="Odustani"
+          variant="secondary"
+          style={{width: 130}}
+          onClick={() => navigate('/finance/fines-taxes/flat-rate')}
+        />
         <Button
           content="Sačuvaj"
           variant="primary"

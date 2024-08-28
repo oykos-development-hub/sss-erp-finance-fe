@@ -369,7 +369,12 @@ const ProceduralCostForm = ({procedural_cost}: ProceduralCostFormProps) => {
         <FileList files={(procedural_cost?.file && procedural_cost?.file) ?? []} />
       </Row>
       <Footer>
-        <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
+        <Button
+          content="Odustani"
+          variant="secondary"
+          style={{width: 130}}
+          onClick={() => navigate('/finance/fines-taxes/procedural-costs')}
+        />
         <Button
           content="Sačuvaj"
           variant="primary"

@@ -390,7 +390,12 @@ const PropertyBenefitsConfiscationForm = ({property_benefits_confiscation}: Prop
         <FileList files={(property_benefits_confiscation?.file && property_benefits_confiscation?.file) ?? []} />
       </Row>
       <Footer>
-        <Button content="Odustani" variant="secondary" style={{width: 130}} onClick={() => reset()} />
+        <Button
+          content="Odustani"
+          variant="secondary"
+          style={{width: 130}}
+          onClick={() => navigate('/finance/fines-taxes/confiscation')}
+        />
         <Button
           content="Sačuvaj"
           variant="primary"
