@@ -466,6 +466,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
           date_of_payment: parseDateForBackend(data?.date_of_payment),
           description: data?.description,
           passed_to_accounting: data?.passed_to_accounting,
+          passed_to_inventory: data?.passed_to_inventory,
           type: 'invoices',
           organization_unit_id: organization_unit_id?.id,
           pro_forma_invoice_number: data?.pro_forma_invoice_number,
@@ -604,11 +605,12 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
 
   const type = watch('is_invoice');
 
+  const passedToInventory = watch('passed_to_inventory');
   const passedToAccounting = watch('passed_to_accounting');
 
   useEffect(() => {
     setValue('receipt_date', undefined);
-  }, [passedToAccounting]);
+  }, [passedToInventory, passedToAccounting]);
 
   useEffect(() => {
     if (invoice) {
@@ -633,6 +635,7 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
         description: invoice?.description,
         organization_unit_id: invoice?.organization_unit,
         passed_to_accounting: invoice?.passed_to_accounting,
+        passed_to_inventory: invoice?.passed_to_inventory,
         pro_forma_invoice_date: invoice?.pro_forma_invoice_date,
         pro_forma_invoice_number: invoice?.pro_forma_invoice_number,
         articles: invoice.articles.map((_, index) => ({
@@ -1019,10 +1022,41 @@ const InvoiceEntry = ({invoice}: InvoiceFormProps) => {
                       style={{marginLeft: 10}}
                     />
                   }
-                  disabled={!updatePermission || !!invoice?.id}
+                  disabled={!updatePermission || !!invoice?.id || passedToInventory === true}
                   theme={Theme}
                 />
               )}
+            />
+          </div>
+        )}
+
+        {type?.id === true && isManual && (
+          <div style={{width: 350, marginBlock: 20}}>
+            <Controller
+              name="passed_to_inventory"
+              control={control}
+              render={({field: {onChange, name, value}}) => {
+                return (
+                  <StyledSwitch
+                    name={name}
+                    checked={value as any}
+                    onChange={onChange}
+                    content={
+                      <Typography
+                        variant="bodyMedium"
+                        content="PROSLIJEDITE U OSNOVNA SREDSTVA:"
+                        style={{marginLeft: 10}}
+                      />
+                    }
+                    disabled={
+                      passedToAccounting === true ||
+                      invoice?.status === 'Na nalogu' ||
+                      invoice?.status === 'Djelimično na nalogu'
+                    }
+                    theme={Theme}
+                  />
+                );
+              }}
             />
           </div>
         )}
