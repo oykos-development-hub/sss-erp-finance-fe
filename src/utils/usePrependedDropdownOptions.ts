@@ -1,5 +1,5 @@
-import {useMemo} from 'react';
 import {DropdownData} from '../types/dropdownData.ts';
+import {useMemo} from 'react';
 
 const usePrependedDropdownOptions = <T>(options: DropdownData<T>[], filterAllLabel?: string): DropdownData<T>[] => {
   return useMemo(() => {
