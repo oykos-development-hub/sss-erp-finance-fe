@@ -201,7 +201,7 @@ const ReceivablesOverview = () => {
     const modalProps = {
       handleUpload: handleUploadSapIdsTable,
       content: 'Tabela sa SAP ID-evima',
-      noTemplate: true,
+      type: 'IMPORT_PAYMENT_ORDERS_SAP',
     };
     openImportModal(modalProps);
   };

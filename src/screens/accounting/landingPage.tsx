@@ -29,7 +29,7 @@ const ACCOUNTING: React.FC = () => {
           />
           <LandingPageContentBox
             path={'/finance/accounting/returned-enforced-payments'}
-            title={'Knjiženje povraćaja prinudnih naplata'}
+            title={'Knjiženje povrata prinudnih naplata'}
             icon={<RefundsIcon />}
           />
         </Container>

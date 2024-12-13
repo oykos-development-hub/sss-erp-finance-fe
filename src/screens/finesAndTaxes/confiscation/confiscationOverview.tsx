@@ -12,7 +12,7 @@ import {useDebounce} from '../../../utils/useDebounce.ts';
 import useAppContext from '../../../context/useAppContext.ts';
 import useGetPropertyBenefitsConfiscations from '../../../services/graphQL/propertyBenefitsConfiscation/useGetPropertyBenefitsConfiscation.ts';
 import useDeletePropertyBenefitsConfiscation from '../../../services/graphQL/propertyBenefitsConfiscation/useDeletePropertyBenefitsConfiscation.ts';
-import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../services/checkRoutePermissions.ts';
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
@@ -36,8 +36,7 @@ const ConfiscationOverview = () => {
   } = useAppContext();
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

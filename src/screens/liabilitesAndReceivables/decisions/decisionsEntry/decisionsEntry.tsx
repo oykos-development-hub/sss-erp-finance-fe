@@ -27,7 +27,7 @@ import {decisionsSchema, fixedErrorMessage} from './constants.tsx';
 import {DecisionsFormContainer, HalfWidthContainer, Row} from './styles.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 type DecisionEntryForm = yup.InferType<typeof decisionsSchema>;
 interface DecisionFormProps {
@@ -42,8 +42,7 @@ const DecisionsEntry = ({decision}: DecisionFormProps) => {
     contextMain,
   } = useAppContext();
 
-  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(contextMain?.permissions);
   const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
   const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/decisions');
 

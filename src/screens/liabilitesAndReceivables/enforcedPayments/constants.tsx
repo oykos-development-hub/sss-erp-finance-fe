@@ -9,7 +9,7 @@ import {formatCurrency} from '../../../utils/currencyUtils.ts';
 export const enforcedPaymentsStatusOptions = [
   {id: '', title: 'Svi statusi'},
   {id: 'Kreiran', title: 'Kreiran'},
-  {id: 'Povraćaj', title: 'Povraćaj'},
+  {id: 'Povraćaj', title: 'Povrat'},
 ];
 
 export const tableHeads: TableHead[] = [

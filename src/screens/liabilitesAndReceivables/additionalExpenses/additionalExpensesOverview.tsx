@@ -15,7 +15,7 @@ import SectionBox from '../../../shared/sectionBox';
 import {MainTitle} from '../../accounting/styles';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
-import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import {checkIsAdmin} from '../../../services/checkRoutePermissions.ts';
 
 export interface AdditionalExpensesOverviewFilters {
   year?: DropdownData<number> | null;
@@ -44,8 +44,7 @@ const AdditionalExpensesOverview = () => {
   const debouncedSearch = useDebounce(search, 500);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(contextMain?.permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

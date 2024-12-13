@@ -14,7 +14,7 @@ import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {StatusOptionsInvoice, invoicesOverviewTableHeads} from '../constants.tsx';
 import {Row} from './styles.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 export interface InvoiceOverviewFilters {
   year?: DropdownData<string> | null;
@@ -45,8 +45,7 @@ const InvoicesOverview = () => {
   const debouncedSearch = useDebounce(search, 500);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(contextMain?.permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {
@@ -126,6 +125,25 @@ const InvoicesOverview = () => {
   const foundItem = invoice?.find(item => item?.id === showDeleteModalInvoiceId);
   const isInvoice = foundItem ? foundItem.is_invoice : null;
 
+  const isRowEditable = (row: InvoiceItem) => {
+    // Not editable conditions
+    const notEditable =
+      row.status === 'Djelimično na nalogu' ||
+      (row.status === 'Na nalogu' && row?.is_invoice) ||
+      row.passed_to_accounting ||
+      row.passed_to_inventory;
+
+    // Editable conditions
+    const editable =
+      row.status === 'Nepotpun' ||
+      (!row.receipt_date &&
+        !row.registred &&
+        (row.status === 'Kreiran' || (row.status === 'Na nalogu' && !row.is_invoice)));
+
+    // Return true if it's editable and not marked as not editable
+    return editable && !notEditable;
+  };
+
   return (
     <>
       <Row>
@@ -178,26 +196,25 @@ const InvoicesOverview = () => {
         style={{marginBottom: 22}}
         emptyMessage="Još nema računa"
         onRowClick={row =>
-          (row.status === 'Djelimično na nalogu' || (row.status === 'Na nalogu' && row?.is_invoice)) &&
-          navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`)
+          !isRowEditable(row) && navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`)
         }
         tableActions={[
           {
             name: 'Izmijeni',
             onClick: (row: InvoiceItem) => navigate(`/finance/liabilities-receivables/liabilities/invoices/${row.id}`),
             icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-            shouldRender: row =>
-              row.status === 'Nepotpun' ||
-              (!row.receipt_date &&
-                !row.registred &&
-                (row.status === 'Kreiran' || (row.status === 'Na nalogu' && !row.is_invoice))),
+            shouldRender: row => isRowEditable(row),
           },
           {
             name: 'Izbriši',
             onClick: row => onDelete(row),
             icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
             shouldRender: row =>
-              !row.receipt_date && !row.registred && (row.status === 'Kreiran' || row.status === 'Nepotpun'),
+              !row.receipt_date &&
+              !row.registred &&
+              (row.status === 'Kreiran' || row.status === 'Nepotpun') &&
+              !row.passed_to_accounting &&
+              !row.passed_to_inventory,
           },
         ]}
       />

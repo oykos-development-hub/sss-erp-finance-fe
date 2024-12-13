@@ -26,7 +26,7 @@ import {MainTitle} from '../../../../shared/pageElements.ts';
 import {SourceOfFunding} from '../../decisions/constants.tsx';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 type ContractEntryForm = yup.InferType<typeof contractsSchema>;
 interface ContractFormProps {
@@ -41,8 +41,7 @@ const ContractsEntry = ({contract}: ContractFormProps) => {
     contextMain,
   } = useAppContext();
 
-  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(contextMain?.permissions);
   const updatePermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'update');
   const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts');
 

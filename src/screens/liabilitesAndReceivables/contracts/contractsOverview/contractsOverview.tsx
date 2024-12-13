@@ -14,7 +14,7 @@ import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {contractsOverviewTableHeads} from '../constants.tsx';
 import {Row} from './styles.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 export interface ContractsOverviewFilters {
   year?: DropdownData<string> | null;
@@ -48,8 +48,7 @@ const ContractsOverview = () => {
   const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/contracts');
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(contextMain?.permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

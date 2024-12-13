@@ -14,5 +14,5 @@ export const TypesOfObligation = [
   {id: 'obligations', title: 'Obaveze'},
   {id: 'payment_orders', title: 'Nalozi za plaćanje'},
   {id: 'enforced_payments', title: 'Prinudne naplate'},
-  {id: 'return_enforced_payment', title: 'Povraćaji prinudnih naplata'},
+  {id: 'return_enforced_payment', title: 'Povrati prinudnih naplata'},
 ];

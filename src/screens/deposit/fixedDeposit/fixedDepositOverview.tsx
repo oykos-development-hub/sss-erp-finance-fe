@@ -15,7 +15,7 @@ import {FilterInput} from '../../accounting/styles.tsx';
 import {FilterDropdown, Filters} from '../../budget/planning/budgetList/styles.ts';
 import {tableHeads} from './constants.tsx';
 import {Header} from '../styles.ts';
-import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../services/checkRoutePermissions.ts';
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 
@@ -50,8 +50,7 @@ const FixedDepositOverview = ({type}: {type: FixedDepositType}) => {
   const debouncedSearch = useDebounce(search, 500);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

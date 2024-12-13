@@ -137,7 +137,10 @@ const FinanceDepositDetails = () => {
           <DepositConfiscationModal
             data={itemEditData}
             open={confiscationModal}
-            onClose={() => setConfiscationModal(false)}
+            onClose={() => {
+              setConfiscationModal(false);
+              setItemEditData(null);
+            }}
             refetch={refetch}
           />
         )}

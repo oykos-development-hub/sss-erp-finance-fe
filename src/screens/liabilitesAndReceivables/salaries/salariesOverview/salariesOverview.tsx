@@ -13,7 +13,7 @@ import {getYearOptions} from '../../../../utils/getYearOptions.ts';
 import {getMonthOptions} from '../../../../utils/getMonthOptions.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import {DropdownData} from '../../../../types/dropdownData.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 export interface SalariesOverviewFilters {
   organization_unit_id?: DropdownData<number> | null;
@@ -43,8 +43,7 @@ const SalariesOverview = () => {
   } = useAppContext();
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(contextMain?.permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

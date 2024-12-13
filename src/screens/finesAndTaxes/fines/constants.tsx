@@ -91,5 +91,5 @@ export const FinePaymentMethods: DropdownData<number>[] = [
 export const FineStatuses: DropdownData<number>[] = [
   {id: 1, title: 'Uplaćeno'},
   {id: 2, title: 'Stornirano'},
-  {id: 3, title: 'Povraćaj'},
+  {id: 3, title: 'Povrat'},
 ];

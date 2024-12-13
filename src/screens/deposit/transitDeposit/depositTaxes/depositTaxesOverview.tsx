@@ -17,7 +17,7 @@ import {FilterContainer} from './styles';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import usePrependedDropdownOptions from '../../../../utils/usePrependedDropdownOptions.ts';
 import {FilterDropdown} from '../../../budget/planning/budgetList/styles.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 const SUBJECT_ENTITY = 'other';
 
@@ -44,8 +44,7 @@ const DepositTaxesOverview = () => {
   const {search, subject_id, organization_unit_id, status} = watch();
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

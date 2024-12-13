@@ -12,7 +12,7 @@ import useDeleteProceduralCost from '../../../services/graphQL/proceduralCosts/u
 import {TypeOfFines} from '../fines/constants.tsx';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
 import {ProceduralCostOverviewItem} from '../../../types/graphQL/proceduralCosts.ts';
-import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../services/checkRoutePermissions.ts';
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
@@ -37,8 +37,7 @@ const ProceduralCostsOverview = () => {
   } = useAppContext();
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

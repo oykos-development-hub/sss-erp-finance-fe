@@ -8,7 +8,7 @@ import AddReturnedEnforcedPaymentsForAccounting from './addReturnedEnforcedPayme
 import ReturnedEnforcedPaymentsForAccountingOverview from './returnedEnforcedPaymentsForAccountingOverview';
 
 const accountingPaymentOrderTabs = [
-  {id: Tabs.CurrentAccounting, title: 'Knjiženje povraćaja prinudnih naplata', routeName: 'returned-enforced-payments'},
+  {id: Tabs.CurrentAccounting, title: 'Knjiženje povrata prinudnih naplata', routeName: 'returned-enforced-payments'},
   {id: Tabs.CurrentAccountingOverview, title: 'Proknjiženi nalozi', routeName: 'returned-enforced-payments-overview'},
 ];
 
@@ -58,7 +58,7 @@ export const CurrentReturnedEnforcedPaymentsForAccountingTabs = () => {
         return 'PROKNJIŽENI NALOZI';
 
       default:
-        return 'KNJIŽENJE POVRAĆAJA PRINUDNIH NAPLATA';
+        return 'KNJIŽENJE POVRATA PRINUDNIH NAPLATA';
     }
   };
   useEffect(() => {

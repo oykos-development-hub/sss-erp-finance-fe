@@ -11,12 +11,11 @@ import {calcReallocationSums, flattenReallocationBudgetData} from '../../../shar
 import useInternalReallocationsInsert from '../../../services/graphQL/internalReallocations/useInternalReallocationsInsert.ts';
 import useInternalReallocationsOverview from '../../../services/graphQL/internalReallocations/useInternalReallocationsOverview.ts';
 import {generateInternalReallocationPdfData} from '../../../utils/internalReallocationPdfUtils.ts';
-import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
-import {UserRole} from '../../../constants.ts';
+import {checkIsAdmin} from '../../../services/checkRoutePermissions.ts';
 
 const InternalReallocationBudget = () => {
   const {
-    contextMain: {organization_unit, role_id},
+    contextMain: {organization_unit, permissions},
     navigation: {
       navigate,
       location: {pathname},
@@ -30,6 +29,7 @@ const InternalReallocationBudget = () => {
   const reallocationID = pathname.split('/').at(-1);
   const parsedReallocationID = reallocationID && !Number.isNaN(reallocationID) ? parseInt(reallocationID) : undefined;
   const isNew = reallocationID === 'create';
+  const isAdmin = checkIsAdmin(permissions);
 
   const {internalReallocationsOverview} = useInternalReallocationsOverview({id: parsedReallocationID, skip: isNew});
 
@@ -83,7 +83,7 @@ const InternalReallocationBudget = () => {
               <BoldText variant="bodySmall" content="NAZIV PREDLAGAČA:" />
               <Typography variant="bodySmall" content={organization_unit.title} />
             </TitleWrapper>
-            {useRoleCheck(role_id, [UserRole.ADMIN]) && (
+            {isAdmin && (
               <Button
                 content="Eksportuj PDF"
                 variant="secondary"

@@ -53,7 +53,7 @@ import {optionsNumberSchema, optionsStringSchema} from '../../../../utils/formSc
 import {Supplier} from '../../../../types/graphQL/suppliers.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import useGetActivities from '../../../../services/graphQL/activities/useGetActivities.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 const salaryAdditionalExpensesSchema = yup.object().shape({
   account: optionsNumberSchema.required(requiredError).default(null),
@@ -74,6 +74,11 @@ const salarySchema = yup.object().shape({
   month: optionsStringSchema.required(requiredError).default(null),
   date_of_calculation: yup.string().required(requiredError),
   description: yup.string(),
+  number_of_employees: yup
+    .number()
+    .required(requiredError)
+    .typeError('Morate unijeti broj')
+    .min(1, 'Iznos mora biti veći od 0'),
   organization_unit_id: optionsNumberSchema.required(requiredError).default(null),
   salary_additional_expenses: yup
     .array()
@@ -93,6 +98,7 @@ const initialValues = {
   organization_unit_id: undefined,
   date_of_calculation: '',
   description: '',
+  number_of_employees: 0,
   salary_additional_expenses: [
     {
       account: undefined,
@@ -136,12 +142,11 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
     alert,
   } = useAppContext();
 
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
   const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
   const updatePermission = updatePermittedRoutes.includes('/finance/liabilities-receivables/liabilities/salaries');
 
   const isNew = !salary;
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
 
@@ -149,11 +154,10 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
 
   const {counts} = useGetCountOverview({});
   const {insertSalary} = useInsertSalary();
-  const {suppliers} = useGetSuppliers({entity: 'other'});
+  const {suppliers} = useGetSuppliers({});
   const {suppliers: banks} = useGetSuppliers({entity: 'bank'});
   const [importSuspensionsErrors, setImportSuspensionsErrors] = useState<string[]>([]);
   const [importSalariesErrors, setImportSalariesErrors] = useState<string[]>([]);
-  const [totalEmployees, setTotalEmployees] = useState(0);
   const {activities} = useGetActivities(undefined, isUserSSS ? undefined : organization_unit_id);
 
   const additionalSalaryExpenses = watch('salary_additional_expenses');
@@ -222,7 +226,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
     setImportSuspensionsErrors([]);
 
     if (type === 'salaries') {
-      setTotalEmployees(response.number_of_employees);
+      setValue('number_of_employees', response.number_of_employees);
     }
 
     response.data.forEach((additionalExpense: SalaryAdditionalExpenseParams) => {
@@ -262,7 +266,7 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
       date_of_calculation: parseDateForBackend(data.date_of_calculation) ?? '',
       organization_unit_id: organizationUnitId.id,
       description: data.description,
-      number_of_employees: totalEmployees,
+      number_of_employees: data.number_of_employees,
       salary_additional_expenses: data.salary_additional_expenses.map((additionalExpense: SalaryAdditionalExpense) => ({
         title: additionalExpense.title,
         account_id: additionalExpense.account.id,
@@ -661,6 +665,13 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
               />
             )}
           />
+          <Input
+            {...register('number_of_employees')}
+            label="BROJ ZAPOSLENIH:"
+            placeholder="Unesite broj zaposlenih"
+            error={errors.number_of_employees?.message}
+            disabled={!updatePermission || salary?.registred}
+          />
         </Row>
         <Row>
           <Input
@@ -673,12 +684,14 @@ const SalaryForm = ({salary, refetchSalary}: SalaryFormProps) => {
           />
         </Row>
 
-        <InfoBoxWrapper>
-          {renderInfoBox('BROJ ZAPOSLENIH', salary ? salary.number_of_employees : 0)}
-          {renderInfoBox('UKUPNI NETO IZNOS', salary ? salary.net_price + salary.obligations_price : 0, true)}
-          {renderInfoBox('UKUPNO OBUSTAVE', salary ? salary.obligations_price : 0, true)}
-          {renderInfoBox('ZA ISPLATU BANKAMA', salary ? salary.net_price : 0, true)}
-        </InfoBoxWrapper>
+        {!!salary && (
+          <InfoBoxWrapper>
+            {renderInfoBox('BROJ ZAPOSLENIH', salary ? salary.number_of_employees : 0)}
+            {renderInfoBox('UKUPNI NETO IZNOS', salary ? salary.net_price + salary.obligations_price : 0, true)}
+            {renderInfoBox('UKUPNO OBUSTAVE', salary ? salary.obligations_price : 0, true)}
+            {renderInfoBox('ZA ISPLATU BANKAMA', salary ? salary.net_price : 0, true)}
+          </InfoBoxWrapper>
+        )}
         <Row>
           <FileUploadStepTitle variant="bodyMedium" content="KORAK 1: UVEZI REKAPITULACIJU MJESEČNE ZARADE" />
         </Row>

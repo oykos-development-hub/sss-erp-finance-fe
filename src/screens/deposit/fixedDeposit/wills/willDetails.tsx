@@ -103,7 +103,8 @@ const WillDetails = () => {
                     name: 'delete',
                     onClick: row => setDeleteDispatchId(row.id),
                     icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-                    shouldRender: () => deletePermission,
+                    // only show delete for the dispatch that was added most recently
+                    shouldRender: row => deletePermission && currentWill[0]?.dispatches?.indexOf(row) === 0,
                   },
                 ]
           }
@@ -113,7 +114,10 @@ const WillDetails = () => {
           <WillDispatchModal
             data={dispatchEditData}
             open={true}
-            onClose={() => setDispatchModal(false)}
+            onClose={() => {
+              setDispatchEditData(null);
+              setDispatchModal(false);
+            }}
             refetch={refetch}
             willStatus={currentWill[0]?.status}
           />

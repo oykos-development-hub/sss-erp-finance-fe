@@ -12,7 +12,7 @@ import useGetFlatRate from '../../../services/graphQL/flatRate/useGetFlatRate.ts
 import useDeleteFlatRate from '../../../services/graphQL/flatRate/useDeleteFlatRate.ts';
 import {FlatRateOverviewItem} from '../../../types/graphQL/flatRate.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
-import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../services/checkRoutePermissions.ts';
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
@@ -37,8 +37,7 @@ const FlatRateOverview = () => {
   } = useAppContext();
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

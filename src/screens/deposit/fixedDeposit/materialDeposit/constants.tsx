@@ -25,7 +25,7 @@ export const materialDepositItemTableHeads: TableHead[] = [
     title: 'Iznos',
     accessor: 'amount',
     type: 'custom',
-    renderContents: amount => <Typography content={formatCurrency(amount)} />,
+    renderContents: amount => <Typography content={formatCurrency(amount, true)} />,
   },
   {
     title: 'Datum oduzimanja',

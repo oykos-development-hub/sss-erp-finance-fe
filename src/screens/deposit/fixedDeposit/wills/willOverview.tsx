@@ -15,7 +15,7 @@ import {FilterInput} from '../../../accounting/styles';
 import {FilterDropdown, Filters} from '../../../budget/planning/budgetList/styles';
 import {Header} from '../../styles';
 import {willStatusOptions, willTableHeads} from './constants';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 import usePrependedDropdownOptions from '../../../../utils/usePrependedDropdownOptions.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 
@@ -48,8 +48,7 @@ const WillOverview = () => {
   const debouncedSearch = useDebounce(search, 500);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

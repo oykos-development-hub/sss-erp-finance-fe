@@ -5,8 +5,7 @@ import FundReleaseOverview from './fundReleaseOverview.tsx';
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {CustomDivider, MainTitle, SectionBox, StyledTabs, TitleTabsWrapper} from '../../accounting/styles.tsx';
 import ScreenWrapper from '../../../shared/screenWrapper/screenWrapper.tsx';
-import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
-import {UserRole} from '../../../constants.ts';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 const FundRelease = () => {
   const {
@@ -14,7 +13,7 @@ const FundRelease = () => {
       navigate,
       location: {pathname},
     },
-    contextMain: {role_id},
+    contextMain: {permissions},
   } = useAppContext();
 
   const [activeTab, setActiveTab] = useState(getCurrentTab(pathname) || 1);
@@ -28,6 +27,11 @@ const FundRelease = () => {
         return 'OTPUŠTANJE SREDSTAVA';
     }
   };
+
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermissions = updatePermittedRoutes.includes('/finance/budget/current/fund-release');
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermissions = createPermittedRoutes.includes('/finance/budget/current/fund-release');
 
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
@@ -49,7 +53,7 @@ const FundRelease = () => {
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle()} style={{marginBottom: 0}} />
           <StyledTabs
-            tabs={fundReleaseTabs(useRoleCheck(role_id, [UserRole.MANAGER_OJ]))}
+            tabs={fundReleaseTabs(!createPermissions || !updatePermissions)}
             activeTab={activeTab}
             onChange={onTabChange}
           />

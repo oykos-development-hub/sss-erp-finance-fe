@@ -32,3 +32,10 @@ export function checkActionRoutePermissions(permissions: RoutePermission[], acti
 
   return allowedRoutes;
 }
+
+export function checkIsAdmin(permissions: RoutePermission[]): boolean {
+  // Check if use has CRUD permissions for all routes set to true (admin)
+  return permissions.every(
+    permission => permission.create && permission.read && permission.update && permission.delete,
+  );
+}

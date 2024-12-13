@@ -14,7 +14,7 @@ import {useDebounce} from '../../../../utils/useDebounce.ts';
 import {decisionsOverviewTableHeads} from '../constants.tsx';
 import {Row} from './styles.ts';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 export interface DecisionsOverviewFilters {
   year?: DropdownData<string> | null;
@@ -46,8 +46,7 @@ const DecisionsOverview = () => {
   const debouncedSearch = useDebounce(search, 500);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(contextMain?.permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

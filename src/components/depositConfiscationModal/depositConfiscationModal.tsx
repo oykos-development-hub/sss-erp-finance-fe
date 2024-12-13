@@ -42,10 +42,7 @@ const depositConfiscationSchema = yup.object({
     is: 'material',
     then: schema => schema.required(requiredError),
   }),
-  serial_number: yup.string().when('type', {
-    is: 'material',
-    then: schema => schema.required(requiredError),
-  }),
+  serial_number: yup.string(),
   date_of_confiscation: yup.date().required(requiredError).default(null),
   judge_id: optionsNumberSchema.required(requiredError),
   file_id: yup.number().nullable().default(null),

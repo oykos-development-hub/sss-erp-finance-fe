@@ -187,7 +187,7 @@ const EnforcedPaymentsDetails = () => {
         returnEnforcedPayment(
           payload as any,
           () => {
-            alert.success('Uspješno ste izvršili povraćaj..');
+            alert.success('Uspješno ste izvršili povrat..');
             navigate('/finance/liabilities-receivables/receivables/enforced-payments');
           },
           () => alert.error('Došlo je do greške. Pokušajte ponovo.'),
@@ -389,7 +389,7 @@ const EnforcedPaymentsDetails = () => {
             />
           </Row>
           <CaptionWrapper>
-            <Typography variant="bodyMedium" content="POVRAĆAJ:" style={{padding: 5, fontWeight: 700}} />
+            <Typography variant="bodyMedium" content="POVRAT:" style={{padding: 5, fontWeight: 700}} />
           </CaptionWrapper>
           <div>
             <Row>
@@ -400,7 +400,7 @@ const EnforcedPaymentsDetails = () => {
                   <Datepicker
                     name={name}
                     selected={value ? new Date(value) : ''}
-                    label="DATUM POVRAĆAJA:"
+                    label="DATUM POVRATA:"
                     onChange={onChange}
                     error={errors.return_date?.message}
                     disabled={enforcedPaymentData?.status === 'Povraćaj'}
@@ -417,8 +417,8 @@ const EnforcedPaymentsDetails = () => {
                   files={uploadedReturnFile}
                   variant="secondary"
                   onUpload={handleReturnUpload}
-                  note={<Typography variant="bodySmall" content="Povraćaj" />}
-                  hint={'Fajlovi neće biti učitani dok ne sačuvate povraćaj.'}
+                  note={<Typography variant="bodySmall" content="Povrat" />}
+                  hint={'Fajlovi neće biti učitani dok ne sačuvate povrat.'}
                   buttonText="Učitaj"
                   error={showReturnFileUploadError ? 'Morate učitati fajl' : undefined}
                 />
@@ -426,7 +426,7 @@ const EnforcedPaymentsDetails = () => {
             )}
             {enforcedPaymentData?.status === 'Povraćaj' && (
               <FileListWrapper>
-                <Typography variant="bodySmall" style={{fontWeight: 600}} content={'POVRAĆAJ:'} />
+                <Typography variant="bodySmall" style={{fontWeight: 600}} content={'POVRAT:'} />
                 <FileList files={(enforcedPaymentData && [enforcedPaymentData.return_file]) ?? []} />
               </FileListWrapper>
             )}

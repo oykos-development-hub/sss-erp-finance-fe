@@ -2,8 +2,7 @@ import {useEffect, useState} from 'react';
 import {GraphQL} from '..';
 import useAppContext from '../../../context/useAppContext';
 import {UserProfile, UserProfileOverviewParams, UserProfileResponse} from '../../../types/graphQL/userProfiles.ts';
-import {useRoleCheck} from '../../../utils/useRoleCheck.ts';
-import {UserRole} from '../../../constants.ts';
+import {checkIsAdmin} from '../../checkRoutePermissions.ts';
 
 const useGetUserProfiles = ({
   page,
@@ -20,7 +19,7 @@ const useGetUserProfiles = ({
   const [loading, setLoading] = useState(true);
 
   const {fetch, contextMain} = useAppContext();
-  const isAdmin = useRoleCheck(contextMain.role_id, [UserRole.ADMIN]);
+  const isAdmin = checkIsAdmin(contextMain?.permissions);
 
   const fetchEmployees = async () => {
     setLoading(true);

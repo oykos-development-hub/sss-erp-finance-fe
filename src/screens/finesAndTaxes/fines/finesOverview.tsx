@@ -10,7 +10,7 @@ import useAppContext from '../../../context/useAppContext.ts';
 import {FinesOverviewItem} from '../../../types/graphQL/finesOverview.ts';
 import useDeleteFine from '../../../services/graphQL/fines/useDeleteFine.ts';
 import {ConfirmationModal} from '../../../shared/confirmationModal/confirmationModal.tsx';
-import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
+import {checkActionRoutePermissions, checkIsAdmin} from '../../../services/checkRoutePermissions.ts';
 import usePrependedDropdownOptions from '../../../utils/usePrependedDropdownOptions.ts';
 import {DropdownData} from '../../../types/dropdownData.ts';
 import useGetOrganizationUnits from '../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
@@ -35,8 +35,7 @@ const FinesOverview = () => {
   } = useAppContext();
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

@@ -17,7 +17,7 @@ import {Header} from '../../styles';
 import {DepositPaymentStatusOptions, depositPaymentTableHeads} from './constants';
 import useGetOrganizationUnits from '../../../../services/graphQL/organizationUnits/useGetOrganizationUnits.ts';
 import usePrependedDropdownOptions from '../../../../utils/usePrependedDropdownOptions.ts';
-import {checkActionRoutePermissions} from '../../../../services/checkRoutePermissions.ts';
+import {checkIsAdmin} from '../../../../services/checkRoutePermissions.ts';
 
 const depositPaymentFilterSchema = yup.object({
   status: optionsStringSchema.default(null),
@@ -46,8 +46,7 @@ const DepositPaymentsOverview = () => {
   const debouncedSearch = useDebounce(search, 500);
 
   const {organizationUnits} = useGetOrganizationUnits({disable_filters: true});
-  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
-  const isUserSSS = createPermittedRoutes.includes('/finance');
+  const isUserSSS = checkIsAdmin(permissions);
 
   const organizationUnitsFilter = (): number | undefined => {
     if (isUserSSS) {

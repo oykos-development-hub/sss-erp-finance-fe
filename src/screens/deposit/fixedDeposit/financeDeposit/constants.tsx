@@ -13,7 +13,7 @@ export const fixedFinancialDepositItemTableHeads: TableHead[] = [
     title: 'Iznos',
     accessor: 'amount',
     type: 'custom',
-    renderContents: (value: number) => <Typography variant="bodyMedium" content={formatCurrency(value)} />,
+    renderContents: (value: number) => <Typography variant="bodyMedium" content={formatCurrency(value, true)} />,
   },
   {
     title: 'Datum oduzimanja',
@@ -45,7 +45,7 @@ export const fixedDepositDispatchTableHeads: TableHead[] = [
     title: 'Iznos',
     accessor: 'amount',
     type: 'custom',
-    renderContents: (value: number) => <Typography variant="bodyMedium" content={formatCurrency(value)} />,
+    renderContents: (value: number) => <Typography variant="bodyMedium" content={formatCurrency(value, true)} />,
   },
   {
     title: 'Datum akta',
