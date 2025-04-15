@@ -24,10 +24,10 @@ const BudgetDynamicPreview = () => {
   const recursiveRowRendering = (items: BudgetDynamicCount[], level = 1, path = [] as string[]) => {
     if (!items) return null;
 
-    return items.map((item: BudgetDynamicCount) => {
+    return items.map((item: BudgetDynamicCount, index) => {
       const fieldPath = [...path, item.id.toString()];
       return (
-        <BudgetDynamicTableRow key={item.id} level={level} count={item}>
+        <BudgetDynamicTableRow key={`table-row${index}`} level={level} count={item}>
           {recursiveRowRendering(item.children ?? [], item.children ? level + 1 : level - 1, fieldPath)}
         </BudgetDynamicTableRow>
       );
@@ -100,7 +100,7 @@ const BudgetDynamicTableRow = ({count, level, children}: BudgetTableRowProps) =>
           level={level}
           onClick={count.children?.length ? onCollapse : undefined}
           first
-          hasChildren={!!count.children.length}>
+          hasChildren={!!count?.children?.length}>
           <FlexContainer>
             {!!count.children?.length && generateChevronIcon()}
             <Typography
